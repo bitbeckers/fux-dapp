@@ -1,0 +1,55 @@
+type User @entity {
+  id: ID!
+  balances: [TokenBalance!] @derivedFrom(field: "user")
+  stakes: [Stake!] @derivedFrom(field: "user")
+}
+
+type StakingPool @entity {
+  id: ID!
+  balance: BigInt!
+  stakeCount: BigInt!
+  stakes: [Stake!] @derivedFrom(field: "pool")
+}
+
+type Stake @entity {
+  id: ID!
+  pool: StakingPool
+  user: User!
+  amount: BigInt!
+  created: BigInt!
+}
+
+type Transaction @entity {
+  id: ID!
+  hash: Bytes!
+  userFrom: User!
+  userTo: User!
+  transactionReceipt: TransactionReceipt!
+}
+
+type TransactionReceipt @entity {
+  id: ID!
+  transaction: Transaction!
+  token: Token!
+  from: Bytes!
+  to: Bytes!
+  value: BigInt!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  hash: Bytes!
+}
+
+type Token @entity {
+  id: ID!
+  address: Bytes!
+  name: String
+  symbol: String
+  tokenBalances: [TokenBalance!]! @derivedFrom(field: "token")
+}
+
+type TokenBalance @entity {
+  id: ID!
+  user: User!
+  token: Token!
+  balance: BigInt!
+}

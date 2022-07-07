@@ -1,0 +1,22 @@
+{
+  "name": "summon-raid-app",
+  "version": "0.0.1",
+  "description": "quickly spin up a RG themed web3 dev env",
+  "main": "index.js",
+  "author": "bitbeckers <code@bitbeckers.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "app",
+    "evm",
+    "graph"
+  ],
+  "scripts": {
+    "prestart": "yarn workspace evm typechain && yarn workspace evm test",
+    "start:graph": "yarn workspace graph deploy:local",
+    "start:evm": "yarn workspace evm local",
+    "start:app": "yarn workspace app dev",
+    "start": " yarn start:evm & yarn start:app",
+    "test": "yarn workspace evm test"
+  }
+}

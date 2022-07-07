@@ -1,0 +1,58 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Staking_Pool
+    network: mainnet
+    source:
+      address: "0x04c0dC00c0Ed701AF1A5B3c7eaeB1B644F2c8042"
+      abi: Staking_Pool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - AvailableRewardsUpdated
+        - BatchRewardPaid
+        - Paused
+        - Recovered
+        - RewardPaid
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+        - SagePathUpdated
+        - Staked
+        - StakingPoolUpdated
+        - Unpaused
+        - Withdrawn
+      abis:
+        - name: Staking_Pool
+          file: ./abis/contracts/Staking_Pool.sol/Staking_Pool.json
+      eventHandlers:
+        - event: RewardPaid(address,uint256)
+          handler: handleRewardPaid
+        - event: Staked(indexed address,uint256)
+          handler: handleStaked
+        - event: Withdrawn(indexed address,uint256)
+          handler: handleWithdrawn
+      file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: Token
+    network: mainnet
+    source:
+      address: "0x2584385A9135b0B73Fb4c118B3f67724371A4F89"
+      abi: ERC20_Token
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC20_Token
+          file: ./abis/contracts/ERC20_Token.sol/ERC20_Token.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts
