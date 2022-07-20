@@ -1,4 +1,4 @@
-import { useToken } from "../../hooks/contract";
+import { useNFTs, useToken } from "../../../hooks/contract";
 import {
   Text,
   Heading,
@@ -21,11 +21,11 @@ interface Values {
   amount: string;
 }
 
-const TransferToken: React.FC = () => {
+const MintToken: React.FC = () => {
   const { address } = useWallet();
-  const { transferTokenTo, owner } = useToken();
+  const { mintTokens, owner } = useToken();
 
-  const onTransfer = async (values: Values) => {
+  const onMint = async (values: Values) => {
     console.log("values: ", values);
     if (
       values.amount &&
@@ -34,7 +34,7 @@ const TransferToken: React.FC = () => {
       address === owner
     ) {
       console.log("minting toknes: ", values.amount);
-      await transferTokenTo(
+      await mintTokens(
         values.recipient,
         ethers.utils.parseEther(values.amount)
       );
@@ -48,14 +48,14 @@ const TransferToken: React.FC = () => {
         boxSize={"xs"}
         heading={
           <Heading w={"100%"} variant="noShadow">
-            Transfer tokens
+            Mint tokens
           </Heading>
         }
         variant="withHeader"
         bg="whiteAlpha.200"
       >
-        <Text textAlign={"center"}>
-          The user can transfer tokens, if they have sufficient balance.
+        <Text size="lg" textAlign={"center"}>
+          The owner of a contract can mint tokens
         </Text>
         <Formik
           enableReinitialize
@@ -63,7 +63,7 @@ const TransferToken: React.FC = () => {
           onSubmit={async (values: Values, { setSubmitting, resetForm }) => {
             setSubmitting(true);
             try {
-              onTransfer(values);
+              onMint(values);
             } catch (err) {
               console.log(err);
             } finally {
@@ -88,7 +88,7 @@ const TransferToken: React.FC = () => {
                 <NumberInput
                   value={values.amount}
                   color="white"
-                  placeholder="Amount to send"
+                  placeholder="Amount to wrap"
                   variant="outline"
                   onChange={(e) => {
                     setFieldValue("amount", e);
@@ -109,7 +109,7 @@ const TransferToken: React.FC = () => {
                 loadingText="Submitting"
                 width="100%"
               >
-                TRANSFER
+                MINT
               </Button>
             </Form>
           )}
@@ -119,4 +119,4 @@ const TransferToken: React.FC = () => {
   );
 };
 
-export default TransferToken;
+export default MintToken;

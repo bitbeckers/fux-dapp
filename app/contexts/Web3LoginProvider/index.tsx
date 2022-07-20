@@ -3,7 +3,7 @@ import {
   WEB3_MODAL_OPTIONS,
   NETWORKS,
 } from "./providerOptions";
-import { useToast } from "@raidguild/design-system";
+import { useToast } from "@chakra-ui/react";
 import { WalletProvider, NetworkConfig } from "@raidguild/quiver";
 import React from "react";
 

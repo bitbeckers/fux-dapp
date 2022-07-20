@@ -11,7 +11,7 @@ import {
   NumberIncrementStepper,
   NumberInputField,
   NumberInputStepper,
-} from "@raidguild/design-system";
+} from "@chakra-ui/react";
 import { useReadContract, useWallet } from "@raidguild/quiver";
 import { ethers } from "ethers";
 import { Formik, Form } from "formik";

@@ -1,4 +1,4 @@
-import { useNFTs, useToken } from "../../hooks/contract";
+import { useToken } from "../../../hooks/contract";
 import {
   Text,
   Heading,
@@ -18,23 +18,26 @@ import { Formik, Form } from "formik";
 
 interface Values {
   recipient: string;
-  tokenID: string;
+  amount: string;
 }
 
-const MintNFT: React.FC = () => {
+const TransferToken: React.FC = () => {
   const { address } = useWallet();
-  const { mint, owner } = useNFTs();
+  const { transferTokenTo, owner } = useToken();
 
-  const onMint = async (values: Values) => {
+  const onTransfer = async (values: Values) => {
     console.log("values: ", values);
     if (
-      values.tokenID &&
+      values.amount &&
       values.recipient &&
       ethers.utils.isAddress(values.recipient) &&
       address === owner
     ) {
-      console.log("minting token: ", values.tokenID);
-      await mint(values.recipient, values.tokenID, `${values.tokenID}.json`);
+      console.log("minting toknes: ", values.amount);
+      await transferTokenTo(
+        values.recipient,
+        ethers.utils.parseEther(values.amount)
+      );
     }
   };
 
@@ -45,22 +48,22 @@ const MintNFT: React.FC = () => {
         boxSize={"xs"}
         heading={
           <Heading w={"100%"} variant="noShadow">
-            Mint NFT
+            Transfer tokens
           </Heading>
         }
         variant="withHeader"
         bg="whiteAlpha.200"
       >
-        <Text size="lg" textAlign={"center"}>
-          The owner of a contract can mint
+        <Text textAlign={"center"}>
+          The user can transfer tokens, if they have sufficient balance.
         </Text>
         <Formik
           enableReinitialize
-          initialValues={{ recipient: "", tokenID: "0" }}
+          initialValues={{ recipient: "", amount: "0" }}
           onSubmit={async (values: Values, { setSubmitting, resetForm }) => {
             setSubmitting(true);
             try {
-              onMint(values);
+              onTransfer(values);
             } catch (err) {
               console.log(err);
             } finally {
@@ -82,16 +85,22 @@ const MintNFT: React.FC = () => {
                     setFieldValue("recipient", e.target.value)
                   }
                 />
-                <Input
-                  variant={"outline"}
-                  value={values.recipient}
-                  label="Token ID"
-                  name="tokenID"
-                  placeholder="Provide token ID"
-                  onChange={(e: any) =>
-                    setFieldValue("tokenID", e.target.value)
-                  }
-                />
+                <NumberInput
+                  value={values.amount}
+                  color="white"
+                  placeholder="Amount to send"
+                  variant="outline"
+                  onChange={(e) => {
+                    setFieldValue("amount", e);
+                  }}
+                  min={0}
+                >
+                  <NumberInputField name="amount" borderRadius="none" />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
               </FormControl>
               <Button
                 variant="solid"
@@ -100,7 +109,7 @@ const MintNFT: React.FC = () => {
                 loadingText="Submitting"
                 width="100%"
               >
-                MINT
+                TRANSFER
               </Button>
             </Form>
           )}
@@ -110,4 +119,4 @@ const MintNFT: React.FC = () => {
   );
 };
 
-export default MintNFT;
+export default TransferToken;

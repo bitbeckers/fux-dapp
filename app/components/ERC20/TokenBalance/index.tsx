@@ -1,4 +1,4 @@
-import { useToken } from "../../hooks/contract";
+import { useToken } from "../../../hooks/contract";
 import { Text, Heading, Card, VStack } from "@raidguild/design-system";
 import { ethers } from "ethers";
 
