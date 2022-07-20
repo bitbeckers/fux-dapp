@@ -19,10 +19,11 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { useFux } from "../../../contexts/FuxProvider";
 
 const WorkstreamModal: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { addWorkstream } = useWorkstreams();
+  const { addWorkstream } = useFux();
   const [workstream, setWorkstream] = useState<Partial<Workstream>>();
 
   const handleSourceSelection = (source: string) => {
