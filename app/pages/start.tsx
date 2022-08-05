@@ -11,8 +11,8 @@ const Start: NextPage = () => {
   const { currentUser, claimFux } = useFux();
 
   useEffect(() => {
-    if (currentUser.workstreams && currentUser?.workstreams?.length > 0) {
-      router.push("/commitment");
+    if (currentUser?.workstreams && currentUser?.workstreams?.length > 0) {
+      router.push("/workstreams");
     }
   }, [currentUser, router]);
 

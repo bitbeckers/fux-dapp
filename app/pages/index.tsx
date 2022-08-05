@@ -29,7 +29,7 @@ const Home: NextPage = () => {
           amount of time between here and there, you have a limited amount of
           fucks to give. Very few, in fact. And if you go around giving a fuck
           about everything and everyone without conscious thought or
-          choice—well, then you\U+0027 re going to get fucked.”
+          choice—well, then you're going to get fucked.”
         </Text>
         <Text fontSize="sm" fontWeight="bold" p={"2em"}>
           Mark Manson, The Subtle Art of Not Giving a F*ck: A Counterintuitive

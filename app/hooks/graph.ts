@@ -1,21 +1,48 @@
 import { useQuery, gql } from "@apollo/client";
 
-const GET_ALL_STAKES = gql`
-  query {
-    stakes {
+type WorkstreamResponse = {
+  id: string;
+  contributors: Partial<WorkstreamContributor>[];
+};
+
+const GET_WORKSTREAM_BY_ID = gql`
+  query Workstream($id: String!) {
+    workstream(id: $id) {
       id
-      amount
-      user {
+      name
+      deadline
+      contributors {
         id
+        allocation
       }
     }
   }
 `;
 
-export const useAllStakes = () => {
-  const { loading, error, data } = useQuery<{ stakes: StakeResponse[] }>(
-    GET_ALL_STAKES
+export const useWorkstream = (id: string) => {
+  const { loading, error, data } = useQuery<{ workstream: WorkstreamResponse }>(
+    GET_WORKSTREAM_BY_ID,
+    { variables: { id } }
   );
 
-  return { loading, allStakes: data?.stakes };
+  const _workstream: Partial<Workstream> = {
+    id,
+    deadline: 1661076835,
+    contributors: [
+      {
+        address: "contributor 1",
+        allocation: 20,
+      },
+      {
+        address: "contributor 2",
+        allocation: 40,
+      },
+      {
+        address: "contributor 3",
+        allocation: 80,
+      },
+    ],
+  };
+
+  return { loading, workstream: _workstream };
 };

@@ -1,5 +1,12 @@
-import { SettingsIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import {
+  ArrowRightIcon,
+  SettingsIcon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@chakra-ui/icons";
 import { GridItem, IconButton, Radio, Text } from "@chakra-ui/react";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 const WorkstreamRow: React.FC<{ workstream: Partial<Workstream> }> = ({
@@ -7,7 +14,7 @@ const WorkstreamRow: React.FC<{ workstream: Partial<Workstream> }> = ({
 }) => {
   return (
     <>
-      <GridItem display={"flex"} alignItems={"center"} bg="#301A3A" colSpan={6}>
+      <GridItem display={"flex"} alignItems={"center"} bg="#301A3A" colSpan={8}>
         <Radio alignContent="center" pl={"1em"}>
           {workstream?.name}
         </Radio>
@@ -23,12 +30,28 @@ const WorkstreamRow: React.FC<{ workstream: Partial<Workstream> }> = ({
       </GridItem>
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <IconButton
-          aria-label="edit workstream"
+          aria-label="toggle workstream visibility"
           icon={workstream.publiclyVisible ? <ViewIcon /> : <ViewOffIcon />}
         />
       </GridItem>
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
-        <IconButton aria-label="edit workstream" icon={<SettingsIcon />} />
+        <IconButton
+          aria-label="edit workstream"
+          icon={<SettingsIcon />}
+        />
+      </GridItem>
+      <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
+        <NextLink
+          href={{
+            pathname: "/resolve/[workstreamId]",
+            query: { workstreamId: workstream.id },
+          }}
+        >
+          <IconButton
+            aria-label="resolve workstream"
+            icon={<ArrowRightIcon />}
+          />
+        </NextLink>
       </GridItem>
     </>
   );

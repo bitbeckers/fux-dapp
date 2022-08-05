@@ -14,8 +14,8 @@ import { formatAddress } from "@raidguild/quiver";
 import NextLink from "next/link";
 import React, { useState } from "react";
 
-const FuxOverview: React.FC<{ user?: Partial<User> }> = ({ user }) => {
-  const { claimFux } = useFux();
+const FuxOverview: React.FC<{}> = ({}) => {
+  const { currentUser: user, claimFux } = useFux();
   return (
     <HStack
       w={"100%"}
@@ -48,7 +48,7 @@ const FuxOverview: React.FC<{ user?: Partial<User> }> = ({ user }) => {
           <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
             user?.fux ? user.vFuxBalance?.toString() : "..."
           } vFUX`}</StatNumber>
-          <NextLink href="/history" passHref>
+          <NextLink href="/fux" passHref>
             <StatHelpText color="#BF7AF0">
               <Link>View history</Link>
             </StatHelpText>

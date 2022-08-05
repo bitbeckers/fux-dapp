@@ -21,9 +21,18 @@ type Fux = {
 };
 
 type Workstream = {
-  id: number;
+  id: string;
   name: string;
   source: string;
-  allocation: number;
   publiclyVisible: boolean;
+  deadline: number;
+  contributors: Partial<WorkstreamContributor>[];
+  commitmentRatingSubmitted: boolean;
+  valueRatingSubmitted: boolean;
 };
+
+interface WorkstreamContributor extends Omit<User, "workstreams"> {
+  allocation: number;
+  commitmentRating: number;
+  valueRating: number;
+}
