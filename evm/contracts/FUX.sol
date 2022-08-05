@@ -11,12 +11,17 @@ contract FUX is ERC1155, AccessControl, ERC1155Supply, ERC1155URIStorage {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     uint256 public constant FUX_TOKEN_ID = 0;
 
+    event WorkstreamMinted(uint256 id, string metadataUri);
+    event ContributorAdded(uint256 id, address contributor);
+
     struct Workstream {
-        bytes32 name;
-        address[] contributors;
+        address creator;
+        string name;
+        bool exists;
     }
 
-    mapping(bytes32 => Workstream) public workstreams;
+    mapping(uint256 => Workstream) public workstreams;
+    mapping(uint256 => address[]) public contributors;
 
     constructor() ERC1155("") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -24,12 +29,7 @@ contract FUX is ERC1155, AccessControl, ERC1155Supply, ERC1155URIStorage {
         _grantRole(MINTER_ROLE, msg.sender);
     }
 
-    function uri(uint256 tokenId)
-        public
-        view
-        override(ERC1155, ERC1155URIStorage)
-        returns (string memory)
-    {
+    function uri(uint256 tokenId) public view override(ERC1155, ERC1155URIStorage) returns (string memory) {
         return super.uri(tokenId);
     }
 
@@ -43,13 +43,17 @@ contract FUX is ERC1155, AccessControl, ERC1155Supply, ERC1155URIStorage {
     }
 
     function mintWorkstream(
-        address account,
         uint256 id,
+        string memory name,
         string memory metadataUri
-    ) public onlyRole(MINTER_ROLE) {
-        require(id != FUX_TOKEN_ID, "Can not mint FUX tokens");
+    ) public {
+        require(workstreams[id].exists == false, "Workstream exists for given ID");
         _setURI(id, metadataUri);
-        _mint(account, id, 1, "");
+        _mint(msg.sender, id, 1, "");
+        workstreams[id] = Workstream(msg.sender, name, true);
+        contributors[id].push(msg.sender);
+        emit WorkstreamMinted(id, metadataUri);
+        emit ContributorAdded(id, msg.sender);
     }
 
     function mintBatch(
@@ -60,6 +64,14 @@ contract FUX is ERC1155, AccessControl, ERC1155Supply, ERC1155URIStorage {
         bytes memory data
     ) public onlyRole(MINTER_ROLE) {
         _mintBatch(to, ids, amounts, data);
+    }
+
+    function addContributor(uint256 workstreamId, address contributor) public {
+        require(workstreams[workstreamId].exists, "Workstream does not exists");
+        require(workstreams[workstreamId].creator == msg.sender, "msg.sender is not the creator");
+
+        contributors[workstreamId].push(contributor);
+        emit ContributorAdded(workstreamId, contributor);
     }
 
     // The following functions are overrides required by Solidity.

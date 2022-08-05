@@ -3,6 +3,8 @@ import { ethers, getNamedAccounts } from "hardhat";
 
 import { shouldBehaveLikeFuxToken } from "./fux.token.behavior";
 import setupTest from "../setup";
+import { shouldBehaveLikeFuxWorkstream } from "./fux.workstream.behavior";
+import { shouldBehaveLikeFuxContributor } from "./fux.contributor.behavior";
 
 describe("Unit tests", function () {
   describe("ERC1155 Token", function () {
@@ -13,5 +15,7 @@ describe("Unit tests", function () {
     });
 
     shouldBehaveLikeFuxToken();
+    shouldBehaveLikeFuxWorkstream();
+    shouldBehaveLikeFuxContributor();
   });
 });

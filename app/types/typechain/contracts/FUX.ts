@@ -35,8 +35,10 @@ export interface FUXInterface extends utils.Interface {
     "FUX_TOKEN_ID()": FunctionFragment;
     "MINTER_ROLE()": FunctionFragment;
     "URI_SETTER_ROLE()": FunctionFragment;
+    "addContributor(uint256,address)": FunctionFragment;
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
+    "contributors(uint256,uint256)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
@@ -44,7 +46,7 @@ export interface FUXInterface extends utils.Interface {
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintBatch(address,uint256[],uint256[],string,bytes)": FunctionFragment;
     "mintFux()": FunctionFragment;
-    "mintWorkstream(address,uint256,string)": FunctionFragment;
+    "mintWorkstream(uint256,string,string)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
@@ -54,7 +56,7 @@ export interface FUXInterface extends utils.Interface {
     "supportsInterface(bytes4)": FunctionFragment;
     "totalSupply(uint256)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
-    "workstreams(bytes32)": FunctionFragment;
+    "workstreams(uint256)": FunctionFragment;
   };
 
   getFunction(
@@ -63,8 +65,10 @@ export interface FUXInterface extends utils.Interface {
       | "FUX_TOKEN_ID"
       | "MINTER_ROLE"
       | "URI_SETTER_ROLE"
+      | "addContributor"
       | "balanceOf"
       | "balanceOfBatch"
+      | "contributors"
       | "exists"
       | "getRoleAdmin"
       | "grantRole"
@@ -102,12 +106,20 @@ export interface FUXInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "addContributor",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "balanceOf",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "balanceOfBatch",
     values: [PromiseOrValue<string>[], PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "contributors",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "exists",
@@ -143,8 +155,8 @@ export interface FUXInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "mintWorkstream",
     values: [
-      PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
       PromiseOrValue<string>
     ]
   ): string;
@@ -198,7 +210,7 @@ export interface FUXInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "workstreams",
-    values: [PromiseOrValue<BytesLike>]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
 
   decodeFunctionResult(
@@ -217,9 +229,17 @@ export interface FUXInterface extends utils.Interface {
     functionFragment: "URI_SETTER_ROLE",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "addContributor",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "balanceOfBatch",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "contributors",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
@@ -273,21 +293,25 @@ export interface FUXInterface extends utils.Interface {
 
   events: {
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "ContributorAdded(uint256,address)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
+    "WorkstreamMinted(uint256,string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ContributorAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferSingle"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WorkstreamMinted"): EventFragment;
 }
 
 export interface ApprovalForAllEventObject {
@@ -301,6 +325,18 @@ export type ApprovalForAllEvent = TypedEvent<
 >;
 
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
+
+export interface ContributorAddedEventObject {
+  id: BigNumber;
+  contributor: string;
+}
+export type ContributorAddedEvent = TypedEvent<
+  [BigNumber, string],
+  ContributorAddedEventObject
+>;
+
+export type ContributorAddedEventFilter =
+  TypedEventFilter<ContributorAddedEvent>;
 
 export interface RoleAdminChangedEventObject {
   role: string;
@@ -375,6 +411,18 @@ export type URIEvent = TypedEvent<[string, BigNumber], URIEventObject>;
 
 export type URIEventFilter = TypedEventFilter<URIEvent>;
 
+export interface WorkstreamMintedEventObject {
+  id: BigNumber;
+  metadataUri: string;
+}
+export type WorkstreamMintedEvent = TypedEvent<
+  [BigNumber, string],
+  WorkstreamMintedEventObject
+>;
+
+export type WorkstreamMintedEventFilter =
+  TypedEventFilter<WorkstreamMintedEvent>;
+
 export interface FUX extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -410,6 +458,12 @@ export interface FUX extends BaseContract {
 
     URI_SETTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
+    addContributor(
+      workstreamId: PromiseOrValue<BigNumberish>,
+      contributor: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     balanceOf(
       account: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
@@ -421,6 +475,12 @@ export interface FUX extends BaseContract {
       ids: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<[BigNumber[]]>;
+
+    contributors(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     exists(
       id: PromiseOrValue<BigNumberish>,
@@ -464,8 +524,8 @@ export interface FUX extends BaseContract {
     ): Promise<ContractTransaction>;
 
     mintWorkstream(
-      account: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
+      name: PromiseOrValue<string>,
       metadataUri: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -527,9 +587,15 @@ export interface FUX extends BaseContract {
     ): Promise<[string]>;
 
     workstreams(
-      arg0: PromiseOrValue<BytesLike>,
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<[string] & { name: string }>;
+    ): Promise<
+      [string, string, boolean] & {
+        creator: string;
+        name: string;
+        exists: boolean;
+      }
+    >;
   };
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
@@ -539,6 +605,12 @@ export interface FUX extends BaseContract {
   MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
 
   URI_SETTER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  addContributor(
+    workstreamId: PromiseOrValue<BigNumberish>,
+    contributor: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   balanceOf(
     account: PromiseOrValue<string>,
@@ -551,6 +623,12 @@ export interface FUX extends BaseContract {
     ids: PromiseOrValue<BigNumberish>[],
     overrides?: CallOverrides
   ): Promise<BigNumber[]>;
+
+  contributors(
+    arg0: PromiseOrValue<BigNumberish>,
+    arg1: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   exists(
     id: PromiseOrValue<BigNumberish>,
@@ -594,8 +672,8 @@ export interface FUX extends BaseContract {
   ): Promise<ContractTransaction>;
 
   mintWorkstream(
-    account: PromiseOrValue<string>,
     id: PromiseOrValue<BigNumberish>,
+    name: PromiseOrValue<string>,
     metadataUri: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -657,9 +735,15 @@ export interface FUX extends BaseContract {
   ): Promise<string>;
 
   workstreams(
-    arg0: PromiseOrValue<BytesLike>,
+    arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
-  ): Promise<string>;
+  ): Promise<
+    [string, string, boolean] & {
+      creator: string;
+      name: string;
+      exists: boolean;
+    }
+  >;
 
   callStatic: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
@@ -669,6 +753,12 @@ export interface FUX extends BaseContract {
     MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
 
     URI_SETTER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    addContributor(
+      workstreamId: PromiseOrValue<BigNumberish>,
+      contributor: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     balanceOf(
       account: PromiseOrValue<string>,
@@ -681,6 +771,12 @@ export interface FUX extends BaseContract {
       ids: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
+
+    contributors(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     exists(
       id: PromiseOrValue<BigNumberish>,
@@ -722,8 +818,8 @@ export interface FUX extends BaseContract {
     mintFux(overrides?: CallOverrides): Promise<void>;
 
     mintWorkstream(
-      account: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
+      name: PromiseOrValue<string>,
       metadataUri: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -785,9 +881,15 @@ export interface FUX extends BaseContract {
     ): Promise<string>;
 
     workstreams(
-      arg0: PromiseOrValue<BytesLike>,
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<
+      [string, string, boolean] & {
+        creator: string;
+        name: string;
+        exists: boolean;
+      }
+    >;
   };
 
   filters: {
@@ -801,6 +903,15 @@ export interface FUX extends BaseContract {
       operator?: PromiseOrValue<string> | null,
       approved?: null
     ): ApprovalForAllEventFilter;
+
+    "ContributorAdded(uint256,address)"(
+      id?: null,
+      contributor?: null
+    ): ContributorAddedEventFilter;
+    ContributorAdded(
+      id?: null,
+      contributor?: null
+    ): ContributorAddedEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
       role?: PromiseOrValue<BytesLike> | null,
@@ -870,6 +981,15 @@ export interface FUX extends BaseContract {
       id?: PromiseOrValue<BigNumberish> | null
     ): URIEventFilter;
     URI(value?: null, id?: PromiseOrValue<BigNumberish> | null): URIEventFilter;
+
+    "WorkstreamMinted(uint256,string)"(
+      id?: null,
+      metadataUri?: null
+    ): WorkstreamMintedEventFilter;
+    WorkstreamMinted(
+      id?: null,
+      metadataUri?: null
+    ): WorkstreamMintedEventFilter;
   };
 
   estimateGas: {
@@ -881,6 +1001,12 @@ export interface FUX extends BaseContract {
 
     URI_SETTER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
+    addContributor(
+      workstreamId: PromiseOrValue<BigNumberish>,
+      contributor: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     balanceOf(
       account: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
@@ -890,6 +1016,12 @@ export interface FUX extends BaseContract {
     balanceOfBatch(
       accounts: PromiseOrValue<string>[],
       ids: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    contributors(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -935,8 +1067,8 @@ export interface FUX extends BaseContract {
     ): Promise<BigNumber>;
 
     mintWorkstream(
-      account: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
+      name: PromiseOrValue<string>,
       metadataUri: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -998,7 +1130,7 @@ export interface FUX extends BaseContract {
     ): Promise<BigNumber>;
 
     workstreams(
-      arg0: PromiseOrValue<BytesLike>,
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -1014,6 +1146,12 @@ export interface FUX extends BaseContract {
 
     URI_SETTER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    addContributor(
+      workstreamId: PromiseOrValue<BigNumberish>,
+      contributor: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     balanceOf(
       account: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
@@ -1023,6 +1161,12 @@ export interface FUX extends BaseContract {
     balanceOfBatch(
       accounts: PromiseOrValue<string>[],
       ids: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    contributors(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1068,8 +1212,8 @@ export interface FUX extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     mintWorkstream(
-      account: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
+      name: PromiseOrValue<string>,
       metadataUri: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -1131,7 +1275,7 @@ export interface FUX extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     workstreams(
-      arg0: PromiseOrValue<BytesLike>,
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
