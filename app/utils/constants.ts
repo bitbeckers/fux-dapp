@@ -1,8 +1,8 @@
 export const checkEnvVarConfig = () => {
   const requiredEnvVarNames = [
     {
-      name: "NEXT_PUBLIC_CONTRACT_ADDRESS_ERC20_TOKEN",
-      value: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_ERC20_TOKEN"],
+      name: "NEXT_PUBLIC_CONTRACT_ADDRESS_FUX",
+      value: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"],
     },
     {
       name: "NEXT_PUBLIC_GRAPH_URL",
@@ -21,7 +21,7 @@ export const checkEnvVarConfig = () => {
 checkEnvVarConfig();
 
 export const contractAddresses = {
-  erc20TokenAddress: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_ERC20_TOKEN"]!,
+  erc20TokenAddress: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"]!,
 };
 
 export const urls = {

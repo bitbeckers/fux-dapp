@@ -8,10 +8,11 @@
   "private": true,
   "workspaces": [
     "app",
-    "evm",
+    "summon-evm",
     "graph"
   ],
   "scripts": {
+    "build:fleek": "yarn workspace app build && yarn workspace app export -o ../out/",
     "prestart": "yarn workspace evm typechain && yarn workspace evm test",
     "start:graph": "yarn workspace graph deploy:local",
     "start:evm": "yarn workspace evm local",

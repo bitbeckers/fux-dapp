@@ -1,3 +1,4 @@
+import { useFuxContract } from "../../hooks/contract";
 import { useWallet } from "@raidguild/quiver";
 import { id } from "ethers/lib/utils";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -24,28 +25,28 @@ const FuxContextProvider: React.FC<FuxProps> = ({ children }: FuxProps) => {
   const [currentUser, setCurrentUser] = useState<Partial<User>>({});
 
   const { address, isConnected } = useWallet();
+  const { mintFux, fuxBalance } = useFuxContract();
 
   useEffect(() => {
+    const createFuxUser = (accountAddress: string): Partial<User> => {
+      return {
+        address: accountAddress,
+        fux: {
+          available: fuxBalance?.toNumber() || 0,
+          total: fuxBalance?.toNumber() || 0,
+        },
+      };
+    };
+
     if (isConnected && address) {
       const user: Partial<User> = createFuxUser(address);
-
       setCurrentUser(user);
     }
-  }, [isConnected, address]);
+  }, [isConnected, address, fuxBalance]);
 
-  const createFuxUser = (accountAddress: string): Partial<User> => {
-    return {
-      address: accountAddress,
-    };
-  };
-
-  const claimFux = () => {
+  const claimFux = async () => {
     if (currentUser) {
-      setCurrentUser({
-        ...currentUser,
-        fux: { available: 100, total: 100 },
-        vFuxBalance: 0,
-      });
+      await mintFux();
     }
   };
 

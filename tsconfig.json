@@ -1,0 +1,9 @@
+{
+    "references": [
+      { "path": "./summon-evm" },
+      { "path": "./app" }
+    ],
+    "files": [],
+    "include": [],
+    "exclude": ["**/node_modules"]
+  }
