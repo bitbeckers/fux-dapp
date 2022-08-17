@@ -46,7 +46,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
         <Stat p={"1em"}>
           <StatLabel>vFUX earned</StatLabel>
           <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
-            user?.fux ? user.vFuxBalance?.toString() : "..."
+            user && user.vFuxBalance ? user?.vFuxBalance?.toString() : "0"
           } vFUX`}</StatNumber>
           <NextLink href="/fux" passHref>
             <StatHelpText color="#BF7AF0">

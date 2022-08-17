@@ -1,5 +1,6 @@
 {
   "name": "summon-evm",
+  "main": "types/index.ts",
   "description": "Template for writing Solidity smart contracts",
   "version": "1.0.0",
   "author": {

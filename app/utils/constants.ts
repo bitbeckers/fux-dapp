@@ -8,6 +8,10 @@ export const checkEnvVarConfig = () => {
       name: "NEXT_PUBLIC_GRAPH_URL",
       value: process.env["NEXT_PUBLIC_GRAPH_URL"],
     },
+    {
+      name: "NEXT_PUBLIC_NFT_STORAGE_TOKEN",
+      value: process.env["NEXT_PUBLIC_NFT_STORAGE_TOKEN"],
+    },
   ];
 
   requiredEnvVarNames.forEach((envVarConfig) => {
@@ -26,4 +30,8 @@ export const contractAddresses = {
 
 export const urls = {
   graphUrl: process.env["NEXT_PUBLIC_GRAPH_URL"]!,
+};
+
+export const apiTokens = {
+  nftStorage: process.env["NEXT_PUBLIC_NFT_STORAGE_TOKEN"]!,
 };
