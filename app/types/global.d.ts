@@ -23,12 +23,13 @@ type Fux = {
 type Workstream = {
   id: string;
   name: string;
-  source: string;
   publiclyVisible: boolean;
   deadline: number;
   contributors: Partial<WorkstreamContributor>[];
   commitmentRatingSubmitted: boolean;
   valueRatingSubmitted: boolean;
+  metadataUri: string;
+  reference: string;
 };
 
 interface WorkstreamContributor extends Omit<User, "workstreams"> {

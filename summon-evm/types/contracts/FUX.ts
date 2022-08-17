@@ -44,9 +44,8 @@ export interface FUXInterface extends utils.Interface {
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mintBatch(address,uint256[],uint256[],string,bytes)": FunctionFragment;
     "mintFux()": FunctionFragment;
-    "mintWorkstream(uint256,string,string)": FunctionFragment;
+    "mintWorkstream(bytes)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
@@ -74,7 +73,6 @@ export interface FUXInterface extends utils.Interface {
       | "grantRole"
       | "hasRole"
       | "isApprovedForAll"
-      | "mintBatch"
       | "mintFux"
       | "mintWorkstream"
       | "renounceRole"
@@ -141,24 +139,10 @@ export interface FUXInterface extends utils.Interface {
     functionFragment: "isApprovedForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(
-    functionFragment: "mintBatch",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>[],
-      PromiseOrValue<BigNumberish>[],
-      PromiseOrValue<string>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
   encodeFunctionData(functionFragment: "mintFux", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "mintWorkstream",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>
-    ]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -253,7 +237,6 @@ export interface FUXInterface extends utils.Interface {
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mintBatch", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mintFux", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "mintWorkstream",
@@ -510,23 +493,12 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    mintBatch(
-      to: PromiseOrValue<string>,
-      ids: PromiseOrValue<BigNumberish>[],
-      amounts: PromiseOrValue<BigNumberish>[],
-      uri: PromiseOrValue<string>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     mintFux(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     mintWorkstream(
-      id: PromiseOrValue<BigNumberish>,
-      name: PromiseOrValue<string>,
-      metadataUri: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -590,9 +562,10 @@ export interface FUX extends BaseContract {
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<
-      [string, string, boolean] & {
-        creator: string;
+      [string, string, string, boolean] & {
         name: string;
+        creator: string;
+        ref: string;
         exists: boolean;
       }
     >;
@@ -658,23 +631,12 @@ export interface FUX extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  mintBatch(
-    to: PromiseOrValue<string>,
-    ids: PromiseOrValue<BigNumberish>[],
-    amounts: PromiseOrValue<BigNumberish>[],
-    uri: PromiseOrValue<string>,
-    data: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   mintFux(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   mintWorkstream(
-    id: PromiseOrValue<BigNumberish>,
-    name: PromiseOrValue<string>,
-    metadataUri: PromiseOrValue<string>,
+    data: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -738,9 +700,10 @@ export interface FUX extends BaseContract {
     arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<
-    [string, string, boolean] & {
-      creator: string;
+    [string, string, string, boolean] & {
       name: string;
+      creator: string;
+      ref: string;
       exists: boolean;
     }
   >;
@@ -806,21 +769,10 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    mintBatch(
-      to: PromiseOrValue<string>,
-      ids: PromiseOrValue<BigNumberish>[],
-      amounts: PromiseOrValue<BigNumberish>[],
-      uri: PromiseOrValue<string>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     mintFux(overrides?: CallOverrides): Promise<void>;
 
     mintWorkstream(
-      id: PromiseOrValue<BigNumberish>,
-      name: PromiseOrValue<string>,
-      metadataUri: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -884,9 +836,10 @@ export interface FUX extends BaseContract {
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<
-      [string, string, boolean] & {
-        creator: string;
+      [string, string, string, boolean] & {
         name: string;
+        creator: string;
+        ref: string;
         exists: boolean;
       }
     >;
@@ -1053,23 +1006,12 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    mintBatch(
-      to: PromiseOrValue<string>,
-      ids: PromiseOrValue<BigNumberish>[],
-      amounts: PromiseOrValue<BigNumberish>[],
-      uri: PromiseOrValue<string>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     mintFux(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     mintWorkstream(
-      id: PromiseOrValue<BigNumberish>,
-      name: PromiseOrValue<string>,
-      metadataUri: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1198,23 +1140,12 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    mintBatch(
-      to: PromiseOrValue<string>,
-      ids: PromiseOrValue<BigNumberish>[],
-      amounts: PromiseOrValue<BigNumberish>[],
-      uri: PromiseOrValue<string>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     mintFux(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     mintWorkstream(
-      id: PromiseOrValue<BigNumberish>,
-      name: PromiseOrValue<string>,
-      metadataUri: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
