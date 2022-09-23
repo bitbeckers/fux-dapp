@@ -25,7 +25,7 @@ export const checkEnvVarConfig = () => {
 checkEnvVarConfig();
 
 export const contractAddresses = {
-  erc20TokenAddress: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"]!,
+  fuxContractAddress: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"]!,
 };
 
 export const urls = {

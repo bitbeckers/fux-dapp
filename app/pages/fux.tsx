@@ -1,5 +1,5 @@
-
-import { useFux } from "../contexts/FuxProvider";
+import { useVFuxBalance } from "../hooks/fux";
+import { useWorkstreams } from "../hooks/workstream";
 import {
   VStack,
   Text,
@@ -17,7 +17,8 @@ import type { NextPage } from "next";
 import NextLink from "next/link";
 
 const Fux: NextPage = () => {
-  const { currentUser: user } = useFux();
+  const workstreams = useWorkstreams();
+  const vFux = useVFuxBalance();
 
   return (
     <VStack spacing={8} w={"100%"}>
@@ -27,7 +28,7 @@ const Fux: NextPage = () => {
         <Stat p={"1em"}>
           <StatLabel>Active workstreams</StatLabel>
           <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
-            user?.workstreams ? user.workstreams?.length.toString() : "..."
+            workstreams ? workstreams?.length.toString() : "..."
           }`}</StatNumber>
           <StatHelpText color="#BF7AF0">
             <NextLink href="/fux">
@@ -38,7 +39,7 @@ const Fux: NextPage = () => {
         <Stat p={"1em"}>
           <StatLabel>vFUX earned</StatLabel>
           <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
-            user?.fux ? user.vFuxBalance?.toString() : "..."
+            vFux ? vFux?.toString() : "..."
           } vFUX`}</StatNumber>
         </Stat>
       </StatGroup>

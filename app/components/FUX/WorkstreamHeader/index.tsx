@@ -1,22 +1,9 @@
-import { useFux } from "../../../contexts/FuxProvider";
 import {
-  Avatar,
-  HStack,
-  Link,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
   Text,
-  StatGroup,
-  Spacer,
   VStack,
-  Center,
   Heading,
 } from "@chakra-ui/react";
-import { formatAddress } from "@raidguild/quiver";
-import NextLink from "next/link";
-import React, { useState } from "react";
+import React from "react";
 
 const WorkstreamHeader: React.FC<{ workstreamTitle: string }> = ({
   workstreamTitle,

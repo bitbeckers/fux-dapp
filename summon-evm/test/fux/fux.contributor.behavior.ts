@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers } from "ethers";
+import { DateTime } from "luxon";
 
 import setupTest from "../setup";
 
@@ -13,13 +13,19 @@ export function shouldBehaveLikeFuxContributor(): void {
 
     await expect(user.fux.addContributor(id, owner.address)).to.be.revertedWith("Workstream does not exist");
 
-    expect(await user.fux.mintWorkstream(id, name, metadataUri))
+    await expect(
+      user.fux.mintWorkstream(
+        name,
+        [deployer.address, user.address],
+        DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
+      ),
+    )
       .to.emit(fux, "WorkstreamMinted")
       .withArgs(id, metadataUri);
 
     await expect(deployer.fux.addContributor(id, owner.address)).to.be.revertedWith("msg.sender is not the creator");
 
-    expect(await user.fux.addContributor(id, owner.address))
+    await expect(user.fux.addContributor(id, owner.address))
       .to.emit(fux, "ContributorAdded")
       .withArgs(id, owner.address);
   });

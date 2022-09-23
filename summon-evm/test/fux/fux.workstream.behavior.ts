@@ -1,22 +1,30 @@
 import { expect } from "chai";
-import { ethers } from "ethers";
+import { DateTime } from "luxon";
 
 import setupTest from "../setup";
 
 export function shouldBehaveLikeFuxWorkstream(): void {
-  it("is open to be minted by anyone", async function () {
+  it("allows anyone to mint a workstream", async function () {
     const { fux, deployer, owner, user } = await setupTest();
 
-    const id = 0;
-    const metadataUri = "http://example.com";
-    const name = "mockStream";
-
-    expect(await user.fux.mintWorkstream(id, name, metadataUri))
+    await expect(
+      user.fux.mintWorkstream(
+        "Test",
+        [deployer.address, owner.address],
+        DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
+      ),
+    )
       .to.emit(fux, "WorkstreamMinted")
-      .withArgs(id, metadataUri);
+      .withArgs(0, "http://example.com");
 
-    await expect(user.fux.mintWorkstream(id, name, metadataUri)).to.be.revertedWith(
-      "Workstream exists for given ID",
-    );
+    await expect(
+      user.fux.mintWorkstream(
+        "Test",
+        [deployer.address, owner.address],
+        DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
+      ),
+    )
+      .to.emit(fux, "WorkstreamMinted")
+      .withArgs(1, "http://example.com");
   });
 }

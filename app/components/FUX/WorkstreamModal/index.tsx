@@ -1,74 +1,68 @@
-import { useFux } from "../../../contexts/FuxProvider";
-import { useCreateNFT } from "../../../hooks/nft";
-import { useWorkstreams } from "../../../hooks/workstream";
+import { useMintWorkstream } from "../../../hooks/workstream";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
-  Checkbox,
+  ButtonGroup,
   FormControl,
-  Grid,
-  GridItem,
-  HStack,
   Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Radio,
-  RadioGroup,
-  Spacer,
-  Stack,
-  useDisclosure,
-} from "@chakra-ui/react";
-import {
+  InputGroup,
+  InputRightAddon,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Spacer,
+  Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useWallet } from "@raidguild/quiver";
+import { DateTime } from "luxon";
+import { useForm } from "react-hook-form";
 
 type FormData = {
   name: string;
-  image: string;
-  description: string;
-  reference: string;
-  source: string;
+  duration: string;
 };
 
 const WorkstreamModal: React.FC = () => {
+  const { address: user } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { addWorkstream } = useFux();
-  const [reference, setReference] = useState<string>();
+  const addWorkstream = useMintWorkstream();
 
   const {
     handleSubmit,
     register,
     reset,
-    control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
       name: "",
-      image: "",
-      description: "",
-      source: "manual",
-      reference: "http://examples.com",
+      duration: "7",
     },
   });
 
+  const watchAllFields = watch();
+  console.log("FORM: ", watchAllFields);
+
   const onSubmit = (form: FormData) => {
-    // Upload to NFT.Storage
-    const metadata = await useCreateNFT(form);
-    // Mint NFT
-    addWorkstream(form);
+    // Mint workstream
+    console.log("Submitting, user: ", user);
+    console.log("Submitting, form: ", form);
+    const deadline = Number(
+      DateTime.now()
+        .plus({ days: +form.duration })
+        .toSeconds()
+        .toFixed()
+    );
+    if (user) {
+      addWorkstream(form.name, [user], deadline).then(() => onClose());
+    }
   };
 
+  // TODO inputType date
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl>
@@ -80,23 +74,29 @@ const WorkstreamModal: React.FC = () => {
             minLength: { value: 4, message: "Minimum length should be 4" },
           })}
         />
-        <Input
-          id="description"
-          placeholder="description"
-          {...register("description", {
-            required: "This is required",
-            minLength: { value: 4, message: "Minimum length should be 4" },
-          })}
-        />
-        <Input
-          id="image"
-          placeholder="image"
-          {...register("image", {
-            required: "This is required",
-            minLength: { value: 4, message: "Minimum length should be 4" },
-          })}
-        />
+        <InputGroup>
+          <Input
+            id="duration"
+            placeholder="duration"
+            {...register("duration", {
+              required: "This is required",
+              minLength: { value: 1, message: "Minimum length should be 1" },
+            })}
+          />
+          <InputRightAddon>
+            <Text>Days</Text>
+          </InputRightAddon>
+        </InputGroup>
       </FormControl>
+      <ButtonGroup justifyContent="space-around" w="100%">
+        <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
+          Reset
+        </Button>
+        <Spacer />
+        <Button isLoading={isSubmitting} type="submit">
+          Create workstream
+        </Button>
+      </ButtonGroup>
     </form>
   );
 
@@ -112,22 +112,6 @@ const WorkstreamModal: React.FC = () => {
           <ModalHeader>Add workstream</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>
-
-          <ModalFooter justifyContent={"center"}>
-            <HStack w={"100%"} pt={4}>
-              <Button
-                isLoading={isSubmitting}
-                type="reset"
-                onClick={() => reset()}
-              >
-                Reset
-              </Button>
-              <Spacer />
-              <Button isLoading={isSubmitting} type="submit">
-                Create workstream
-              </Button>
-            </HStack>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
