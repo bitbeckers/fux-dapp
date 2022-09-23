@@ -2,7 +2,7 @@ import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
 import { useValueEvaluation } from "../../hooks/evaluations";
 import { useGetWorkstreamByID } from "../../hooks/workstream";
-import { VStack, Text, Heading } from "@chakra-ui/react";
+import { VStack, Text, Heading, HStack } from "@chakra-ui/react";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -35,13 +35,17 @@ const Resolve: NextPage = () => {
       <>
         <ValueHeader />
         <VStack w={"70%"} maxW={"700px"}>
-          <Heading >{workstream?.name || "..."}</Heading>
-          <Heading size={"md"}>Rate contributor value add</Heading>
-          <Text>
-            {timeToDeadline
-              ? `${timeToDeadline} left to resolve`
-              : "Deadline unknown"}
-          </Text>
+          <HStack paddingTop={"2em"} paddingBottom={"2em"}>
+            <Heading size={"md"}>{`Workstream: ${
+              workstream?.name || "..."
+            }`}</Heading>
+            <Text>
+              {timeToDeadline
+                ? `${timeToDeadline} left to resolve`
+                : "Deadline unknown"}
+            </Text>
+          </HStack>
+
           <ValueReviewForm workstreamID={+workstreamID!} />
         </VStack>
       </>

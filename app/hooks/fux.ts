@@ -37,6 +37,35 @@ export const useMintFux = () => {
   return mintFux;
 };
 
+export const useMintVFux = () => {
+  const toast = useToast();
+  const contract = useFuxContract();
+  const { mutate: mintVFux } = useWriteContract(contract, "mintVFux", {
+    onError: (e) => {
+      toast({
+        title: `Couldn't mint vFUX: ${parseTxErrorMessage(e)}`,
+        status: "error",
+      });
+      throw new Error(e.message);
+    },
+    onResponse: () => {
+      toast({
+        title: `Minting vFUX`,
+        status: "info",
+        duration: 30000,
+      });
+    },
+    onConfirmation: () => {
+      toast({
+        title: "vFUX minted",
+        status: "success",
+      });
+    },
+  });
+
+  return (workstreamID: number) => mintVFux(workstreamID);
+};
+
 export const useFuxBalance = () => {
   const { address } = useWallet();
   const contract = useFuxContract();
@@ -52,7 +81,6 @@ export const useFuxBalance = () => {
 };
 
 export const useVFuxBalance = () => {
-
   const { address } = useWallet();
   const contract = useFuxContract();
 

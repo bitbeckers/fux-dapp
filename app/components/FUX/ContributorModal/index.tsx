@@ -72,6 +72,9 @@ const ContributorModal: React.FC<{
           key={field.id}
           id="newContributors"
           defaultValue={`${field.address}`}
+          marginTop={"1em"}
+          marginBottom={"1em"}
+
           {...register(`newContributors.${index}.address`)}
         />
       ))}

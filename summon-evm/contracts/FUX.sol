@@ -20,6 +20,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     bytes4 internal constant ERC1155_BATCH_ACCEPTED = 0xbc197c81;
 
     event FuxClaimed(address user);
+    event VFuxClaimed(address user, uint256 workstreamID);
     event FuxGiven(address user, uint256 workstreamId, uint256 amount);
     event WorkstreamMinted(uint256 id, string metadataUri);
     event ContributorsAdded(uint256 id, address[] contributors);
@@ -34,13 +35,14 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
 
     struct Evaluation {
         address[] contributors;
-        uint256[] ratings;
+        uint8[] ratings;
     }
 
     mapping(uint256 => Workstream) internal workstreams;
     mapping(address => uint256[]) internal contributorWorkstreams;
     mapping(address => mapping(uint256 => uint256)) internal contributorCommitments;
     mapping(address => mapping(uint256 => Evaluation)) internal valueEvaluations;
+    mapping(address => mapping(uint256 => uint256)) internal vFuxAvailable;
 
     constructor() ERC1155("") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -60,6 +62,13 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         require(balanceOf(msg.sender, FUX_TOKEN_ID) == 0, "Already got your FUX on");
         _mint(msg.sender, FUX_TOKEN_ID, 100, "");
         emit FuxClaimed(msg.sender);
+    }
+
+    function mintVFux(uint256 workstreamID) public {
+        require(vFuxAvailable[msg.sender][workstreamID] == 0, "Already got your vFUX on");
+        _mint(msg.sender, VFUX_TOKEN_ID, 100, "");
+        vFuxAvailable[msg.sender][workstreamID] == 100;
+        emit VFuxClaimed(msg.sender, workstreamID);
     }
 
     function mintWorkstream(
@@ -121,13 +130,34 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, fuxGiven, "");
     }
 
-    //TODO checks
     function submitValueEvaluation(
         uint256 workstreamID,
         address[] memory contributors,
-        uint256[] memory ratings
+        uint8[] memory vFuxGiven
     ) public {
-        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, ratings);
+        require(contributors.length > 0, "No-one was evaluated");
+        require(contributors.length == vFuxGiven.length, "Not everyone was evaluated");
+        noSelfFuxing(contributors);
+        spendAllVFux(vFuxGiven, workstreamID);
+
+        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven);
+    }
+
+    function noSelfFuxing(address[] memory contributors) internal view {
+        uint256 size = contributors.length;
+        for (uint256 i = 0; i < size; i++) {
+            require(contributors[i] != msg.sender);
+        }
+    }
+
+    function spendAllVFux(uint8[] memory vFuxGiven, uint256 workstreamID) internal view {
+        uint256 size = vFuxGiven.length;
+        uint8 total = 0;
+        for (uint256 i = 0; i < size; i++) {
+            total += vFuxGiven[i];
+        }
+
+        require(total == vFuxAvailable[msg.sender][workstreamID]);
     }
 
     function getValueEvaluation(uint256 workstreamID) public view returns (Evaluation memory evaluation) {
@@ -153,11 +183,6 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         override(ERC1155, ERC1155Receiver, AccessControl)
         returns (bool)
     {
-        // return
-        //     interfaceId == 0x01ffc9a7 || // ERC165
-        //     interfaceId == 0xd9b67a26 || //ERC1155
-        //     interfaceId == 0x4e2312e0; // ERC1155_ACCEPTED ^ ERC1155_BATCH_ACCEPTED
-
         return super.supportsInterface(interfaceId);
     }
 

@@ -72,7 +72,7 @@ const WorkstreamModal: React.FC = () => {
             minLength: { value: 4, message: "Minimum length should be 4" },
           })}
         />
-        <InputGroup>
+        <InputGroup marginTop={"1em"} marginBottom={"1em"}>
           <Input
             id="duration"
             placeholder="duration"
@@ -86,7 +86,7 @@ const WorkstreamModal: React.FC = () => {
           </InputRightAddon>
         </InputGroup>
       </FormControl>
-      <ButtonGroup justifyContent="space-around" w="100%">
+      <ButtonGroup marginTop={"1em"} justifyContent="space-around" w="100%">
         <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
           Reset
         </Button>

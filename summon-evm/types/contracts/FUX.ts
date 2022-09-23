@@ -35,9 +35,9 @@ export declare namespace FUX {
     ratings: PromiseOrValue<BigNumberish>[];
   };
 
-  export type EvaluationStructOutput = [string[], BigNumber[]] & {
+  export type EvaluationStructOutput = [string[], number[]] & {
     contributors: string[];
-    ratings: BigNumber[];
+    ratings: number[];
   };
 
   export type WorkstreamStruct = {
@@ -84,6 +84,7 @@ export interface FUXInterface extends utils.Interface {
     "hasRole(bytes32,address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintFux()": FunctionFragment;
+    "mintVFux(uint256)": FunctionFragment;
     "mintWorkstream(string,address[],uint256)": FunctionFragment;
     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
@@ -93,7 +94,7 @@ export interface FUXInterface extends utils.Interface {
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setURI(string)": FunctionFragment;
-    "submitValueEvaluation(uint256,address[],uint256[])": FunctionFragment;
+    "submitValueEvaluation(uint256,address[],uint8[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "totalSupply(uint256)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
@@ -121,6 +122,7 @@ export interface FUXInterface extends utils.Interface {
       | "hasRole"
       | "isApprovedForAll"
       | "mintFux"
+      | "mintVFux"
       | "mintWorkstream"
       | "onERC1155BatchReceived"
       | "onERC1155Received"
@@ -210,6 +212,10 @@ export interface FUXInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "mintFux", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "mintVFux",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(
     functionFragment: "mintWorkstream",
     values: [
@@ -360,6 +366,7 @@ export interface FUXInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mintFux", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "mintVFux", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "mintWorkstream",
     data: BytesLike
@@ -419,6 +426,7 @@ export interface FUXInterface extends utils.Interface {
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
+    "VFuxClaimed(address,uint256)": EventFragment;
     "WorkstreamMinted(uint256,string)": EventFragment;
   };
 
@@ -432,6 +440,7 @@ export interface FUXInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferSingle"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "VFuxClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WorkstreamMinted"): EventFragment;
 }
 
@@ -550,6 +559,17 @@ export interface URIEventObject {
 export type URIEvent = TypedEvent<[string, BigNumber], URIEventObject>;
 
 export type URIEventFilter = TypedEventFilter<URIEvent>;
+
+export interface VFuxClaimedEventObject {
+  user: string;
+  workstreamID: BigNumber;
+}
+export type VFuxClaimedEvent = TypedEvent<
+  [string, BigNumber],
+  VFuxClaimedEventObject
+>;
+
+export type VFuxClaimedEventFilter = TypedEventFilter<VFuxClaimedEvent>;
 
 export interface WorkstreamMintedEventObject {
   id: BigNumber;
@@ -681,6 +701,11 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    mintVFux(
+      workstreamID: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     mintWorkstream(
       name: PromiseOrValue<string>,
       contributors: PromiseOrValue<string>[],
@@ -750,7 +775,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      ratings: PromiseOrValue<BigNumberish>[],
+      vFuxGiven: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -862,6 +887,11 @@ export interface FUX extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  mintVFux(
+    workstreamID: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   mintWorkstream(
     name: PromiseOrValue<string>,
     contributors: PromiseOrValue<string>[],
@@ -931,7 +961,7 @@ export interface FUX extends BaseContract {
   submitValueEvaluation(
     workstreamID: PromiseOrValue<BigNumberish>,
     contributors: PromiseOrValue<string>[],
-    ratings: PromiseOrValue<BigNumberish>[],
+    vFuxGiven: PromiseOrValue<BigNumberish>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1041,6 +1071,11 @@ export interface FUX extends BaseContract {
 
     mintFux(overrides?: CallOverrides): Promise<void>;
 
+    mintVFux(
+      workstreamID: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     mintWorkstream(
       name: PromiseOrValue<string>,
       contributors: PromiseOrValue<string>[],
@@ -1110,7 +1145,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      ratings: PromiseOrValue<BigNumberish>[],
+      vFuxGiven: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1239,6 +1274,12 @@ export interface FUX extends BaseContract {
     ): URIEventFilter;
     URI(value?: null, id?: PromiseOrValue<BigNumberish> | null): URIEventFilter;
 
+    "VFuxClaimed(address,uint256)"(
+      user?: null,
+      workstreamID?: null
+    ): VFuxClaimedEventFilter;
+    VFuxClaimed(user?: null, workstreamID?: null): VFuxClaimedEventFilter;
+
     "WorkstreamMinted(uint256,string)"(
       id?: null,
       metadataUri?: null
@@ -1337,6 +1378,11 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    mintVFux(
+      workstreamID: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     mintWorkstream(
       name: PromiseOrValue<string>,
       contributors: PromiseOrValue<string>[],
@@ -1406,7 +1452,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      ratings: PromiseOrValue<BigNumberish>[],
+      vFuxGiven: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1521,6 +1567,11 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    mintVFux(
+      workstreamID: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     mintWorkstream(
       name: PromiseOrValue<string>,
       contributors: PromiseOrValue<string>[],
@@ -1590,7 +1641,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      ratings: PromiseOrValue<BigNumberish>[],
+      vFuxGiven: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
