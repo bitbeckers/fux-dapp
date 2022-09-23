@@ -41,6 +41,7 @@ export const providerOptions: IProviderOptions = {
       rpc: {
         1: NETWORKS["0x1"].rpc,
         3: NETWORKS["0x3"].rpc,
+        5: NETWORKS["0x5"].rpc,
         1337: NETWORKS["0x539"].rpc,
         80001: NETWORKS["0x13881"].rpc,
       },
@@ -54,4 +55,4 @@ export const WEB3_MODAL_OPTIONS = {
   theme: "dark",
 };
 
-export const DEFAULT_CHAIN_ID = "0x539";
+export const DEFAULT_CHAIN_ID = "0x5";
