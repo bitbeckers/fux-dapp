@@ -34,8 +34,6 @@ const WorkstreamRow: React.FC<{ workstreamID: number }> = ({
         <Checkbox
           alignContent="center"
           pl={"1em"}
-          isDisabled={commitment?.gt(0)}
-          isInvalid={commitment?.gt(0)}
         >
           {workstream?.name}
         </Checkbox>

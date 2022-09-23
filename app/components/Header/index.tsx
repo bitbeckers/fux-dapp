@@ -23,11 +23,6 @@ const Header: React.FC<{}> = () => {
           <Heading fontSize="4xl">FUX</Heading>
         </Link>
       </NextLink>
-      <NextLink href="/fux" passHref>
-        <Link>
-          <Heading fontSize="lg">MY FUX</Heading>
-        </Link>
-      </NextLink>
       <NextLink href="/workstreams" passHref>
         <Link>
           <Heading fontSize="lg">MY WORKSTREAMS</Heading>
