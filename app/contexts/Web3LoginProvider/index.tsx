@@ -4,7 +4,7 @@ import {
   NETWORKS,
 } from "./providerOptions";
 import { useToast } from "@chakra-ui/react";
-import { WalletProvider, NetworkConfig } from "@raidguild/quiver";
+import { WalletProvider } from "@raidguild/quiver";
 import React from "react";
 
 const Web3LoginProvider: React.FC<{ children: any }> = ({ children }) => {

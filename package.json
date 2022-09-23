@@ -8,15 +8,16 @@
   "private": true,
   "workspaces": [
     "app",
-    "evm",
+    "summon-evm",
     "graph"
   ],
   "scripts": {
-    "prestart": "yarn workspace evm typechain && yarn workspace evm test",
+    "build:fleek": "yarn workspace app build && yarn workspace app export -o ../out/",
+    "prestart": "yarn workspace summon-evm typechain && yarn workspace summon-evm test",
     "start:graph": "yarn workspace graph deploy:local",
-    "start:evm": "yarn workspace evm local",
+    "start:evm": "yarn workspace summon-evm local",
     "start:app": "yarn workspace app dev",
     "start": " yarn start:evm & yarn start:app",
-    "test": "yarn workspace evm test"
+    "test": "yarn workspace summon-evm test"
   }
 }
