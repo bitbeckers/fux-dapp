@@ -75,7 +75,6 @@ export interface FUXInterface extends utils.Interface {
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "commitToWorkstream(uint256,uint256)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
-    "getCommitmentEvaluation(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getValueEvaluation(uint256)": FunctionFragment;
     "getWorkstreamByID(uint256)": FunctionFragment;
@@ -86,13 +85,14 @@ export interface FUXInterface extends utils.Interface {
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintFux()": FunctionFragment;
     "mintWorkstream(string,address[],uint256)": FunctionFragment;
+    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
+    "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setURI(string)": FunctionFragment;
-    "submitCommitmentEvaluation(uint256,address[],uint256[])": FunctionFragment;
     "submitValueEvaluation(uint256,address[],uint256[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "totalSupply(uint256)": FunctionFragment;
@@ -112,7 +112,6 @@ export interface FUXInterface extends utils.Interface {
       | "balanceOfBatch"
       | "commitToWorkstream"
       | "exists"
-      | "getCommitmentEvaluation"
       | "getRoleAdmin"
       | "getValueEvaluation"
       | "getWorkstreamByID"
@@ -123,13 +122,14 @@ export interface FUXInterface extends utils.Interface {
       | "isApprovedForAll"
       | "mintFux"
       | "mintWorkstream"
+      | "onERC1155BatchReceived"
+      | "onERC1155Received"
       | "renounceRole"
       | "revokeRole"
       | "safeBatchTransferFrom"
       | "safeTransferFrom"
       | "setApprovalForAll"
       | "setURI"
-      | "submitCommitmentEvaluation"
       | "submitValueEvaluation"
       | "supportsInterface"
       | "totalSupply"
@@ -178,10 +178,6 @@ export interface FUXInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
-    functionFragment: "getCommitmentEvaluation",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [PromiseOrValue<BytesLike>]
   ): string;
@@ -223,6 +219,26 @@ export interface FUXInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "onERC1155BatchReceived",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "onERC1155Received",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "renounceRole",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
@@ -257,14 +273,6 @@ export interface FUXInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "setURI",
     values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "submitCommitmentEvaluation",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>[],
-      PromiseOrValue<BigNumberish>[]
-    ]
   ): string;
   encodeFunctionData(
     functionFragment: "submitValueEvaluation",
@@ -326,10 +334,6 @@ export interface FUXInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getCommitmentEvaluation",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
@@ -361,6 +365,14 @@ export interface FUXInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "onERC1155BatchReceived",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "onERC1155Received",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
@@ -378,10 +390,6 @@ export interface FUXInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "submitCommitmentEvaluation",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "submitValueEvaluation",
     data: BytesLike
@@ -621,13 +629,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    getCommitmentEvaluation(
-      workstreamID: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [FUX.EvaluationStructOutput] & { evaluation: FUX.EvaluationStructOutput }
-    >;
-
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -687,6 +688,24 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    onERC1155BatchReceived(
+      _operator: PromiseOrValue<string>,
+      _from: PromiseOrValue<string>,
+      _ids: PromiseOrValue<BigNumberish>[],
+      _values: PromiseOrValue<BigNumberish>[],
+      _data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    onERC1155Received(
+      _operator: PromiseOrValue<string>,
+      _from: PromiseOrValue<string>,
+      _id: PromiseOrValue<BigNumberish>,
+      _value: PromiseOrValue<BigNumberish>,
+      _data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
@@ -725,13 +744,6 @@ export interface FUX extends BaseContract {
 
     setURI(
       newuri: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    submitCommitmentEvaluation(
-      workstreamID: PromiseOrValue<BigNumberish>,
-      contributors: PromiseOrValue<string>[],
-      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -802,11 +814,6 @@ export interface FUX extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  getCommitmentEvaluation(
-    workstreamID: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<FUX.EvaluationStructOutput>;
-
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
@@ -862,6 +869,24 @@ export interface FUX extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  onERC1155BatchReceived(
+    _operator: PromiseOrValue<string>,
+    _from: PromiseOrValue<string>,
+    _ids: PromiseOrValue<BigNumberish>[],
+    _values: PromiseOrValue<BigNumberish>[],
+    _data: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  onERC1155Received(
+    _operator: PromiseOrValue<string>,
+    _from: PromiseOrValue<string>,
+    _id: PromiseOrValue<BigNumberish>,
+    _value: PromiseOrValue<BigNumberish>,
+    _data: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   renounceRole(
     role: PromiseOrValue<BytesLike>,
     account: PromiseOrValue<string>,
@@ -900,13 +925,6 @@ export interface FUX extends BaseContract {
 
   setURI(
     newuri: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  submitCommitmentEvaluation(
-    workstreamID: PromiseOrValue<BigNumberish>,
-    contributors: PromiseOrValue<string>[],
-    ratings: PromiseOrValue<BigNumberish>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -977,11 +995,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    getCommitmentEvaluation(
-      workstreamID: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<FUX.EvaluationStructOutput>;
-
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1035,6 +1048,24 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    onERC1155BatchReceived(
+      _operator: PromiseOrValue<string>,
+      _from: PromiseOrValue<string>,
+      _ids: PromiseOrValue<BigNumberish>[],
+      _values: PromiseOrValue<BigNumberish>[],
+      _data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    onERC1155Received(
+      _operator: PromiseOrValue<string>,
+      _from: PromiseOrValue<string>,
+      _id: PromiseOrValue<BigNumberish>,
+      _value: PromiseOrValue<BigNumberish>,
+      _data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
@@ -1073,13 +1104,6 @@ export interface FUX extends BaseContract {
 
     setURI(
       newuri: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    submitCommitmentEvaluation(
-      workstreamID: PromiseOrValue<BigNumberish>,
-      contributors: PromiseOrValue<string>[],
-      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1265,11 +1289,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getCommitmentEvaluation(
-      workstreamID: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1325,6 +1344,24 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    onERC1155BatchReceived(
+      _operator: PromiseOrValue<string>,
+      _from: PromiseOrValue<string>,
+      _ids: PromiseOrValue<BigNumberish>[],
+      _values: PromiseOrValue<BigNumberish>[],
+      _data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    onERC1155Received(
+      _operator: PromiseOrValue<string>,
+      _from: PromiseOrValue<string>,
+      _id: PromiseOrValue<BigNumberish>,
+      _value: PromiseOrValue<BigNumberish>,
+      _data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
@@ -1363,13 +1400,6 @@ export interface FUX extends BaseContract {
 
     setURI(
       newuri: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    submitCommitmentEvaluation(
-      workstreamID: PromiseOrValue<BigNumberish>,
-      contributors: PromiseOrValue<string>[],
-      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1443,11 +1473,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getCommitmentEvaluation(
-      workstreamID: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1503,6 +1528,24 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    onERC1155BatchReceived(
+      _operator: PromiseOrValue<string>,
+      _from: PromiseOrValue<string>,
+      _ids: PromiseOrValue<BigNumberish>[],
+      _values: PromiseOrValue<BigNumberish>[],
+      _data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    onERC1155Received(
+      _operator: PromiseOrValue<string>,
+      _from: PromiseOrValue<string>,
+      _id: PromiseOrValue<BigNumberish>,
+      _value: PromiseOrValue<BigNumberish>,
+      _data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
@@ -1541,13 +1584,6 @@ export interface FUX extends BaseContract {
 
     setURI(
       newuri: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    submitCommitmentEvaluation(
-      workstreamID: PromiseOrValue<BigNumberish>,
-      contributors: PromiseOrValue<string>[],
-      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

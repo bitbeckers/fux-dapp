@@ -154,7 +154,8 @@ export const useCommitmentToWorkstreamByID = (
   const { response: workstream } = useReadContract(
     contract,
     "getWorkstreamCommitment",
-    [id, contributor]
+    [id, contributor],
+    { autoUpdateInterval: 5000 }
   );
 
   return workstream;

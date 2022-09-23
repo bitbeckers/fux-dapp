@@ -9,7 +9,6 @@ import {
 import _ from "lodash";
 
 export const useMintFux = () => {
-  console.log("useMintFux");
   const toast = useToast();
   const contract = useFuxContract();
   const { mutate: mintFux } = useWriteContract(contract, "mintFux", {
@@ -39,7 +38,6 @@ export const useMintFux = () => {
 };
 
 export const useFuxBalance = () => {
-  console.log("useFuxBalance");
   const { address } = useWallet();
   const contract = useFuxContract();
 
@@ -54,7 +52,6 @@ export const useFuxBalance = () => {
 };
 
 export const useVFuxBalance = () => {
-  console.log("useVFuxBalance");
 
   const { address } = useWallet();
   const contract = useFuxContract();

@@ -1,10 +1,13 @@
+import { useFuxBalance } from "../../../hooks/fux";
 import {
   useCommitmentToWorkstreamByID,
   useGetWorkstreamByID,
 } from "../../../hooks/workstream";
+import AssignFuxModal from "../AssignFuxModal";
 import ContributorModal from "../ContributorModal";
 import {
   ArrowRightIcon,
+  CheckIcon,
   PlusSquareIcon,
   SettingsIcon,
   ViewIcon,
@@ -18,10 +21,12 @@ import React from "react";
 const WorkstreamRow: React.FC<{ workstreamID: number }> = ({
   workstreamID,
 }) => {
-  console.log("Generating ROW: ", workstreamID);
   const { address: user } = useWallet();
   const workstream = useGetWorkstreamByID(workstreamID);
   const commitment = useCommitmentToWorkstreamByID(workstreamID, user || "");
+  const availableFux = useFuxBalance();
+
+  console.log("ROW AVAILABLE FUX: ", availableFux);
 
   return (
     <>
@@ -45,6 +50,12 @@ const WorkstreamRow: React.FC<{ workstreamID: number }> = ({
         <Text pr={"1em"}>{`${commitment || 0} %`}</Text>
       </GridItem>
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
+        <AssignFuxModal
+          workstreamID={workstreamID}
+          availableFux={availableFux?.toNumber() || 0}
+        />
+      </GridItem>
+      <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <IconButton
           aria-label="toggle workstream visibility"
           icon={Math.random() > 0.5 ? <ViewIcon /> : <ViewOffIcon />}
@@ -56,9 +67,7 @@ const WorkstreamRow: React.FC<{ workstreamID: number }> = ({
           contributors={workstream?.contributors || []}
         />
       </GridItem>
-      <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
-        <IconButton aria-label="edit workstream" icon={<SettingsIcon />} />
-      </GridItem>
+
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <NextLink
           href={{

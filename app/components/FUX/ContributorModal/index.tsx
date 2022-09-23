@@ -1,5 +1,5 @@
 import { useAddContributors } from "../../../hooks/workstream";
-import { PlusSquareIcon } from "@chakra-ui/icons";
+import { AddIcon, AtSignIcon, PlusSquareIcon } from "@chakra-ui/icons";
 import {
   Button,
   ButtonGroup,
@@ -96,7 +96,7 @@ const ContributorModal: React.FC<{
       <IconButton
         onClick={onOpen}
         aria-label="Manage contributors"
-        icon={<PlusSquareIcon />}
+        icon={<AtSignIcon />}
       ></IconButton>
 
       <Modal isOpen={isOpen} onClose={onClose}>

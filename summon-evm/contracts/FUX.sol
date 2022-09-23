@@ -5,14 +5,19 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Receiver.sol";
+
 import "hardhat/console.sol";
 
-contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, AccessControl {
+contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, AccessControl {
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     uint256 public constant FUX_TOKEN_ID = 0;
     uint256 public constant VFUX_TOKEN_ID = 1;
     uint256 internal counter = 0;
+
+    bytes4 internal constant ERC1155_ACCEPTED = 0xf23a6e61;
+    bytes4 internal constant ERC1155_BATCH_ACCEPTED = 0xbc197c81;
 
     event FuxClaimed(address user);
     event FuxGiven(address user, uint256 workstreamId, uint256 amount);
@@ -35,7 +40,6 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, AccessControl {
     mapping(uint256 => Workstream) internal workstreams;
     mapping(address => uint256[]) internal contributorWorkstreams;
     mapping(address => mapping(uint256 => uint256)) internal contributorCommitments;
-    mapping(address => mapping(uint256 => Evaluation)) internal commitmentEvaluations;
     mapping(address => mapping(uint256 => Evaluation)) internal valueEvaluations;
 
     constructor() ERC1155("") {
@@ -118,19 +122,6 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, AccessControl {
     }
 
     //TODO checks
-    function submitCommitmentEvaluation(
-        uint256 workstreamID,
-        address[] memory contributors,
-        uint256[] memory ratings
-    ) public {
-        commitmentEvaluations[msg.sender][workstreamID] = Evaluation(contributors, ratings);
-    }
-
-    function getCommitmentEvaluation(uint256 workstreamID) public view returns (Evaluation memory evaluation) {
-        evaluation = commitmentEvaluations[msg.sender][workstreamID];
-    }
-
-    //TODO checks
     function submitValueEvaluation(
         uint256 workstreamID,
         address[] memory contributors,
@@ -156,7 +147,37 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, AccessControl {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view override(ERC1155, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC1155, ERC1155Receiver, AccessControl)
+        returns (bool)
+    {
+        // return
+        //     interfaceId == 0x01ffc9a7 || // ERC165
+        //     interfaceId == 0xd9b67a26 || //ERC1155
+        //     interfaceId == 0x4e2312e0; // ERC1155_ACCEPTED ^ ERC1155_BATCH_ACCEPTED
+
         return super.supportsInterface(interfaceId);
+    }
+
+    function onERC1155Received(
+        address _operator,
+        address _from,
+        uint256 _id,
+        uint256 _value,
+        bytes calldata _data
+    ) external pure returns (bytes4) {
+        return ERC1155_ACCEPTED;
+    }
+
+    function onERC1155BatchReceived(
+        address _operator,
+        address _from,
+        uint256[] calldata _ids,
+        uint256[] calldata _values,
+        bytes calldata _data
+    ) external pure returns (bytes4) {
+        return ERC1155_BATCH_ACCEPTED;
     }
 }
