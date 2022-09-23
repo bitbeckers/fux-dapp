@@ -17,6 +17,13 @@ export const NETWORKS: NetworkConfig = {
     explorer: "https://ropsten.etherscan.io/",
     rpc: "https://ropsten.infura.io/v3/e039ebf983d0477ca69a543b1c62101a",
   },
+  "0x5": {
+    chainId: "0x5",
+    name: "Goerli",
+    symbol: "ETH",
+    explorer: "https://goerli.etherscan.io/",
+    rpc: "https://goerli.infura.io/v3/e039ebf983d0477ca69a543b1c62101a",
+  },
   "0x539": {
     chainId: "0x539",
     name: "Hardhat",
