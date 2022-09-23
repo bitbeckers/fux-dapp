@@ -11,7 +11,7 @@ export function shouldBehaveLikeFuxContributor(): void {
     const metadataUri = "http://example.com";
     const name = "mockStream";
 
-    await expect(user.fux.addContributor(id, owner.address)).to.be.revertedWith("Workstream does not exist");
+    await expect(user.fux.addContributors(id, [owner.address])).to.be.revertedWith("Workstream does not exist");
 
     await expect(
       user.fux.mintWorkstream(
@@ -23,10 +23,10 @@ export function shouldBehaveLikeFuxContributor(): void {
       .to.emit(fux, "WorkstreamMinted")
       .withArgs(id, metadataUri);
 
-    await expect(deployer.fux.addContributor(id, owner.address)).to.be.revertedWith("msg.sender is not the creator");
+    await expect(deployer.fux.addContributors(id, [owner.address])).to.be.revertedWith("msg.sender is not the creator");
 
-    await expect(user.fux.addContributor(id, owner.address))
-      .to.emit(fux, "ContributorAdded")
-      .withArgs(id, owner.address);
+    await expect(user.fux.addContributors(id, [owner.address]))
+      .to.emit(fux, "ContributorsAdded")
+      .withArgs(id, [owner.address]);
   });
 }

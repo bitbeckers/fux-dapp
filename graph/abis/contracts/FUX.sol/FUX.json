@@ -40,12 +40,12 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "contributor",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "contributors",
+        "type": "address[]"
       }
     ],
-    "name": "ContributorAdded",
+    "name": "ContributorsAdded",
     "type": "event"
   },
   {
@@ -346,12 +346,12 @@
         "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "contributor",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "contributors",
+        "type": "address[]"
       }
     ],
-    "name": "addContributor",
+    "name": "addContributors",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -70,7 +70,7 @@ export interface FUXInterface extends utils.Interface {
     "MINTER_ROLE()": FunctionFragment;
     "URI_SETTER_ROLE()": FunctionFragment;
     "VFUX_TOKEN_ID()": FunctionFragment;
-    "addContributor(uint256,address)": FunctionFragment;
+    "addContributors(uint256,address[])": FunctionFragment;
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "commitToWorkstream(uint256,uint256)": FunctionFragment;
@@ -107,7 +107,7 @@ export interface FUXInterface extends utils.Interface {
       | "MINTER_ROLE"
       | "URI_SETTER_ROLE"
       | "VFUX_TOKEN_ID"
-      | "addContributor"
+      | "addContributors"
       | "balanceOf"
       | "balanceOfBatch"
       | "commitToWorkstream"
@@ -158,8 +158,8 @@ export interface FUXInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "addContributor",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+    functionFragment: "addContributors",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>[]]
   ): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
@@ -312,7 +312,7 @@ export interface FUXInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "addContributor",
+    functionFragment: "addContributors",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
@@ -402,7 +402,7 @@ export interface FUXInterface extends utils.Interface {
 
   events: {
     "ApprovalForAll(address,address,bool)": EventFragment;
-    "ContributorAdded(uint256,address)": EventFragment;
+    "ContributorsAdded(uint256,address[])": EventFragment;
     "FuxClaimed(address)": EventFragment;
     "FuxGiven(address,uint256,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
@@ -415,7 +415,7 @@ export interface FUXInterface extends utils.Interface {
   };
 
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ContributorAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ContributorsAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxGiven"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
@@ -439,17 +439,17 @@ export type ApprovalForAllEvent = TypedEvent<
 
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
 
-export interface ContributorAddedEventObject {
+export interface ContributorsAddedEventObject {
   id: BigNumber;
-  contributor: string;
+  contributors: string[];
 }
-export type ContributorAddedEvent = TypedEvent<
-  [BigNumber, string],
-  ContributorAddedEventObject
+export type ContributorsAddedEvent = TypedEvent<
+  [BigNumber, string[]],
+  ContributorsAddedEventObject
 >;
 
-export type ContributorAddedEventFilter =
-  TypedEventFilter<ContributorAddedEvent>;
+export type ContributorsAddedEventFilter =
+  TypedEventFilter<ContributorsAddedEvent>;
 
 export interface FuxClaimedEventObject {
   user: string;
@@ -592,9 +592,9 @@ export interface FUX extends BaseContract {
 
     VFUX_TOKEN_ID(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    addContributor(
+    addContributors(
       workstreamId: PromiseOrValue<BigNumberish>,
-      contributor: PromiseOrValue<string>,
+      contributors: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -773,9 +773,9 @@ export interface FUX extends BaseContract {
 
   VFUX_TOKEN_ID(overrides?: CallOverrides): Promise<BigNumber>;
 
-  addContributor(
+  addContributors(
     workstreamId: PromiseOrValue<BigNumberish>,
-    contributor: PromiseOrValue<string>,
+    contributors: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -948,9 +948,9 @@ export interface FUX extends BaseContract {
 
     VFUX_TOKEN_ID(overrides?: CallOverrides): Promise<BigNumber>;
 
-    addContributor(
+    addContributors(
       workstreamId: PromiseOrValue<BigNumberish>,
-      contributor: PromiseOrValue<string>,
+      contributors: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1123,14 +1123,14 @@ export interface FUX extends BaseContract {
       approved?: null
     ): ApprovalForAllEventFilter;
 
-    "ContributorAdded(uint256,address)"(
+    "ContributorsAdded(uint256,address[])"(
       id?: null,
-      contributor?: null
-    ): ContributorAddedEventFilter;
-    ContributorAdded(
+      contributors?: null
+    ): ContributorsAddedEventFilter;
+    ContributorsAdded(
       id?: null,
-      contributor?: null
-    ): ContributorAddedEventFilter;
+      contributors?: null
+    ): ContributorsAddedEventFilter;
 
     "FuxClaimed(address)"(user?: null): FuxClaimedEventFilter;
     FuxClaimed(user?: null): FuxClaimedEventFilter;
@@ -1236,9 +1236,9 @@ export interface FUX extends BaseContract {
 
     VFUX_TOKEN_ID(overrides?: CallOverrides): Promise<BigNumber>;
 
-    addContributor(
+    addContributors(
       workstreamId: PromiseOrValue<BigNumberish>,
-      contributor: PromiseOrValue<string>,
+      contributors: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1414,9 +1414,9 @@ export interface FUX extends BaseContract {
 
     VFUX_TOKEN_ID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    addContributor(
+    addContributors(
       workstreamId: PromiseOrValue<BigNumberish>,
-      contributor: PromiseOrValue<string>,
+      contributors: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

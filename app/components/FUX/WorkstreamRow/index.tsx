@@ -2,6 +2,7 @@ import {
   useCommitmentToWorkstreamByID,
   useGetWorkstreamByID,
 } from "../../../hooks/workstream";
+import ContributorModal from "../ContributorModal";
 import {
   ArrowRightIcon,
   PlusSquareIcon,
@@ -50,7 +51,10 @@ const WorkstreamRow: React.FC<{ workstreamID: number }> = ({
         />
       </GridItem>
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
-        <IconButton aria-label="add contributor" icon={<PlusSquareIcon />} />
+        <ContributorModal
+          workstreamID={workstreamID}
+          contributors={workstream?.contributors || []}
+        />
       </GridItem>
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <IconButton aria-label="edit workstream" icon={<SettingsIcon />} />

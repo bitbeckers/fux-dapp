@@ -17,7 +17,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, AccessControl {
     event FuxClaimed(address user);
     event FuxGiven(address user, uint256 workstreamId, uint256 amount);
     event WorkstreamMinted(uint256 id, string metadataUri);
-    event ContributorAdded(uint256 id, address contributor);
+    event ContributorsAdded(uint256 id, address[] contributors);
 
     struct Workstream {
         string name;
@@ -66,24 +66,30 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, AccessControl {
         console.log("MINTING WORKSTREAM");
         require(contributors.length > 0, "No contributors known");
         uint256 workstreamID = counter;
-        Workstream memory _workstream = Workstream(name, msg.sender, contributors, deadline, true);
+        Workstream memory _workstream;
+        _workstream.name = name;
+        _workstream.creator = msg.sender;
+        _workstream.deadline = deadline;
+        _workstream.contributors = new address[](0);
+        _workstream.exists = true;
         workstreams[workstreamID] = _workstream;
 
-        uint256 contributorsLength = contributors.length;
-        for (uint256 i = 0; i < contributorsLength; i++) {
-            addContributor(workstreamID, contributors[i]);
-        }
+        addContributors(workstreamID, contributors);
 
         emit WorkstreamMinted(workstreamID, "http://example.com");
         counter = counter + 1;
     }
 
-    function addContributor(uint256 workstreamId, address contributor) public {
+    function addContributors(uint256 workstreamId, address[] calldata contributors) public {
         require(workstreams[workstreamId].exists, "Workstream does not exists");
         require(workstreams[workstreamId].creator == msg.sender, "msg.sender is not the creator");
-
-        contributorWorkstreams[contributor].push(workstreamId);
-        emit ContributorAdded(workstreamId, contributor);
+        uint256 contributorsLength = contributors.length;
+        for (uint256 i = 0; i < contributorsLength; i++) {
+            address contributor = contributors[i];
+            contributorWorkstreams[contributor].push(workstreamId);
+            workstreams[workstreamId].contributors.push(contributor);
+        }
+        emit ContributorsAdded(workstreamId, contributors);
     }
 
     function getWorkstreamIDs(address user) public view returns (uint256[] memory ids) {

@@ -160,13 +160,13 @@ export const useCommitmentToWorkstreamByID = (
   return workstream;
 };
 
-export const useAddContributor = () => {
-  console.log("useAddContributor");
+export const useAddContributors = () => {
+  console.log("useAddContributors");
 
   const toast = useToast();
   const contract = useFuxContract();
 
-  const { mutate } = useWriteContract(contract, "addContributor", {
+  const { mutate } = useWriteContract(contract, "addContributors", {
     onError: (e) => {
       toast({
         title: `Couldn't add contributor: ${parseTxErrorMessage(e)}`,
@@ -189,5 +189,5 @@ export const useAddContributor = () => {
     },
   });
 
-  return (id: number, contributor: string) => mutate(id, contributor);
+  return (id: number, contributors: string[]) => mutate(id, contributors);
 };

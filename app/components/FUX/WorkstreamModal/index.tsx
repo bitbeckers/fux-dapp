@@ -49,8 +49,6 @@ const WorkstreamModal: React.FC = () => {
 
   const onSubmit = (form: FormData) => {
     // Mint workstream
-    console.log("Submitting, user: ", user);
-    console.log("Submitting, form: ", form);
     const deadline = Number(
       DateTime.now()
         .plus({ days: +form.duration })
