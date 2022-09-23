@@ -1,5 +1,5 @@
+import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
-import WorkstreamHeader from "../../components/FUX/WorkstreamHeader";
 import { useValueEvaluation } from "../../hooks/evaluations";
 import { useGetWorkstreamByID } from "../../hooks/workstream";
 import { VStack, Text, Heading } from "@chakra-ui/react";
@@ -33,11 +33,10 @@ const Resolve: NextPage = () => {
   return (
     <VStack w={"100%"}>
       <>
-        <WorkstreamHeader
-          workstreamTitle={workstream?.name || "No title found"}
-        />
+        <ValueHeader />
         <VStack w={"70%"} maxW={"700px"}>
-          <Heading>Rate contributor value add</Heading>
+          <Heading >{workstream?.name || "..."}</Heading>
+          <Heading size={"md"}>Rate contributor value add</Heading>
           <Text>
             {timeToDeadline
               ? `${timeToDeadline} left to resolve`
