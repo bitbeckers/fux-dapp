@@ -14,6 +14,9 @@ import {
   useDisclosure,
   IconButton,
   HStack,
+  InputGroup,
+  InputRightElement,
+  Spacer,
 } from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -40,6 +43,7 @@ const ContributorModal: React.FC<{
   } = useForm<FormData>({
     defaultValues: {
       contributors: contributors,
+      newContributors: [{ address: "" }],
     },
   });
 
@@ -68,29 +72,32 @@ const ContributorModal: React.FC<{
       ))}
 
       {fields.map((field, index) => (
-        <Input
-          key={field.id}
-          id="newContributors"
-          defaultValue={`${field.address}`}
-          marginTop={"1em"}
-          marginBottom={"1em"}
-
-          {...register(`newContributors.${index}.address`)}
-        />
+        <InputGroup key={field.id} marginTop={"1em"}>
+          <Input
+            id="newContributors"
+            defaultValue={`${field.address}`}
+            {...register(`newContributors.${index}.address`)}
+          />
+          {index == fields.length -1 ? (
+            <InputRightElement>
+              <IconButton
+                aria-label="Add contributor"
+                onClick={() => append({ address: "" })}
+                icon={<AddIcon />}
+              />
+            </InputRightElement>
+          ) : undefined}
+        </InputGroup>
       ))}
-      <HStack>
-        <ButtonGroup justifyContent="space-around" w="70%">
-          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-            Reset
-          </Button>
-          <Button type="button" onClick={() => append({ address: "" })}>
-            Add
-          </Button>
-        </ButtonGroup>
-        <Button isLoading={isSubmitting} type="submit">
-          Add contributors
+      <ButtonGroup justifyContent="space-between" w="100%" marginTop={"1em"}>
+        <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
+          Reset
         </Button>
-      </HStack>
+        <Spacer />
+        <Button isLoading={isSubmitting} type="submit">
+          Store
+        </Button>
+      </ButtonGroup>
     </form>
   );
 
