@@ -5,12 +5,8 @@ export const checkEnvVarConfig = () => {
       value: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"],
     },
     {
-      name: "NEXT_PUBLIC_GRAPH_URL",
-      value: process.env["NEXT_PUBLIC_GRAPH_URL"],
-    },
-    {
-      name: "NEXT_PUBLIC_NFT_STORAGE_TOKEN",
-      value: process.env["NEXT_PUBLIC_NFT_STORAGE_TOKEN"],
+      name: "NEXT_PUBLIC_DEFAULT_CHAIN",
+      value: process.env["NEXT_PUBLIC_DEFAULT_CHAIN"],
     },
   ];
 
@@ -28,10 +24,6 @@ export const contractAddresses = {
   fuxContractAddress: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"]!,
 };
 
-export const urls = {
-  graphUrl: process.env["NEXT_PUBLIC_GRAPH_URL"]!,
-};
-
-export const apiTokens = {
-  nftStorage: process.env["NEXT_PUBLIC_NFT_STORAGE_TOKEN"]!,
+export const defaultChain = {
+  graphUrl: process.env["NEXT_PUBLIC_DEFAULT_CHAIN"]!,
 };

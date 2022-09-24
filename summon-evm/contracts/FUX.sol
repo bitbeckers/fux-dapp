@@ -117,6 +117,8 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         fuxGiven = contributorCommitments[user][workstreamID];
     }
 
+    //TODO proper logic
+    // TODO FUX are fluid - pump or demote attention
     function commitToWorkstream(uint256 workstreamID, uint256 fuxGiven) public {
         require(balanceOf(msg.sender, FUX_TOKEN_ID) >= fuxGiven, "Not enough FUX to give");
         contributorCommitments[msg.sender][workstreamID] = fuxGiven;
