@@ -88,8 +88,21 @@ export const useVFuxBalance = () => {
     contract,
     "balanceOf",
     [address || "", 1],
-    { autoUpdateInterval: 60000 }
+    { autoUpdateInterval: 10000 }
   );
 
   return fuxBalance;
+};
+
+export const useVFuxBalanceForWorkstreamEvaluation = (workstreamID: number) => {
+  const contract = useFuxContract();
+
+  const { response: vFuxAvailable } = useReadContract(
+    contract,
+    "getVFuxForEvaluation",
+    [workstreamID],
+    { autoUpdateInterval: 10000 }
+  );
+
+  return vFuxAvailable;
 };

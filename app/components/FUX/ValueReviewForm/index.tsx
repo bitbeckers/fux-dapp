@@ -33,7 +33,6 @@ const ValueReviewForm: React.FC<{
 }> = ({ workstreamID }) => {
   const { address: user } = useWallet();
   const submitEvaluation = useSubmitValueEvaluation();
-  const mintVFux = useMintVFux();
   const currentEvaluation = useValueEvaluation(workstreamID);
 
   const [ratings, setRatings] = useState<any>();
@@ -139,13 +138,10 @@ const ValueReviewForm: React.FC<{
       </Text>
 
       <HStack w={"100%"} pt={4}>
-        <Box w="80%" justifyContent="center">
-          <Button onClick={() => mintVFux(workstreamID)}>Claim 100 vFUX</Button>
-        </Box>
         <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
           Reset
         </Button>
-
+        <Spacer />
         <Button isLoading={isSubmitting} type="submit">
           Submit review
         </Button>

@@ -9,6 +9,16 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Receiver.sol";
 
 import "hardhat/console.sol";
 
+error NonTransferableFux();
+error NotContributor();
+error NotEnoughFux();
+error NotEnoughVFux();
+error TokensAlreadyMinted();
+error EvaluationAlreadySubmitted();
+error NonExistentWorkstream();
+error NotApprovedOrOwner();
+error InvalidInput(string inputVar);
+
 contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, AccessControl {
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -22,13 +32,18 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     event FuxClaimed(address user);
     event VFuxClaimed(address user, uint256 workstreamID);
     event FuxGiven(address user, uint256 workstreamId, uint256 amount);
+    event FuxWithdraw(address user, uint256 workstreamId, uint256 amount);
+
     event WorkstreamMinted(uint256 id, string metadataUri);
     event ContributorsAdded(uint256 id, address[] contributors);
+
+    event EvaluationSubmitted(uint256 workstreamID, address contributors);
 
     struct Workstream {
         string name;
         address creator;
         address[] contributors;
+        uint256[] evaluations;
         uint256 deadline;
         bool exists;
     }
@@ -36,13 +51,16 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     struct Evaluation {
         address[] contributors;
         uint8[] ratings;
+        bool exists;
     }
 
     mapping(uint256 => Workstream) internal workstreams;
     mapping(address => uint256[]) internal contributorWorkstreams;
-    mapping(address => mapping(uint256 => uint256)) internal contributorCommitments;
+    mapping(address => mapping(uint256 => uint8)) internal contributorCommitments;
     mapping(address => mapping(uint256 => Evaluation)) internal valueEvaluations;
-    mapping(address => mapping(uint256 => uint256)) internal vFuxAvailable;
+    mapping(address => mapping(uint256 => uint8)) internal vFuxAvailable;
+    mapping(address => bool) internal isFuxer;
+    mapping(address => mapping(uint256 => bool)) internal isContributor;
 
     constructor() ERC1155("") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -58,16 +76,41 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         _setURI(newuri);
     }
 
+    function getWorkstreamIDs(address user) public view returns (uint256[] memory ids) {
+        ids = contributorWorkstreams[user];
+    }
+
+    function getWorkstreamByID(uint256 workstreamID) public view returns (Workstream memory workstream) {
+        workstream = workstreams[workstreamID];
+    }
+
+    function getWorkstreamCommitment(address user, uint256 workstreamID) public view returns (uint256 fuxGiven) {
+        fuxGiven = contributorCommitments[user][workstreamID];
+    }
+
+    function getValueEvaluation(address user, uint256 workstreamID) public view returns (Evaluation memory evaluation) {
+        evaluation = valueEvaluations[user][workstreamID];
+    }
+
+    function getVFuxForEvaluation(uint256 workstreamID) public view returns (uint8 vFux) {
+        vFux = vFuxAvailable[msg.sender][workstreamID];
+    }
+
     function mintFux() public {
-        require(balanceOf(msg.sender, FUX_TOKEN_ID) == 0, "Already got your FUX on");
+        if (isFuxer[msg.sender]) revert TokensAlreadyMinted();
         _mint(msg.sender, FUX_TOKEN_ID, 100, "");
         emit FuxClaimed(msg.sender);
+        isFuxer[msg.sender] = true;
     }
 
     function mintVFux(uint256 workstreamID) public {
-        require(vFuxAvailable[msg.sender][workstreamID] == 0, "Already got your vFUX on");
+        if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
+        if (vFuxAvailable[msg.sender][workstreamID] > 0) revert TokensAlreadyMinted();
+        if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
+        if (getValueEvaluation(msg.sender, workstreamID).exists) revert EvaluationAlreadySubmitted();
+
         _mint(msg.sender, VFUX_TOKEN_ID, 100, "");
-        vFuxAvailable[msg.sender][workstreamID] == 100;
+        vFuxAvailable[msg.sender][workstreamID] = uint8(100);
         emit VFuxClaimed(msg.sender, workstreamID);
     }
 
@@ -76,8 +119,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         address[] calldata contributors,
         uint256 deadline
     ) public {
-        console.log("MINTING WORKSTREAM");
-        require(contributors.length > 0, "No contributors known");
+        if (contributors.length == 0) revert InvalidInput("contributors");
         uint256 workstreamID = counter;
         Workstream memory _workstream;
         _workstream.name = name;
@@ -93,43 +135,46 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         counter = counter + 1;
     }
 
+    //TODO more efficient state changes
     function addContributors(uint256 workstreamId, address[] calldata contributors) public {
-        require(workstreams[workstreamId].exists, "Workstream does not exists");
-        require(workstreams[workstreamId].creator == msg.sender, "msg.sender is not the creator");
+        if (!workstreams[workstreamId].exists) revert NonExistentWorkstream();
+        if (workstreams[workstreamId].creator != msg.sender) revert NotApprovedOrOwner();
         uint256 contributorsLength = contributors.length;
         for (uint256 i = 0; i < contributorsLength; i++) {
             address contributor = contributors[i];
             contributorWorkstreams[contributor].push(workstreamId);
             workstreams[workstreamId].contributors.push(contributor);
+            isContributor[contributor][workstreamId] = true;
         }
         emit ContributorsAdded(workstreamId, contributors);
     }
 
-    function getWorkstreamIDs(address user) public view returns (uint256[] memory ids) {
-        ids = contributorWorkstreams[user];
-    }
+    function commitToWorkstream(uint256 workstreamID, uint8 fuxGiven) public {
+        if (balanceOf(msg.sender, FUX_TOKEN_ID) < fuxGiven) revert NotEnoughFux();
+        if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
+        uint8 currentFux = contributorCommitments[msg.sender][workstreamID];
 
-    function getWorkstreamByID(uint256 workstreamID) public view returns (Workstream memory workstream) {
-        workstream = workstreams[workstreamID];
-    }
+        require(currentFux != fuxGiven, "Same amount of FUX");
 
-    function getWorkstreamCommitment(uint256 workstreamID, address user) public view returns (uint256 fuxGiven) {
-        fuxGiven = contributorCommitments[user][workstreamID];
-    }
+        if (currentFux < fuxGiven) {
+            _safeTransferFrom(msg.sender, address(this), FUX_TOKEN_ID, fuxGiven - currentFux, "");
+        }
+        if (currentFux > fuxGiven) {
+            _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, currentFux - fuxGiven, "");
+        }
 
-    //TODO proper logic
-    // TODO FUX are fluid - pump or demote attention
-    function commitToWorkstream(uint256 workstreamID, uint256 fuxGiven) public {
-        require(balanceOf(msg.sender, FUX_TOKEN_ID) >= fuxGiven, "Not enough FUX to give");
         contributorCommitments[msg.sender][workstreamID] = fuxGiven;
-        _safeTransferFrom(msg.sender, address(this), FUX_TOKEN_ID, fuxGiven, "");
+        emit FuxGiven(msg.sender, workstreamID, fuxGiven);
     }
 
     function withdrawFromWorkstream(uint256 workstreamID) public {
+        if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
+
         uint256 fuxGiven = contributorCommitments[msg.sender][workstreamID];
-        require(fuxGiven > 0, "No FUX were given");
+        if (fuxGiven == 0) revert NotEnoughFux();
         contributorCommitments[msg.sender][workstreamID] = 0;
         _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, fuxGiven, "");
+        emit FuxWithdraw(msg.sender, workstreamID, fuxGiven);
     }
 
     function submitValueEvaluation(
@@ -137,33 +182,58 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         address[] memory contributors,
         uint8[] memory vFuxGiven
     ) public {
-        require(contributors.length > 0, "No-one was evaluated");
-        require(contributors.length == vFuxGiven.length, "Not everyone was evaluated");
-        noSelfFuxing(contributors);
-        spendAllVFux(vFuxGiven, workstreamID);
+        if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
+        if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
+        if (getVFuxForEvaluation(workstreamID) == 0) revert NotEnoughVFux();
+        if (contributors.length == 0 || contributors.length != vFuxGiven.length)
+            revert InvalidInput("contributors, vFuxGiven");
+        _noSelfFuxing(contributors);
+        _spendAllVFux(vFuxGiven, workstreamID);
 
-        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven);
+        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven, true);
+
+        emit EvaluationSubmitted(0, msg.sender);
     }
 
-    function noSelfFuxing(address[] memory contributors) internal view {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public pure override {
+        revert NonTransferableFux();
+    }
+
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public pure virtual override {
+        revert NonTransferableFux();
+    }
+
+    function _noSelfFuxing(address[] memory contributors) internal view {
         uint256 size = contributors.length;
         for (uint256 i = 0; i < size; i++) {
-            require(contributors[i] != msg.sender);
+            if (contributors[i] == msg.sender) revert InvalidInput("sender is contributor");
         }
     }
 
-    function spendAllVFux(uint8[] memory vFuxGiven, uint256 workstreamID) internal view {
+    function _spendAllVFux(uint8[] memory vFuxGiven, uint256 workstreamID) internal view {
         uint256 size = vFuxGiven.length;
         uint8 total = 0;
         for (uint256 i = 0; i < size; i++) {
             total += vFuxGiven[i];
         }
 
-        require(total == vFuxAvailable[msg.sender][workstreamID]);
+        if (total != vFuxAvailable[msg.sender][workstreamID]) revert NotEnoughFux();
     }
 
-    function getValueEvaluation(uint256 workstreamID) public view returns (Evaluation memory evaluation) {
-        evaluation = valueEvaluations[msg.sender][workstreamID];
+    function _isContributor(address contributor, uint256 workstreamID) internal view returns (bool) {
+        return isContributor[contributor][workstreamID];
     }
 
     // The following functions are overrides required by Solidity.
