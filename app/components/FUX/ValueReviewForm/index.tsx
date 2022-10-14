@@ -33,7 +33,7 @@ const ValueReviewForm: React.FC<{
 }> = ({ workstreamID }) => {
   const { address: user } = useWallet();
   const submitEvaluation = useSubmitValueEvaluation();
-  const currentEvaluation = useValueEvaluation(user, workstreamID);
+  const currentEvaluation = useValueEvaluation(user || "", workstreamID);
 
   const [ratings, setRatings] = useState<any>();
 

@@ -37,7 +37,7 @@ const Resolve: NextPage = () => {
     workstream?.deadline.toNumber()
   );
   const vFuxAvailable = useVFuxBalanceForWorkstreamEvaluation(+workstreamID!);
-  const valueEvaluation = useValueEvaluation(user, +workstreamID!);
+  const valueEvaluation = useValueEvaluation(user || "", +workstreamID!);
 
   console.log("vFUX Available: ", vFuxAvailable);
   console.log("value evaluation: ", valueEvaluation);
