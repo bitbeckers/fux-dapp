@@ -7,6 +7,7 @@ import {
 } from "../../hooks/fux";
 import { useGetWorkstreamByID } from "../../hooks/workstream";
 import { VStack, Text, Heading, HStack, Button, Box } from "@chakra-ui/react";
+import { useWallet } from "@raidguild/quiver";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -27,6 +28,7 @@ const calculateTimeToDeadline = (timestamp: number | undefined) => {
 const Resolve: NextPage = () => {
   const router = useRouter();
   const mintVFux = useMintVFux();
+  const { address: user } = useWallet();
 
   const { workstreamID } = router.query;
 
@@ -35,7 +37,7 @@ const Resolve: NextPage = () => {
     workstream?.deadline.toNumber()
   );
   const vFuxAvailable = useVFuxBalanceForWorkstreamEvaluation(+workstreamID!);
-  const valueEvaluation = useValueEvaluation(+workstreamID!);
+  const valueEvaluation = useValueEvaluation(user, +workstreamID!);
 
   console.log("vFUX Available: ", vFuxAvailable);
   console.log("value evaluation: ", valueEvaluation);
