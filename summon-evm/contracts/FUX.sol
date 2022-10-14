@@ -56,7 +56,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     }
 
     mapping(uint256 => Workstream) internal workstreams;
-    mapping(address => uint256[]) internal contributorWorkstreams;
+    mapping(address => uint256[]) internal contributorWorkstreams; //TODO find, replace, pop to keep updated
     mapping(address => mapping(uint256 => uint8)) internal contributorCommitments;
     mapping(address => mapping(uint256 => Evaluation)) internal valueEvaluations;
     mapping(address => mapping(uint256 => uint8)) internal vFuxAvailable;
@@ -211,7 +211,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
             revert InvalidInput("contributors, vFuxGiven");
 
         valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven, true);
-        
+
         _payVFux(contributors, vFuxGiven, workstreamID);
 
         emit EvaluationResolved(0);

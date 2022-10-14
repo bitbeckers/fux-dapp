@@ -18,8 +18,8 @@ import { useWallet } from "@raidguild/quiver";
 import NextLink from "next/link";
 import React from "react";
 
-const WorkstreamRow: React.FC<{ workstreamID: number }> = ({
-  workstreamID,
+const WorkstreamRow: React.FC<{ workstreamID: number, showInactive: boolean }> = ({
+  workstreamID, showInactive
 }) => {
   const { address: user } = useWallet();
   const workstream = useGetWorkstreamByID(workstreamID);
@@ -28,13 +28,10 @@ const WorkstreamRow: React.FC<{ workstreamID: number }> = ({
 
   console.log("ROW AVAILABLE FUX: ", availableFux);
 
-  return (
+  return showInactive || workstream?.exists ? (
     <>
       <GridItem display={"flex"} alignItems={"center"} bg="#301A3A" colSpan={7}>
-        <Checkbox
-          alignContent="center"
-          pl={"1em"}
-        >
+        <Checkbox alignContent="center" pl={"1em"}>
           {workstream?.name}
         </Checkbox>
       </GridItem>
@@ -80,7 +77,7 @@ const WorkstreamRow: React.FC<{ workstreamID: number }> = ({
         </NextLink>
       </GridItem>
     </>
-  );
+  ) : <></>;
 };
 
 export { WorkstreamRow };

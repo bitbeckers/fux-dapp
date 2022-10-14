@@ -1,9 +1,14 @@
-import { Button } from "@chakra-ui/react";
+import { Button, Link } from "@chakra-ui/react";
 import { formatAddress, useWallet } from "@raidguild/quiver";
+import NextLink from "next/link";
 
 const ConnectWallet: React.FC = () => {
   const { connectWallet, isConnecting, isConnected, disconnect, address } =
     useWallet();
+
+  const onDisconnect = () => {
+    disconnect();
+  };
   return (
     <>
       {!isConnected && (
@@ -21,9 +26,11 @@ const ConnectWallet: React.FC = () => {
       )}
       {isConnected && (
         <>
-          <Button colorScheme="red" onClick={() => disconnect()}>
-            {formatAddress(address)}
-          </Button>
+          <NextLink href="/start" passHref>
+            <Button colorScheme="red" onClick={() => onDisconnect()}>
+              <Link>{formatAddress(address)}</Link>
+            </Button>
+          </NextLink>
         </>
       )}
     </>
