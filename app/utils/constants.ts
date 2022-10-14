@@ -24,6 +24,4 @@ export const contractAddresses = {
   fuxContractAddress: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"]!,
 };
 
-export const defaultChain = {
-  graphUrl: process.env["NEXT_PUBLIC_DEFAULT_CHAIN"]!,
-};
+export const defaultChain = process.env["NEXT_PUBLIC_DEFAULT_CHAIN"];
