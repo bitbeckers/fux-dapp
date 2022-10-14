@@ -41,7 +41,7 @@ export const useSubmitValueEvaluation = () => {
     mutate(workstreamID, contributors, ratings);
 };
 
-export const useValueEvaluation = (workstreamID: number) => {
+export const useValueEvaluation = (address: string, workstreamID: number) => {
   console.log("useValueEvaluation");
 
   const contract = useFuxContract();
@@ -49,7 +49,7 @@ export const useValueEvaluation = (workstreamID: number) => {
   const { response: valueEvaluation } = useReadContract(
     contract,
     "getValueEvaluation",
-    [workstreamID],
+    [address, workstreamID],
     { autoUpdateInterval: 10000 }
   );
 

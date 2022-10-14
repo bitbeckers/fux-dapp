@@ -1,5 +1,7 @@
 import { deployments } from "hardhat";
 
+import { FUX } from "../types";
+
 const setupTest = deployments.createFixture(async ({ deployments, getNamedAccounts, ethers }) => {
   await deployments.fixture(); // ensure you start from a fresh deployments
   const { deployer, owner, user } = await getNamedAccounts();
@@ -11,7 +13,7 @@ const setupTest = deployments.createFixture(async ({ deployments, getNamedAccoun
   const setupAddress = async (address: string) => {
     return {
       address,
-      fux: await ethers.getContract("FUX", address)
+      fux: <FUX>await ethers.getContract("FUX", address),
     };
   };
 
