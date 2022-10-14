@@ -37,7 +37,8 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     event WorkstreamMinted(uint256 id, string metadataUri);
     event ContributorsAdded(uint256 id, address[] contributors);
 
-    event EvaluationSubmitted(uint256 workstreamID, address contributors);
+    event EvaluationSubmitted(uint256 workstreamID, address contributor);
+    event EvaluationResolved(uint256 workstreamID);
 
     struct Workstream {
         string name;
@@ -188,11 +189,33 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         if (contributors.length == 0 || contributors.length != vFuxGiven.length)
             revert InvalidInput("contributors, vFuxGiven");
         _noSelfFuxing(contributors);
-        _spendAllVFux(vFuxGiven, workstreamID);
+
+        _depositAllVFux(vFuxGiven, workstreamID);
 
         valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven, true);
 
         emit EvaluationSubmitted(0, msg.sender);
+    }
+
+    function resolveValueEvaluation(
+        uint256 workstreamID,
+        address[] memory contributors,
+        uint8[] memory vFuxGiven
+    ) public {
+        Workstream storage workstream = workstreams[workstreamID];
+        if (!workstream.exists) revert NonExistentWorkstream();
+        if (msg.sender != workstream.creator) revert NotApprovedOrOwner();
+        if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
+        if (getVFuxForEvaluation(workstreamID) == 0) revert NotEnoughVFux();
+        if (contributors.length == 0 || contributors.length != vFuxGiven.length)
+            revert InvalidInput("contributors, vFuxGiven");
+
+        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven, true);
+        
+        _payVFux(contributors, vFuxGiven, workstreamID);
+
+        emit EvaluationResolved(0);
+        workstream.exists = false;
     }
 
     function safeTransferFrom(
@@ -222,11 +245,27 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         }
     }
 
-    function _spendAllVFux(uint8[] memory vFuxGiven, uint256 workstreamID) internal view {
+    function _depositAllVFux(uint8[] memory vFuxGiven, uint256 workstreamID) internal {
         uint256 size = vFuxGiven.length;
         uint8 total = 0;
         for (uint256 i = 0; i < size; i++) {
             total += vFuxGiven[i];
+        }
+
+        if (total != vFuxAvailable[msg.sender][workstreamID]) revert NotEnoughFux();
+        _safeTransferFrom(msg.sender, address(this), VFUX_TOKEN_ID, 100, "");
+    }
+
+    function _payVFux(
+        address[] memory contributors,
+        uint8[] memory vFuxGiven,
+        uint256 workstreamID
+    ) internal {
+        uint256 size = vFuxGiven.length;
+        uint8 total = 0;
+        for (uint256 i = 0; i < size; i++) {
+            total += vFuxGiven[i];
+            _safeTransferFrom(msg.sender, contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
         }
 
         if (total != vFuxAvailable[msg.sender][workstreamID]) revert NotEnoughFux();

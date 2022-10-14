@@ -6,6 +6,7 @@ import { config as dotenvConfig } from "dotenv";
 import "hardhat-abi-exporter";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
+import "hardhat-contract-sizer";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
@@ -61,6 +62,10 @@ const config: HardhatUserConfig = {
       clear: true,
     },
   ],
+  contractSizer: {
+    runOnCompile: true,
+    strict: true
+  },
   defaultNetwork: "hardhat",
   etherscan: {
     apiKey: {

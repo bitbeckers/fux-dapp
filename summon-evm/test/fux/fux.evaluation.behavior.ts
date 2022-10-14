@@ -37,6 +37,8 @@ export function shouldBehaveLikeFuxEvaluation(): void {
     await user.fux.mintFux();
     await owner.fux.mintFux();
 
+    expect(await user.fux.balanceOf(user.address, 1)).to.be.eq(0);
+
     await expect(user.fux.submitValueEvaluation(0, [owner.address], [100])).to.be.revertedWith("NotEnoughFux()");
 
     await user.fux.commitToWorkstream(0, 50);
@@ -48,6 +50,8 @@ export function shouldBehaveLikeFuxEvaluation(): void {
     await owner.fux.mintVFux(0);
     await user.fux.mintVFux(0);
 
+    expect(await user.fux.balanceOf(user.address, 1)).to.be.eq(100);
+
     await expect(user.fux.submitValueEvaluation(0, [user.address], [100])).to.be.revertedWith(
       'InvalidInput("sender is contributor")',
     );
@@ -57,6 +61,8 @@ export function shouldBehaveLikeFuxEvaluation(): void {
     await expect(user.fux.submitValueEvaluation(0, [owner.address], [100]))
       .to.emit(fux, "EvaluationSubmitted")
       .withArgs(0, user.address);
+
+    expect(await user.fux.balanceOf(user.address, 1)).to.be.eq(0);
 
     const evaluation = await user.fux.getValueEvaluation(user.address, 0);
 

@@ -3,6 +3,7 @@ import { expect } from "chai";
 import setupTest from "../setup";
 import { shouldBehaveLikeFuxContributor } from "./fux.contributor.behavior";
 import { shouldBehaveLikeFuxEvaluation } from "./fux.evaluation.behavior";
+import { shouldBehaveLikeFuxResolution } from "./fux.resolution.behavior";
 import { shouldBehaveLikeFuxToken } from "./fux.token.behavior";
 import { shouldBehaveLikeFuxWorkstream } from "./fux.workstream.behavior";
 
@@ -20,5 +21,6 @@ describe("Unit tests", function () {
     shouldBehaveLikeFuxWorkstream();
     shouldBehaveLikeFuxContributor();
     shouldBehaveLikeFuxEvaluation();
+    shouldBehaveLikeFuxResolution();
   });
 });
