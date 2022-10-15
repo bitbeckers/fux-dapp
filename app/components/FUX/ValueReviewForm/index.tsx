@@ -18,10 +18,12 @@ import {
   Text,
   HStack,
   Box,
+  Flex,
+  Center,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import _, { Dictionary } from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 type FormData = {
@@ -36,6 +38,8 @@ const ValueReviewForm: React.FC<{
   const currentEvaluation = useValueEvaluation(user || "", workstreamID);
 
   const [ratings, setRatings] = useState<any>();
+
+  console.log("Review workstreamID: ", workstreamID);
 
   useEffect(() => {
     if (currentEvaluation?.contributors && currentEvaluation?.ratings) {
@@ -65,12 +69,16 @@ const ValueReviewForm: React.FC<{
   // TODO intelligent filtering
   const onSubmit = (data: FormData) => {
     console.log("Value ratings: ", data.ratings);
+    console.log("Contributors: ", workstream?.contributors);
 
-    if (workstreamID && workstream?.contributors && data.ratings) {
+
+    if (workstream?.contributors && data.ratings) {
       const contributors = workstream.contributors.filter(
         (contributor) => contributor !== user
       );
       const ratings = data.ratings.filter((rating) => rating);
+      console.log("Contributors: ", contributors);
+      console.log("Ratings: ", ratings);
       submitEvaluation(workstreamID, contributors, ratings);
     }
   };
@@ -86,7 +94,7 @@ const ValueReviewForm: React.FC<{
                   contributor == user ? (
                     ""
                   ) : (
-                    <>
+                    <Fragment key={index}>
                       <GridItem
                         display={"flex"}
                         alignItems={"center"}
@@ -127,7 +135,7 @@ const ValueReviewForm: React.FC<{
                           />
                         )}
                       </GridItem>
-                    </>
+                    </Fragment>
                   )
               )
             : "No contributors found"}

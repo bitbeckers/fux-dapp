@@ -107,11 +107,24 @@
         "internalType": "uint256",
         "name": "workstreamID",
         "type": "uint256"
+      }
+    ],
+    "name": "EvaluationResolved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "contributors",
+        "name": "contributor",
         "type": "address"
       }
     ],
@@ -929,6 +942,29 @@
       }
     ],
     "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "contributors",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "vFuxGiven",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "resolveValueEvaluation",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

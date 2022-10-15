@@ -1,10 +1,5 @@
 import ConnectWallet from "../ConnectWallet";
-import {
-  Stack,
-  Heading,
-  Link,
-  Spacer,
-} from "@chakra-ui/react";
+import { Stack, Heading, Link, Spacer } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 const Header: React.FC<{}> = () => {
@@ -28,9 +23,9 @@ const Header: React.FC<{}> = () => {
           <Heading fontSize="lg">MY WORKSTREAMS</Heading>
         </Link>
       </NextLink>
-      <NextLink href="/profile" passHref>
+      <NextLink href="/history" passHref>
         <Link>
-          <Heading fontSize="lg">MY PROFILE</Heading>
+          <Heading fontSize="lg">MY HISTORY</Heading>
         </Link>
       </NextLink>
 

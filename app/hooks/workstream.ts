@@ -130,7 +130,6 @@ export const useGetWorkstreamIDs = () => {
 };
 
 export const useGetWorkstreamByID = (id: number) => {
-  console.log("useGetWorkstreamByID");
 
   const contract = useFuxContract();
 

@@ -7,7 +7,7 @@ import { VStack, Divider, Grid } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 import type { NextPage } from "next";
 
-const Workstreams: NextPage = () => {
+const History: NextPage = () => {
   const workstreamIDs = useGetWorkstreamIDs();
   const fuxBalance = useFuxBalance();
 
@@ -20,7 +20,11 @@ const Workstreams: NextPage = () => {
       <Grid w="40%" gap={2} templateColumns="repeat(13, 1fr)">
         {workstreamIDs
           ? workstreamIDs.map((id: BigNumber, index: number) => (
-              <WorkstreamRow workstreamID={id.toNumber()} showInactive={false} key={index} />
+              <WorkstreamRow
+                workstreamID={id.toNumber()}
+                showInactive={true}
+                key={index}
+              />
             ))
           : undefined}
       </Grid>
@@ -28,4 +32,4 @@ const Workstreams: NextPage = () => {
   );
 };
 
-export default Workstreams;
+export default History;
