@@ -20,6 +20,7 @@ export function shouldBehaveLikeFuxResolution(): void {
     await owner.fux.mintVFux(0);
 
     expect(await user.fux.balanceOf(user.address, 1)).to.be.eq(0);
+    expect(await user.fux.balanceOf(user.address, 0)).to.be.eq(50);
 
     await expect(user.fux.resolveValueEvaluation(0, [user.address], [100])).to.be.revertedWith("NotApprovedOrOwner()");
 
@@ -28,5 +29,7 @@ export function shouldBehaveLikeFuxResolution(): void {
       .withArgs(0);
 
     expect(await user.fux.balanceOf(user.address, 1)).to.be.eq(100);
+    expect(await user.fux.balanceOf(user.address, 0)).to.be.eq(100);
+
   });
 }

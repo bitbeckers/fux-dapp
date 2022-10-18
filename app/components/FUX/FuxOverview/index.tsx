@@ -40,16 +40,18 @@ const FuxOverview: React.FC<{}> = ({}) => {
           <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
             fuxBalance ? fuxBalance.toString() : "..."
           } / 100 FUX`}</StatNumber>
-          <StatHelpText color="#BF7AF0">
-            <Link onClick={() => claimFux()}>Claim FUX</Link>
-          </StatHelpText>
+          {fuxBalance?.gt("0") ? undefined : (
+            <StatHelpText color="#BF7AF0">
+              <Link onClick={() => claimFux()}>Claim FUX</Link>
+            </StatHelpText>
+          )}
         </Stat>
         <Stat p={"1em"}>
           <StatLabel>vFUX earned</StatLabel>
           <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
             vFuxBalance ? vFuxBalance.toString() : "0"
           } vFUX`}</StatNumber>
-          <NextLink href="/fux" passHref>
+          <NextLink href="/history" passHref>
             <StatHelpText color="#BF7AF0">
               <Link>View history</Link>
             </StatHelpText>

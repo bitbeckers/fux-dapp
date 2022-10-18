@@ -42,6 +42,11 @@
   },
   {
     "inputs": [],
+    "name": "NotEnoughFunds",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotEnoughFux",
     "type": "error"
   },
@@ -532,6 +537,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "claimRewards",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -571,6 +583,25 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getAvailableBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -598,9 +629,9 @@
     "name": "getVFuxForEvaluation",
     "outputs": [
       {
-        "internalType": "uint8",
+        "internalType": "uint256",
         "name": "vFux",
-        "type": "uint8"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -629,9 +660,9 @@
             "type": "address[]"
           },
           {
-            "internalType": "uint8[]",
+            "internalType": "uint256[]",
             "name": "ratings",
-            "type": "uint8[]"
+            "type": "uint256[]"
           },
           {
             "internalType": "bool",
@@ -682,6 +713,11 @@
           {
             "internalType": "uint256",
             "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "funds",
             "type": "uint256"
           },
           {
@@ -847,7 +883,7 @@
     ],
     "name": "mintWorkstream",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -959,9 +995,9 @@
         "type": "address[]"
       },
       {
-        "internalType": "uint8[]",
+        "internalType": "uint256[]",
         "name": "vFuxGiven",
-        "type": "uint8[]"
+        "type": "uint256[]"
       }
     ],
     "name": "resolveValueEvaluation",
@@ -1097,9 +1133,9 @@
         "type": "address[]"
       },
       {
-        "internalType": "uint8[]",
+        "internalType": "uint256[]",
         "name": "vFuxGiven",
-        "type": "uint8[]"
+        "type": "uint256[]"
       }
     ],
     "name": "submitValueEvaluation",

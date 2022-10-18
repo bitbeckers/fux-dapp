@@ -36,8 +36,8 @@ export const useMintWorkstream = () => {
     },
   });
 
-  return async (name: string, contributors: string[], deadline: number) =>
-    mutate(name, contributors, deadline);
+  return async (name: string, contributors: string[], deadline: number, value?: string) =>
+    mutate(name, contributors, deadline, { value });
 };
 
 export const useCommitToWorkstream = () => {

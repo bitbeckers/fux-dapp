@@ -32,6 +32,7 @@ import {
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import _, { add, Dictionary } from "lodash";
+import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -42,6 +43,7 @@ type FormData = {
 const ValueResolutionForm: React.FC<{
   workstreamID: number;
 }> = ({ workstreamID }) => {
+  const router = useRouter();
   const { address: user } = useWallet();
   const resolveEvaluation = useResolveValueEvaluation();
   const currentEvaluation = useValueEvaluation(user || "", workstreamID);
@@ -85,7 +87,9 @@ const ValueResolutionForm: React.FC<{
         (contributor) => contributor !== user
       );
       const ratings = data.ratings.filter((rating) => rating);
-      resolveEvaluation(workstreamID, contributors, ratings);
+      resolveEvaluation(workstreamID, contributors, ratings).then(() =>
+        router.push("/workstreams")
+      );
     }
   };
 
