@@ -1,3 +1,5 @@
+import { useWallet } from "@raidguild/quiver";
+
 export const checkEnvVarConfig = () => {
   const requiredEnvVarNames = [
     {
@@ -25,3 +27,32 @@ export const contractAddresses = {
 };
 
 export const defaultChain = process.env["NEXT_PUBLIC_DEFAULT_CHAIN"];
+
+export const useConstants = () => {
+  const { chainId } = useWallet();
+
+  const nativeToken = getNativeSymbol(chainId || "");
+
+  return {
+    nativeToken,
+  };
+};
+
+const getNativeSymbol = (chainID: string) => {
+  let symbol = "";
+  switch (chainID) {
+    case "0x1":
+      symbol = "ETH";
+      break;
+    case "0x5":
+      symbol = "gETH";
+      break;
+    case "0x539":
+      symbol = "hhETH";
+      break;
+    default:
+      symbol = "N/A";
+  }
+
+  return symbol;
+};

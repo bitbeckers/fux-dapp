@@ -66,7 +66,7 @@ const Resolve: NextPage = () => {
             </Text>
           </HStack>
 
-          {vFuxAvailable && vFuxAvailable > 0 ? (
+          {vFuxAvailable && vFuxAvailable.gt("0") ? (
             user === workstream?.creator ? (
               <ValueResolutionForm workstreamID={_workstreamID} />
             ) : workstream?.creator ? (

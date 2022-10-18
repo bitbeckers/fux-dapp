@@ -1,5 +1,6 @@
+import ClaimRewards from "../ClaimRewards";
 import ConnectWallet from "../ConnectWallet";
-import { Stack, Heading, Link, Spacer } from "@chakra-ui/react";
+import { Stack, Heading, Link, Spacer, ButtonGroup } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 const Header: React.FC<{}> = () => {
@@ -28,10 +29,17 @@ const Header: React.FC<{}> = () => {
           <Heading fontSize="lg">MY HISTORY</Heading>
         </Link>
       </NextLink>
+      <NextLink href="/rewards" passHref>
+        <Link>
+          <Heading fontSize="lg">MY REWARDS</Heading>
+        </Link>
+      </NextLink>
 
       <Spacer />
-
-      <ConnectWallet />
+      <ButtonGroup>
+        <ClaimRewards />
+        <ConnectWallet />
+      </ButtonGroup>
     </Stack>
   );
 };

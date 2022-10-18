@@ -7,7 +7,7 @@ const setupTest = deployments.createFixture(async ({ deployments, getNamedAccoun
   const { deployer, owner, user } = await getNamedAccounts();
 
   // Contracts
-  const fux = await ethers.getContract("FUX");
+  const fux = <FUX>await ethers.getContract("FUX");
 
   // Account config
   const setupAddress = async (address: string) => {

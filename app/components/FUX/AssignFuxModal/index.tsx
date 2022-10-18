@@ -19,6 +19,7 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Spacer,
 } from "@chakra-ui/react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -59,7 +60,7 @@ const AssignFuxModal: React.FC<{
 
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl>
+      <FormControl mb={"1em"}>
         <Controller
           name={`fuxGiven`}
           control={control}
@@ -86,10 +87,11 @@ const AssignFuxModal: React.FC<{
         />
       </FormControl>
 
-      <ButtonGroup justifyContent="space-around" w="70%">
+      <ButtonGroup justifyContent="space-around" w="100%">
         <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
           Reset
         </Button>
+        <Spacer />
         <Button isLoading={isSubmitting} type="submit">
           Give FUX
         </Button>

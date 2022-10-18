@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { BigNumber, ethers } from "ethers";
 import { DateTime } from "luxon";
 
 import setupTest from "../setup";
@@ -67,6 +68,6 @@ export function shouldBehaveLikeFuxEvaluation(): void {
     const evaluation = await user.fux.getValueEvaluation(user.address, 0);
 
     expect(evaluation.contributors).to.be.eql([owner.address]);
-    expect(evaluation.ratings).to.be.eql([100]);
+    expect(evaluation.ratings).to.be.eql([BigNumber.from("100")]);
   });
 }

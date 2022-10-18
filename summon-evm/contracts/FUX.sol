@@ -11,6 +11,7 @@ import "hardhat/console.sol";
 
 error NonTransferableFux();
 error NotContributor();
+error NotEnoughFunds();
 error NotEnoughFux();
 error NotEnoughVFux();
 error TokensAlreadyMinted();
@@ -46,22 +47,24 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         address[] contributors;
         uint256[] evaluations;
         uint256 deadline;
+        uint256 funds;
         bool exists;
     }
 
     struct Evaluation {
         address[] contributors;
-        uint8[] ratings;
+        uint256[] ratings;
         bool exists;
     }
 
     mapping(uint256 => Workstream) internal workstreams;
     mapping(address => uint256[]) internal contributorWorkstreams; //TODO find, replace, pop to keep updated
-    mapping(address => mapping(uint256 => uint8)) internal contributorCommitments;
+    mapping(address => mapping(uint256 => uint256)) internal contributorCommitments;
     mapping(address => mapping(uint256 => Evaluation)) internal valueEvaluations;
-    mapping(address => mapping(uint256 => uint8)) internal vFuxAvailable;
+    mapping(address => mapping(uint256 => uint256)) internal vFuxAvailableForWorkstream;
     mapping(address => bool) internal isFuxer;
     mapping(address => mapping(uint256 => bool)) internal isContributor;
+    mapping(address => uint256) internal balances;
 
     constructor() ERC1155("") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -93,8 +96,12 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         evaluation = valueEvaluations[user][workstreamID];
     }
 
-    function getVFuxForEvaluation(uint256 workstreamID) public view returns (uint8 vFux) {
-        vFux = vFuxAvailable[msg.sender][workstreamID];
+    function getVFuxForEvaluation(uint256 workstreamID) public view returns (uint256 vFux) {
+        vFux = vFuxAvailableForWorkstream[msg.sender][workstreamID];
+    }
+
+    function getAvailableBalance(address account) public view returns (uint256 balance) {
+        balance = balances[account];
     }
 
     function mintFux() public {
@@ -106,12 +113,12 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
 
     function mintVFux(uint256 workstreamID) public {
         if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
-        if (vFuxAvailable[msg.sender][workstreamID] > 0) revert TokensAlreadyMinted();
+        if (vFuxAvailableForWorkstream[msg.sender][workstreamID] > 0) revert TokensAlreadyMinted();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
         if (getValueEvaluation(msg.sender, workstreamID).exists) revert EvaluationAlreadySubmitted();
 
         _mint(msg.sender, VFUX_TOKEN_ID, 100, "");
-        vFuxAvailable[msg.sender][workstreamID] = uint8(100);
+        vFuxAvailableForWorkstream[msg.sender][workstreamID] = uint8(100);
         emit VFuxClaimed(msg.sender, workstreamID);
     }
 
@@ -119,7 +126,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         string memory name,
         address[] calldata contributors,
         uint256 deadline
-    ) public {
+    ) public payable {
         if (contributors.length == 0) revert InvalidInput("contributors");
         uint256 workstreamID = counter;
         Workstream memory _workstream;
@@ -128,6 +135,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         _workstream.deadline = deadline;
         _workstream.contributors = new address[](0);
         _workstream.exists = true;
+        _workstream.funds = msg.value;
         workstreams[workstreamID] = _workstream;
 
         addContributors(workstreamID, contributors);
@@ -153,7 +161,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     function commitToWorkstream(uint256 workstreamID, uint8 fuxGiven) public {
         if (balanceOf(msg.sender, FUX_TOKEN_ID) < fuxGiven) revert NotEnoughFux();
         if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
-        uint8 currentFux = contributorCommitments[msg.sender][workstreamID];
+        uint256 currentFux = contributorCommitments[msg.sender][workstreamID];
 
         require(currentFux != fuxGiven, "Same amount of FUX");
 
@@ -181,7 +189,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     function submitValueEvaluation(
         uint256 workstreamID,
         address[] memory contributors,
-        uint8[] memory vFuxGiven
+        uint256[] memory vFuxGiven
     ) public {
         if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
@@ -200,7 +208,7 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     function resolveValueEvaluation(
         uint256 workstreamID,
         address[] memory contributors,
-        uint8[] memory vFuxGiven
+        uint256[] memory vFuxGiven
     ) public {
         Workstream storage workstream = workstreams[workstreamID];
         if (!workstream.exists) revert NonExistentWorkstream();
@@ -213,8 +221,12 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven, true);
 
         _payVFux(contributors, vFuxGiven, workstreamID);
+        if (workstream.funds > 0) {
+            _reserveFunds(contributors, vFuxGiven, workstream.funds);
+        }
+        _returnFux(contributors, workstreamID);
 
-        emit EvaluationResolved(0);
+        emit EvaluationResolved(workstreamID);
         workstream.exists = false;
     }
 
@@ -245,30 +257,68 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         }
     }
 
-    function _depositAllVFux(uint8[] memory vFuxGiven, uint256 workstreamID) internal {
+    function _depositAllVFux(uint256[] memory vFuxGiven, uint256 workstreamID) internal {
         uint256 size = vFuxGiven.length;
-        uint8 total = 0;
+        uint256 total = 0;
         for (uint256 i = 0; i < size; i++) {
             total += vFuxGiven[i];
         }
 
-        if (total != vFuxAvailable[msg.sender][workstreamID]) revert NotEnoughFux();
+        if (total != vFuxAvailableForWorkstream[msg.sender][workstreamID]) revert NotEnoughFux();
         _safeTransferFrom(msg.sender, address(this), VFUX_TOKEN_ID, 100, "");
     }
 
     function _payVFux(
         address[] memory contributors,
-        uint8[] memory vFuxGiven,
+        uint256[] memory vFuxGiven,
         uint256 workstreamID
     ) internal {
         uint256 size = vFuxGiven.length;
-        uint8 total = 0;
+        uint256 total = 0;
         for (uint256 i = 0; i < size; i++) {
             total += vFuxGiven[i];
             _safeTransferFrom(msg.sender, contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
         }
 
-        if (total != vFuxAvailable[msg.sender][workstreamID]) revert NotEnoughFux();
+        if (total != vFuxAvailableForWorkstream[msg.sender][workstreamID]) revert NotEnoughFux();
+    }
+
+    function _returnFux(address[] memory contributors, uint256 workstreamID) internal {
+        uint256 size = contributors.length;
+        for (uint256 i = 0; i < size; i++) {
+            address contributor = contributors[i];
+            _safeTransferFrom(
+                address(this),
+                contributor,
+                FUX_TOKEN_ID,
+                getWorkstreamCommitment(contributor, workstreamID),
+                ""
+            );
+        }
+    }
+
+    function _reserveFunds(
+        address[] memory contributors,
+        uint256[] memory vFuxGiven,
+        uint256 balance
+    ) internal {
+        uint256 size = vFuxGiven.length;
+        uint256 total = 0;
+        for (uint256 i = 0; i < size; i++) {
+            uint256 portion = (vFuxGiven[i] * balance) / 100;
+            total += portion;
+            balances[contributors[i]] = portion;
+        }
+
+        if (total > balance) revert NotEnoughFunds();
+    }
+
+    function claimRewards() external {
+        if (balances[msg.sender] == 0) revert NotEnoughFunds();
+
+        uint256 owed = balances[msg.sender];
+        balances[msg.sender] = 0;
+        payable(msg.sender).transfer(owed);
     }
 
     function _isContributor(address contributor, uint256 workstreamID) internal view returns (bool) {

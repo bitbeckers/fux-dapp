@@ -17,7 +17,7 @@ const Workstreams: NextPage = () => {
       <WorkstreamModal />
       <Divider />
 
-      <Grid w="40%" gap={2} templateColumns="repeat(13, 1fr)">
+      <Grid w="40%" gap={2} templateColumns="repeat(16, 1fr)">
         {workstreamIDs
           ? workstreamIDs.map((id: BigNumber, index: number) => (
               <WorkstreamRow workstreamID={id.toNumber()} showInactive={false} key={index} />
