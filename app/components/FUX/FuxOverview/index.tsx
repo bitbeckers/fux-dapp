@@ -10,7 +10,7 @@ import {
   Text,
   StatGroup,
 } from "@chakra-ui/react";
-import { formatAddress, useWallet } from "@raidguild/quiver";
+import { formatAddress, useENS, useWallet } from "@raidguild/quiver";
 import NextLink from "next/link";
 import React from "react";
 
@@ -19,6 +19,8 @@ const FuxOverview: React.FC<{}> = ({}) => {
   const claimFux = useMintFux();
   const fuxBalance = useFuxBalance();
   const vFuxBalance = useVFuxBalance();
+  const { ens, avatar, loading } = useENS({ address: user ?? "" });
+
   return (
     <HStack
       w={"100%"}
@@ -29,10 +31,16 @@ const FuxOverview: React.FC<{}> = ({}) => {
     >
       <HStack p="5">
         <Avatar
-          name={user ? user : "n/a"}
-          src="https://sguru.org/wp-content/uploads/2017/06/steam-avatar-profile-picture-1574.jpg"
+          name={ens && !loading ? ens : user ? user : "..."}
+          src={
+            avatar && !loading
+              ? avatar
+              : "https://sguru.org/wp-content/uploads/2017/06/steam-avatar-profile-picture-1574.jpg"
+          }
         />
-        <Text>{user ? formatAddress(user) : "n/a"}</Text>
+        <Text>
+          {ens && !loading ? ens : user ? formatAddress(user) : "..."}
+        </Text>
       </HStack>
       <StatGroup textAlign="left">
         <Stat p={"1em"}>

@@ -1,10 +1,12 @@
 import { Button, Link } from "@chakra-ui/react";
-import { formatAddress, useWallet } from "@raidguild/quiver";
+import { formatAddress, useENS, useWallet } from "@raidguild/quiver";
 import NextLink from "next/link";
 
 const ConnectWallet: React.FC = () => {
   const { connectWallet, isConnecting, isConnected, disconnect, address } =
     useWallet();
+
+  const { ens, loading } = useENS({ address: address ?? "" });
 
   const onDisconnect = () => {
     disconnect();
@@ -28,7 +30,7 @@ const ConnectWallet: React.FC = () => {
         <>
           <NextLink href="/start" passHref>
             <Button colorScheme="red" onClick={() => onDisconnect()}>
-              <Link>{formatAddress(address)}</Link>
+              <Link>{ens && !loading ? ens : formatAddress(address)}</Link>
             </Button>
           </NextLink>
         </>
