@@ -9,7 +9,7 @@ const config = {
   title: "FUX docs",
   tagline: "Dinosaurs are cool",
   url: "https://bitbeckers.github.io",
-  baseUrl: "/",
+  baseUrl: "/fux-dapp/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
