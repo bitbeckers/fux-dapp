@@ -1,4 +1,4 @@
-name: Test deployment
+name: Test docs deployment
 defaults:
   run:
     working-directory: docs
@@ -12,13 +12,13 @@ on:
 
 jobs:
   test-deploy:
-    name: Test deployment
+    name: Test docs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
           cache: yarn
 
       - name: Install dependencies
