@@ -1,12 +1,13 @@
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
+import "@openzeppelin/hardhat-upgrades";
 import "@typechain/hardhat";
 import { config as dotenvConfig } from "dotenv";
 import "hardhat-abi-exporter";
+import "hardhat-contract-sizer";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
-import "hardhat-contract-sizer";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
@@ -36,7 +37,6 @@ const chainIds = {
   "optimism-mainnet": 10,
   "polygon-mainnet": 137,
   "polygon-mumbai": 80001,
-  rinkeby: 4,
   goerli: 5,
 };
 
@@ -64,7 +64,7 @@ const config: HardhatUserConfig = {
   ],
   contractSizer: {
     runOnCompile: true,
-    strict: true
+    strict: true,
   },
   defaultNetwork: "hardhat",
   etherscan: {
@@ -76,7 +76,7 @@ const config: HardhatUserConfig = {
       optimisticEthereum: process.env.OPTIMISM_API_KEY || "",
       polygon: process.env.POLYGONSCAN_API_KEY || "",
       polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
-      rinkeby: process.env.ETHERSCAN_API_KEY || "",
+      goerli: process.env.ETHERSCAN_API_KEY || "",
     },
   },
   gasReporter: {
@@ -86,14 +86,14 @@ const config: HardhatUserConfig = {
     src: "./contracts",
   },
   namedAccounts: {
-    deployer: { default: 0, rinkeby: 0 },
+    deployer: { default: 0, goerli: 0 },
     owner: {
       default: 1,
-      rinkeby: 0,
+      goerli: 0,
     },
     user: {
       default: 2,
-      rinkeby: 0,
+      goerli: 0,
     },
   },
   networks: {
@@ -111,7 +111,6 @@ const config: HardhatUserConfig = {
     goerli: getChainConfig("goerli"),
     "polygon-mainnet": getChainConfig("polygon-mainnet"),
     "polygon-mumbai": getChainConfig("polygon-mumbai"),
-    rinkeby: getChainConfig("rinkeby"),
   },
   paths: {
     artifacts: "./artifacts",

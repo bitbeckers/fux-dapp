@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
-import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Receiver.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155SupplyUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverUpgradeable.sol";
+
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "hardhat/console.sol";
 
@@ -20,12 +23,21 @@ error NonExistentWorkstream();
 error NotApprovedOrOwner();
 error InvalidInput(string inputVar);
 
-contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, AccessControl {
+contract FUX is
+    Initializable,
+    ERC1155Upgradeable,
+    AccessControlUpgradeable,
+    ERC1155SupplyUpgradeable,
+    ERC1155URIStorageUpgradeable,
+    ERC1155ReceiverUpgradeable,
+    UUPSUpgradeable
+{
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+
     uint256 public constant FUX_TOKEN_ID = 0;
     uint256 public constant VFUX_TOKEN_ID = 1;
-    uint256 internal counter = 0;
+    uint256 internal counter;
 
     bytes4 internal constant ERC1155_ACCEPTED = 0xf23a6e61;
     bytes4 internal constant ERC1155_BATCH_ACCEPTED = 0xbc197c81;
@@ -66,13 +78,30 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
     mapping(address => mapping(uint256 => bool)) internal isContributor;
     mapping(address => uint256) internal balances;
 
-    constructor() ERC1155("") {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(URI_SETTER_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
     }
 
-    function uri(uint256 tokenId) public view override(ERC1155, ERC1155URIStorage) returns (string memory) {
+    function initialize() public initializer {
+        __ERC1155_init("");
+        __AccessControl_init();
+        __ERC1155Supply_init();
+        __UUPSUpgradeable_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(URI_SETTER_ROLE, msg.sender);
+        _grantRole(UPGRADER_ROLE, msg.sender);
+
+        counter = 0;
+    }
+
+    function uri(uint256 tokenId)
+        public
+        view
+        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
+        returns (string memory)
+    {
         return super.uri(tokenId);
     }
 
@@ -327,6 +356,8 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         return isContributor[contributor][workstreamID];
     }
 
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}
+
     // The following functions are overrides required by Solidity.
 
     function _beforeTokenTransfer(
@@ -336,14 +367,14 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) internal override(ERC1155, ERC1155Supply) {
+    ) internal override(ERC1155Upgradeable, ERC1155SupplyUpgradeable) {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC1155, ERC1155Receiver, AccessControl)
+        override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
