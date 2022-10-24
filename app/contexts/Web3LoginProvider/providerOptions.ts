@@ -4,13 +4,13 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { IProviderOptions } from "web3modal";
 
 export const NETWORKS: NetworkConfig = {
-  "0x1": {
-    chainId: "0x1",
-    name: "Mainnet",
-    symbol: "ETH",
-    explorer: "https://etherscan.io/",
-    rpc: "https://mainnet.infura.io/v3/e039ebf983d0477ca69a543b1c62101a",
-  },
+  // "0x1": {
+  //   chainId: "0x1",
+  //   name: "Mainnet",
+  //   symbol: "ETH",
+  //   explorer: "https://etherscan.io/",
+  //   rpc: "https://mainnet.infura.io/v3/e039ebf983d0477ca69a543b1c62101a",
+  // },
   "0x5": {
     chainId: "0x5",
     name: "Goerli",
@@ -32,7 +32,7 @@ export const providerOptions: IProviderOptions = {
     package: WalletConnectProvider,
     options: {
       rpc: {
-        1: NETWORKS["0x1"].rpc,
+        // 1: NETWORKS["0x1"].rpc,
         5: NETWORKS["0x5"].rpc,
         1337: NETWORKS["0x539"].rpc,
       },

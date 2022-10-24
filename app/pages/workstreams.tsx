@@ -1,7 +1,6 @@
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
-import { useFuxBalance } from "../hooks/fux";
 import { useGetWorkstreamIDs } from "../hooks/workstream";
 import { VStack, Divider, Grid } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
@@ -9,7 +8,6 @@ import type { NextPage } from "next";
 
 const Workstreams: NextPage = () => {
   const workstreamIDs = useGetWorkstreamIDs();
-  const fuxBalance = useFuxBalance();
 
   return (
     <VStack spacing={8} w={"100%"}>

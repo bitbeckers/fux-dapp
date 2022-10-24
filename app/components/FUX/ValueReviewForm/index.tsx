@@ -2,8 +2,8 @@ import {
   useSubmitValueEvaluation,
   useValueEvaluation,
 } from "../../../hooks/evaluations";
-import { useMintVFux } from "../../../hooks/fux";
 import { useGetWorkstreamByID } from "../../../hooks/workstream";
+import { ContributorRow } from "../ContributorRow";
 import {
   Button,
   FormControl,
@@ -17,11 +17,12 @@ import {
   Spacer,
   Text,
   HStack,
-  Box,
-  Flex,
-  Center,
+  useToast,
+  ButtonGroup,
+  VStack,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
+import { BigNumber, BigNumberish } from "ethers";
 import _, { Dictionary } from "lodash";
 import React, { Fragment, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -34,10 +35,13 @@ const ValueReviewForm: React.FC<{
   workstreamID: number;
 }> = ({ workstreamID }) => {
   const { address: user } = useWallet();
+  const toast = useToast();
   const submitEvaluation = useSubmitValueEvaluation();
   const currentEvaluation = useValueEvaluation(user || "", workstreamID);
 
-  const [ratings, setRatings] = useState<any>();
+  const [ratings, setRatings] = useState<{ [address: string]: BigNumberish }>(
+    {}
+  );
 
   console.log("Review workstreamID: ", workstreamID);
 
@@ -68,22 +72,26 @@ const ValueReviewForm: React.FC<{
 
   // TODO intelligent filtering
   const onSubmit = (data: FormData) => {
-    console.log("Value ratings: ", data.ratings);
-    console.log("Contributors: ", workstream?.contributors);
-
-
     if (workstream?.contributors && data.ratings) {
+      const totalVFux = data.ratings
+        .map((rating) => Number(rating))
+        .reduce((total, value) => +total + value, 0);
+      if (totalVFux != 100) {
+        toast({
+          title: `Not enough vFUX: ${totalVFux.toString()}/100`,
+          status: "error",
+        });
+        return;
+      }
+
       const contributors = workstream.contributors.filter(
         (contributor) => contributor !== user
       );
       const ratings = data.ratings.filter((rating) => rating);
-      console.log("Contributors: ", contributors);
-      console.log("Ratings: ", ratings);
       submitEvaluation(workstreamID, contributors, ratings);
     }
   };
 
-  // TODO ENS names
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl>
@@ -101,16 +109,19 @@ const ValueReviewForm: React.FC<{
                         bg="#301A3A"
                         colSpan={6}
                       >
-                        <Text pl={"1em"}>{contributor}</Text>
+                        <ContributorRow address={contributor} />
                       </GridItem>
                       <GridItem
                         bg="#301A3A"
                         display={"flex"}
                         alignItems={"center"}
-                        colSpan={2}
+                        justifyContent={"center"}
+                        colSpan={3}
                       >
                         {ratings[contributor] ? (
-                          ratings[contributor]
+                          <Text>{`${ratings[
+                            contributor
+                          ].toString()} vFUX`}</Text>
                         ) : (
                           <Controller
                             name={`ratings.${index}`}
@@ -141,19 +152,21 @@ const ValueReviewForm: React.FC<{
             : "No contributors found"}
         </Grid>
       </FormControl>
-      <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
-        Assign 100% of your FUX to give
-      </Text>
 
-      <HStack w={"100%"} pt={4}>
-        <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-          Reset
-        </Button>
-        <Spacer />
-        <Button isLoading={isSubmitting} type="submit">
-          Submit review
-        </Button>
-      </HStack>
+      <VStack w={"100%"} pt={4}>
+        <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
+          Assign your 100 vFUX to rate value contribution
+        </Text>
+        <ButtonGroup>
+          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
+            Reset
+          </Button>
+          <Spacer />
+          <Button isLoading={isSubmitting} type="submit">
+            Submit review
+          </Button>
+        </ButtonGroup>
+      </VStack>
     </form>
   );
 };

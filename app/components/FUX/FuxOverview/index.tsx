@@ -1,4 +1,5 @@
 import { useFuxBalance, useMintFux, useVFuxBalance } from "../../../hooks/fux";
+import { useUserProfile } from "../../../hooks/user";
 import {
   Avatar,
   HStack,
@@ -10,15 +11,15 @@ import {
   Text,
   StatGroup,
 } from "@chakra-ui/react";
-import { formatAddress, useWallet } from "@raidguild/quiver";
 import NextLink from "next/link";
 import React from "react";
 
 const FuxOverview: React.FC<{}> = ({}) => {
-  const { address: user } = useWallet();
   const claimFux = useMintFux();
   const fuxBalance = useFuxBalance();
   const vFuxBalance = useVFuxBalance();
+  const { displayName, avatar, loading } = useUserProfile();
+
   return (
     <HStack
       w={"100%"}
@@ -28,17 +29,14 @@ const FuxOverview: React.FC<{}> = ({}) => {
       pb={"2em"}
     >
       <HStack p="5">
-        <Avatar
-          name={user ? user : "n/a"}
-          src="https://sguru.org/wp-content/uploads/2017/06/steam-avatar-profile-picture-1574.jpg"
-        />
-        <Text>{user ? formatAddress(user) : "n/a"}</Text>
+        <Avatar name={displayName()} src={avatar && !loading ? avatar : ""} />
+        <Text>{displayName(true)}</Text>
       </HStack>
       <StatGroup textAlign="left">
         <Stat p={"1em"}>
           <StatLabel>FUX available</StatLabel>
           <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
-            fuxBalance ? fuxBalance.toString() : "..."
+            fuxBalance ? fuxBalance.toString() : "0"
           } / 100 FUX`}</StatNumber>
           {fuxBalance?.gt("0") ? undefined : (
             <StatHelpText color="#BF7AF0">

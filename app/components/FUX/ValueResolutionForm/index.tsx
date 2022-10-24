@@ -2,7 +2,6 @@ import {
   useSubmitValueEvaluation,
   useValueEvaluation,
 } from "../../../hooks/evaluations";
-import { useMintVFux } from "../../../hooks/fux";
 import { useResolveValueEvaluation } from "../../../hooks/resolution";
 import { useGetWorkstreamByID } from "../../../hooks/workstream";
 import { EvaluationAccordionItem } from "../EvaluationAccordionItem";
@@ -19,18 +18,13 @@ import {
   Spacer,
   Text,
   HStack,
-  Box,
-  AccordionItem,
   Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionPanel,
-  Flex,
   VStack,
   Heading,
-  Divider,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
+import { BigNumberish } from "ethers";
 import _, { add, Dictionary } from "lodash";
 import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
@@ -48,8 +42,9 @@ const ValueResolutionForm: React.FC<{
   const resolveEvaluation = useResolveValueEvaluation();
   const currentEvaluation = useValueEvaluation(user || "", workstreamID);
 
-  const [ratings, setRatings] = useState<any>();
-  const [evaluations, setEvaluations] = useState<any>();
+  const [ratings, setRatings] = useState<{ [address: string]: BigNumberish }>(
+    {}
+  );
 
   console.log("Resolution workstreamID: ", workstreamID);
 
@@ -121,7 +116,9 @@ const ValueResolutionForm: React.FC<{
                           colSpan={2}
                         >
                           {ratings[contributor] ? (
-                            ratings[contributor]
+                            <Text>{`${ratings[
+                              contributor
+                            ].toString()} vFUX`}</Text>
                           ) : (
                             <Controller
                               name={`ratings.${index}`}
@@ -156,15 +153,25 @@ const ValueResolutionForm: React.FC<{
           Assign 100% of your FUX to give
         </Text>
 
-        <HStack w={"100%"} pt={4} pb={"2em"}>
-          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-            Reset
-          </Button>
-          <Spacer />
-          <Button isLoading={isSubmitting} type="submit">
-            Resolve
-          </Button>
-        </HStack>
+        <VStack w={"100%"} pt={4}>
+          <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
+            Assign your 100 vFUX to rate value contribution and distribute
+            rewards
+          </Text>
+          <ButtonGroup>
+            <Button
+              isLoading={isSubmitting}
+              type="reset"
+              onClick={() => reset()}
+            >
+              Reset
+            </Button>
+            <Spacer />
+            <Button isLoading={isSubmitting} type="submit">
+              Resolve workstream
+            </Button>
+          </ButtonGroup>
+        </VStack>
         {workstream?.contributors ? (
           <>
             <Heading>Peer evaluations</Heading>
