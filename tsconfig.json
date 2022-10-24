@@ -2,6 +2,7 @@
     "references": [
       { "path": "./summon-evm" },
       { "path": "./app" }
+      { "path": "./docs" }
     ],
     "files": [],
     "include": [],

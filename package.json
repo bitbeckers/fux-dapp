@@ -9,7 +9,8 @@
   "workspaces": [
     "app",
     "summon-evm",
-    "graph"
+    "graph",
+    "docs"
   ],
   "scripts": {
     "build:fleek": "yarn workspace app build && yarn workspace app export -o ../out/",
