@@ -22,7 +22,7 @@ const EvaluationAccordionItem: React.FC<{
     <Flex key={contributor}>
       <ContributorRow address={contributor} />
       <Spacer />
-      <Text fontWeight={"bold"}>{`${evaluation.ratings[index]} FUX`}</Text>
+      <Text fontWeight={"bold"}>{`${evaluation.ratings[index]} vFUX`}</Text>
     </Flex>
   ));
 
@@ -31,6 +31,7 @@ const EvaluationAccordionItem: React.FC<{
       <h2>
         <AccordionButton>
           <ContributorRow address={address} />
+          <Spacer />
           <AccordionIcon />
         </AccordionButton>
       </h2>

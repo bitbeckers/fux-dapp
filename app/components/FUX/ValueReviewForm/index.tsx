@@ -19,6 +19,7 @@ import {
   HStack,
   useToast,
   ButtonGroup,
+  VStack,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import { BigNumber, BigNumberish } from "ethers";
@@ -152,7 +153,7 @@ const ValueReviewForm: React.FC<{
         </Grid>
       </FormControl>
 
-      <HStack w={"100%"} pt={4}>
+      <VStack w={"100%"} pt={4}>
         <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
           Assign your 100 vFUX to rate value contribution
         </Text>
@@ -165,7 +166,7 @@ const ValueReviewForm: React.FC<{
             Submit review
           </Button>
         </ButtonGroup>
-      </HStack>
+      </VStack>
     </form>
   );
 };

@@ -21,6 +21,7 @@ import {
   Accordion,
   VStack,
   Heading,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import { BigNumberish } from "ethers";
@@ -152,15 +153,25 @@ const ValueResolutionForm: React.FC<{
           Assign 100% of your FUX to give
         </Text>
 
-        <HStack w={"100%"} pt={4} pb={"2em"}>
-          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-            Reset
-          </Button>
-          <Spacer />
-          <Button isLoading={isSubmitting} type="submit">
-            Resolve
-          </Button>
-        </HStack>
+        <VStack w={"100%"} pt={4}>
+          <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
+            Assign your 100 vFUX to rate value contribution and distribute
+            rewards
+          </Text>
+          <ButtonGroup>
+            <Button
+              isLoading={isSubmitting}
+              type="reset"
+              onClick={() => reset()}
+            >
+              Reset
+            </Button>
+            <Spacer />
+            <Button isLoading={isSubmitting} type="submit">
+              Resolve workstream
+            </Button>
+          </ButtonGroup>
+        </VStack>
         {workstream?.contributors ? (
           <>
             <Heading>Peer evaluations</Heading>
