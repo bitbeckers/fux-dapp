@@ -1,7 +1,7 @@
 name: Test docs deployment
 defaults:
   run:
-    working-directory: docs
+    working-directory: doc
 
 on:
   pull_request:
