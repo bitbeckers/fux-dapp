@@ -6,14 +6,7 @@ import {
 import { useConstants } from "../../../utils/constants";
 import AssignFuxModal from "../AssignFuxModal";
 import ContributorModal from "../ContributorModal";
-import {
-  ArrowRightIcon,
-  CheckIcon,
-  PlusSquareIcon,
-  SettingsIcon,
-  ViewIcon,
-  ViewOffIcon,
-} from "@chakra-ui/icons";
+import { ArrowRightIcon } from "@chakra-ui/icons";
 import { Checkbox, GridItem, IconButton, Radio, Text } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import { ethers } from "ethers";

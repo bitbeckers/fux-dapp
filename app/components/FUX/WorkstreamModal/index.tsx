@@ -23,7 +23,6 @@ import {
   NumberInputField,
   NumberInputStepper,
   HStack,
-  FormLabel,
   VStack,
   FormHelperText,
 } from "@chakra-ui/react";
@@ -87,7 +86,6 @@ const WorkstreamModal: React.FC = () => {
     }
   };
 
-  // TODO inputType date
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl>

@@ -2,7 +2,6 @@ import {
   useSubmitValueEvaluation,
   useValueEvaluation,
 } from "../../../hooks/evaluations";
-import { useMintVFux } from "../../../hooks/fux";
 import { useResolveValueEvaluation } from "../../../hooks/resolution";
 import { useGetWorkstreamByID } from "../../../hooks/workstream";
 import { EvaluationAccordionItem } from "../EvaluationAccordionItem";
@@ -19,18 +18,12 @@ import {
   Spacer,
   Text,
   HStack,
-  Box,
-  AccordionItem,
   Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionPanel,
-  Flex,
   VStack,
   Heading,
-  Divider,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
+import { BigNumberish } from "ethers";
 import _, { add, Dictionary } from "lodash";
 import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
@@ -48,8 +41,9 @@ const ValueResolutionForm: React.FC<{
   const resolveEvaluation = useResolveValueEvaluation();
   const currentEvaluation = useValueEvaluation(user || "", workstreamID);
 
-  const [ratings, setRatings] = useState<any>();
-  const [evaluations, setEvaluations] = useState<any>();
+  const [ratings, setRatings] = useState<{ [address: string]: BigNumberish }>(
+    {}
+  );
 
   console.log("Resolution workstreamID: ", workstreamID);
 
@@ -121,7 +115,9 @@ const ValueResolutionForm: React.FC<{
                           colSpan={2}
                         >
                           {ratings[contributor] ? (
-                            ratings[contributor]
+                            <Text>{`${ratings[
+                              contributor
+                            ].toString()} vFUX`}</Text>
                           ) : (
                             <Controller
                               name={`ratings.${index}`}

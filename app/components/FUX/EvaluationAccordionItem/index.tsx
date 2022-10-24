@@ -1,4 +1,5 @@
 import { useValueEvaluation } from "../../../hooks/evaluations";
+import { ContributorRow } from "../ContributorRow";
 import {
   AccordionButton,
   AccordionIcon,
@@ -19,7 +20,7 @@ const EvaluationAccordionItem: React.FC<{
 
   const ratings = evaluation?.contributors.map((contributor, index) => (
     <Flex key={contributor}>
-      <Text>{contributor}</Text>
+      <ContributorRow address={contributor} />
       <Spacer />
       <Text fontWeight={"bold"}>{`${evaluation.ratings[index]} FUX`}</Text>
     </Flex>
@@ -29,9 +30,7 @@ const EvaluationAccordionItem: React.FC<{
     <AccordionItem>
       <h2>
         <AccordionButton>
-          <Box flex="1" textAlign="left">
-            {address}
-          </Box>
+          <ContributorRow address={address} />
           <AccordionIcon />
         </AccordionButton>
       </h2>

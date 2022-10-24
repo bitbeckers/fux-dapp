@@ -1,5 +1,5 @@
 import { useAddContributors } from "../../../hooks/workstream";
-import { AddIcon, AtSignIcon, PlusSquareIcon } from "@chakra-ui/icons";
+import { BsFillPersonPlusFill } from "react-icons/bs";
 import {
   Button,
   ButtonGroup,
@@ -10,16 +10,16 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Text,
   useDisclosure,
   IconButton,
-  HStack,
   InputGroup,
   InputRightElement,
   Spacer,
+  Icon,
 } from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
 import { useFieldArray, useForm } from "react-hook-form";
+import { ContributorRow } from "../ContributorRow";
 
 type FormData = {
   contributors: string[];
@@ -53,9 +53,6 @@ const ContributorModal: React.FC<{
       name: "newContributors",
     });
 
-  const watchAllFields = watch();
-  console.log("FORM CONTRIBUTORS: ", watchAllFields);
-
   const onSubmit = (form: FormData) => {
     if (form.newContributors.length > 0) {
       const addressArray = form.newContributors
@@ -68,7 +65,7 @@ const ContributorModal: React.FC<{
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
       {contributors.map((contributor, index) => (
-        <Text key={index}>{contributor}</Text>
+        <ContributorRow key={index} address={contributor} />
       ))}
 
       {fields.map((field, index) => (
@@ -78,12 +75,12 @@ const ContributorModal: React.FC<{
             defaultValue={`${field.address}`}
             {...register(`newContributors.${index}.address`)}
           />
-          {index == fields.length -1 ? (
+          {index == fields.length - 1 ? (
             <InputRightElement>
               <IconButton
                 aria-label="Add contributor"
                 onClick={() => append({ address: "" })}
-                icon={<AddIcon />}
+                icon={<Icon as={BsFillPersonPlusFill} />}
               />
             </InputRightElement>
           ) : undefined}
@@ -106,7 +103,7 @@ const ContributorModal: React.FC<{
       <IconButton
         onClick={onOpen}
         aria-label="Manage contributors"
-        icon={<AtSignIcon />}
+        icon={<Icon as={BsFillPersonPlusFill} />}
       ></IconButton>
 
       <Modal isOpen={isOpen} onClose={onClose}>
