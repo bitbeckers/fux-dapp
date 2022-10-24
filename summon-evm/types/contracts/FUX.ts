@@ -76,7 +76,7 @@ export interface FUXInterface extends utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "FUX_TOKEN_ID()": FunctionFragment;
-    "MINTER_ROLE()": FunctionFragment;
+    "UPGRADER_ROLE()": FunctionFragment;
     "URI_SETTER_ROLE()": FunctionFragment;
     "VFUX_TOKEN_ID()": FunctionFragment;
     "addContributors(uint256,address[])": FunctionFragment;
@@ -94,12 +94,14 @@ export interface FUXInterface extends utils.Interface {
     "getWorkstreamIDs(address)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
+    "initialize()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintFux()": FunctionFragment;
     "mintVFux(uint256)": FunctionFragment;
     "mintWorkstream(string,address[],uint256)": FunctionFragment;
     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
+    "proxiableUUID()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "resolveValueEvaluation(uint256,address[],uint256[])": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
@@ -110,6 +112,8 @@ export interface FUXInterface extends utils.Interface {
     "submitValueEvaluation(uint256,address[],uint256[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "totalSupply(uint256)": FunctionFragment;
+    "upgradeTo(address)": FunctionFragment;
+    "upgradeToAndCall(address,bytes)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
     "withdrawFromWorkstream(uint256)": FunctionFragment;
   };
@@ -118,7 +122,7 @@ export interface FUXInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "DEFAULT_ADMIN_ROLE"
       | "FUX_TOKEN_ID"
-      | "MINTER_ROLE"
+      | "UPGRADER_ROLE"
       | "URI_SETTER_ROLE"
       | "VFUX_TOKEN_ID"
       | "addContributors"
@@ -136,12 +140,14 @@ export interface FUXInterface extends utils.Interface {
       | "getWorkstreamIDs"
       | "grantRole"
       | "hasRole"
+      | "initialize"
       | "isApprovedForAll"
       | "mintFux"
       | "mintVFux"
       | "mintWorkstream"
       | "onERC1155BatchReceived"
       | "onERC1155Received"
+      | "proxiableUUID"
       | "renounceRole"
       | "resolveValueEvaluation"
       | "revokeRole"
@@ -152,6 +158,8 @@ export interface FUXInterface extends utils.Interface {
       | "submitValueEvaluation"
       | "supportsInterface"
       | "totalSupply"
+      | "upgradeTo"
+      | "upgradeToAndCall"
       | "uri"
       | "withdrawFromWorkstream"
   ): FunctionFragment;
@@ -165,7 +173,7 @@ export interface FUXInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "MINTER_ROLE",
+    functionFragment: "UPGRADER_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -237,6 +245,10 @@ export interface FUXInterface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "initialize",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
@@ -272,6 +284,10 @@ export interface FUXInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BytesLike>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proxiableUUID",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -334,6 +350,14 @@ export interface FUXInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
+    functionFragment: "upgradeTo",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "upgradeToAndCall",
+    values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "uri",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
@@ -351,7 +375,7 @@ export interface FUXInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "MINTER_ROLE",
+    functionFragment: "UPGRADER_ROLE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -410,6 +434,7 @@ export interface FUXInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
@@ -426,6 +451,10 @@ export interface FUXInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "onERC1155Received",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proxiableUUID",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -462,6 +491,11 @@ export interface FUXInterface extends utils.Interface {
     functionFragment: "totalSupply",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "upgradeTo", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "upgradeToAndCall",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "uri", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "withdrawFromWorkstream",
@@ -469,39 +503,58 @@ export interface FUXInterface extends utils.Interface {
   ): Result;
 
   events: {
+    "AdminChanged(address,address)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "BeaconUpgraded(address)": EventFragment;
     "ContributorsAdded(uint256,address[])": EventFragment;
     "EvaluationResolved(uint256)": EventFragment;
     "EvaluationSubmitted(uint256,address)": EventFragment;
     "FuxClaimed(address)": EventFragment;
     "FuxGiven(address,uint256,uint256)": EventFragment;
     "FuxWithdraw(address,uint256,uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
+    "Upgraded(address)": EventFragment;
     "VFuxClaimed(address,uint256)": EventFragment;
     "WorkstreamMinted(uint256,string)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ContributorsAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EvaluationResolved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EvaluationSubmitted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxGiven"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxWithdraw"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferSingle"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "VFuxClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WorkstreamMinted"): EventFragment;
 }
+
+export interface AdminChangedEventObject {
+  previousAdmin: string;
+  newAdmin: string;
+}
+export type AdminChangedEvent = TypedEvent<
+  [string, string],
+  AdminChangedEventObject
+>;
+
+export type AdminChangedEventFilter = TypedEventFilter<AdminChangedEvent>;
 
 export interface ApprovalForAllEventObject {
   account: string;
@@ -514,6 +567,16 @@ export type ApprovalForAllEvent = TypedEvent<
 >;
 
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
+
+export interface BeaconUpgradedEventObject {
+  beacon: string;
+}
+export type BeaconUpgradedEvent = TypedEvent<
+  [string],
+  BeaconUpgradedEventObject
+>;
+
+export type BeaconUpgradedEventFilter = TypedEventFilter<BeaconUpgradedEvent>;
 
 export interface ContributorsAddedEventObject {
   id: BigNumber;
@@ -580,6 +643,13 @@ export type FuxWithdrawEvent = TypedEvent<
 >;
 
 export type FuxWithdrawEventFilter = TypedEventFilter<FuxWithdrawEvent>;
+
+export interface InitializedEventObject {
+  version: number;
+}
+export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export interface RoleAdminChangedEventObject {
   role: string;
@@ -654,6 +724,13 @@ export type URIEvent = TypedEvent<[string, BigNumber], URIEventObject>;
 
 export type URIEventFilter = TypedEventFilter<URIEvent>;
 
+export interface UpgradedEventObject {
+  implementation: string;
+}
+export type UpgradedEvent = TypedEvent<[string], UpgradedEventObject>;
+
+export type UpgradedEventFilter = TypedEventFilter<UpgradedEvent>;
+
 export interface VFuxClaimedEventObject {
   user: string;
   workstreamID: BigNumber;
@@ -708,7 +785,7 @@ export interface FUX extends BaseContract {
 
     FUX_TOKEN_ID(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    MINTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+    UPGRADER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
     URI_SETTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
@@ -800,6 +877,10 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    initialize(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     isApprovedForAll(
       account: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
@@ -839,6 +920,8 @@ export interface FUX extends BaseContract {
       _data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -905,6 +988,17 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    upgradeTo(
+      newImplementation: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    upgradeToAndCall(
+      newImplementation: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     uri(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -920,7 +1014,7 @@ export interface FUX extends BaseContract {
 
   FUX_TOKEN_ID(overrides?: CallOverrides): Promise<BigNumber>;
 
-  MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+  UPGRADER_ROLE(overrides?: CallOverrides): Promise<string>;
 
   URI_SETTER_ROLE(overrides?: CallOverrides): Promise<string>;
 
@@ -1008,6 +1102,10 @@ export interface FUX extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  initialize(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   isApprovedForAll(
     account: PromiseOrValue<string>,
     operator: PromiseOrValue<string>,
@@ -1047,6 +1145,8 @@ export interface FUX extends BaseContract {
     _data: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  proxiableUUID(overrides?: CallOverrides): Promise<string>;
 
   renounceRole(
     role: PromiseOrValue<BytesLike>,
@@ -1113,6 +1213,17 @@ export interface FUX extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  upgradeTo(
+    newImplementation: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  upgradeToAndCall(
+    newImplementation: PromiseOrValue<string>,
+    data: PromiseOrValue<BytesLike>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   uri(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -1128,7 +1239,7 @@ export interface FUX extends BaseContract {
 
     FUX_TOKEN_ID(overrides?: CallOverrides): Promise<BigNumber>;
 
-    MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+    UPGRADER_ROLE(overrides?: CallOverrides): Promise<string>;
 
     URI_SETTER_ROLE(overrides?: CallOverrides): Promise<string>;
 
@@ -1214,6 +1325,8 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    initialize(overrides?: CallOverrides): Promise<void>;
+
     isApprovedForAll(
       account: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
@@ -1251,6 +1364,8 @@ export interface FUX extends BaseContract {
       _data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<string>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -1317,6 +1432,17 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    upgradeTo(
+      newImplementation: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    upgradeToAndCall(
+      newImplementation: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     uri(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -1329,6 +1455,15 @@ export interface FUX extends BaseContract {
   };
 
   filters: {
+    "AdminChanged(address,address)"(
+      previousAdmin?: null,
+      newAdmin?: null
+    ): AdminChangedEventFilter;
+    AdminChanged(
+      previousAdmin?: null,
+      newAdmin?: null
+    ): AdminChangedEventFilter;
+
     "ApprovalForAll(address,address,bool)"(
       account?: PromiseOrValue<string> | null,
       operator?: PromiseOrValue<string> | null,
@@ -1339,6 +1474,13 @@ export interface FUX extends BaseContract {
       operator?: PromiseOrValue<string> | null,
       approved?: null
     ): ApprovalForAllEventFilter;
+
+    "BeaconUpgraded(address)"(
+      beacon?: PromiseOrValue<string> | null
+    ): BeaconUpgradedEventFilter;
+    BeaconUpgraded(
+      beacon?: PromiseOrValue<string> | null
+    ): BeaconUpgradedEventFilter;
 
     "ContributorsAdded(uint256,address[])"(
       id?: null,
@@ -1387,6 +1529,9 @@ export interface FUX extends BaseContract {
       workstreamId?: null,
       amount?: null
     ): FuxWithdrawEventFilter;
+
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
       role?: PromiseOrValue<BytesLike> | null,
@@ -1457,6 +1602,13 @@ export interface FUX extends BaseContract {
     ): URIEventFilter;
     URI(value?: null, id?: PromiseOrValue<BigNumberish> | null): URIEventFilter;
 
+    "Upgraded(address)"(
+      implementation?: PromiseOrValue<string> | null
+    ): UpgradedEventFilter;
+    Upgraded(
+      implementation?: PromiseOrValue<string> | null
+    ): UpgradedEventFilter;
+
     "VFuxClaimed(address,uint256)"(
       user?: null,
       workstreamID?: null
@@ -1478,7 +1630,7 @@ export interface FUX extends BaseContract {
 
     FUX_TOKEN_ID(overrides?: CallOverrides): Promise<BigNumber>;
 
-    MINTER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+    UPGRADER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
     URI_SETTER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1566,6 +1718,10 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    initialize(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     isApprovedForAll(
       account: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
@@ -1605,6 +1761,8 @@ export interface FUX extends BaseContract {
       _data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -1671,6 +1829,17 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    upgradeTo(
+      newImplementation: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    upgradeToAndCall(
+      newImplementation: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     uri(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -1689,7 +1858,7 @@ export interface FUX extends BaseContract {
 
     FUX_TOKEN_ID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    MINTER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    UPGRADER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     URI_SETTER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1777,6 +1946,10 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    initialize(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     isApprovedForAll(
       account: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
@@ -1816,6 +1989,8 @@ export interface FUX extends BaseContract {
       _data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -1880,6 +2055,17 @@ export interface FUX extends BaseContract {
     totalSupply(
       id: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    upgradeTo(
+      newImplementation: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    upgradeToAndCall(
+      newImplementation: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     uri(

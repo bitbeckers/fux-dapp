@@ -13,9 +13,11 @@ describe("Unit tests", function () {
     it("is a basic ERC1155 token", async () => {
       const { fux } = await setupTest();
 
-      // The ERC-165 identifier for this interface is 0xd9b67a26.
+      // The ERC-165 identifier for interface EIP1155 is 0xd9b67a26.
       expect(await fux.supportsInterface("0xd9b67a26")).to.be.true;
       expect(await fux.uri(0)).to.be.eq("");
+
+      await expect(fux.initialize()).to.be.revertedWith("Initializable: contract is already initialized");
     });
 
     shouldBehaveLikeFuxToken();
