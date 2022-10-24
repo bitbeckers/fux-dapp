@@ -15,12 +15,17 @@ export function shouldBehaveLikeFuxResolution(): void {
 
     await user.fux.mintFux();
     await owner.fux.mintFux();
-    await user.fux.commitToWorkstream(0, 50);
-    await owner.fux.commitToWorkstream(0, 50);
+    await user.fux.commitToWorkstream(0, 60);
+    await owner.fux.commitToWorkstream(0, 40);
     await owner.fux.mintVFux(0);
 
-    expect(await user.fux.balanceOf(user.address, 1)).to.be.eq(0);
-    expect(await user.fux.balanceOf(user.address, 0)).to.be.eq(50);
+    expect(await fux.balanceOf(user.address, 1)).to.be.eq(0);
+    expect(await fux.balanceOf(user.address, 0)).to.be.eq(40);
+    expect(await fux.balanceOf(owner.address, 1)).to.be.eq(100);
+    expect(await fux.balanceOf(owner.address, 0)).to.be.eq(60);
+
+    expect(await fux.getWorkstreamCommitment(user.address, 0)).to.be.eq(60);
+    expect(await fux.getWorkstreamCommitment(owner.address, 0)).to.be.eq(40);
 
     await expect(user.fux.resolveValueEvaluation(0, [user.address], [100])).to.be.revertedWith("NotApprovedOrOwner()");
 
@@ -28,8 +33,12 @@ export function shouldBehaveLikeFuxResolution(): void {
       .to.emit(fux, "EvaluationResolved")
       .withArgs(0);
 
-    expect(await user.fux.balanceOf(user.address, 1)).to.be.eq(100);
-    expect(await user.fux.balanceOf(user.address, 0)).to.be.eq(100);
+    expect(await fux.balanceOf(user.address, 1)).to.be.eq(100);
+    expect(await fux.balanceOf(user.address, 0)).to.be.eq(100);
+    expect(await fux.balanceOf(owner.address, 1)).to.be.eq(0);
+    expect(await fux.balanceOf(owner.address, 0)).to.be.eq(100);
 
+    expect(await fux.getWorkstreamCommitment(user.address, 0)).to.be.eq(0);
+    expect(await fux.getWorkstreamCommitment(owner.address, 0)).to.be.eq(0);
   });
 }

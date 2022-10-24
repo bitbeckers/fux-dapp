@@ -226,6 +226,10 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
         }
         _returnFux(contributors, workstreamID);
 
+        uint256 commitment = getWorkstreamCommitment(msg.sender, workstreamID);
+        contributorCommitments[msg.sender][workstreamID] = 0;
+        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, commitment, "");
+
         emit EvaluationResolved(workstreamID);
         workstream.exists = false;
     }
@@ -285,15 +289,13 @@ contract FUX is ERC1155, ERC1155Supply, ERC1155URIStorage, ERC1155Receiver, Acce
 
     function _returnFux(address[] memory contributors, uint256 workstreamID) internal {
         uint256 size = contributors.length;
+        uint256 commitment = 0;
         for (uint256 i = 0; i < size; i++) {
             address contributor = contributors[i];
-            _safeTransferFrom(
-                address(this),
-                contributor,
-                FUX_TOKEN_ID,
-                getWorkstreamCommitment(contributor, workstreamID),
-                ""
-            );
+            commitment = getWorkstreamCommitment(contributor, workstreamID);
+            contributorCommitments[contributor][workstreamID] = 0;
+
+            _safeTransferFrom(address(this), contributor, FUX_TOKEN_ID, commitment, "");
         }
     }
 
