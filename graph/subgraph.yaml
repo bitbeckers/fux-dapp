@@ -3,56 +3,45 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Staking_Pool
-    network: mainnet
+    name: FUX
+    network: goerli
     source:
-      address: "0x04c0dC00c0Ed701AF1A5B3c7eaeB1B644F2c8042"
-      abi: Staking_Pool
+      address: "0x8F9e2E1F2fd83B491224355CC2515A961d53dcaF"
+      abi: FUX
+      startBlock: 7826724
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - AvailableRewardsUpdated
-        - BatchRewardPaid
-        - Paused
-        - Recovered
-        - RewardPaid
-        - RoleAdminChanged
-        - RoleGranted
-        - RoleRevoked
-        - SagePathUpdated
-        - Staked
-        - StakingPoolUpdated
-        - Unpaused
-        - Withdrawn
+        - User
+        - Workstream
+        - Token
+        - TokenBalance
       abis:
-        - name: Staking_Pool
-          file: ./abis/contracts/Staking_Pool.sol/Staking_Pool.json
+        - name: FUX
+          file: ./abis/contracts/FUX.sol/FUX.json
       eventHandlers:
-        - event: RewardPaid(address,uint256)
-          handler: handleRewardPaid
-        - event: Staked(indexed address,uint256)
-          handler: handleStaked
-        - event: Withdrawn(indexed address,uint256)
-          handler: handleWithdrawn
-      file: ./src/mapping.ts
-  - kind: ethereum/contract
-    name: Token
-    network: mainnet
-    source:
-      address: "0x2584385A9135b0B73Fb4c118B3f67724371A4F89"
-      abi: ERC20_Token
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - Transfer
-      abis:
-        - name: ERC20_Token
-          file: ./abis/contracts/ERC20_Token.sol/ERC20_Token.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransfer
+        - event: ContributorsAdded(uint256,address[])
+          handler: handleContributorsAdded
+        - event: EvaluationResolved(uint256)
+          handler: handleEvaluationResolved
+        - event: EvaluationSubmitted(uint256,address)
+          handler: handleEvaluationSubmitted
+        - event: FuxClaimed(address)
+          handler: handleFuxClaimed
+        - event: FuxGiven(address,uint256,uint256)
+          handler: handleFuxGiven
+        - event: FuxWithdraw(address,uint256,uint256)
+          handler: handleFuxWithdraw
+        - event: RewardsReserved(address,uint256)
+          handler: handleRewardsReserved
+        - event: RewardsClaimed(address,uint256)
+          handler: handleRewardsClaimed
+        - event: VFuxClaimed(address,uint256)
+          handler: handleVFuxClaimed
+        - event: WorkstreamMinted(uint256,uint256,uint256,string)
+          handler: handleWorkstreamMinted
       file: ./src/mapping.ts

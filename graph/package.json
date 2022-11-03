@@ -9,15 +9,15 @@
     "stop:local": "docker-compose down",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ [SUBGRAPH NAME HERE]",
-    "create:local": "graph create --node http://localhost:8020/ summon/raid-app",
-    "remove:local": "graph remove --node http://localhost:8020/ summon/raid-app",
-    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 summon/raid-app",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ bitbeckers/fux-goerli",
+    "create:local": "graph create --node http://localhost:8020/ bitbeckers/fux-goerli",
+    "remove:local": "graph remove --node http://localhost:8020/ bitbeckers/fux-goerli",
+    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 bitbeckers/fux-goerli",
     "predeploy:local": "yarn create:local",
     "precreate:local": "yarn start:local"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.22.4",
-    "@graphprotocol/graph-ts": "0.22.1"
+    "@graphprotocol/graph-cli": "^0.22.4",
+    "@graphprotocol/graph-ts": "^0.22.1"
   }
 }

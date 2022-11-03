@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { ethers } from "hardhat";
 import { DateTime } from "luxon";
 
 import setupTest from "../setup";
@@ -7,31 +8,27 @@ export function shouldBehaveLikeFuxWorkstream(): void {
   it("allows anyone to mint a workstream", async function () {
     const { fux, deployer, owner, user } = await setupTest();
 
-    await expect(
-      user.fux.mintWorkstream(
-        "Test",
-        [deployer.address, owner.address],
-        DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
-      ),
-    )
+    const deadline = DateTime.now().plus({ days: 7 }).toSeconds().toFixed();
+
+    await expect(user.fux.mintWorkstream("Test", [deployer.address, owner.address], deadline))
       .to.emit(fux, "WorkstreamMinted")
-      .withArgs(0, "http://example.com");
+      .withArgs(0, 0, deadline, "http://example.com");
+
+    const funding = ethers.utils.parseEther("1");
 
     await expect(
-      user.fux.mintWorkstream(
-        "Test",
-        [deployer.address, owner.address],
-        DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
-      ),
+      user.fux.mintWorkstream("Test", [deployer.address, owner.address], deadline, {
+        value: funding,
+      }),
     )
       .to.emit(fux, "WorkstreamMinted")
-      .withArgs(1, "http://example.com");
+      .withArgs(1, funding, deadline, "http://example.com");
   });
 
   it("allows workstream contributor to commit FUX", async function () {
-    const { fux, deployer, owner, user } = await setupTest();
+    const { fux, owner, user } = await setupTest();
 
-    const workstream = await user.fux.mintWorkstream(
+    await user.fux.mintWorkstream(
       "Test",
       [user.address],
       DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),

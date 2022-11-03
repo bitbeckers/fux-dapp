@@ -1,55 +1,57 @@
 type User @entity {
   id: ID!
   balances: [TokenBalance!] @derivedFrom(field: "user")
-  stakes: [Stake!] @derivedFrom(field: "user")
+  workstreams: [UserWorkstream!] @derivedFrom(field: "user")
+  fuxGiven: [FuxGiven!] @derivedFrom(field: "user")
+  rewards: BigInt
 }
 
-type StakingPool @entity {
+type Workstream @entity {
   id: ID!
-  balance: BigInt!
-  stakeCount: BigInt!
-  stakes: [Stake!] @derivedFrom(field: "pool")
+  coordinator: User
+  contributors: [UserWorkstream!] @derivedFrom(field: "workstream")
+  funding: BigInt
+  deadline: BigInt
+  resolved: Boolean
 }
 
-type Stake @entity {
+type UserWorkstream @entity {
   id: ID!
-  pool: StakingPool
   user: User!
-  amount: BigInt!
-  created: BigInt!
+  workstream: Workstream!
 }
 
-type Transaction @entity {
+type Evaluation @entity {
   id: ID!
-  hash: Bytes!
-  userFrom: User!
-  userTo: User!
-  transactionReceipt: TransactionReceipt!
-}
-
-type TransactionReceipt @entity {
-  id: ID!
-  transaction: Transaction!
-  token: Token!
-  from: Bytes!
-  to: Bytes!
-  value: BigInt!
-  timestamp: BigInt!
-  blockNumber: BigInt!
-  hash: Bytes!
+  workstream: Workstream!
+  contributors: [User!]!
+  ratings: [BigInt!]!
 }
 
 type Token @entity {
   id: ID!
-  address: Bytes!
   name: String
   symbol: String
-  tokenBalances: [TokenBalance!]! @derivedFrom(field: "token")
+  tokenBalances: [TokenBalance!] @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity {
   id: ID!
   user: User!
   token: Token!
+  balance: BigInt!
+}
+
+type FuxGiven @entity {
+  id: ID!
+  user: User!
+  workstream: Workstream!
+  balance: BigInt!
+}
+
+type VFuxWorkstream @entity {
+  id: ID!
+  user: User!
+  workstream: Workstream!
   balance: BigInt!
 }

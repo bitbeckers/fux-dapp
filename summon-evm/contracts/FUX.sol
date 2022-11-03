@@ -47,11 +47,14 @@ contract FUX is
     event FuxGiven(address user, uint256 workstreamId, uint256 amount);
     event FuxWithdraw(address user, uint256 workstreamId, uint256 amount);
 
-    event WorkstreamMinted(uint256 id, string metadataUri);
+    event WorkstreamMinted(uint256 id, uint256 funds, uint256 deadline, string metadataUri);
     event ContributorsAdded(uint256 id, address[] contributors);
 
     event EvaluationSubmitted(uint256 workstreamID, address contributor);
     event EvaluationResolved(uint256 workstreamID);
+
+    event RewardsReserved(address user, uint256 amount);
+    event RewardsClaimed(address user, uint256 amount);
 
     struct Workstream {
         string name;
@@ -169,7 +172,7 @@ contract FUX is
 
         addContributors(workstreamID, contributors);
 
-        emit WorkstreamMinted(workstreamID, "http://example.com");
+        emit WorkstreamMinted(workstreamID, msg.value, deadline, "http://example.com");
         counter = counter + 1;
     }
 
@@ -231,7 +234,7 @@ contract FUX is
 
         valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven, true);
 
-        emit EvaluationSubmitted(0, msg.sender);
+        emit EvaluationSubmitted(workstreamID, msg.sender);
     }
 
     function resolveValueEvaluation(
@@ -339,6 +342,7 @@ contract FUX is
             uint256 portion = (vFuxGiven[i] * balance) / 100;
             total += portion;
             balances[contributors[i]] = portion;
+            emit RewardsReserved(contributors[i], portion);
         }
 
         if (total > balance) revert NotEnoughFunds();
@@ -350,6 +354,7 @@ contract FUX is
         uint256 owed = balances[msg.sender];
         balances[msg.sender] = 0;
         payable(msg.sender).transfer(owed);
+        emit RewardsClaimed(msg.sender, owed);
     }
 
     function _isContributor(address contributor, uint256 workstreamID) internal view returns (bool) {
