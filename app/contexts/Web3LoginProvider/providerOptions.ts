@@ -16,7 +16,7 @@ export const NETWORKS: NetworkConfig = {
     name: "Goerli",
     symbol: "ETH",
     explorer: "https://goerli.etherscan.io/",
-    rpc: `https://eth-goerli.g.alchemy.com/v2/cd4bk_iwE3JUEUr9quSdEg-SFKyvY2A_`,
+    rpc: `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
   },
   "0x539": {
     chainId: "0x539",
