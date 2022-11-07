@@ -2,14 +2,11 @@ import { useFuxContract } from "./contract";
 import { useToast } from "@chakra-ui/react";
 import {
   parseTxErrorMessage,
-  useReadContract,
-  useWallet,
   useWriteContract,
 } from "@raidguild/quiver";
 import _ from "lodash";
 
 export const useMintWorkstream = () => {
-  console.log("useMintWorkstream");
   const toast = useToast();
   const contract = useFuxContract();
 
@@ -36,13 +33,15 @@ export const useMintWorkstream = () => {
     },
   });
 
-  return async (name: string, contributors: string[], deadline: number, value?: string) =>
-    mutate(name, contributors, deadline, { value });
+  return async (
+    name: string,
+    contributors: string[],
+    deadline: number,
+    value?: string
+  ) => mutate(name, contributors, deadline, { value });
 };
 
 export const useCommitToWorkstream = () => {
-  console.log("useCommitToWorkstream");
-
   const toast = useToast();
   const contract = useFuxContract();
 
@@ -78,8 +77,6 @@ export const useCommitToWorkstream = () => {
 };
 
 export const useWithdrawFromWorkstream = () => {
-  console.log("useWithdrawFromWorkstream");
-
   const toast = useToast();
   const contract = useFuxContract();
 
@@ -113,55 +110,7 @@ export const useWithdrawFromWorkstream = () => {
   return (workstreamID: number) => withdrawFromWorkstream(workstreamID);
 };
 
-export const useGetWorkstreamIDs = () => {
-  console.log("useGetWorkstreams");
-
-  const { address: user } = useWallet();
-  const contract = useFuxContract();
-
-  const { response: userWorkstreams } = useReadContract(
-    contract,
-    "getWorkstreamIDs",
-    [user || ""],
-    { autoUpdateInterval: 10000 }
-  );
-
-  return userWorkstreams;
-};
-
-export const useGetWorkstreamByID = (id: number) => {
-
-  const contract = useFuxContract();
-
-  const { response: workstream } = useReadContract(
-    contract,
-    "getWorkstreamByID",
-    [id]
-  );
-
-  return workstream;
-};
-
-export const useCommitmentToWorkstreamByID = (
-  workstreamID: number,
-  contributor: string
-) => {
-  console.log("useCommitmentToWorkstreamByID");
-
-  const contract = useFuxContract();
-
-  const { response: workstream } = useReadContract(
-    contract,
-    "getWorkstreamCommitment",
-    [contributor, workstreamID],
-    { autoUpdateInterval: 5000 }
-  );
-
-  return workstream;
-};
-
 export const useAddContributors = () => {
-  console.log("useAddContributors");
 
   const toast = useToast();
   const contract = useFuxContract();

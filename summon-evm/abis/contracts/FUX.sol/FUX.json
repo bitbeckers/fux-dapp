@@ -5,11 +5,6 @@
     "type": "constructor"
   },
   {
-    "inputs": [],
-    "name": "EvaluationAlreadySubmitted",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "string",
@@ -38,6 +33,11 @@
   {
     "inputs": [],
     "name": "NotContributor",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotCoordinator",
     "type": "error"
   },
   {
@@ -144,25 +144,24 @@
         "internalType": "uint256",
         "name": "workstreamID",
         "type": "uint256"
-      }
-    ],
-    "name": "EvaluationResolved",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "workstreamID",
-        "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "contributor",
+        "name": "creator",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "contributors",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "ratings",
+        "type": "uint256[]"
       }
     ],
     "name": "EvaluationSubmitted",
@@ -480,6 +479,19 @@
       }
     ],
     "name": "VFuxClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      }
+    ],
+    "name": "WorkstreamClosed",
     "type": "event"
   },
   {
@@ -1262,7 +1274,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "vFuxGiven",
+        "name": "ratings",
         "type": "uint256[]"
       }
     ],

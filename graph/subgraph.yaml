@@ -26,9 +26,9 @@ dataSources:
           handler: handleTransfer
         - event: ContributorsAdded(uint256,address[])
           handler: handleContributorsAdded
-        - event: EvaluationResolved(uint256)
-          handler: handleEvaluationResolved
-        - event: EvaluationSubmitted(uint256,address)
+        - event: WorkstreamClosed(uint256)
+          handler: handleWorkstreamClosed
+        - event: EvaluationSubmitted(uint256,address,address[],uint256[])
           handler: handleEvaluationSubmitted
         - event: FuxClaimed(address)
           handler: handleFuxClaimed

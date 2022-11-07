@@ -1,5 +1,6 @@
 type User @entity {
   id: ID!
+  fuxer: Boolean
   balances: [TokenBalance!] @derivedFrom(field: "user")
   workstreams: [UserWorkstream!] @derivedFrom(field: "user")
   fuxGiven: [FuxGiven!] @derivedFrom(field: "user")
@@ -8,6 +9,7 @@ type User @entity {
 
 type Workstream @entity {
   id: ID!
+  name: String
   coordinator: User
   contributors: [UserWorkstream!] @derivedFrom(field: "workstream")
   funding: BigInt
@@ -23,6 +25,7 @@ type UserWorkstream @entity {
 
 type Evaluation @entity {
   id: ID!
+  creator: User!
   workstream: Workstream!
   contributors: [User!]!
   ratings: [BigInt!]!

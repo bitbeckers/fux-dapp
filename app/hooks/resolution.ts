@@ -5,9 +5,9 @@ import {
   useWriteContract,
 } from "@raidguild/quiver";
 import _ from "lodash";
+import { BigNumberish } from "ethers";
 
 export const useResolveValueEvaluation = () => {
-  console.log("useResolveValueEvaluation");
   const toast = useToast();
   const contract = useFuxContract();
 
@@ -34,6 +34,6 @@ export const useResolveValueEvaluation = () => {
     },
   });
 
-  return (workstreamID: number, contributors: string[], ratings: number[]) =>
+  return (workstreamID: number, contributors: string[], ratings: BigNumberish[]) =>
     mutate(workstreamID, contributors, ratings);
 };

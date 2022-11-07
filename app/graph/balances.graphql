@@ -1,0 +1,18 @@
+query Balances($address: ID!) @live {
+  user(id: $address) {
+    id
+    balances {
+      token {
+        name
+        symbol
+      }
+      balance
+    }
+  }
+}
+
+query TokenBalance($address: ID!, $symbol: String!) @live {
+  tokenBalances(where: {token_: {symbol: $symbol}, user_: {id: $address}}){
+    balance
+  }
+}

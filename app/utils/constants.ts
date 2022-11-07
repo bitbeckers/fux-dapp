@@ -14,6 +14,10 @@ export const checkEnvVarConfig = () => {
       name: "NEXT_PUBLIC_INFURA_API_KEY",
       value: process.env["NEXT_PUBLIC_INFURA_API_KEY"],
     },
+    {
+      name: "NEXT_PUBLIC_ALCHEMY_API_KEY",
+      value: process.env["NEXT_PUBLIC_ALCHEMY_API_KEY"],
+    },
   ];
 
   requiredEnvVarNames.forEach((envVarConfig) => {

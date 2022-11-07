@@ -507,8 +507,7 @@ export interface FUXInterface extends utils.Interface {
     "ApprovalForAll(address,address,bool)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
     "ContributorsAdded(uint256,address[])": EventFragment;
-    "EvaluationResolved(uint256)": EventFragment;
-    "EvaluationSubmitted(uint256,address)": EventFragment;
+    "EvaluationSubmitted(uint256,address,address[],uint256[])": EventFragment;
     "FuxClaimed(address)": EventFragment;
     "FuxGiven(address,uint256,uint256)": EventFragment;
     "FuxWithdraw(address,uint256,uint256)": EventFragment;
@@ -523,6 +522,7 @@ export interface FUXInterface extends utils.Interface {
     "URI(string,uint256)": EventFragment;
     "Upgraded(address)": EventFragment;
     "VFuxClaimed(address,uint256)": EventFragment;
+    "WorkstreamClosed(uint256)": EventFragment;
     "WorkstreamMinted(uint256,uint256,uint256,string)": EventFragment;
   };
 
@@ -530,7 +530,6 @@ export interface FUXInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ContributorsAdded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "EvaluationResolved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EvaluationSubmitted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxGiven"): EventFragment;
@@ -546,6 +545,7 @@ export interface FUXInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "VFuxClaimed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WorkstreamClosed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WorkstreamMinted"): EventFragment;
 }
 
@@ -594,23 +594,14 @@ export type ContributorsAddedEvent = TypedEvent<
 export type ContributorsAddedEventFilter =
   TypedEventFilter<ContributorsAddedEvent>;
 
-export interface EvaluationResolvedEventObject {
-  workstreamID: BigNumber;
-}
-export type EvaluationResolvedEvent = TypedEvent<
-  [BigNumber],
-  EvaluationResolvedEventObject
->;
-
-export type EvaluationResolvedEventFilter =
-  TypedEventFilter<EvaluationResolvedEvent>;
-
 export interface EvaluationSubmittedEventObject {
   workstreamID: BigNumber;
-  contributor: string;
+  creator: string;
+  contributors: string[];
+  ratings: BigNumber[];
 }
 export type EvaluationSubmittedEvent = TypedEvent<
-  [BigNumber, string],
+  [BigNumber, string, string[], BigNumber[]],
   EvaluationSubmittedEventObject
 >;
 
@@ -767,6 +758,17 @@ export type VFuxClaimedEvent = TypedEvent<
 >;
 
 export type VFuxClaimedEventFilter = TypedEventFilter<VFuxClaimedEvent>;
+
+export interface WorkstreamClosedEventObject {
+  workstreamID: BigNumber;
+}
+export type WorkstreamClosedEvent = TypedEvent<
+  [BigNumber],
+  WorkstreamClosedEventObject
+>;
+
+export type WorkstreamClosedEventFilter =
+  TypedEventFilter<WorkstreamClosedEvent>;
 
 export interface WorkstreamMintedEventObject {
   id: BigNumber;
@@ -1002,7 +1004,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      vFuxGiven: PromiseOrValue<BigNumberish>[],
+      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1227,7 +1229,7 @@ export interface FUX extends BaseContract {
   submitValueEvaluation(
     workstreamID: PromiseOrValue<BigNumberish>,
     contributors: PromiseOrValue<string>[],
-    vFuxGiven: PromiseOrValue<BigNumberish>[],
+    ratings: PromiseOrValue<BigNumberish>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1446,7 +1448,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      vFuxGiven: PromiseOrValue<BigNumberish>[],
+      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1519,18 +1521,17 @@ export interface FUX extends BaseContract {
       contributors?: null
     ): ContributorsAddedEventFilter;
 
-    "EvaluationResolved(uint256)"(
-      workstreamID?: null
-    ): EvaluationResolvedEventFilter;
-    EvaluationResolved(workstreamID?: null): EvaluationResolvedEventFilter;
-
-    "EvaluationSubmitted(uint256,address)"(
+    "EvaluationSubmitted(uint256,address,address[],uint256[])"(
       workstreamID?: null,
-      contributor?: null
+      creator?: null,
+      contributors?: null,
+      ratings?: null
     ): EvaluationSubmittedEventFilter;
     EvaluationSubmitted(
       workstreamID?: null,
-      contributor?: null
+      creator?: null,
+      contributors?: null,
+      ratings?: null
     ): EvaluationSubmittedEventFilter;
 
     "FuxClaimed(address)"(user?: null): FuxClaimedEventFilter;
@@ -1654,6 +1655,11 @@ export interface FUX extends BaseContract {
       workstreamID?: null
     ): VFuxClaimedEventFilter;
     VFuxClaimed(user?: null, workstreamID?: null): VFuxClaimedEventFilter;
+
+    "WorkstreamClosed(uint256)"(
+      workstreamID?: null
+    ): WorkstreamClosedEventFilter;
+    WorkstreamClosed(workstreamID?: null): WorkstreamClosedEventFilter;
 
     "WorkstreamMinted(uint256,uint256,uint256,string)"(
       id?: null,
@@ -1859,7 +1865,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      vFuxGiven: PromiseOrValue<BigNumberish>[],
+      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -2087,7 +2093,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      vFuxGiven: PromiseOrValue<BigNumberish>[],
+      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

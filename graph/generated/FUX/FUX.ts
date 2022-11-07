@@ -98,24 +98,6 @@ export class ContributorsAdded__Params {
   }
 }
 
-export class EvaluationResolved extends ethereum.Event {
-  get params(): EvaluationResolved__Params {
-    return new EvaluationResolved__Params(this);
-  }
-}
-
-export class EvaluationResolved__Params {
-  _event: EvaluationResolved;
-
-  constructor(event: EvaluationResolved) {
-    this._event = event;
-  }
-
-  get workstreamID(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-}
-
 export class EvaluationSubmitted extends ethereum.Event {
   get params(): EvaluationSubmitted__Params {
     return new EvaluationSubmitted__Params(this);
@@ -133,8 +115,16 @@ export class EvaluationSubmitted__Params {
     return this._event.parameters[0].value.toBigInt();
   }
 
-  get contributor(): Address {
+  get creator(): Address {
     return this._event.parameters[1].value.toAddress();
+  }
+
+  get contributors(): Array<Address> {
+    return this._event.parameters[2].value.toAddressArray();
+  }
+
+  get ratings(): Array<BigInt> {
+    return this._event.parameters[3].value.toBigIntArray();
   }
 }
 
@@ -475,6 +465,24 @@ export class VFuxClaimed__Params {
 
   get workstreamID(): BigInt {
     return this._event.parameters[1].value.toBigInt();
+  }
+}
+
+export class WorkstreamClosed extends ethereum.Event {
+  get params(): WorkstreamClosed__Params {
+    return new WorkstreamClosed__Params(this);
+  }
+}
+
+export class WorkstreamClosed__Params {
+  _event: WorkstreamClosed;
+
+  constructor(event: WorkstreamClosed) {
+    this._event = event;
+  }
+
+  get workstreamID(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
   }
 }
 
@@ -1631,7 +1639,7 @@ export class SubmitValueEvaluationCall__Inputs {
     return this._call.inputValues[1].value.toAddressArray();
   }
 
-  get vFuxGiven(): Array<BigInt> {
+  get ratings(): Array<BigInt> {
     return this._call.inputValues[2].value.toBigIntArray();
   }
 }

@@ -16,6 +16,8 @@ export class User extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
+
+    this.set("fuxer", Value.fromBoolean(false));
   }
 
   save(): void {
@@ -42,6 +44,15 @@ export class User extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get fuxer(): boolean {
+    let value = this.get("fuxer");
+    return value!.toBoolean();
+  }
+
+  set fuxer(value: boolean) {
+    this.set("fuxer", Value.fromBoolean(value));
   }
 
   get balances(): Array<string> | null {
@@ -145,6 +156,23 @@ export class Workstream extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get name(): string | null {
+    let value = this.get("name");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set name(value: string | null) {
+    if (!value) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(<string>value));
+    }
   }
 
   get coordinator(): string | null {
@@ -284,6 +312,7 @@ export class Evaluation extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("creator", Value.fromString(""));
     this.set("workstream", Value.fromString(""));
     this.set("contributors", Value.fromStringArray(new Array(0)));
     this.set("ratings", Value.fromBigIntArray(new Array(0)));
@@ -313,6 +342,15 @@ export class Evaluation extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get creator(): string {
+    let value = this.get("creator");
+    return value!.toString();
+  }
+
+  set creator(value: string) {
+    this.set("creator", Value.fromString(value));
   }
 
   get workstream(): string {

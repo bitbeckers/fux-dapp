@@ -1,0 +1,14 @@
+query User($address: ID!) @live {
+  user(id: $address) {
+    id
+    fuxer
+    rewards
+    balances {
+      token {
+        name
+        symbol
+      }
+      balance
+    }
+  }
+}

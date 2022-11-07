@@ -14,6 +14,7 @@ import "hardhat/console.sol";
 
 error NonTransferableFux();
 error NotContributor();
+error NotCoordinator();
 error NotEnoughFunds();
 error NotEnoughFux();
 error NotEnoughVFux();
@@ -50,8 +51,8 @@ contract FUX is
     event WorkstreamMinted(uint256 id, uint256 funds, uint256 deadline, string metadataUri);
     event ContributorsAdded(uint256 id, address[] contributors);
 
-    event EvaluationSubmitted(uint256 workstreamID, address contributor);
-    event EvaluationResolved(uint256 workstreamID);
+    event EvaluationSubmitted(uint256 workstreamID, address creator, address[] contributors, uint256[] ratings);
+    event WorkstreamClosed(uint256 workstreamID);
 
     event RewardsReserved(address user, uint256 amount);
     event RewardsClaimed(address user, uint256 amount);
@@ -144,10 +145,10 @@ contract FUX is
     }
 
     function mintVFux(uint256 workstreamID) public {
-        if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
+        if (!_isCoordinator(workstreamID)) revert NotCoordinator();
         if (vFuxAvailableForWorkstream[msg.sender][workstreamID] > 0) revert TokensAlreadyMinted();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
-        if (getValueEvaluation(msg.sender, workstreamID).exists) revert EvaluationAlreadySubmitted();
+        if (!workstreams[workstreamID].exists) revert NonExistentWorkstream();
 
         _mint(msg.sender, VFUX_TOKEN_ID, 100, "");
         vFuxAvailableForWorkstream[msg.sender][workstreamID] = uint8(100);
@@ -211,30 +212,20 @@ contract FUX is
     function withdrawFromWorkstream(uint256 workstreamID) public {
         if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
 
-        uint256 fuxGiven = contributorCommitments[msg.sender][workstreamID];
-        if (fuxGiven == 0) revert NotEnoughFux();
-        contributorCommitments[msg.sender][workstreamID] = 0;
-        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, fuxGiven, "");
-        emit FuxWithdraw(msg.sender, workstreamID, fuxGiven);
+        _withdrawFux(workstreamID);
     }
 
     function submitValueEvaluation(
         uint256 workstreamID,
         address[] memory contributors,
-        uint256[] memory vFuxGiven
+        uint256[] memory ratings
     ) public {
         if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
-        if (getVFuxForEvaluation(workstreamID) == 0) revert NotEnoughVFux();
-        if (contributors.length == 0 || contributors.length != vFuxGiven.length)
+        if (contributors.length == 0 || contributors.length != ratings.length)
             revert InvalidInput("contributors, vFuxGiven");
-        _noSelfFuxing(contributors);
 
-        _depositAllVFux(vFuxGiven, workstreamID);
-
-        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven, true);
-
-        emit EvaluationSubmitted(workstreamID, msg.sender);
+        _submitEvaluations(workstreamID, contributors, ratings);
     }
 
     function resolveValueEvaluation(
@@ -247,22 +238,17 @@ contract FUX is
         if (msg.sender != workstream.creator) revert NotApprovedOrOwner();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
         if (getVFuxForEvaluation(workstreamID) == 0) revert NotEnoughVFux();
-        if (contributors.length == 0 || contributors.length != vFuxGiven.length)
-            revert InvalidInput("contributors, vFuxGiven");
 
-        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, vFuxGiven, true);
+        _submitEvaluations(workstreamID, contributors, vFuxGiven);
 
         _payVFux(contributors, vFuxGiven, workstreamID);
         if (workstream.funds > 0) {
             _reserveFunds(contributors, vFuxGiven, workstream.funds);
         }
         _returnFux(contributors, workstreamID);
+        _withdrawFux(workstreamID);
 
-        uint256 commitment = getWorkstreamCommitment(msg.sender, workstreamID);
-        contributorCommitments[msg.sender][workstreamID] = 0;
-        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, commitment, "");
-
-        emit EvaluationResolved(workstreamID);
+        emit WorkstreamClosed(workstreamID);
         workstream.exists = false;
     }
 
@@ -286,6 +272,30 @@ contract FUX is
         revert NonTransferableFux();
     }
 
+    function _withdrawFux(uint256 workstreamID) internal {
+        uint256 commitment = contributorCommitments[msg.sender][workstreamID];
+        if (commitment == 0) revert NotEnoughFux();
+        contributorCommitments[msg.sender][workstreamID] = 0;
+        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, commitment, "");
+        emit FuxWithdraw(msg.sender, workstreamID, commitment);
+    }
+
+    function _submitEvaluations(
+        uint256 workstreamID,
+        address[] memory contributors,
+        uint256[] memory ratings
+    ) internal {
+        if (!_checkTotal(ratings, 100)) revert NotEnoughFux();
+        _noSelfFuxing(contributors);
+
+        if (contributors.length == 0 || contributors.length != ratings.length)
+            revert InvalidInput("contributors, ratings");
+
+        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, ratings, true);
+
+        emit EvaluationSubmitted(workstreamID, msg.sender, contributors, ratings);
+    }
+
     function _noSelfFuxing(address[] memory contributors) internal view {
         uint256 size = contributors.length;
         for (uint256 i = 0; i < size; i++) {
@@ -293,22 +303,12 @@ contract FUX is
         }
     }
 
-    function _depositAllVFux(uint256[] memory vFuxGiven, uint256 workstreamID) internal {
-        uint256 size = vFuxGiven.length;
-        uint256 total = 0;
-        for (uint256 i = 0; i < size; i++) {
-            total += vFuxGiven[i];
-        }
-
-        if (total != vFuxAvailableForWorkstream[msg.sender][workstreamID]) revert NotEnoughFux();
-        _safeTransferFrom(msg.sender, address(this), VFUX_TOKEN_ID, 100, "");
-    }
-
     function _payVFux(
         address[] memory contributors,
         uint256[] memory vFuxGiven,
         uint256 workstreamID
     ) internal {
+        if (!_checkTotal(vFuxGiven, 100)) revert NotEnoughVFux();
         uint256 size = vFuxGiven.length;
         uint256 total = 0;
         for (uint256 i = 0; i < size; i++) {
@@ -341,7 +341,7 @@ contract FUX is
         for (uint256 i = 0; i < size; i++) {
             uint256 portion = (vFuxGiven[i] * balance) / 100;
             total += portion;
-            balances[contributors[i]] = portion;
+            balances[contributors[i]] += portion;
             emit RewardsReserved(contributors[i], portion);
         }
 
@@ -359,6 +359,20 @@ contract FUX is
 
     function _isContributor(address contributor, uint256 workstreamID) internal view returns (bool) {
         return isContributor[contributor][workstreamID];
+    }
+
+    function _isCoordinator(uint256 workstreamID) internal view returns (bool) {
+        return workstreams[workstreamID].creator == msg.sender;
+    }
+
+    function _checkTotal(uint256[] memory values, uint256 total) internal pure returns (bool) {
+        uint256 len = values.length;
+        uint256 _total = 0;
+        for (uint256 i = 0; i < len; i++) {
+            _total += values[i];
+        }
+
+        return _total == total;
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}

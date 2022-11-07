@@ -16,7 +16,7 @@ export const NETWORKS: NetworkConfig = {
     name: "Goerli",
     symbol: "ETH",
     explorer: "https://goerli.etherscan.io/",
-    rpc: `https://goerli.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+    rpc: `https://eth-goerli.g.alchemy.com/v2/cd4bk_iwE3JUEUr9quSdEg-SFKyvY2A_`,
   },
   "0x539": {
     chainId: "0x539",
