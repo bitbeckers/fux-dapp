@@ -57,7 +57,7 @@ const History: NextPage = () => {
                     (fux) => fux.workstream.id === workstream.workstream.id
                   )}
                   fuxAvailable={undefined}
-                  showInactive={false}
+                  showInactive={true}
                   key={index}
                 />
               ))

@@ -23,10 +23,14 @@ const WorkstreamRow: React.FC<{
 }> = ({ workstream, fuxGiven, fuxAvailable, showInactive }) => {
   const { nativeToken } = useConstants();
 
-  const _workstream = workstream.workstream;
-  const workstreamID = Number(_workstream.id);
+  const _workstream = showInactive
+    ? workstream.workstream
+    : workstream.workstream.resolved
+    ? undefined
+    : workstream.workstream;
+  const workstreamID = Number(_workstream?.id);
 
-  return showInactive || workstream ? (
+  return _workstream ? (
     <>
       <GridItem display={"flex"} alignItems={"center"} bg="#301A3A" colSpan={7}>
         <Checkbox alignContent="center" pl={"1em"}>
