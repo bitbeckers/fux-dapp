@@ -1,4 +1,5 @@
 import { WorkstreamEvaluationsDocument } from "../../.graphclient";
+import { ContributorRow } from "../../components/FUX/ContributorRow";
 import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueResolutionForm } from "../../components/FUX/ValueResolutionForm";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
@@ -56,6 +57,8 @@ const Resolve: NextPage = () => {
         <ValueHeader />
         <VStack w={"70%"} maxW={"700px"}>
           <HStack paddingTop={"2em"} paddingBottom={"2em"}>
+            <ContributorRow address={data.workstream.coordinator?.id || ""} />
+
             <Heading size={"md"}>{`${
               data.workstream?.name || "No name found"
             }`}</Heading>

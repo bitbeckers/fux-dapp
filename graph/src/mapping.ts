@@ -14,12 +14,11 @@ import {
 } from "../generated/FUX/FUX";
 import {
   User,
-
   Workstream,
   Evaluation,
   UserWorkstream,
 } from "../generated/schema";
-import { FUX_TOKEN } from "./utils/constants";
+import { FUX_TOKEN, ZERO_ADDRESS } from "./utils/constants";
 import {
   getOrCreateFuxGiven,
   getOrCreateToken,
@@ -74,12 +73,6 @@ export function handleEvaluationSubmitted(event: EvaluationSubmitted): void {
 
 export function handleFuxClaimed(event: FuxClaimed): void {
   let user = getOrCreateUser(event.params.user.toHexString());
-  let token = getOrCreateToken(FUX_TOKEN);
-  let tokenBalance = getOrCreateTokenBalance(user, token);
-
-  tokenBalance.balance = BigInt.fromI32(100);
-  tokenBalance.save();
-
   user.fuxer = true;
   user.save();
 }
@@ -103,21 +96,54 @@ export function handleFuxWithdraw(event: FuxWithdraw): void {
 }
 
 export function handleTransfer(event: TransferSingle): void {
-  let user = getOrCreateUser(event.transaction.from.toHexString());
   let token = getOrCreateToken(event.params.id);
-  let tokenBalance = getOrCreateTokenBalance(user, token);
+
+  let recipient = getOrCreateUser(event.params.to.toHexString());
+  let tokenBalanceRecipient = getOrCreateTokenBalance(recipient, token);
+
+  //Mint
+  if (event.params.from == ZERO_ADDRESS) {
+    tokenBalanceRecipient.balance = tokenBalanceRecipient.balance.plus(
+      event.params.value
+    );
+    tokenBalanceRecipient.save();
+    return;
+  }
+
+  // Transfer
+  let sender = getOrCreateUser(event.params.from.toHexString());
+  let tokenBalanceSender = getOrCreateTokenBalance(sender, token);
 
   // deposit to contract
   if (event.params.to == event.address) {
-    tokenBalance.balance = tokenBalance.balance.minus(event.params.value);
+    tokenBalanceSender.balance = tokenBalanceSender.balance.minus(
+      event.params.value
+    );
+    tokenBalanceSender.save();
   }
 
   // returned from contract
-  if (event.params.to.toHexString() == user.id) {
-    tokenBalance.balance = tokenBalance.balance.plus(event.params.value);
+  if (event.params.from == event.address) {
+    tokenBalanceRecipient.balance = tokenBalanceRecipient.balance.plus(
+      event.params.value
+    );
+    tokenBalanceRecipient.save();
   }
 
-  tokenBalance.save();
+  // Transfer between users
+  if (
+    event.params.from != event.address &&
+    event.params.to != event.address
+  ) {
+    tokenBalanceSender.balance = tokenBalanceSender.balance.minus(
+      event.params.value
+    );
+    tokenBalanceRecipient.balance = tokenBalanceRecipient.balance.plus(
+      event.params.value
+    );
+    tokenBalanceSender.save();
+    tokenBalanceRecipient.save()
+  }
 }
 
 export function handleRewardsReserved(event: RewardsReserved): void {

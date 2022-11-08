@@ -1,16 +1,18 @@
 import {
-  FuxGivenDocument,
   FuxGivenFragmentFragment,
-  TokenBalance,
-  TokenBalanceDocument,
   UserWorkstreamFragmentFragment,
-  Workstream,
 } from "../../../.graphclient";
 import { useConstants } from "../../../utils/constants";
 import AssignFuxModal from "../AssignFuxModal";
 import ContributorModal from "../ContributorModal";
 import { ArrowRightIcon } from "@chakra-ui/icons";
-import { Checkbox, GridItem, IconButton, Text } from "@chakra-ui/react";
+import {
+  Checkbox,
+  GridItem,
+  IconButton,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { ethers } from "ethers";
 import NextLink from "next/link";
 import React from "react";
@@ -21,6 +23,7 @@ const WorkstreamRow: React.FC<{
   fuxAvailable?: number;
   showInactive: boolean;
 }> = ({ workstream, fuxGiven, fuxAvailable, showInactive }) => {
+  const toast = useToast();
   const { nativeToken } = useConstants();
 
   const _workstream = showInactive
@@ -29,6 +32,15 @@ const WorkstreamRow: React.FC<{
     ? undefined
     : workstream.workstream;
   const workstreamID = Number(_workstream?.id);
+
+  const handleClick = () => {
+    if (!fuxGiven) {
+      toast({
+        title: `Cannot evaluate without giving FUX`,
+        status: "error",
+      });
+    }
+  };
 
   return _workstream ? (
     <>
@@ -78,17 +90,26 @@ const WorkstreamRow: React.FC<{
       </GridItem>
 
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
-        <NextLink
-          href={{
-            pathname: "/resolve/[workstreamID]",
-            query: { workstreamID },
-          }}
-        >
+        {fuxGiven ? (
+          <NextLink
+            href={{
+              pathname: "/resolve/[workstreamID]",
+              query: { workstreamID },
+            }}
+          >
+            <IconButton
+              onClick={handleClick}
+              aria-label="resolve workstream"
+              icon={<ArrowRightIcon />}
+            />
+          </NextLink>
+        ) : (
           <IconButton
+            onClick={handleClick}
             aria-label="resolve workstream"
             icon={<ArrowRightIcon />}
           />
-        </NextLink>
+        )}
       </GridItem>
     </>
   ) : (

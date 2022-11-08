@@ -58,7 +58,11 @@ const ValueResolutionForm: React.FC<{
   });
 
   const watchAllFields = watch(); // when pass nothing as argument, you are watching everything
-  console.log("FIELDS: ", watchAllFields);
+  console.log("Form: ", watchAllFields);
+  console.log("Workstream ID: ", workstream?.workstream?.id);
+  console.log("vFUXAvailable: ", vFuxAvailable);
+
+
 
   useEffect(() => {
     if (!workstream?.evaluations || !user) {
@@ -214,7 +218,7 @@ const ValueResolutionForm: React.FC<{
       <Text>No contributors found</Text>
     );
 
-  return workstream?.workstream?.resolved && vFuxAvailable?.gt(0)
+  return workstream?.workstream && !workstream.workstream.resolved && vFuxAvailable?.gt(0)
     ? reviewForm
     : startEvaluation;
 };
