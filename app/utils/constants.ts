@@ -11,10 +11,6 @@ export const checkEnvVarConfig = () => {
       value: process.env["NEXT_PUBLIC_DEFAULT_CHAIN"],
     },
     {
-      name: "NEXT_PUBLIC_INFURA_API_KEY",
-      value: process.env["NEXT_PUBLIC_INFURA_API_KEY"],
-    },
-    {
       name: "NEXT_PUBLIC_ALCHEMY_API_KEY",
       value: process.env["NEXT_PUBLIC_ALCHEMY_API_KEY"],
     },
