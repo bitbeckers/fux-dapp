@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import setupTest from "../setup";
 
 export function shouldBehaveLikeFuxResolution(): void {
-  it("allows workstream creator to resolve workstream", async function () {
+  it("allows workstream coordinator to resolve workstream", async function () {
     const { fux, owner, user } = await setupTest();
 
     await owner.fux.mintWorkstream(
@@ -16,7 +16,13 @@ export function shouldBehaveLikeFuxResolution(): void {
     await user.fux.mintFux();
     await owner.fux.mintFux();
     await user.fux.commitToWorkstream(0, 60);
+
+    await expect(owner.fux.resolveValueEvaluation(0, [user.address], [100])).to.be.revertedWith("NotEnoughFux()");
+
     await owner.fux.commitToWorkstream(0, 40);
+
+    await expect(owner.fux.resolveValueEvaluation(0, [user.address], [100])).to.be.revertedWith("NotEnoughVFux()");
+
     await owner.fux.mintVFux(0);
 
     expect(await fux.balanceOf(user.address, 1)).to.be.eq(0);
@@ -30,7 +36,7 @@ export function shouldBehaveLikeFuxResolution(): void {
     await expect(user.fux.resolveValueEvaluation(0, [user.address], [100])).to.be.revertedWith("NotApprovedOrOwner()");
 
     await expect(owner.fux.resolveValueEvaluation(0, [user.address], [100]))
-      .to.emit(fux, "EvaluationResolved")
+      .to.emit(fux, "WorkstreamClosed")
       .withArgs(0);
 
     expect(await fux.balanceOf(user.address, 1)).to.be.eq(100);

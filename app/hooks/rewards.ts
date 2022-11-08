@@ -2,8 +2,6 @@ import { useFuxContract } from "./contract";
 import { useToast } from "@chakra-ui/react";
 import {
   parseTxErrorMessage,
-  useReadContract,
-  useWallet,
   useWriteContract,
 } from "@raidguild/quiver";
 import _ from "lodash";
@@ -36,18 +34,4 @@ export const useClaimRewards = () => {
   });
 
   return () => claimRewards();
-};
-
-export const useRewardsBalance = () => {
-  const contract = useFuxContract();
-  const { address: user } = useWallet();
-
-  const { response: valueEvaluation } = useReadContract(
-    contract,
-    "getAvailableBalance",
-    [user || ""],
-    { autoUpdateInterval: 10000 }
-  );
-
-  return valueEvaluation;
 };

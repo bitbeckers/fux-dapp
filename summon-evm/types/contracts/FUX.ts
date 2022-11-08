@@ -507,12 +507,13 @@ export interface FUXInterface extends utils.Interface {
     "ApprovalForAll(address,address,bool)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
     "ContributorsAdded(uint256,address[])": EventFragment;
-    "EvaluationResolved(uint256)": EventFragment;
-    "EvaluationSubmitted(uint256,address)": EventFragment;
+    "EvaluationSubmitted(uint256,address,address[],uint256[])": EventFragment;
     "FuxClaimed(address)": EventFragment;
     "FuxGiven(address,uint256,uint256)": EventFragment;
     "FuxWithdraw(address,uint256,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
+    "RewardsClaimed(address,uint256)": EventFragment;
+    "RewardsReserved(address,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
@@ -521,19 +522,21 @@ export interface FUXInterface extends utils.Interface {
     "URI(string,uint256)": EventFragment;
     "Upgraded(address)": EventFragment;
     "VFuxClaimed(address,uint256)": EventFragment;
-    "WorkstreamMinted(uint256,string)": EventFragment;
+    "WorkstreamClosed(uint256)": EventFragment;
+    "WorkstreamMinted(uint256,uint256,uint256,string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ContributorsAdded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "EvaluationResolved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EvaluationSubmitted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxGiven"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxWithdraw"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardsClaimed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardsReserved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
@@ -542,6 +545,7 @@ export interface FUXInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "VFuxClaimed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WorkstreamClosed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WorkstreamMinted"): EventFragment;
 }
 
@@ -590,23 +594,14 @@ export type ContributorsAddedEvent = TypedEvent<
 export type ContributorsAddedEventFilter =
   TypedEventFilter<ContributorsAddedEvent>;
 
-export interface EvaluationResolvedEventObject {
-  workstreamID: BigNumber;
-}
-export type EvaluationResolvedEvent = TypedEvent<
-  [BigNumber],
-  EvaluationResolvedEventObject
->;
-
-export type EvaluationResolvedEventFilter =
-  TypedEventFilter<EvaluationResolvedEvent>;
-
 export interface EvaluationSubmittedEventObject {
   workstreamID: BigNumber;
-  contributor: string;
+  creator: string;
+  contributors: string[];
+  ratings: BigNumber[];
 }
 export type EvaluationSubmittedEvent = TypedEvent<
-  [BigNumber, string],
+  [BigNumber, string, string[], BigNumber[]],
   EvaluationSubmittedEventObject
 >;
 
@@ -650,6 +645,28 @@ export interface InitializedEventObject {
 export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
 
 export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
+
+export interface RewardsClaimedEventObject {
+  user: string;
+  amount: BigNumber;
+}
+export type RewardsClaimedEvent = TypedEvent<
+  [string, BigNumber],
+  RewardsClaimedEventObject
+>;
+
+export type RewardsClaimedEventFilter = TypedEventFilter<RewardsClaimedEvent>;
+
+export interface RewardsReservedEventObject {
+  user: string;
+  amount: BigNumber;
+}
+export type RewardsReservedEvent = TypedEvent<
+  [string, BigNumber],
+  RewardsReservedEventObject
+>;
+
+export type RewardsReservedEventFilter = TypedEventFilter<RewardsReservedEvent>;
 
 export interface RoleAdminChangedEventObject {
   role: string;
@@ -742,12 +759,25 @@ export type VFuxClaimedEvent = TypedEvent<
 
 export type VFuxClaimedEventFilter = TypedEventFilter<VFuxClaimedEvent>;
 
+export interface WorkstreamClosedEventObject {
+  workstreamID: BigNumber;
+}
+export type WorkstreamClosedEvent = TypedEvent<
+  [BigNumber],
+  WorkstreamClosedEventObject
+>;
+
+export type WorkstreamClosedEventFilter =
+  TypedEventFilter<WorkstreamClosedEvent>;
+
 export interface WorkstreamMintedEventObject {
   id: BigNumber;
+  funds: BigNumber;
+  deadline: BigNumber;
   metadataUri: string;
 }
 export type WorkstreamMintedEvent = TypedEvent<
-  [BigNumber, string],
+  [BigNumber, BigNumber, BigNumber, string],
   WorkstreamMintedEventObject
 >;
 
@@ -974,7 +1004,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      vFuxGiven: PromiseOrValue<BigNumberish>[],
+      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1199,7 +1229,7 @@ export interface FUX extends BaseContract {
   submitValueEvaluation(
     workstreamID: PromiseOrValue<BigNumberish>,
     contributors: PromiseOrValue<string>[],
-    vFuxGiven: PromiseOrValue<BigNumberish>[],
+    ratings: PromiseOrValue<BigNumberish>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1418,7 +1448,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      vFuxGiven: PromiseOrValue<BigNumberish>[],
+      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1491,18 +1521,17 @@ export interface FUX extends BaseContract {
       contributors?: null
     ): ContributorsAddedEventFilter;
 
-    "EvaluationResolved(uint256)"(
-      workstreamID?: null
-    ): EvaluationResolvedEventFilter;
-    EvaluationResolved(workstreamID?: null): EvaluationResolvedEventFilter;
-
-    "EvaluationSubmitted(uint256,address)"(
+    "EvaluationSubmitted(uint256,address,address[],uint256[])"(
       workstreamID?: null,
-      contributor?: null
+      creator?: null,
+      contributors?: null,
+      ratings?: null
     ): EvaluationSubmittedEventFilter;
     EvaluationSubmitted(
       workstreamID?: null,
-      contributor?: null
+      creator?: null,
+      contributors?: null,
+      ratings?: null
     ): EvaluationSubmittedEventFilter;
 
     "FuxClaimed(address)"(user?: null): FuxClaimedEventFilter;
@@ -1532,6 +1561,18 @@ export interface FUX extends BaseContract {
 
     "Initialized(uint8)"(version?: null): InitializedEventFilter;
     Initialized(version?: null): InitializedEventFilter;
+
+    "RewardsClaimed(address,uint256)"(
+      user?: null,
+      amount?: null
+    ): RewardsClaimedEventFilter;
+    RewardsClaimed(user?: null, amount?: null): RewardsClaimedEventFilter;
+
+    "RewardsReserved(address,uint256)"(
+      user?: null,
+      amount?: null
+    ): RewardsReservedEventFilter;
+    RewardsReserved(user?: null, amount?: null): RewardsReservedEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
       role?: PromiseOrValue<BytesLike> | null,
@@ -1615,12 +1656,21 @@ export interface FUX extends BaseContract {
     ): VFuxClaimedEventFilter;
     VFuxClaimed(user?: null, workstreamID?: null): VFuxClaimedEventFilter;
 
-    "WorkstreamMinted(uint256,string)"(
+    "WorkstreamClosed(uint256)"(
+      workstreamID?: null
+    ): WorkstreamClosedEventFilter;
+    WorkstreamClosed(workstreamID?: null): WorkstreamClosedEventFilter;
+
+    "WorkstreamMinted(uint256,uint256,uint256,string)"(
       id?: null,
+      funds?: null,
+      deadline?: null,
       metadataUri?: null
     ): WorkstreamMintedEventFilter;
     WorkstreamMinted(
       id?: null,
+      funds?: null,
+      deadline?: null,
       metadataUri?: null
     ): WorkstreamMintedEventFilter;
   };
@@ -1815,7 +1865,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      vFuxGiven: PromiseOrValue<BigNumberish>[],
+      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -2043,7 +2093,7 @@ export interface FUX extends BaseContract {
     submitValueEvaluation(
       workstreamID: PromiseOrValue<BigNumberish>,
       contributors: PromiseOrValue<string>[],
-      vFuxGiven: PromiseOrValue<BigNumberish>[],
+      ratings: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

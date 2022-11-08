@@ -38,7 +38,9 @@ type FormData = {
   funding: number;
 };
 
-const WorkstreamModal: React.FC = () => {
+const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
+  onCloseAction,
+}) => {
   const { provider, address: user } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const addWorkstream = useMintWorkstream();
@@ -72,8 +74,10 @@ const WorkstreamModal: React.FC = () => {
     },
   });
 
-  const watchAllFields = watch();
-  console.log("FORM: ", watchAllFields);
+  const handleOnClose = () => {
+    onClose();
+    onCloseAction();
+  };
 
   const onSubmit = (form: FormData) => {
     const funding = ethers.utils.parseEther(form.funding.toString()).toString();
@@ -82,7 +86,7 @@ const WorkstreamModal: React.FC = () => {
       DateTime.fromISO(form.duration).endOf("day").toSeconds().toFixed()
     );
     if (user) {
-      addWorkstream(form.name, [user], deadline, funding).then(() => onClose());
+      addWorkstream(form.name, [user], deadline, funding).then(handleOnClose);
     }
   };
 

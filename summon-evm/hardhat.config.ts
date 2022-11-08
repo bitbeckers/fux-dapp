@@ -81,6 +81,8 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     currency: "USD",
+    gasPrice: 12,
+    coinmarketcap: process.env.CMC_API_KEY || "",
     enabled: process.env.REPORT_GAS ? true : false,
     excludeContracts: [],
     src: "./contracts",

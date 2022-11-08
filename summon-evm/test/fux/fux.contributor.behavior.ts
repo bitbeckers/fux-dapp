@@ -10,18 +10,13 @@ export function shouldBehaveLikeFuxContributor(): void {
     const id = 0;
     const metadataUri = "http://example.com";
     const name = "mockStream";
+    const deadline = DateTime.now().plus({ days: 7 }).toSeconds().toFixed();
 
     await expect(user.fux.addContributors(id, [owner.address])).to.be.revertedWith("NonExistentWorkstream()");
 
-    await expect(
-      user.fux.mintWorkstream(
-        name,
-        [deployer.address, user.address],
-        DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
-      ),
-    )
+    await expect(user.fux.mintWorkstream(name, [deployer.address, user.address], deadline))
       .to.emit(fux, "WorkstreamMinted")
-      .withArgs(id, metadataUri);
+      .withArgs(id, 0, deadline, metadataUri);
 
     await expect(deployer.fux.addContributors(id, [owner.address])).to.be.revertedWith("NotApprovedOrOwner()");
 
@@ -31,5 +26,4 @@ export function shouldBehaveLikeFuxContributor(): void {
 
     //TODO can user see workstream
   });
-
 }

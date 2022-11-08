@@ -1,6 +1,4 @@
-import {
-  useCommitToWorkstream,
-} from "../../../hooks/workstream";
+import { useCommitToWorkstream } from "../../../hooks/workstream";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -29,12 +27,11 @@ type FormData = {
 
 const AssignFuxModal: React.FC<{
   workstreamID: number;
-  availableFux: number;
-}> = ({ workstreamID, availableFux }) => {
+  fuxGiven: number;
+  fuxAvailable: number;
+}> = ({ workstreamID, fuxGiven, fuxAvailable }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const giveFUX = useCommitToWorkstream();
-
-  console.log("MODAL: ", availableFux);
 
   const {
     control,
@@ -45,15 +42,12 @@ const AssignFuxModal: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      fuxGiven: availableFux,
+      fuxGiven,
     },
   });
 
-  const watchAllFields = watch();
-  console.log("FORM FUX: ", watchAllFields);
-
   const onSubmit = (form: FormData) => {
-    if (form.fuxGiven > 0 && form.fuxGiven <= availableFux) {
+    if (form.fuxGiven !== fuxGiven) {
       giveFUX(workstreamID, form.fuxGiven).then(() => onClose());
     }
   };
@@ -69,9 +63,9 @@ const AssignFuxModal: React.FC<{
             <NumberInput
               onChange={onChange}
               {...restField}
-              defaultValue={availableFux}
+              defaultValue={fuxGiven}
               min={1}
-              max={availableFux}
+              max={fuxGiven + fuxAvailable}
             >
               <NumberInputField
                 ref={ref}

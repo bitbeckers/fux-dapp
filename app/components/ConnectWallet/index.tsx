@@ -1,16 +1,18 @@
-import { useUserProfile } from "../../hooks/user";
 import { Button, Link } from "@chakra-ui/react";
-import { useWallet } from "@raidguild/quiver";
+import { formatAddress, useENS, useWallet } from "@raidguild/quiver";
 import NextLink from "next/link";
 
 const ConnectWallet: React.FC = () => {
-  const { connectWallet, isConnecting, isConnected, disconnect } = useWallet();
+  const { address, connectWallet, isConnecting, isConnected, disconnect } =
+    useWallet();
 
-  const { displayName } = useUserProfile();
+  const { ens } = useENS({ address: address ? address : "" });
 
   const onDisconnect = () => {
     disconnect();
   };
+
+  console.log("ENS: ", ens);
 
   return (
     <>
@@ -31,7 +33,7 @@ const ConnectWallet: React.FC = () => {
         <>
           <NextLink href="/start" passHref>
             <Button colorScheme="red" onClick={() => onDisconnect()}>
-              <Link>{displayName(true)}</Link>
+              <Link>{ens ? ens : formatAddress(address)}</Link>
             </Button>
           </NextLink>
         </>

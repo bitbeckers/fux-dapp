@@ -3,10 +3,8 @@ import { useToast } from "@chakra-ui/react";
 import {
   parseTxErrorMessage,
   useReadContract,
-  useWallet,
   useWriteContract,
 } from "@raidguild/quiver";
-import _ from "lodash";
 
 export const useMintFux = () => {
   const toast = useToast();
@@ -66,35 +64,9 @@ export const useMintVFux = () => {
   return (workstreamID: number) => mintVFux(workstreamID);
 };
 
-export const useFuxBalance = () => {
-  const { address } = useWallet();
-  const contract = useFuxContract();
-
-  const { response: fuxBalance } = useReadContract(
-    contract,
-    "balanceOf",
-    [address || "", 0],
-    { autoUpdateInterval: 10000 }
-  );
-
-  return fuxBalance;
-};
-
-export const useVFuxBalance = () => {
-  const { address } = useWallet();
-  const contract = useFuxContract();
-
-  const { response: fuxBalance } = useReadContract(
-    contract,
-    "balanceOf",
-    [address || "", 1],
-    { autoUpdateInterval: 10000 }
-  );
-
-  return fuxBalance;
-};
-
-export const useVFuxBalanceForWorkstreamEvaluation = (workstreamID: number) => {
+export const useVFuxBalanceForWorkstreamEvaluation = (
+  workstreamID: number
+) => {
   const contract = useFuxContract();
 
   const { response: vFuxAvailable } = useReadContract(

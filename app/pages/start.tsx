@@ -1,30 +1,47 @@
+import { UserDocument } from "../.graphclient";
+import ConnectWallet from "../components/ConnectWallet";
 import FuxOverview from "../components/FUX/FuxOverview";
-import { useFuxBalance, useMintFux } from "../hooks/fux";
-import { VStack, Button, Text, Box } from "@chakra-ui/react";
+import { useMintFux } from "../hooks/fux";
+import { VStack, Button, Text, Center } from "@chakra-ui/react";
+import { useWallet } from "@raidguild/quiver";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useQuery } from "urql";
 
 const Start: NextPage = () => {
   const router = useRouter();
   const claimFux = useMintFux();
-  const fuxBalance = useFuxBalance();
+  const { address } = useWallet();
+
+  const [result, reexecuteQuery] = useQuery({
+    query: UserDocument,
+    variables: {
+      address: address?.toLowerCase() || "",
+    },
+  });
+
+  const { data, fetching, error } = result;
 
   useEffect(() => {
-    if (fuxBalance?.gt(0)) {
+    if (data?.user?.fuxer) {
       router.push("/workstreams");
     }
-  }, [fuxBalance, router]);
-
-  console.log("Fuxbalance: ", fuxBalance?.toString());
+  }, [data, router]);
 
   return (
     <VStack spacing={8} w={"100%"}>
       <FuxOverview />
-      <Box w="80%" justifyContent="center">
-        <Text fontSize="4xl">Claim your FUX to get started</Text>
-        <Button onClick={() => claimFux()}>Claim 100 FUX</Button>
-      </Box>
+      {address ? (
+        <Center w="80%" justifyContent="center">
+          <VStack>
+            <Text fontSize="4xl">Claim your FUX to get started</Text>
+            <Button onClick={() => claimFux()}>Claim 100 FUX</Button>
+          </VStack>
+        </Center>
+      ) : (
+        <ConnectWallet />
+      )}
     </VStack>
   );
 };

@@ -2,9 +2,9 @@ import { useFuxContract } from "./contract";
 import { useToast } from "@chakra-ui/react";
 import {
   parseTxErrorMessage,
-  useReadContract,
   useWriteContract,
 } from "@raidguild/quiver";
+import { BigNumberish } from "ethers";
 import _ from "lodash";
 
 export const useSubmitValueEvaluation = () => {
@@ -37,20 +37,9 @@ export const useSubmitValueEvaluation = () => {
     },
   });
 
-  return (workstreamID: number, contributors: string[], ratings: number[]) =>
-    mutate(workstreamID, contributors, ratings);
-};
-
-export const useValueEvaluation = (address: string, workstreamID: number) => {
-
-  const contract = useFuxContract();
-
-  const { response: valueEvaluation } = useReadContract(
-    contract,
-    "getValueEvaluation",
-    [address, workstreamID],
-    { autoUpdateInterval: 10000 }
-  );
-
-  return valueEvaluation;
+  return (
+    workstreamID: number,
+    contributors: string[],
+    ratings: BigNumberish[]
+  ) => mutate(workstreamID, contributors, ratings);
 };

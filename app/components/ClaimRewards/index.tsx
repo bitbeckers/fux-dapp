@@ -1,38 +1,36 @@
-import { useClaimRewards, useRewardsBalance } from "../../hooks/rewards";
+import { UserDocument } from "../../.graphclient";
+import { useClaimRewards } from "../../hooks/rewards";
 import { useConstants } from "../../utils/constants";
-import { Button, Link, Text } from "@chakra-ui/react";
-import { formatAddress, useWallet } from "@raidguild/quiver";
+import { Button, Text } from "@chakra-ui/react";
+import { useWallet } from "@raidguild/quiver";
 import { ethers } from "ethers";
-import _ from "lodash";
-import NextLink from "next/link";
+import { useQuery } from "urql";
 
 const ClaimRewards: React.FC = () => {
-  const { connectWallet, isConnecting, isConnected, disconnect, address } =
-    useWallet();
-  const rewards = useRewardsBalance();
   const claimRewards = useClaimRewards();
   const { nativeToken } = useConstants();
+  const { address } = useWallet();
+
+  const [result, reexecuteQuery] = useQuery({
+    query: UserDocument,
+    variables: {
+      address: address?.toLowerCase() || "",
+    },
+  });
+
+  const { data, fetching, error } = result;
+
+  const rewards = data?.user?.rewards;
+
   return (
     <>
-      {!isConnected && (
-        <Button
-          colorScheme="teal"
-          disabled={isConnecting}
-          onClick={() => !isConnected && connectWallet()}
-        >
-          {"..."}
-        </Button>
-      )}
-      {isConnected && (
-        <>
-          <Button colorScheme="red" onClick={() => claimRewards()}>
-            <Text>{`${
-              ethers.utils.formatEther(rewards?.toString() || "0").toString() ||
-              "..."
-            } ${nativeToken}`}</Text>
-          </Button>
-        </>
-      )}
+      <Button colorScheme="red" onClick={() => claimRewards()}>
+        <Text>{`${
+          rewards
+            ? ethers.utils.formatEther(rewards.toString()).toString()
+            : "0"
+        } ${nativeToken}`}</Text>
+      </Button>
     </>
   );
 };

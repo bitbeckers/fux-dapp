@@ -1,0 +1,66 @@
+query WorkstreamFux($id: ID! = "") {
+  userWorkstreams(where: {user_: {id: $id}}) {
+    ...UserWorkstreamFragment
+  }
+  fuxGivens(where: {user_: {id: $id}}) {
+    ...FuxGivenFragment
+  }
+}
+
+fragment FuxGivenFragment on FuxGiven {
+  balance
+  workstream {
+    id
+  }
+}
+
+fragment UserWorkstreamFragment on UserWorkstream {
+  workstream {
+    deadline
+    funding
+    id
+    name
+    resolved
+    contributors {
+      id
+      user {
+        id
+      }
+    }
+    coordinator {
+      id
+    }
+  }
+}
+
+query Workstream($id: ID!) {
+  workstream(id: $id) {
+    id
+    name
+    deadline
+    funding
+    resolved
+    contributors {
+      id
+    }
+    coordinator {
+      id
+    }
+  }
+}
+
+query FuxGiven($address: ID!, $workstreamID: ID!) {
+  fuxGivens(
+    where: {user_: {id: $address}, workstream_: {id: $workstreamID}}
+  ) {
+    balance
+  }
+}
+
+query WorkstreamVFux($address: ID!, $workstreamID: ID!) {
+  vfuxWorkstreams(
+    where: { user_: { id: $address }, workstream_: { id: $workstreamID } }
+  ) {
+    balance
+  }
+}

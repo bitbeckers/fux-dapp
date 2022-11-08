@@ -1,63 +1,66 @@
+import { WorkstreamEvaluationsDocument } from "../../.graphclient";
+import { ContributorRow } from "../../components/FUX/ContributorRow";
 import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueResolutionForm } from "../../components/FUX/ValueResolutionForm";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
-import { useValueEvaluation } from "../../hooks/evaluations";
-import {
-  useMintVFux,
-  useVFuxBalanceForWorkstreamEvaluation,
-} from "../../hooks/fux";
-import { useGetWorkstreamByID } from "../../hooks/workstream";
-import { VStack, Text, Heading, HStack, Button, Box } from "@chakra-ui/react";
+import { VStack, Text, Heading, HStack } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
-import { BigNumber } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useQuery } from "urql";
 
-const calculateTimeToDeadline = (timestamp: number | undefined) => {
-  if (timestamp && !isNaN(timestamp)) {
-    const now = DateTime.now();
-    const deadline = DateTime.fromSeconds(timestamp);
-
-    return deadline
-      .diff(now, ["months", "days", "hours", "minutes"])
-      .toFormat("d 'days ' h 'hours ' mm 'minutes'");
+const calculateTimeToDeadline = (timestamp?: number) => {
+  if (!timestamp || isNaN(timestamp)) {
+    return undefined;
   }
 
-  return "...";
+  const now = DateTime.now();
+  const deadline = DateTime.fromSeconds(Number(timestamp));
+
+  return deadline
+    .diff(now, ["months", "days", "hours", "minutes"])
+    .toFormat("d 'days ' h 'hours ' mm 'minutes'");
 };
 
 const Resolve: NextPage = () => {
   const router = useRouter();
-  const mintVFux = useMintVFux();
-  const { address: user } = useWallet();
-
+  const { address } = useWallet();
   const { workstreamID } = router.query;
 
-  const _workstreamID = Number(workstreamID);
+  const [result, reexecuteQuery] = useQuery({
+    query: WorkstreamEvaluationsDocument,
+    variables: {
+      address: address?.toLowerCase() || "",
+      workstreamID: (workstreamID as string) || "",
+    },
+  });
 
-  console.log("Router :", router);
-  console.log("Resolve workstreamID: ", workstreamID);
+  const { data, fetching, error } = result;
 
-  const workstream = useGetWorkstreamByID(_workstreamID);
-  const timeToDeadline = calculateTimeToDeadline(
-    workstream?.deadline.toNumber()
-  );
-  const vFuxAvailable = useVFuxBalanceForWorkstreamEvaluation(_workstreamID);
-  const valueEvaluation = useValueEvaluation(user || "", _workstreamID);
+  const timeToDeadline = calculateTimeToDeadline(data?.workstream?.deadline);
 
-  console.log("vFUX Available: ", vFuxAvailable);
-  console.log("value evaluation: ", valueEvaluation);
+  console.log("Coordinator: ", data?.workstream?.coordinator?.id);
+
+  const form =
+    address?.toLowerCase() ===
+    data?.workstream?.coordinator?.id.toLowerCase() ? (
+      <ValueResolutionForm workstream={data} />
+    ) : (
+      <ValueReviewForm workstream={data} />
+    );
 
   // TODO check on existing evaluation
-  return (
+  return data?.workstream?.id && !fetching ? (
     <>
       <VStack w={"100%"}>
         <ValueHeader />
         <VStack w={"70%"} maxW={"700px"}>
           <HStack paddingTop={"2em"} paddingBottom={"2em"}>
-            <Heading size={"md"}>{`Workstream: ${
-              workstream?.name || "..."
+            <ContributorRow address={data.workstream.coordinator?.id || ""} />
+
+            <Heading size={"md"}>{`${
+              data.workstream?.name || "No name found"
             }`}</Heading>
             <Text>
               {timeToDeadline
@@ -65,24 +68,12 @@ const Resolve: NextPage = () => {
                 : "Deadline unknown"}
             </Text>
           </HStack>
-
-          {vFuxAvailable && vFuxAvailable.gt("0") ? (
-            user === workstream?.creator ? (
-              <ValueResolutionForm workstreamID={_workstreamID} />
-            ) : workstream?.creator ? (
-              <ValueReviewForm workstreamID={_workstreamID} />
-            ) : undefined
-          ) : workstreamID ? (
-            <Box w="80%" justifyContent="center">
-              <Text>Claim 100vFUX to start evaluating your contributors</Text>
-              <Button onClick={() => mintVFux(_workstreamID)}>
-                Claim 100 vFUX
-              </Button>
-            </Box>
-          ) : undefined}
+          {form}
         </VStack>
       </VStack>
     </>
+  ) : (
+    <Text>{`No workstream found for ID: ${workstreamID}`}</Text>
   );
 };
 
