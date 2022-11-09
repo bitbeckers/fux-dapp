@@ -1535,6 +1535,12 @@ const merger = new(BareMerger as any)({
         },
         location: 'WorkstreamEvaluationsDocument.graphql'
       },{
+        document: WorkstreamHistoryDocument,
+        get rawSDL() {
+          return printWithCache(WorkstreamHistoryDocument);
+        },
+        location: 'WorkstreamHistoryDocument.graphql'
+      },{
         document: UserDocument,
         get rawSDL() {
           return printWithCache(UserDocument);
@@ -1644,6 +1650,33 @@ export type EvaluationFragmentFragment = (
   & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
 );
 
+export type WorkstreamHistoryQueryVariables = Exact<{
+  address: Scalars['ID'];
+}>;
+
+
+export type WorkstreamHistoryQuery = { userWorkstreams: Array<{ workstream: (
+      Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
+      & { coordinator?: Maybe<Pick<User, 'id'>>, contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, evaluations?: Maybe<Array<(
+        Pick<Evaluation, 'ratings'>
+        & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
+      )>>, fuxGiven?: Maybe<Array<(
+        Pick<FuxGiven, 'balance'>
+        & { user: Pick<User, 'id'> }
+      )>> }
+    ) }> };
+
+export type UserWorkstreamFragmentFragment = { workstream: (
+    Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
+    & { coordinator?: Maybe<Pick<User, 'id'>>, contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, evaluations?: Maybe<Array<(
+      Pick<Evaluation, 'ratings'>
+      & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
+    )>>, fuxGiven?: Maybe<Array<(
+      Pick<FuxGiven, 'balance'>
+      & { user: Pick<User, 'id'> }
+    )>> }
+  ) };
+
 export type UserQueryVariables = Exact<{
   address: Scalars['ID'];
 }>;
@@ -1742,6 +1775,38 @@ export const WorkstreamFragmentFragmentDoc = gql`
   }
 }
     ${EvaluationFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamFragmentFragment, unknown>;
+export const UserWorkstreamFragmentFragmentDoc = gql`
+    fragment UserWorkstreamFragment on UserWorkstream {
+  workstream {
+    coordinator {
+      id
+    }
+    contributors {
+      id
+    }
+    deadline
+    evaluations {
+      creator {
+        id
+      }
+      ratings
+      contributors {
+        id
+      }
+    }
+    funding
+    id
+    name
+    resolved
+    fuxGiven {
+      balance
+      user {
+        id
+      }
+    }
+  }
+}
+    ` as unknown as DocumentNode<UserWorkstreamFragmentFragment, unknown>;
 export const WorkstreamsByUserFragmentFragmentDoc = gql`
     fragment WorkstreamsByUserFragment on Workstream {
   fuxGiven(where: {user_: {id: $address}}) {
@@ -1824,6 +1889,13 @@ export const WorkstreamEvaluationsDocument = gql`
   }
 }
     ${WorkstreamFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamEvaluationsQuery, WorkstreamEvaluationsQueryVariables>;
+export const WorkstreamHistoryDocument = gql`
+    query WorkstreamHistory($address: ID!) {
+  userWorkstreams(where: {user_: {id: $address}}) {
+    ...UserWorkstreamFragment
+  }
+}
+    ${UserWorkstreamFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamHistoryQuery, WorkstreamHistoryQueryVariables>;
 export const UserDocument = gql`
     query User($address: ID!) @live {
   user(id: $address) {
@@ -1873,6 +1945,7 @@ export const WorkstreamVFuxDocument = gql`
 
 
 
+
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
@@ -1884,6 +1957,9 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     },
     WorkstreamEvaluations(variables: WorkstreamEvaluationsQueryVariables, options?: C): Promise<WorkstreamEvaluationsQuery> {
       return requester<WorkstreamEvaluationsQuery, WorkstreamEvaluationsQueryVariables>(WorkstreamEvaluationsDocument, variables, options) as Promise<WorkstreamEvaluationsQuery>;
+    },
+    WorkstreamHistory(variables: WorkstreamHistoryQueryVariables, options?: C): Promise<WorkstreamHistoryQuery> {
+      return requester<WorkstreamHistoryQuery, WorkstreamHistoryQueryVariables>(WorkstreamHistoryDocument, variables, options) as Promise<WorkstreamHistoryQuery>;
     },
     User(variables: UserQueryVariables, options?: C): AsyncIterable<UserQuery> {
       return requester<UserQuery, UserQueryVariables>(UserDocument, variables, options) as AsyncIterable<UserQuery>;

@@ -1,8 +1,8 @@
-import { WorkstreamsByUserDocument } from "../.graphclient";
+import { WorkstreamHistoryDocument } from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
+import WorkstreamCard from "../components/FUX/WorkstreamCard";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
-import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
-import { VStack, Divider, Grid } from "@chakra-ui/react";
+import { VStack, Divider, Accordion, Heading } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import type { NextPage } from "next";
 import { useQuery } from "urql";
@@ -11,7 +11,7 @@ const History: NextPage = () => {
   const { address: user } = useWallet();
 
   const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamsByUserDocument,
+    query: WorkstreamHistoryDocument,
     variables: {
       address: user?.toLowerCase() || "",
     },
@@ -25,21 +25,16 @@ const History: NextPage = () => {
       <WorkstreamModal onCloseAction={reexecuteQuery} />
       <Divider />
 
+      <Heading>Workstream History</Heading>
+
       {fetching ? (
         "Loading... "
       ) : (
-        <Grid w="40%" gap={2} templateColumns="repeat(16, 1fr)">
-          {data?.userWorkstreams
-            ? data?.userWorkstreams.map(({ workstream }, index) => (
-                <WorkstreamRow
-                  workstream={workstream}
-                  fuxAvailable={undefined}
-                  showInactive={true}
-                  key={index}
-                />
-              ))
-            : undefined}
-        </Grid>
+        <Accordion w={"80%"} maxW={"769px"} allowToggle={true}>
+          {data?.userWorkstreams.map((workstream, index) => (
+            <WorkstreamCard workstream={workstream} key={index} />
+          ))}
+        </Accordion>
       )}
     </VStack>
   );

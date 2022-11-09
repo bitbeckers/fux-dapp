@@ -41,9 +41,6 @@ const Resolve: NextPage = () => {
     (uw) => uw.workstream.id === workstreamID
   )?.workstream;
 
-  console.log("wprlstrea,: ", _workstream?.coordinator?.id);
-  console.log("id in objecy: ", _workstream?.id);
-
   return _workstream ? (
     <>
       <VStack w={"100%"}>
