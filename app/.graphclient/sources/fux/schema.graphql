@@ -961,6 +961,8 @@ type Workstream {
   name: String
   coordinator: User
   contributors(skip: Int = 0, first: Int = 100, orderBy: UserWorkstream_orderBy, orderDirection: OrderDirection, where: UserWorkstream_filter): [UserWorkstream!]
+  evaluations(skip: Int = 0, first: Int = 100, orderBy: Evaluation_orderBy, orderDirection: OrderDirection, where: Evaluation_filter): [Evaluation!]
+  fuxGiven(skip: Int = 0, first: Int = 100, orderBy: FuxGiven_orderBy, orderDirection: OrderDirection, where: FuxGiven_filter): [FuxGiven!]
   funding: BigInt
   deadline: BigInt
   resolved: Boolean
@@ -1017,6 +1019,8 @@ input Workstream_filter {
   coordinator_not_ends_with_nocase: String
   coordinator_: User_filter
   contributors_: UserWorkstream_filter
+  evaluations_: Evaluation_filter
+  fuxGiven_: FuxGiven_filter
   funding: BigInt
   funding_not: BigInt
   funding_gt: BigInt
@@ -1046,6 +1050,8 @@ enum Workstream_orderBy {
   name
   coordinator
   contributors
+  evaluations
+  fuxGiven
   funding
   deadline
   resolved

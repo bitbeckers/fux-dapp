@@ -1,4 +1,7 @@
-import { TokenBalanceDocument, WorkstreamFuxDocument } from "../.graphclient";
+import {
+  TokenBalanceDocument,
+  WorkstreamsByUserDocument,
+} from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
@@ -9,12 +12,12 @@ import React from "react";
 import { useQuery } from "urql";
 
 const Workstreams: NextPage = () => {
-  const { address } = useWallet();
+  const { address: user } = useWallet();
 
   const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamFuxDocument,
+    query: WorkstreamsByUserDocument,
     variables: {
-      id: address?.toLowerCase() || "",
+      address: user?.toLowerCase() || "",
     },
   });
 
@@ -23,7 +26,7 @@ const Workstreams: NextPage = () => {
   const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
     query: TokenBalanceDocument,
     variables: {
-      address: address?.toLowerCase() || "",
+      address: user?.toLowerCase() || "",
       symbol: "FUX",
     },
   });
@@ -34,25 +37,22 @@ const Workstreams: NextPage = () => {
     error: fuxBalance,
   } = fuxBalanceResponse;
 
-  const fuxAvailable = fuxAvailableData?.tokenBalances[0]?.balance as number;
+  const balance = fuxAvailableData?.tokenBalances.find((balance) => balance);
 
   return (
     <VStack spacing={8} w={"100%"}>
       <FuxOverview />
-      <WorkstreamModal onCloseAction={reexecuteQuery}/>
+      <WorkstreamModal onCloseAction={reexecuteQuery} />
       <Divider />
       {fetching ? (
         "Loading... "
       ) : (
         <Grid w="40%" gap={2} templateColumns="repeat(16, 1fr)">
           {data?.userWorkstreams
-            ? data?.userWorkstreams.map((workstream, index) => (
+            ? data?.userWorkstreams.map(({ workstream }, index) => (
                 <WorkstreamRow
                   workstream={workstream}
-                  fuxGiven={data.fuxGivens.find(
-                    (fux) => fux.workstream.id === workstream.workstream.id
-                  )}
-                  fuxAvailable={fuxAvailable}
+                  fuxAvailable={balance?.balance}
                   showInactive={false}
                   key={index}
                 />

@@ -1,7 +1,4 @@
-import {
-  FuxGivenFragmentFragment,
-  UserWorkstreamFragmentFragment,
-} from "../../../.graphclient";
+import { WorkstreamsByUserFragmentFragment } from "../../../.graphclient";
 import { useConstants } from "../../../utils/constants";
 import AssignFuxModal from "../AssignFuxModal";
 import ContributorModal from "../ContributorModal";
@@ -18,23 +15,26 @@ import NextLink from "next/link";
 import React from "react";
 
 const WorkstreamRow: React.FC<{
-  workstream: UserWorkstreamFragmentFragment;
-  fuxGiven?: FuxGivenFragmentFragment;
+  workstream: WorkstreamsByUserFragmentFragment;
   fuxAvailable?: number;
   showInactive: boolean;
-}> = ({ workstream, fuxGiven, fuxAvailable, showInactive }) => {
+}> = ({ workstream, fuxAvailable, showInactive }) => {
   const toast = useToast();
   const { nativeToken } = useConstants();
 
   const _workstream = showInactive
-    ? workstream.workstream
-    : workstream.workstream.resolved
+    ? workstream
+    : workstream.resolved
     ? undefined
-    : workstream.workstream;
+    : workstream;
   const workstreamID = Number(_workstream?.id);
 
+  const _fuxGiven = _workstream?.fuxGiven?.find((fux) => fux.balance);
+
+  const allowResolve = Number(_fuxGiven?.balance) !== 0;
+
   const handleClick = () => {
-    if (!fuxGiven) {
+    if (!allowResolve) {
       toast({
         title: `Cannot evaluate without giving FUX`,
         status: "error",
@@ -67,13 +67,13 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={2}
       >
-        <Text pr={"1em"}>{`${fuxGiven ? fuxGiven.balance : "0"} %`}</Text>
+        <Text pr={"1em"}>{`${_fuxGiven ? _fuxGiven.balance : "0"} %`}</Text>
       </GridItem>
       {fuxAvailable ? (
         <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
           <AssignFuxModal
             workstreamID={workstreamID}
-            fuxGiven={fuxGiven?.balance}
+            fuxGiven={_fuxGiven?.balance}
             fuxAvailable={fuxAvailable}
           />
         </GridItem>
@@ -81,16 +81,14 @@ const WorkstreamRow: React.FC<{
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <ContributorModal
           workstreamID={workstreamID}
-          contributors={
-            _workstream.contributors
-              ?.map((contributor) => contributor.user.id)
-              .filter((out) => out) || []
-          }
+          contributors={_workstream.contributors?.filter(
+            (contributor) => contributor
+          )}
         />
       </GridItem>
 
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
-        {fuxGiven ? (
+        {allowResolve ? (
           <NextLink
             href={{
               pathname: "/resolve/[workstreamID]",
@@ -98,7 +96,6 @@ const WorkstreamRow: React.FC<{
             }}
           >
             <IconButton
-              onClick={handleClick}
               aria-label="resolve workstream"
               icon={<ArrowRightIcon />}
             />

@@ -1,4 +1,6 @@
-import { WorkstreamEvaluationsQuery } from "../../../.graphclient";
+import {
+  WorkstreamFragmentFragment,
+} from "../../../.graphclient";
 import {
   useMintVFux,
   useVFuxBalanceForWorkstreamEvaluation,
@@ -32,16 +34,16 @@ type FormData = {
 };
 
 const ValueResolutionForm: React.FC<{
-  workstream?: WorkstreamEvaluationsQuery;
+  workstream?: WorkstreamFragmentFragment;
 }> = ({ workstream }) => {
   const toast = useToast();
   const { address: user } = useWallet();
   const mintVFux = useMintVFux();
 
   const resolveEvaluation = useResolveValueEvaluation();
-  const vFuxAvailable =
-    useVFuxBalanceForWorkstreamEvaluation(Number(workstream?.workstream?.id)) ||
-    undefined;
+  const vFuxAvailable = useVFuxBalanceForWorkstreamEvaluation(
+    Number(workstream?.id)
+  );
 
   const [ratings, setRatings] = useState<{ [address: string]: BigNumberish }>();
 
@@ -50,19 +52,11 @@ const ValueResolutionForm: React.FC<{
     reset,
     control,
     formState: { errors, isSubmitting },
-    watch,
   } = useForm<FormData>({
     defaultValues: {
       ratings: ratings || {},
     },
   });
-
-  const watchAllFields = watch(); // when pass nothing as argument, you are watching everything
-  console.log("Form: ", watchAllFields);
-  console.log("Workstream ID: ", workstream?.workstream?.id);
-  console.log("vFUXAvailable: ", vFuxAvailable);
-
-
 
   useEffect(() => {
     if (!workstream?.evaluations || !user) {
@@ -74,23 +68,18 @@ const ValueResolutionForm: React.FC<{
     );
 
     if (currentEvaluation) {
-      const addresses = currentEvaluation.contributors.map(
+      const addresses = currentEvaluation?.contributors.map(
         (contributor) => contributor.id
       );
 
       const merged = _.zipObject(addresses, currentEvaluation.ratings);
-
-      console.log("MERGED: ", merged);
 
       setRatings(merged);
     }
   }, [user, workstream]);
 
   const onSubmit = (data: FormData) => {
-    if (
-      !workstream?.workstream?.id ||
-      Object.values(data.ratings).length == 0
-    ) {
+    if (!workstream?.id || Object.values(data.ratings).length == 0) {
       toast({
         title: `Missing input data`,
         status: "error",
@@ -114,19 +103,9 @@ const ValueResolutionForm: React.FC<{
       (entry) => entry[0] !== user
     );
 
-    console.log("FilteredData: ", filteredData);
-    console.log(
-      "Address: ",
-      filteredData.map((data) => data[0])
-    );
-    console.log(
-      "Rating: ",
-      filteredData.map((data) => BigNumber.from(data[1]))
-    );
-
     if (filteredData?.length > 0) {
       resolveEvaluation(
-        Number(workstream.workstream.id),
+        Number(workstream.id),
         filteredData.map((data) => data[0]),
         filteredData.map((data) => BigNumber.from(data[1]))
       );
@@ -136,20 +115,20 @@ const ValueResolutionForm: React.FC<{
   const startEvaluation = (
     <VStack w="80%" justifyContent="center">
       <Text>Claim 100vFUX to start evaluating your contributors</Text>
-      <Button onClick={() => mintVFux(Number(workstream?.workstream?.id))}>
+      <Button onClick={() => mintVFux(Number(workstream?.id))}>
         Claim 100 vFUX
       </Button>
     </VStack>
   );
 
-  const contributors = workstream?.workstream?.contributors;
+  const contributors = workstream?.contributors;
 
   const reviewForm =
     contributors && contributors?.length > 0 && user ? (
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormControl>
           <Grid gap={2} templateColumns="repeat(10, 1fr)">
-            {contributors.map(({ user: contributor }, index) => {
+            {contributors.map((contributor, index) => {
               return contributor.id.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
@@ -218,7 +197,7 @@ const ValueResolutionForm: React.FC<{
       <Text>No contributors found</Text>
     );
 
-  return workstream?.workstream && !workstream.workstream.resolved && vFuxAvailable?.gt(0)
+  return workstream && !workstream.resolved && vFuxAvailable?.gt(0)
     ? reviewForm
     : startEvaluation;
 };

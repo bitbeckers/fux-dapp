@@ -25,50 +25,50 @@ const calculateTimeToDeadline = (timestamp?: number) => {
 
 const Resolve: NextPage = () => {
   const router = useRouter();
-  const { address } = useWallet();
+  const { address: user } = useWallet();
   const { workstreamID } = router.query;
 
   const [result, reexecuteQuery] = useQuery({
     query: WorkstreamEvaluationsDocument,
     variables: {
-      address: address?.toLowerCase() || "",
+      address: user?.toLowerCase() || "",
       workstreamID: (workstreamID as string) || "",
     },
   });
 
   const { data, fetching, error } = result;
+  const _workstream = data?.userWorkstreams.find(
+    (uw) => uw.workstream.id === workstreamID
+  )?.workstream;
 
-  const timeToDeadline = calculateTimeToDeadline(data?.workstream?.deadline);
+  console.log("wprlstrea,: ", _workstream?.coordinator?.id);
+  console.log("id in objecy: ", _workstream?.id);
 
-  console.log("Coordinator: ", data?.workstream?.coordinator?.id);
-
-  const form =
-    address?.toLowerCase() ===
-    data?.workstream?.coordinator?.id.toLowerCase() ? (
-      <ValueResolutionForm workstream={data} />
-    ) : (
-      <ValueReviewForm workstream={data} />
-    );
-
-  // TODO check on existing evaluation
-  return data?.workstream?.id && !fetching ? (
+  return _workstream ? (
     <>
       <VStack w={"100%"}>
         <ValueHeader />
         <VStack w={"70%"} maxW={"700px"}>
           <HStack paddingTop={"2em"} paddingBottom={"2em"}>
-            <ContributorRow address={data.workstream.coordinator?.id || ""} />
+            <ContributorRow address={_workstream.coordinator?.id || ""} />
 
             <Heading size={"md"}>{`${
-              data.workstream?.name || "No name found"
+              _workstream?.name || "No name found"
             }`}</Heading>
             <Text>
-              {timeToDeadline
-                ? `${timeToDeadline} left to resolve`
+              {_workstream?.deadline
+                ? `${calculateTimeToDeadline(
+                    _workstream.deadline
+                  )} left to resolve`
                 : "Deadline unknown"}
             </Text>
           </HStack>
-          {form}
+          {user?.toLowerCase() ===
+          _workstream?.coordinator?.id.toLowerCase() ? (
+            <ValueResolutionForm workstream={_workstream} />
+          ) : (
+            <ValueReviewForm workstream={_workstream} />
+          )}
         </VStack>
       </VStack>
     </>

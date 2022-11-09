@@ -915,6 +915,8 @@ export type Workstream = {
   name?: Maybe<Scalars['String']>;
   coordinator?: Maybe<User>;
   contributors?: Maybe<Array<UserWorkstream>>;
+  evaluations?: Maybe<Array<Evaluation>>;
+  fuxGiven?: Maybe<Array<FuxGiven>>;
   funding?: Maybe<Scalars['BigInt']>;
   deadline?: Maybe<Scalars['BigInt']>;
   resolved?: Maybe<Scalars['Boolean']>;
@@ -927,6 +929,24 @@ export type WorkstreamcontributorsArgs = {
   orderBy?: InputMaybe<UserWorkstream_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<UserWorkstream_filter>;
+};
+
+
+export type WorkstreamevaluationsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Evaluation_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Evaluation_filter>;
+};
+
+
+export type WorkstreamfuxGivenArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<FuxGiven_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<FuxGiven_filter>;
 };
 
 export type Workstream_filter = {
@@ -980,6 +1000,8 @@ export type Workstream_filter = {
   coordinator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   coordinator_?: InputMaybe<User_filter>;
   contributors_?: InputMaybe<UserWorkstream_filter>;
+  evaluations_?: InputMaybe<Evaluation_filter>;
+  fuxGiven_?: InputMaybe<FuxGiven_filter>;
   funding?: InputMaybe<Scalars['BigInt']>;
   funding_not?: InputMaybe<Scalars['BigInt']>;
   funding_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1009,6 +1031,8 @@ export type Workstream_orderBy =
   | 'name'
   | 'coordinator'
   | 'contributors'
+  | 'evaluations'
+  | 'fuxGiven'
   | 'funding'
   | 'deadline'
   | 'resolved';

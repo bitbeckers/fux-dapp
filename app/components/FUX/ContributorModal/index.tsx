@@ -1,5 +1,5 @@
 import { useAddContributors } from "../../../hooks/workstream";
-import { BsFillPersonPlusFill } from "react-icons/bs";
+import { ContributorRow } from "../ContributorRow";
 import {
   Button,
   ButtonGroup,
@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
 import { useFieldArray, useForm } from "react-hook-form";
-import { ContributorRow } from "../ContributorRow";
+import { BsFillPersonPlusFill } from "react-icons/bs";
 
 type FormData = {
   contributors: string[];
@@ -28,7 +28,7 @@ type FormData = {
 
 const ContributorModal: React.FC<{
   workstreamID: number;
-  contributors: string[];
+  contributors?: { user: { id: string } }[];
 }> = ({ workstreamID, contributors }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const addContributors = useAddContributors();
@@ -42,7 +42,10 @@ const ContributorModal: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      contributors: contributors,
+      contributors:
+        contributors?.map(({ user }) => {
+          return user.id;
+        }) || [],
       newContributors: [{ address: "" }],
     },
   });
@@ -64,8 +67,8 @@ const ContributorModal: React.FC<{
 
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {contributors.map((contributor, index) => (
-        <ContributorRow key={index} address={contributor} />
+      {contributors?.map(({ user }, index) => (
+        <ContributorRow key={index} address={user.id} />
       ))}
 
       {fields.map((field, index) => (

@@ -937,6 +937,8 @@ export type Workstream = {
   name?: Maybe<Scalars['String']>;
   coordinator?: Maybe<User>;
   contributors?: Maybe<Array<UserWorkstream>>;
+  evaluations?: Maybe<Array<Evaluation>>;
+  fuxGiven?: Maybe<Array<FuxGiven>>;
   funding?: Maybe<Scalars['BigInt']>;
   deadline?: Maybe<Scalars['BigInt']>;
   resolved?: Maybe<Scalars['Boolean']>;
@@ -949,6 +951,24 @@ export type WorkstreamcontributorsArgs = {
   orderBy?: InputMaybe<UserWorkstream_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<UserWorkstream_filter>;
+};
+
+
+export type WorkstreamevaluationsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Evaluation_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Evaluation_filter>;
+};
+
+
+export type WorkstreamfuxGivenArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<FuxGiven_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<FuxGiven_filter>;
 };
 
 export type Workstream_filter = {
@@ -1002,6 +1022,8 @@ export type Workstream_filter = {
   coordinator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   coordinator_?: InputMaybe<User_filter>;
   contributors_?: InputMaybe<UserWorkstream_filter>;
+  evaluations_?: InputMaybe<Evaluation_filter>;
+  fuxGiven_?: InputMaybe<FuxGiven_filter>;
   funding?: InputMaybe<Scalars['BigInt']>;
   funding_not?: InputMaybe<Scalars['BigInt']>;
   funding_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1031,6 +1053,8 @@ export type Workstream_orderBy =
   | 'name'
   | 'coordinator'
   | 'contributors'
+  | 'evaluations'
+  | 'fuxGiven'
   | 'funding'
   | 'deadline'
   | 'resolved';
@@ -1357,6 +1381,8 @@ export type WorkstreamResolvers<ContextType = MeshContext, ParentType extends Re
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coordinator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   contributors?: Resolver<Maybe<Array<ResolversTypes['UserWorkstream']>>, ParentType, ContextType, RequireFields<WorkstreamcontributorsArgs, 'skip' | 'first'>>;
+  evaluations?: Resolver<Maybe<Array<ResolversTypes['Evaluation']>>, ParentType, ContextType, RequireFields<WorkstreamevaluationsArgs, 'skip' | 'first'>>;
+  fuxGiven?: Resolver<Maybe<Array<ResolversTypes['FuxGiven']>>, ParentType, ContextType, RequireFields<WorkstreamfuxGivenArgs, 'skip' | 'first'>>;
   funding?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   deadline?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   resolved?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -1515,23 +1541,17 @@ const merger = new(BareMerger as any)({
         },
         location: 'UserDocument.graphql'
       },{
-        document: WorkstreamFuxDocument,
+        document: WorkstreamsByUserDocument,
         get rawSDL() {
-          return printWithCache(WorkstreamFuxDocument);
+          return printWithCache(WorkstreamsByUserDocument);
         },
-        location: 'WorkstreamFuxDocument.graphql'
+        location: 'WorkstreamsByUserDocument.graphql'
       },{
-        document: WorkstreamDocument,
+        document: WorkstreamByIdDocument,
         get rawSDL() {
-          return printWithCache(WorkstreamDocument);
+          return printWithCache(WorkstreamByIdDocument);
         },
-        location: 'WorkstreamDocument.graphql'
-      },{
-        document: FuxGivenDocument,
-        get rawSDL() {
-          return printWithCache(FuxGivenDocument);
-        },
-        location: 'FuxGivenDocument.graphql'
+        location: 'WorkstreamByIdDocument.graphql'
       },{
         document: WorkstreamVFuxDocument,
         get rawSDL() {
@@ -1603,22 +1623,25 @@ export type WorkstreamEvaluationsQueryVariables = Exact<{
 }>;
 
 
-export type WorkstreamEvaluationsQuery = { workstream?: Maybe<(
-    Pick<Workstream, 'id' | 'deadline' | 'funding' | 'resolved' | 'name'>
-    & { coordinator?: Maybe<Pick<User, 'id'>>, contributors?: Maybe<Array<{ user: Pick<User, 'id'> }>> }
-  )>, evaluations: Array<(
+export type WorkstreamEvaluationsQuery = { userWorkstreams: Array<{ workstream: (
+      Pick<Workstream, 'id' | 'name' | 'deadline' | 'funding' | 'resolved'>
+      & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+        Pick<Evaluation, 'ratings'>
+        & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
+      )>> }
+    ) }> };
+
+export type WorkstreamFragmentFragment = (
+  Pick<Workstream, 'id' | 'name' | 'deadline' | 'funding' | 'resolved'>
+  & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
     Pick<Evaluation, 'ratings'>
     & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-  )> };
+  )>> }
+);
 
 export type EvaluationFragmentFragment = (
   Pick<Evaluation, 'ratings'>
   & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-);
-
-export type WorkstreamFragmentFragment = (
-  Pick<Workstream, 'id' | 'deadline' | 'funding' | 'resolved' | 'name'>
-  & { coordinator?: Maybe<Pick<User, 'id'>>, contributors?: Maybe<Array<{ user: Pick<User, 'id'> }>> }
 );
 
 export type UserQueryVariables = Exact<{
@@ -1634,52 +1657,53 @@ export type UserQuery = { user?: Maybe<(
     )>> }
   )> };
 
-export type WorkstreamFuxQueryVariables = Exact<{
-  id?: Scalars['ID'];
+export type WorkstreamsByUserQueryVariables = Exact<{
+  address: Scalars['ID'];
 }>;
 
 
-export type WorkstreamFuxQuery = { userWorkstreams: Array<{ workstream: (
+export type WorkstreamsByUserQuery = { userWorkstreams: Array<{ workstream: (
       Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-      & { contributors?: Maybe<Array<(
-        Pick<UserWorkstream, 'id'>
+      & { fuxGiven?: Maybe<Array<(
+        Pick<FuxGiven, 'balance'>
         & { user: Pick<User, 'id'> }
-      )>>, coordinator?: Maybe<Pick<User, 'id'>> }
-    ) }>, fuxGivens: Array<(
-    Pick<FuxGiven, 'balance'>
-    & { workstream: Pick<Workstream, 'id'> }
-  )> };
+      )>>, contributors?: Maybe<Array<{ user: Pick<User, 'id'> }>>, coordinator?: Maybe<Pick<User, 'id'>> }
+    ) }> };
 
-export type FuxGivenFragmentFragment = (
-  Pick<FuxGiven, 'balance'>
-  & { workstream: Pick<Workstream, 'id'> }
+export type WorkstreamsByUserFragmentFragment = (
+  Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
+  & { fuxGiven?: Maybe<Array<(
+    Pick<FuxGiven, 'balance'>
+    & { user: Pick<User, 'id'> }
+  )>>, contributors?: Maybe<Array<{ user: Pick<User, 'id'> }>>, coordinator?: Maybe<Pick<User, 'id'>> }
 );
 
-export type UserWorkstreamFragmentFragment = { workstream: (
-    Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-    & { contributors?: Maybe<Array<(
-      Pick<UserWorkstream, 'id'>
-      & { user: Pick<User, 'id'> }
-    )>>, coordinator?: Maybe<Pick<User, 'id'>> }
-  ) };
-
-export type WorkstreamQueryVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type WorkstreamQuery = { workstream?: Maybe<(
-    Pick<Workstream, 'id' | 'name' | 'deadline' | 'funding' | 'resolved'>
-    & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>> }
-  )> };
-
-export type FuxGivenQueryVariables = Exact<{
-  address: Scalars['ID'];
+export type WorkstreamByIDQueryVariables = Exact<{
   workstreamID: Scalars['ID'];
 }>;
 
 
-export type FuxGivenQuery = { fuxGivens: Array<Pick<FuxGiven, 'balance'>> };
+export type WorkstreamByIDQuery = { workstream?: Maybe<(
+    Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
+    & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+      Pick<Evaluation, 'ratings'>
+      & { contributors: Array<Pick<User, 'id'>> }
+    )>>, fuxGiven?: Maybe<Array<(
+      Pick<FuxGiven, 'balance'>
+      & { user: Pick<User, 'id'> }
+    )>> }
+  )> };
+
+export type WorkstreamByIDFragmentFragment = (
+  Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
+  & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+    Pick<Evaluation, 'ratings'>
+    & { contributors: Array<Pick<User, 'id'>> }
+  )>>, fuxGiven?: Maybe<Array<(
+    Pick<FuxGiven, 'balance'>
+    & { user: Pick<User, 'id'> }
+  )>> }
+);
 
 export type WorkstreamVFuxQueryVariables = Exact<{
   address: Scalars['ID'];
@@ -1703,48 +1727,71 @@ export const EvaluationFragmentFragmentDoc = gql`
 export const WorkstreamFragmentFragmentDoc = gql`
     fragment WorkstreamFragment on Workstream {
   id
-  deadline
-  funding
-  resolved
   name
+  contributors {
+    id
+  }
   coordinator {
     id
   }
-  contributors(where: {workstream_: {id: $workstreamID}}) {
+  deadline
+  funding
+  resolved
+  evaluations(where: {creator_: {id: $address}}) {
+    ...EvaluationFragment
+  }
+}
+    ${EvaluationFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamFragmentFragment, unknown>;
+export const WorkstreamsByUserFragmentFragmentDoc = gql`
+    fragment WorkstreamsByUserFragment on Workstream {
+  fuxGiven(where: {user_: {id: $address}}) {
+    balance
+    user {
+      id
+    }
+  }
+  deadline
+  funding
+  id
+  name
+  resolved
+  contributors {
+    user {
+      id
+    }
+  }
+  coordinator {
+    id
+  }
+}
+    ` as unknown as DocumentNode<WorkstreamsByUserFragmentFragment, unknown>;
+export const WorkstreamByIDFragmentFragmentDoc = gql`
+    fragment WorkstreamByIDFragment on Workstream {
+  contributors {
+    id
+  }
+  coordinator {
+    id
+  }
+  deadline
+  funding
+  id
+  name
+  resolved
+  evaluations {
+    contributors {
+      id
+    }
+    ratings
+  }
+  fuxGiven {
+    balance
     user {
       id
     }
   }
 }
-    ` as unknown as DocumentNode<WorkstreamFragmentFragment, unknown>;
-export const FuxGivenFragmentFragmentDoc = gql`
-    fragment FuxGivenFragment on FuxGiven {
-  balance
-  workstream {
-    id
-  }
-}
-    ` as unknown as DocumentNode<FuxGivenFragmentFragment, unknown>;
-export const UserWorkstreamFragmentFragmentDoc = gql`
-    fragment UserWorkstreamFragment on UserWorkstream {
-  workstream {
-    deadline
-    funding
-    id
-    name
-    resolved
-    contributors {
-      id
-      user {
-        id
-      }
-    }
-    coordinator {
-      id
-    }
-  }
-}
-    ` as unknown as DocumentNode<UserWorkstreamFragmentFragment, unknown>;
+    ` as unknown as DocumentNode<WorkstreamByIDFragmentFragment, unknown>;
 export const BalancesDocument = gql`
     query Balances($address: ID!) @live {
   user(id: $address) {
@@ -1768,15 +1815,15 @@ export const TokenBalanceDocument = gql`
     ` as unknown as DocumentNode<TokenBalanceQuery, TokenBalanceQueryVariables>;
 export const WorkstreamEvaluationsDocument = gql`
     query WorkstreamEvaluations($address: ID!, $workstreamID: ID!) {
-  workstream(id: $workstreamID) {
-    ...WorkstreamFragment
-  }
-  evaluations(where: {creator_: {id: $address}, workstream_: {id: $workstreamID}}) {
-    ...EvaluationFragment
+  userWorkstreams(
+    where: {user_: {id: $address}, workstream_: {id: $workstreamID}}
+  ) {
+    workstream {
+      ...WorkstreamFragment
+    }
   }
 }
-    ${WorkstreamFragmentFragmentDoc}
-${EvaluationFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamEvaluationsQuery, WorkstreamEvaluationsQueryVariables>;
+    ${WorkstreamFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamEvaluationsQuery, WorkstreamEvaluationsQueryVariables>;
 export const UserDocument = gql`
     query User($address: ID!) @live {
   user(id: $address) {
@@ -1793,41 +1840,22 @@ export const UserDocument = gql`
   }
 }
     ` as unknown as DocumentNode<UserQuery, UserQueryVariables>;
-export const WorkstreamFuxDocument = gql`
-    query WorkstreamFux($id: ID! = "") {
-  userWorkstreams(where: {user_: {id: $id}}) {
-    ...UserWorkstreamFragment
-  }
-  fuxGivens(where: {user_: {id: $id}}) {
-    ...FuxGivenFragment
-  }
-}
-    ${UserWorkstreamFragmentFragmentDoc}
-${FuxGivenFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamFuxQuery, WorkstreamFuxQueryVariables>;
-export const WorkstreamDocument = gql`
-    query Workstream($id: ID!) {
-  workstream(id: $id) {
-    id
-    name
-    deadline
-    funding
-    resolved
-    contributors {
-      id
-    }
-    coordinator {
-      id
+export const WorkstreamsByUserDocument = gql`
+    query WorkstreamsByUser($address: ID!) {
+  userWorkstreams(where: {user_: {id: $address}}) {
+    workstream {
+      ...WorkstreamsByUserFragment
     }
   }
 }
-    ` as unknown as DocumentNode<WorkstreamQuery, WorkstreamQueryVariables>;
-export const FuxGivenDocument = gql`
-    query FuxGiven($address: ID!, $workstreamID: ID!) {
-  fuxGivens(where: {user_: {id: $address}, workstream_: {id: $workstreamID}}) {
-    balance
+    ${WorkstreamsByUserFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamsByUserQuery, WorkstreamsByUserQueryVariables>;
+export const WorkstreamByIDDocument = gql`
+    query WorkstreamByID($workstreamID: ID!) {
+  workstream(id: $workstreamID) {
+    ...WorkstreamByIDFragment
   }
 }
-    ` as unknown as DocumentNode<FuxGivenQuery, FuxGivenQueryVariables>;
+    ${WorkstreamByIDFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>;
 export const WorkstreamVFuxDocument = gql`
     query WorkstreamVFux($address: ID!, $workstreamID: ID!) {
   vfuxWorkstreams(
@@ -1837,7 +1865,6 @@ export const WorkstreamVFuxDocument = gql`
   }
 }
     ` as unknown as DocumentNode<WorkstreamVFuxQuery, WorkstreamVFuxQueryVariables>;
-
 
 
 
@@ -1861,14 +1888,11 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     User(variables: UserQueryVariables, options?: C): AsyncIterable<UserQuery> {
       return requester<UserQuery, UserQueryVariables>(UserDocument, variables, options) as AsyncIterable<UserQuery>;
     },
-    WorkstreamFux(variables?: WorkstreamFuxQueryVariables, options?: C): Promise<WorkstreamFuxQuery> {
-      return requester<WorkstreamFuxQuery, WorkstreamFuxQueryVariables>(WorkstreamFuxDocument, variables, options) as Promise<WorkstreamFuxQuery>;
+    WorkstreamsByUser(variables: WorkstreamsByUserQueryVariables, options?: C): Promise<WorkstreamsByUserQuery> {
+      return requester<WorkstreamsByUserQuery, WorkstreamsByUserQueryVariables>(WorkstreamsByUserDocument, variables, options) as Promise<WorkstreamsByUserQuery>;
     },
-    Workstream(variables: WorkstreamQueryVariables, options?: C): Promise<WorkstreamQuery> {
-      return requester<WorkstreamQuery, WorkstreamQueryVariables>(WorkstreamDocument, variables, options) as Promise<WorkstreamQuery>;
-    },
-    FuxGiven(variables: FuxGivenQueryVariables, options?: C): Promise<FuxGivenQuery> {
-      return requester<FuxGivenQuery, FuxGivenQueryVariables>(FuxGivenDocument, variables, options) as Promise<FuxGivenQuery>;
+    WorkstreamByID(variables: WorkstreamByIDQueryVariables, options?: C): Promise<WorkstreamByIDQuery> {
+      return requester<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>(WorkstreamByIDDocument, variables, options) as Promise<WorkstreamByIDQuery>;
     },
     WorkstreamVFux(variables: WorkstreamVFuxQueryVariables, options?: C): Promise<WorkstreamVFuxQuery> {
       return requester<WorkstreamVFuxQuery, WorkstreamVFuxQueryVariables>(WorkstreamVFuxDocument, variables, options) as Promise<WorkstreamVFuxQuery>;

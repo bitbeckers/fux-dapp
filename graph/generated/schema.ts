@@ -209,6 +209,40 @@ export class Workstream extends Entity {
     }
   }
 
+  get evaluations(): Array<string> | null {
+    let value = this.get("evaluations");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set evaluations(value: Array<string> | null) {
+    if (!value) {
+      this.unset("evaluations");
+    } else {
+      this.set("evaluations", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get fuxGiven(): Array<string> | null {
+    let value = this.get("fuxGiven");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set fuxGiven(value: Array<string> | null) {
+    if (!value) {
+      this.unset("fuxGiven");
+    } else {
+      this.set("fuxGiven", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
   get funding(): BigInt | null {
     let value = this.get("funding");
     if (!value || value.kind == ValueKind.NULL) {
