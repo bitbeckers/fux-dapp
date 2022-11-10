@@ -1,4 +1,4 @@
-import { WorkstreamEvaluationsQuery } from "../../../.graphclient";
+import { WorkstreamFragmentFragment } from "../../../.graphclient";
 import { useSubmitValueEvaluation } from "../../../hooks/evaluations";
 import { ContributorRow } from "../ContributorRow";
 import {
@@ -29,7 +29,7 @@ type FormData = {
 
 //TODO cleanup form
 const ValueReviewForm: React.FC<{
-  workstream?: WorkstreamEvaluationsQuery;
+  workstream?: WorkstreamFragmentFragment;
 }> = ({ workstream }) => {
   const { address: user } = useWallet();
   const toast = useToast();
@@ -41,15 +41,11 @@ const ValueReviewForm: React.FC<{
     reset,
     control,
     formState: { errors, isSubmitting },
-    watch,
   } = useForm<FormData>({
     defaultValues: {
       ratings: ratings || {},
     },
   });
-
-  const watchAllFields = watch(); // when pass nothing as argument, you are watching everything
-  console.log("FIELDS: ", watchAllFields);
 
   useEffect(() => {
     if (!workstream?.evaluations || !user) {
@@ -67,15 +63,13 @@ const ValueReviewForm: React.FC<{
 
       const merged = _.zipObject(addresses, currentEvaluation.ratings);
 
-      console.log("MERGED: ", merged);
-
       setRatings(merged);
     }
   }, [user, workstream]);
 
   const onSubmit = (data: FormData) => {
     if (
-      !workstream?.workstream?.id ||
+      !workstream?.id ||
       Object.values(data.ratings).length == 0
     ) {
       toast({
@@ -101,33 +95,23 @@ const ValueReviewForm: React.FC<{
       (entry) => entry[0] !== user
     );
 
-    console.log("FilteredData: ", filteredData);
-    console.log(
-      "Address: ",
-      filteredData.map((data) => data[0])
-    );
-    console.log(
-      "Rating: ",
-      filteredData.map((data) => BigNumber.from(data[1]))
-    );
-
     if (filteredData?.length > 0) {
       submitEvaluation(
-        Number(workstream.workstream.id),
+        Number(workstream.id),
         filteredData.map((data) => data[0]),
         filteredData.map((data) => BigNumber.from(data[1]))
       );
     }
   };
 
-  const contributors = workstream?.workstream?.contributors;
+  const contributors = workstream?.contributors;
 
   const reviewForm =
     contributors && contributors?.length > 0 && user ? (
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormControl>
           <Grid gap={2} templateColumns="repeat(10, 1fr)">
-            {contributors.map(({ user: contributor }, index) => {
+            {contributors.map((contributor, index) => {
               return contributor.id.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>

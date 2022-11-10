@@ -1,39 +1,19 @@
-import {
-  Workstream,
-  Maybe,
-  User,
-  FuxGiven,
-  WorkstreamFuxDocument,
-} from "../.graphclient";
+import { WorkstreamHistoryDocument } from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
+import WorkstreamCard from "../components/FUX/WorkstreamCard";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
-import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
-import { VStack, Divider, Grid, Text } from "@chakra-ui/react";
+import { VStack, Divider, Accordion, Heading } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import type { NextPage } from "next";
 import { useQuery } from "urql";
 
-export type WorkstreamResponse = {
-  workstream: Pick<
-    Workstream,
-    "id" | "name" | "resolved" | "funding" | "deadline"
-  > & {
-    contributors?: Maybe<Array<{ user: Pick<User, "id"> }>>;
-    coordinator?: Maybe<Pick<User, "id">>;
-  };
-};
-
-export type FuxResponse = Pick<FuxGiven, "balance"> & {
-  workstream: Pick<Workstream, "id">;
-};
-
 const History: NextPage = () => {
-  const { address } = useWallet();
+  const { address: user } = useWallet();
 
   const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamFuxDocument,
+    query: WorkstreamHistoryDocument,
     variables: {
-      id: address?.toLowerCase() || "",
+      address: user?.toLowerCase() || "",
     },
   });
 
@@ -45,24 +25,16 @@ const History: NextPage = () => {
       <WorkstreamModal onCloseAction={reexecuteQuery} />
       <Divider />
 
+      <Heading>Workstream History</Heading>
+
       {fetching ? (
         "Loading... "
       ) : (
-        <Grid w="40%" gap={2} templateColumns="repeat(16, 1fr)">
-          {data?.userWorkstreams
-            ? data?.userWorkstreams.map((workstream, index) => (
-                <WorkstreamRow
-                  workstream={workstream}
-                  fuxGiven={data.fuxGivens.find(
-                    (fux) => fux.workstream.id === workstream.workstream.id
-                  )}
-                  fuxAvailable={undefined}
-                  showInactive={true}
-                  key={index}
-                />
-              ))
-            : undefined}
-        </Grid>
+        <Accordion w={"80%"} maxW={"769px"} allowToggle={true}>
+          {data?.userWorkstreams.map((workstream, index) => (
+            <WorkstreamCard workstream={workstream} key={index} />
+          ))}
+        </Accordion>
       )}
     </VStack>
   );

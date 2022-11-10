@@ -1,0 +1,38 @@
+query WorkstreamHistory($address: ID!) {
+  userWorkstreams(where: { user_: { id: $address } }) {
+    ...UserWorkstreamFragment
+  }
+}
+
+fragment UserWorkstreamFragment on UserWorkstream {
+  workstream {
+    coordinator {
+      id
+    }
+    contributors {
+      user {
+        id
+      }
+    }
+    deadline
+    evaluations {
+      creator {
+        id
+      }
+      ratings
+      contributors {
+        id
+      }
+    }
+    funding
+    id
+    name
+    resolved
+    fuxGiven {
+      balance
+      user {
+        id
+      }
+    }
+  }
+}

@@ -12,6 +12,8 @@ type Workstream @entity {
   name: String
   coordinator: User
   contributors: [UserWorkstream!] @derivedFrom(field: "workstream")
+  evaluations: [Evaluation!] @derivedFrom(field: "workstream")
+  fuxGiven: [FuxGiven!] @derivedFrom(field: "workstream")
   funding: BigInt
   deadline: BigInt
   resolved: Boolean
