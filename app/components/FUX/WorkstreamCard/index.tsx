@@ -1,17 +1,16 @@
-import { UserWorkstreamFragmentFragment } from "../../../.graphclient";
+import { User, UserWorkstreamFragmentFragment } from "../../../.graphclient";
 import { ContributorRow } from "../ContributorRow";
 import {
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Box,
   Flex,
   Heading,
   HStack,
   Table,
-  TableCaption,
   TableContainer,
+  Tbody,
   Td,
   Text,
   Th,
@@ -24,14 +23,18 @@ import { BigNumberish } from "ethers";
 import sortBy from "lodash/sortBy";
 import React from "react";
 
+type Contributor = {
+  user: {
+    id: string;
+  };
+};
+
 type Evaluation = {
   creator: {
     id: string;
   };
   ratings: BigNumberish[];
-  contributors: {
-    id: string;
-  }[];
+  contributors: Pick<User, "id">[];
 };
 
 const WorkstreamCard: React.FC<{
@@ -39,13 +42,26 @@ const WorkstreamCard: React.FC<{
 }> = ({ workstream }) => {
   const _workstream = workstream.workstream;
 
-  const evaluationRow = (evaluation: Evaluation) => {
+  const evaluationRow = (
+    sortedContributors: Contributor[],
+    evaluation: Evaluation
+  ) => {
+    const _contributors = evaluation.contributors;
+    const _ratings = evaluation.ratings;
+
+    const mapped = sortedContributors.map((contributor) => {
+      const _index = _contributors.findIndex(
+        ({ id }) => id.toLowerCase() === contributor?.user?.id.toLowerCase()
+      );
+      return _index >= 0 ? _ratings[_index] : "-";
+    });
+
     return (
-      <Tr>
+      <Tr key={evaluation.creator.id}>
         <Td>
           <Heading size="sm">{formatAddress(evaluation.creator.id)}</Heading>
         </Td>
-        {evaluation.ratings.map((rating, index) => (
+        {mapped.map((rating, index) => (
           <Td key={index}>{rating.toString()}</Td>
         ))}
       </Tr>
@@ -53,21 +69,26 @@ const WorkstreamCard: React.FC<{
   };
 
   const evaluationOverview = (
-    contributors: string[],
+    contributors: Contributor[],
     evaluations: Evaluation[]
   ) => {
-    const sortedContributors = sortBy(contributors);
+    const sortedContributors = sortBy(contributors).filter(
+      (contributor) => contributor
+    );
+
     const headers = (
       <Thead>
-        <Th>Evaluator</Th>
-        {sortedContributors.map((contributor, index) => (
-          <Th key={index}>{formatAddress(contributor)}</Th>
-        ))}
+        <Tr>
+          <Th>Evaluator</Th>
+          {sortedContributors.map((contributor, index) => (
+            <Th key={index}>{formatAddress(contributor?.user?.id) || ""}</Th>
+          ))}
+        </Tr>
       </Thead>
     );
 
-    const rows = evaluations.map((evaluation, index) => {
-      return evaluationRow(evaluation);
+    const rows = evaluations.map((evaluation) => {
+      return evaluationRow(sortedContributors, evaluation);
     });
 
     return (
@@ -75,7 +96,7 @@ const WorkstreamCard: React.FC<{
         <Heading size="sm">Evaluations:</Heading>
         <Table variant="simple">
           {headers}
-          <>{rows}</>
+          <Tbody>{rows}</Tbody>
         </Table>
       </TableContainer>
     );
@@ -86,7 +107,7 @@ const WorkstreamCard: React.FC<{
       <h2>
         <AccordionButton>
           <Heading size="md" flex="1" textAlign="left">
-            {_workstream.name}
+            {_workstream.name?.toUpperCase()}
           </Heading>
           <Text>{_workstream.resolved ? "Closed" : "Active"}</Text>
           <AccordionIcon />
@@ -100,8 +121,8 @@ const WorkstreamCard: React.FC<{
         <VStack alignItems={"flex-start"}>
           <Heading size="sm">Contributor:</Heading>
           <Flex gap="2">
-            {_workstream.contributors?.map((contributor, index) => (
-              <ContributorRow key={index} address={contributor.id} />
+            {_workstream.contributors?.map(({ user }, index) => (
+              <ContributorRow key={index} address={user.id} />
             ))}
           </Flex>
         </VStack>
@@ -110,7 +131,7 @@ const WorkstreamCard: React.FC<{
         _workstream.evaluations &&
         _workstream.contributors
           ? evaluationOverview(
-              _workstream.contributors.map(({ id }) => id),
+              _workstream.contributors.map((contributor) => contributor),
               _workstream.evaluations
             )
           : undefined}

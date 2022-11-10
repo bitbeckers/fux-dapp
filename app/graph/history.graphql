@@ -10,7 +10,9 @@ fragment UserWorkstreamFragment on UserWorkstream {
       id
     }
     contributors {
-      id
+      user {
+        id
+      }
     }
     deadline
     evaluations {
