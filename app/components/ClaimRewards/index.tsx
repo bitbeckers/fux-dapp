@@ -25,7 +25,7 @@ const ClaimRewards: React.FC = () => {
   return (
     <>
       <Button colorScheme="red" onClick={() => claimRewards()}>
-        <Text>{`${
+        <Text>{`Claim ${
           rewards
             ? ethers.utils.formatEther(rewards.toString()).toString()
             : "0"
