@@ -13,6 +13,9 @@ fragment WorkstreamFragment on Workstream {
   name
   contributors {
     id
+    user {
+      id
+    }
   }
   coordinator {
     id

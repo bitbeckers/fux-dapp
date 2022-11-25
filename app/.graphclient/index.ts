@@ -1631,7 +1631,10 @@ export type WorkstreamEvaluationsQueryVariables = Exact<{
 
 export type WorkstreamEvaluationsQuery = { userWorkstreams: Array<{ workstream: (
       Pick<Workstream, 'id' | 'name' | 'deadline' | 'funding' | 'resolved'>
-      & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+      & { contributors?: Maybe<Array<(
+        Pick<UserWorkstream, 'id'>
+        & { user: Pick<User, 'id'> }
+      )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
         Pick<Evaluation, 'ratings'>
         & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
       )>> }
@@ -1639,7 +1642,10 @@ export type WorkstreamEvaluationsQuery = { userWorkstreams: Array<{ workstream: 
 
 export type WorkstreamFragmentFragment = (
   Pick<Workstream, 'id' | 'name' | 'deadline' | 'funding' | 'resolved'>
-  & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+  & { contributors?: Maybe<Array<(
+    Pick<UserWorkstream, 'id'>
+    & { user: Pick<User, 'id'> }
+  )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
     Pick<Evaluation, 'ratings'>
     & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
   )>> }
@@ -1763,6 +1769,9 @@ export const WorkstreamFragmentFragmentDoc = gql`
   name
   contributors {
     id
+    user {
+      id
+    }
   }
   coordinator {
     id

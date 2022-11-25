@@ -1,6 +1,4 @@
-import {
-  WorkstreamFragmentFragment,
-} from "../../../.graphclient";
+import { WorkstreamFragmentFragment } from "../../../.graphclient";
 import {
   useMintVFux,
   useVFuxBalanceForWorkstreamEvaluation,
@@ -129,7 +127,7 @@ const ValueResolutionForm: React.FC<{
         <FormControl>
           <Grid gap={2} templateColumns="repeat(10, 1fr)">
             {contributors.map((contributor, index) => {
-              return contributor.id.toLowerCase() ===
+              return contributor.user.id.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
                   <GridItem
@@ -139,7 +137,7 @@ const ValueResolutionForm: React.FC<{
                     colSpan={6}
                     borderLeftRadius="3xl"
                   >
-                    <ContributorRow address={contributor.id} />
+                    <ContributorRow address={contributor.user.id} />
                   </GridItem>
                   <GridItem
                     bg="#301A3A"
@@ -149,10 +147,10 @@ const ValueResolutionForm: React.FC<{
                     colSpan={3}
                   >
                     <Controller
-                      name={`ratings.${contributor.id}`}
+                      name={`ratings.${contributor.user.id}`}
                       control={control}
                       rules={{ required: true }}
-                      key={`ratings.${contributor.id}`}
+                      key={`ratings.${contributor.user.id}`}
                       render={({ field }) => (
                         <NumberInput {...field}>
                           <NumberInputField
