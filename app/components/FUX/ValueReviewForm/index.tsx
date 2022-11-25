@@ -43,7 +43,7 @@ const ValueReviewForm: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      ratings: ratings || {},
+      ratings: ratings,
     },
   });
 
@@ -56,6 +56,8 @@ const ValueReviewForm: React.FC<{
       (evaluation) => evaluation.creator.id.toLowerCase() === user.toLowerCase()
     );
 
+    console.log("Evaluation found: ", currentEvaluation);
+
     if (currentEvaluation) {
       const addresses = currentEvaluation.contributors.map(
         (contributor) => contributor.id
@@ -63,15 +65,14 @@ const ValueReviewForm: React.FC<{
 
       const merged = _.zipObject(addresses, currentEvaluation.ratings);
 
+      console.log("Merged: ", merged);
+
       setRatings(merged);
     }
   }, [user, workstream]);
 
   const onSubmit = (data: FormData) => {
-    if (
-      !workstream?.id ||
-      Object.values(data.ratings).length == 0
-    ) {
+    if (!workstream?.id || Object.values(data.ratings).length == 0) {
       toast({
         title: `Missing input data`,
         status: "error",
@@ -105,6 +106,8 @@ const ValueReviewForm: React.FC<{
   };
 
   const contributors = workstream?.contributors;
+
+  console.log("Ratings: ", ratings);
 
   const reviewForm =
     contributors && contributors?.length > 0 && user ? (
@@ -142,6 +145,13 @@ const ValueReviewForm: React.FC<{
                             ref={field.ref}
                             name={field.name}
                             borderRadius={0}
+                            placeholder={
+                              ratings
+                                ? ratings[
+                                    contributor.user.id.toLowerCase()
+                                  ].toString()
+                                : "0"
+                            }
                           />
                           <NumberInputStepper>
                             <NumberIncrementStepper />
