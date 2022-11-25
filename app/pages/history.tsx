@@ -2,7 +2,7 @@ import { WorkstreamHistoryDocument } from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamCard from "../components/FUX/WorkstreamCard";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
-import { VStack, Divider, Accordion, Heading } from "@chakra-ui/react";
+import { VStack, Divider, Accordion, Heading, Spacer } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import type { NextPage } from "next";
 import { useQuery } from "urql";
@@ -36,6 +36,7 @@ const History: NextPage = () => {
           ))}
         </Accordion>
       )}
+      <Spacer />
     </VStack>
   );
 };
