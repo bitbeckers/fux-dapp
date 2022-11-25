@@ -52,7 +52,7 @@ const ValueResolutionForm: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      ratings: ratings || {},
+      ratings: ratings,
     },
   });
 
@@ -157,6 +157,13 @@ const ValueResolutionForm: React.FC<{
                             ref={field.ref}
                             name={field.name}
                             borderRadius={0}
+                            placeholder={
+                              ratings
+                                ? ratings[
+                                    contributor.user.id.toLowerCase()
+                                  ].toString()
+                                : "0"
+                            }
                           />
                           <NumberInputStepper>
                             <NumberIncrementStepper />
