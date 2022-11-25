@@ -12,7 +12,7 @@ const ValueHeader: React.FC<{}> = ({}) => {
     >
       <Heading>Evaluate value add</Heading>
       <Text w={"50%"} textAlign="center">
-        Allocate vFUX based on how well you think collaborators executed on
+        Allocate points based on how well you think collaborators executed on
         their commitment.
       </Text>
     </VStack>
