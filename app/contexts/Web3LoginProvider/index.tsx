@@ -14,8 +14,6 @@ const Web3LoginProvider: React.FC<{ children: any }> = ({ children }) => {
     <WalletProvider
       web3modalOptions={WEB3_MODAL_OPTIONS}
       networks={NETWORKS}
-      // Optional if you want to auto switch the network
-      defaultChainId={DEFAULT_CHAIN_ID}
       // Optional but useful to handle events.
       handleModalEvents={(eventName, error) => {
         if (error) {

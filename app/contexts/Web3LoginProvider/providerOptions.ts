@@ -45,5 +45,3 @@ export const WEB3_MODAL_OPTIONS = {
   providerOptions,
   theme: "dark",
 };
-
-export const DEFAULT_CHAIN_ID = defaultChain;
