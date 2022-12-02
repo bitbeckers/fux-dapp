@@ -4,6 +4,7 @@ import {
 } from "../../../.graphclient";
 import { useSubmitValueEvaluation } from "../../../hooks/evaluations";
 import { ContributorRow } from "../ContributorRow";
+import { StarIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,
@@ -21,6 +22,7 @@ import {
   useToast,
   HStack,
   Center,
+  Icon,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import { BigNumber, BigNumberish } from "ethers";
@@ -135,6 +137,7 @@ const ValueReviewForm: React.FC<{
   };
 
   const contributors = workstream?.contributors;
+  const owner = workstream?.coordinator?.id;
 
   console.log("Ratings: ", ratings);
 
@@ -160,6 +163,13 @@ const ValueReviewForm: React.FC<{
                     borderLeftRadius="3xl"
                   >
                     <ContributorRow address={contributor.user.id} />
+                    <Spacer />
+                    {contributor.user.id.toLowerCase() ===
+                    owner?.toLowerCase() ? (
+                      <StarIcon mr={"1em"} />
+                    ) : (
+                      <></>
+                    )}
                   </GridItem>
                   <GridItem
                     bg="#301A3A"
