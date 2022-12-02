@@ -1,5 +1,4 @@
 import {
-  DEFAULT_CHAIN_ID,
   WEB3_MODAL_OPTIONS,
   NETWORKS,
 } from "./providerOptions";
