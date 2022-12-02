@@ -1651,6 +1651,11 @@ export type WorkstreamFragmentFragment = (
   )>> }
 );
 
+export type ContributorFragmentFragment = (
+  Pick<UserWorkstream, 'id'>
+  & { user: Pick<User, 'id'> }
+);
+
 export type EvaluationFragmentFragment = (
   Pick<Evaluation, 'ratings'>
   & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
@@ -1752,6 +1757,14 @@ export type WorkstreamVFuxQueryVariables = Exact<{
 
 export type WorkstreamVFuxQuery = { vfuxWorkstreams: Array<Pick<VFuxWorkstream, 'balance'>> };
 
+export const ContributorFragmentFragmentDoc = gql`
+    fragment ContributorFragment on UserWorkstream {
+  id
+  user {
+    id
+  }
+}
+    ` as unknown as DocumentNode<ContributorFragmentFragment, unknown>;
 export const EvaluationFragmentFragmentDoc = gql`
     fragment EvaluationFragment on Evaluation {
   creator {
@@ -1768,10 +1781,7 @@ export const WorkstreamFragmentFragmentDoc = gql`
   id
   name
   contributors {
-    id
-    user {
-      id
-    }
+    ...ContributorFragment
   }
   coordinator {
     id
@@ -1783,7 +1793,8 @@ export const WorkstreamFragmentFragmentDoc = gql`
     ...EvaluationFragment
   }
 }
-    ${EvaluationFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamFragmentFragment, unknown>;
+    ${ContributorFragmentFragmentDoc}
+${EvaluationFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamFragmentFragment, unknown>;
 export const UserWorkstreamFragmentFragmentDoc = gql`
     fragment UserWorkstreamFragment on UserWorkstream {
   workstream {

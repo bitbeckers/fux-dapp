@@ -41,6 +41,21 @@ const Resolve: NextPage = () => {
     (uw) => uw.workstream.id === workstreamID
   )?.workstream;
 
+  const generateContent = () => {
+    if (!_workstream && !user) {
+      return undefined;
+    }
+
+    return user?.toLowerCase() ===
+      _workstream?.coordinator?.id.toLowerCase() ? (
+      <ValueResolutionForm workstream={_workstream} />
+    ) : (
+      <ValueReviewForm workstream={_workstream} />
+    );
+  };
+
+  const form = generateContent();
+
   return _workstream ? (
     <>
       <VStack w={"100%"}>
@@ -60,12 +75,7 @@ const Resolve: NextPage = () => {
                 : "Deadline unknown"}
             </Text>
           </HStack>
-          {user?.toLowerCase() ===
-          _workstream?.coordinator?.id.toLowerCase() ? (
-            <ValueResolutionForm workstream={_workstream} />
-          ) : (
-            <ValueReviewForm workstream={_workstream} />
-          )}
+          {form ? form : ""}
         </VStack>
       </VStack>
     </>
