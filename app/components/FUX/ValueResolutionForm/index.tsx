@@ -3,7 +3,9 @@ import {
   useMintVFux,
   useVFuxBalanceForWorkstreamEvaluation,
 } from "../../../hooks/fux";
-import { useResolveValueEvaluation } from "../../../hooks/resolution";
+import {
+  useResolveValueEvaluation,
+} from "../../../hooks/resolution";
 import { ContributorRow } from "../ContributorRow";
 import {
   Button,
@@ -102,7 +104,7 @@ const ValueResolutionForm: React.FC<{
       .map((rating) => (rating ? +rating : 0))
       .reduce((_total, value) => _total + value, 0);
 
-    if(totalVFux) setTotal(totalVFux);
+    if (totalVFux) setTotal(totalVFux);
   }, [formData]);
 
   const onSubmit = (data: FormData) => {
