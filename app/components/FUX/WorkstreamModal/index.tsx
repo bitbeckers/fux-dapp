@@ -1,3 +1,4 @@
+import { UserDocument } from "../../../.graphclient";
 import { useMintWorkstream } from "../../../hooks/workstream";
 import { useConstants } from "../../../utils/constants";
 import { AddIcon } from "@chakra-ui/icons";
@@ -31,11 +32,13 @@ import { BigNumber, ethers } from "ethers";
 import { DateTime } from "luxon";
 import { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useQuery } from "urql";
 
 type FormData = {
   name: string;
   duration: string;
   funding: number;
+  fuxGiven: number;
 };
 
 const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
@@ -45,6 +48,19 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const addWorkstream = useMintWorkstream();
   const { nativeToken } = useConstants();
+
+  const [result, reexecuteQuery] = useQuery({
+    query: UserDocument,
+    variables: {
+      address: user?.toLowerCase() || "",
+    },
+  });
+
+  const { data, fetching, error } = result;
+
+  const fuxBalance = data?.user?.balances?.find(
+    (balance) => balance.token.name === "FUX"
+  )?.balance;
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0));
 
@@ -71,6 +87,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
       name: "",
       duration: "7",
       funding: 0,
+      fuxGiven: fuxBalance,
     },
   });
 
@@ -85,8 +102,16 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     const deadline = Number(
       DateTime.fromISO(form.duration).endOf("day").toSeconds().toFixed()
     );
+
+    const _fuxGiven = form.fuxGiven;
     if (user) {
-      addWorkstream(form.name, [user], deadline, funding).then(handleOnClose);
+      addWorkstream(
+        form.name,
+        [user],
+        _fuxGiven,
+        deadline,
+        funding
+      ).then(handleOnClose);
     }
   };
 
@@ -163,6 +188,45 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                     {`Balance: ${parseFloat(
                       ethers.utils.formatEther(ethBalance)
                     ).toFixed(2)} ${nativeToken}`}
+                  </FormHelperText>
+                </>
+              )}
+            />
+            <Controller
+              name={`fuxGiven`}
+              control={control}
+              rules={{ required: true }}
+              key={`fuxGiven`}
+              render={({ field: { ref, onChange, ...restField } }) => (
+                <>
+                  <FormHelperText textColor={"white"} w={"100%"}>
+                    How many FUX do you give?
+                  </FormHelperText>
+                  <InputGroup>
+                    <NumberInput
+                      precision={0}
+                      step={1}
+                      onChange={onChange}
+                      min={0}
+                      max={fuxBalance}
+                      {...restField}
+                    >
+                      <NumberInputField
+                        ref={ref}
+                        name={restField.name}
+                        borderRightRadius={0}
+                      />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
+                      <Text>FUX</Text>
+                    </InputRightAddon>
+                  </InputGroup>
+                  <FormHelperText textColor={"white"} w={"100%"}>
+                    {`${fuxBalance} FUX to give`}
                   </FormHelperText>
                 </>
               )}
