@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { ethers } from "ethers";
 
 import setupTest from "../setup";
 

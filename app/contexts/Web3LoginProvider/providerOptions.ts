@@ -1,4 +1,3 @@
-import { defaultChain } from "../../utils/constants";
 import { NetworkConfig } from "@raidguild/quiver";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { IProviderOptions } from "web3modal";

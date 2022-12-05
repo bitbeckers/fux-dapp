@@ -5,19 +5,23 @@ import { DateTime } from "luxon";
 import setupTest from "../setup";
 
 export function shouldBehaveLikeFuxWorkstream(): void {
-  it("allows anyone to mint a workstream", async function () {
+  it("allows any fuxxer to mint a workstream", async function () {
     const { fux, deployer, owner, user } = await setupTest();
 
     const deadline = DateTime.now().plus({ days: 7 }).toSeconds().toFixed();
 
-    await expect(user.fux.mintWorkstream("Test", [deployer.address, owner.address], deadline))
+    await expect(user.fux.mintWorkstream("Test", [user.address, deployer.address, owner.address], 10, deadline)).to.be.reverted;
+
+    await user.fux.mintFux();
+
+    await expect(user.fux.mintWorkstream("Test", [user.address, deployer.address, owner.address], 10, deadline))
       .to.emit(fux, "WorkstreamMinted")
       .withArgs(0, 0, deadline, "http://example.com");
 
     const funding = ethers.utils.parseEther("1");
 
     await expect(
-      user.fux.mintWorkstream("Test", [deployer.address, owner.address], deadline, {
+      user.fux.mintWorkstream("Test", [user.address, deployer.address, owner.address], 10, deadline, {
         value: funding,
       }),
     )
@@ -28,15 +32,9 @@ export function shouldBehaveLikeFuxWorkstream(): void {
   it("allows workstream contributor to commit FUX", async function () {
     const { fux, owner, user } = await setupTest();
 
-    await user.fux.mintWorkstream(
-      "Test",
-      [user.address],
-      DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
-    );
-
-    await expect(user.fux.commitToWorkstream(0, 50)).to.be.revertedWith("NotEnoughFux()");
-
     await user.fux.mintFux();
+
+    await user.fux.mintWorkstream("Test", [user.address], 10, DateTime.now().plus({ days: 7 }).toSeconds().toFixed());
 
     await expect(user.fux.commitToWorkstream(0, 50)).to.emit(fux, "FuxGiven");
     expect(await user.fux.balanceOf(user.address, 0)).to.be.eq(50);
@@ -54,15 +52,17 @@ export function shouldBehaveLikeFuxWorkstream(): void {
   });
 
   it("allows workstream contributor to update committed FUX", async function () {
-    const { fux, deployer, owner, user } = await setupTest();
+    const { fux, user } = await setupTest();
 
-    const workstream = await user.fux.mintWorkstream(
+    await user.fux.mintFux();
+
+    await user.fux.mintWorkstream(
       "Test",
       [user.address],
+      10,
       DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
     );
 
-    await user.fux.mintFux();
     await user.fux.commitToWorkstream(0, 50);
     expect(await user.fux.getWorkstreamCommitment(user.address, 0)).to.be.eq(50);
     expect(await user.fux.balanceOf(user.address, 0)).to.be.eq(50);
@@ -78,17 +78,18 @@ export function shouldBehaveLikeFuxWorkstream(): void {
   });
 
   it("allows workstream contributor to withdraw FUX", async function () {
-    const { fux, deployer, owner, user } = await setupTest();
-
-    const workstream = await user.fux.mintWorkstream(
-      "Test",
-      [user.address],
-      DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
-    );
+    const { fux, owner, user } = await setupTest();
 
     await user.fux.mintFux();
 
-    await expect(user.fux.withdrawFromWorkstream(0)).to.be.revertedWith("NotEnoughFux()");
+    await user.fux.mintWorkstream(
+      "Test",
+      [user.address],
+      10,
+      DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
+    );
+
+    await expect(user.fux.withdrawFromWorkstream(0)).to.not.be.reverted;
 
     await user.fux.commitToWorkstream(0, 50);
 

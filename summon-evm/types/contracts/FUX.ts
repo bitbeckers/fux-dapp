@@ -83,7 +83,7 @@ export interface FUXInterface extends utils.Interface {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "claimRewards()": FunctionFragment;
-    "commitToWorkstream(uint256,uint8)": FunctionFragment;
+    "commitToWorkstream(uint256,uint256)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
     "getAvailableBalance(address)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
@@ -98,11 +98,12 @@ export interface FUXInterface extends utils.Interface {
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintFux()": FunctionFragment;
     "mintVFux(uint256)": FunctionFragment;
-    "mintWorkstream(string,address[],uint256)": FunctionFragment;
+    "mintWorkstream(string,address[],uint256,uint256)": FunctionFragment;
     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
+    "resolveSoloWorkstream(uint256)": FunctionFragment;
     "resolveValueEvaluation(uint256,address[],uint256[])": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
@@ -149,6 +150,7 @@ export interface FUXInterface extends utils.Interface {
       | "onERC1155Received"
       | "proxiableUUID"
       | "renounceRole"
+      | "resolveSoloWorkstream"
       | "resolveValueEvaluation"
       | "revokeRole"
       | "safeBatchTransferFrom"
@@ -262,6 +264,7 @@ export interface FUXInterface extends utils.Interface {
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<string>[],
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
     ]
   ): string;
@@ -292,6 +295,10 @@ export interface FUXInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "resolveSoloWorkstream",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "resolveValueEvaluation",
@@ -459,6 +466,10 @@ export interface FUXInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "resolveSoloWorkstream",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -929,6 +940,7 @@ export interface FUX extends BaseContract {
     mintWorkstream(
       name: PromiseOrValue<string>,
       contributors: PromiseOrValue<string>[],
+      selfFux: PromiseOrValue<BigNumberish>,
       deadline: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -956,6 +968,11 @@ export interface FUX extends BaseContract {
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    resolveSoloWorkstream(
+      workstreamID: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1154,6 +1171,7 @@ export interface FUX extends BaseContract {
   mintWorkstream(
     name: PromiseOrValue<string>,
     contributors: PromiseOrValue<string>[],
+    selfFux: PromiseOrValue<BigNumberish>,
     deadline: PromiseOrValue<BigNumberish>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1181,6 +1199,11 @@ export interface FUX extends BaseContract {
   renounceRole(
     role: PromiseOrValue<BytesLike>,
     account: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  resolveSoloWorkstream(
+    workstreamID: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1373,6 +1396,7 @@ export interface FUX extends BaseContract {
     mintWorkstream(
       name: PromiseOrValue<string>,
       contributors: PromiseOrValue<string>[],
+      selfFux: PromiseOrValue<BigNumberish>,
       deadline: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1400,6 +1424,11 @@ export interface FUX extends BaseContract {
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    resolveSoloWorkstream(
+      workstreamID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1790,6 +1819,7 @@ export interface FUX extends BaseContract {
     mintWorkstream(
       name: PromiseOrValue<string>,
       contributors: PromiseOrValue<string>[],
+      selfFux: PromiseOrValue<BigNumberish>,
       deadline: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1817,6 +1847,11 @@ export interface FUX extends BaseContract {
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    resolveSoloWorkstream(
+      workstreamID: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -2018,6 +2053,7 @@ export interface FUX extends BaseContract {
     mintWorkstream(
       name: PromiseOrValue<string>,
       contributors: PromiseOrValue<string>[],
+      selfFux: PromiseOrValue<BigNumberish>,
       deadline: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -2045,6 +2081,11 @@ export interface FUX extends BaseContract {
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    resolveSoloWorkstream(
+      workstreamID: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
