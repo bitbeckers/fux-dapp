@@ -1277,8 +1277,8 @@ export class CommitToWorkstreamCall__Inputs {
     return this._call.inputValues[0].value.toBigInt();
   }
 
-  get fuxGiven(): i32 {
-    return this._call.inputValues[1].value.toI32();
+  get fuxGiven(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
   }
 }
 
@@ -1431,8 +1431,12 @@ export class MintWorkstreamCall__Inputs {
     return this._call.inputValues[1].value.toAddressArray();
   }
 
-  get deadline(): BigInt {
+  get selfFux(): BigInt {
     return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get deadline(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
   }
 }
 
@@ -1474,6 +1478,36 @@ export class RenounceRoleCall__Outputs {
   _call: RenounceRoleCall;
 
   constructor(call: RenounceRoleCall) {
+    this._call = call;
+  }
+}
+
+export class ResolveSoloWorkstreamCall extends ethereum.Call {
+  get inputs(): ResolveSoloWorkstreamCall__Inputs {
+    return new ResolveSoloWorkstreamCall__Inputs(this);
+  }
+
+  get outputs(): ResolveSoloWorkstreamCall__Outputs {
+    return new ResolveSoloWorkstreamCall__Outputs(this);
+  }
+}
+
+export class ResolveSoloWorkstreamCall__Inputs {
+  _call: ResolveSoloWorkstreamCall;
+
+  constructor(call: ResolveSoloWorkstreamCall) {
+    this._call = call;
+  }
+
+  get workstreamID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class ResolveSoloWorkstreamCall__Outputs {
+  _call: ResolveSoloWorkstreamCall;
+
+  constructor(call: ResolveSoloWorkstreamCall) {
     this._call = call;
   }
 }

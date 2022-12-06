@@ -12,7 +12,7 @@ fragment WorkstreamFragment on Workstream {
   id
   name
   contributors {
-    id
+    ...ContributorFragment
   }
   coordinator {
     id
@@ -22,6 +22,13 @@ fragment WorkstreamFragment on Workstream {
   resolved
   evaluations(where: { creator_: { id: $address } }) {
     ...EvaluationFragment
+  }
+}
+
+fragment ContributorFragment on UserWorkstream {
+  id
+  user {
+    id
   }
 }
 

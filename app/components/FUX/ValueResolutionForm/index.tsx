@@ -1,11 +1,11 @@
-import {
-  WorkstreamFragmentFragment,
-} from "../../../.graphclient";
+import { WorkstreamFragmentFragment } from "../../../.graphclient";
 import {
   useMintVFux,
   useVFuxBalanceForWorkstreamEvaluation,
 } from "../../../hooks/fux";
-import { useResolveValueEvaluation } from "../../../hooks/resolution";
+import {
+  useResolveValueEvaluation,
+} from "../../../hooks/resolution";
 import { ContributorRow } from "../ContributorRow";
 import {
   Button,
@@ -36,27 +36,35 @@ type FormData = {
 const ValueResolutionForm: React.FC<{
   workstream?: WorkstreamFragmentFragment;
 }> = ({ workstream }) => {
+  if (!workstream) {
+    <Text>Loading...</Text>;
+  }
+
   const toast = useToast();
   const { address: user } = useWallet();
-  const mintVFux = useMintVFux();
 
+  const mintVFux = useMintVFux();
   const resolveEvaluation = useResolveValueEvaluation();
   const vFuxAvailable = useVFuxBalanceForWorkstreamEvaluation(
     Number(workstream?.id)
   );
 
   const [ratings, setRatings] = useState<{ [address: string]: BigNumberish }>();
+  const [total, setTotal] = useState(0);
 
   const {
     handleSubmit,
     reset,
+    watch,
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      ratings: ratings || {},
+      ratings: ratings,
     },
   });
+
+  const formData = watch();
 
   useEffect(() => {
     if (!workstream?.evaluations || !user) {
@@ -67,16 +75,37 @@ const ValueResolutionForm: React.FC<{
       (evaluation) => evaluation.creator.id.toLowerCase() === user.toLowerCase()
     );
 
-    if (currentEvaluation) {
-      const addresses = currentEvaluation?.contributors.map(
-        (contributor) => contributor.id
-      );
-
-      const merged = _.zipObject(addresses, currentEvaluation.ratings);
-
-      setRatings(merged);
+    if (!currentEvaluation) {
+      return;
     }
+
+    const addresses = currentEvaluation?.contributors.map(
+      (contributor) => contributor.id
+    );
+
+    const merged = _.zipObject(addresses, currentEvaluation.ratings);
+
+    setRatings(merged);
   }, [user, workstream]);
+
+  //TODO cleanup useEffect with all the !!!!
+  useEffect(() => {
+    if (!formData.ratings) {
+      return;
+    }
+
+    const values = Object.values(formData.ratings);
+
+    if (!values) {
+      return;
+    }
+
+    const totalVFux = values
+      .map((rating) => (rating ? +rating : 0))
+      .reduce((_total, value) => _total + value, 0);
+
+    if (totalVFux) setTotal(totalVFux);
+  }, [formData]);
 
   const onSubmit = (data: FormData) => {
     if (!workstream?.id || Object.values(data.ratings).length == 0) {
@@ -87,13 +116,9 @@ const ValueResolutionForm: React.FC<{
       return;
     }
 
-    const totalVFux = Object.values(data.ratings)
-      .map((rating) => Number(rating))
-      .reduce((total, value) => +total + value, 0);
-
-    if (totalVFux != 100) {
+    if (total != 100) {
       toast({
-        title: `Not enough vFUX: ${totalVFux.toString()}/100`,
+        title: `Not enough: ${total || "..."}/100`,
         status: "error",
       });
       return;
@@ -129,7 +154,7 @@ const ValueResolutionForm: React.FC<{
         <FormControl>
           <Grid gap={2} templateColumns="repeat(10, 1fr)">
             {contributors.map((contributor, index) => {
-              return contributor.id.toLowerCase() ===
+              return contributor.user.id.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
                   <GridItem
@@ -139,7 +164,7 @@ const ValueResolutionForm: React.FC<{
                     colSpan={6}
                     borderLeftRadius="3xl"
                   >
-                    <ContributorRow address={contributor.id} />
+                    <ContributorRow address={contributor.user.id} />
                   </GridItem>
                   <GridItem
                     bg="#301A3A"
@@ -149,16 +174,24 @@ const ValueResolutionForm: React.FC<{
                     colSpan={3}
                   >
                     <Controller
-                      name={`ratings.${contributor.id}`}
+                      name={`ratings.${contributor.user.id}`}
                       control={control}
                       rules={{ required: true }}
-                      key={`ratings.${contributor.id}`}
+                      key={`ratings.${contributor.user.id}`}
                       render={({ field }) => (
                         <NumberInput {...field}>
                           <NumberInputField
                             ref={field.ref}
                             name={field.name}
                             borderRadius={0}
+                            max={100}
+                            placeholder={
+                              ratings
+                                ? ratings[
+                                    contributor.user.id.toLowerCase()
+                                  ].toString()
+                                : "0"
+                            }
                           />
                           <NumberInputStepper>
                             <NumberIncrementStepper />
@@ -187,8 +220,14 @@ const ValueResolutionForm: React.FC<{
               Reset
             </Button>
             <Spacer />
-            <Button isLoading={isSubmitting} type="submit">
-              Finalize workstream
+            <Button
+              isDisabled={total != 100}
+              isLoading={isSubmitting}
+              type="submit"
+            >
+              {total && total != 100
+                ? `${100 - total} / 100`
+                : "Finalize workstream"}
             </Button>
           </ButtonGroup>
         </VStack>

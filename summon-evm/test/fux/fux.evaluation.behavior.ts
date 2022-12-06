@@ -6,19 +6,20 @@ import setupTest from "../setup";
 
 export function shouldBehaveLikeFuxEvaluation(): void {
   it("only allows workstream coordinator to claim vFUX for evaluation and only when committed", async function () {
-    const { fux, deployer, owner, user } = await setupTest();
+    const { fux, owner, user } = await setupTest();
+
+    await user.fux.mintFux();
 
     await user.fux.mintWorkstream(
       "Test",
       [user.address, owner.address],
+      10,
       DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
     );
 
-    await user.fux.mintFux();
     await owner.fux.mintFux();
 
     await expect(owner.fux.mintVFux(0)).to.be.revertedWith("NotCoordinator()");
-    await expect(user.fux.mintVFux(0)).to.be.revertedWith("NotEnoughFux()");
 
     await user.fux.commitToWorkstream(0, 50);
 
@@ -30,20 +31,21 @@ export function shouldBehaveLikeFuxEvaluation(): void {
   it("allows workstream contributor to submit evaluations", async function () {
     const { fux, deployer, owner, user } = await setupTest();
 
+    await user.fux.mintFux();
+
     await user.fux.mintWorkstream(
       "Test",
       [user.address, owner.address],
+      10,
       DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
     );
 
-    await user.fux.mintFux();
     await owner.fux.mintFux();
 
     expect(await user.fux.balanceOf(user.address, 1)).to.be.eq(0);
 
-    await expect(user.fux.submitValueEvaluation(0, [owner.address], [100])).to.be.revertedWith("NotEnoughFux()");
+    await expect(user.fux.submitValueEvaluation(0, [owner.address], [100])).to.not.be.reverted;
 
-    await user.fux.commitToWorkstream(0, 50);
     await owner.fux.commitToWorkstream(0, 42);
 
     await expect(deployer.fux.submitValueEvaluation(0, [owner.address], [100])).to.be.revertedWith("NotContributor()");
@@ -51,7 +53,6 @@ export function shouldBehaveLikeFuxEvaluation(): void {
     await expect(user.fux.submitValueEvaluation(0, [owner.address], [100]))
       .to.emit(fux, "EvaluationSubmitted")
       .withArgs(0, user.address, [owner.address], [100]);
-
 
     await expect(user.fux.submitValueEvaluation(0, [user.address], [100])).to.be.revertedWith(
       'InvalidInput("sender is contributor")',

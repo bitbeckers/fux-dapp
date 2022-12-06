@@ -1,6 +1,10 @@
-import { WorkstreamFragmentFragment } from "../../../.graphclient";
+import {
+  WorkstreamFragmentFragment,
+  EvaluationFragmentFragment,
+} from "../../../.graphclient";
 import { useSubmitValueEvaluation } from "../../../hooks/evaluations";
 import { ContributorRow } from "../ContributorRow";
+import { StarIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,
@@ -16,6 +20,9 @@ import {
   ButtonGroup,
   VStack,
   useToast,
+  HStack,
+  Center,
+  Icon,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import { BigNumber, BigNumberish } from "ethers";
@@ -31,21 +38,29 @@ type FormData = {
 const ValueReviewForm: React.FC<{
   workstream?: WorkstreamFragmentFragment;
 }> = ({ workstream }) => {
+  if (!workstream) {
+    <Text>Loading...</Text>;
+  }
   const { address: user } = useWallet();
   const toast = useToast();
   const submitEvaluation = useSubmitValueEvaluation();
 
   const [ratings, setRatings] = useState<{ [address: string]: BigNumberish }>();
+  const [total, setTotal] = useState<number>(0);
+
   const {
     handleSubmit,
     reset,
+    watch,
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      ratings: ratings || {},
+      ratings: ratings,
     },
   });
+
+  const formData = watch();
 
   useEffect(() => {
     if (!workstream?.evaluations || !user) {
@@ -53,25 +68,46 @@ const ValueReviewForm: React.FC<{
     }
 
     const currentEvaluation = workstream.evaluations.find(
-      (evaluation) => evaluation.creator.id.toLowerCase() === user.toLowerCase()
+      (evaluation: EvaluationFragmentFragment) =>
+        evaluation.creator.id.toLowerCase() === user.toLowerCase()
     );
 
-    if (currentEvaluation) {
-      const addresses = currentEvaluation.contributors.map(
-        (contributor) => contributor.id
-      );
-
-      const merged = _.zipObject(addresses, currentEvaluation.ratings);
-
-      setRatings(merged);
+    if (!currentEvaluation) {
+      return;
     }
+
+    const addresses = currentEvaluation.contributors.map(
+      (contributor) => contributor.id
+    );
+
+    const merged = _.zipObject(addresses, currentEvaluation.ratings);
+
+    console.log("Merged: ", merged);
+
+    setRatings(merged);
   }, [user, workstream]);
 
+  //TODO cleanup useEffect with all the !!!!
+  useEffect(() => {
+    if (!formData.ratings) {
+      return;
+    }
+
+    const values = Object.values(formData.ratings);
+
+    if (!values) {
+      return;
+    }
+
+    const totalVFux = values
+      .map((rating) => (rating ? +rating : 0))
+      .reduce((_total, value) => _total + value, 0);
+
+    if (totalVFux) setTotal(totalVFux);
+  }, [formData]);
+
   const onSubmit = (data: FormData) => {
-    if (
-      !workstream?.id ||
-      Object.values(data.ratings).length == 0
-    ) {
+    if (!total || !workstream?.id || Object.values(data.ratings).length == 0) {
       toast({
         title: `Missing input data`,
         status: "error",
@@ -79,13 +115,9 @@ const ValueReviewForm: React.FC<{
       return;
     }
 
-    const totalVFux = Object.values(data.ratings)
-      .map((rating) => Number(rating))
-      .reduce((total, value) => +total + value, 0);
-
-    if (totalVFux != 100) {
+    if (total != 100) {
       toast({
-        title: `Not enough vFUX: ${totalVFux.toString()}/100`,
+        title: `Not enough: ${total.toString() || "..."}/100`,
         status: "error",
       });
       return;
@@ -105,14 +137,22 @@ const ValueReviewForm: React.FC<{
   };
 
   const contributors = workstream?.contributors;
+  const owner = workstream?.coordinator?.id;
+
+  console.log("Ratings: ", ratings);
 
   const reviewForm =
     contributors && contributors?.length > 0 && user ? (
       <form onSubmit={handleSubmit(onSubmit)}>
+        <Center>
+          <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
+            Distribute 100 points to rate value contribution
+          </Text>
+        </Center>
         <FormControl>
           <Grid gap={2} templateColumns="repeat(10, 1fr)">
             {contributors.map((contributor, index) => {
-              return contributor.id.toLowerCase() ===
+              return contributor.user.id.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
                   <GridItem
@@ -122,7 +162,14 @@ const ValueReviewForm: React.FC<{
                     colSpan={6}
                     borderLeftRadius="3xl"
                   >
-                    <ContributorRow address={contributor.id} />
+                    <ContributorRow address={contributor.user.id} />
+                    <Spacer />
+                    {contributor.user.id.toLowerCase() ===
+                    owner?.toLowerCase() ? (
+                      <StarIcon mr={"1em"} />
+                    ) : (
+                      <></>
+                    )}
                   </GridItem>
                   <GridItem
                     bg="#301A3A"
@@ -132,16 +179,24 @@ const ValueReviewForm: React.FC<{
                     colSpan={3}
                   >
                     <Controller
-                      name={`ratings.${contributor.id}`}
+                      name={`ratings.${contributor.user.id}`}
                       control={control}
                       rules={{ required: true }}
-                      key={`ratings.${contributor.id}`}
+                      key={`ratings.${contributor.user.id}`}
                       render={({ field }) => (
                         <NumberInput {...field}>
                           <NumberInputField
                             ref={field.ref}
                             name={field.name}
                             borderRadius={0}
+                            max={100}
+                            placeholder={
+                              ratings
+                                ? ratings[
+                                    contributor.user.id.toLowerCase()
+                                  ].toString()
+                                : "0"
+                            }
                           />
                           <NumberInputStepper>
                             <NumberIncrementStepper />
@@ -158,9 +213,6 @@ const ValueReviewForm: React.FC<{
         </FormControl>
 
         <VStack w={"100%"} pt={4}>
-          <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
-            Distribute 100 points to rate value contribution
-          </Text>
           <ButtonGroup>
             <Button
               isLoading={isSubmitting}
@@ -170,8 +222,14 @@ const ValueReviewForm: React.FC<{
               Reset
             </Button>
             <Spacer />
-            <Button isLoading={isSubmitting} type="submit">
-              Submit evaluation
+            <Button
+              isDisabled={total != 100}
+              isLoading={isSubmitting}
+              type="submit"
+            >
+              {total && total != 100
+                ? `${100 - total} / 100`
+                : "Submit evaluation"}
             </Button>
           </ButtonGroup>
         </VStack>

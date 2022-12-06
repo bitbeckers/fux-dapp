@@ -1,5 +1,6 @@
 import { WorkstreamEvaluationsDocument } from "../../.graphclient";
 import { ContributorRow } from "../../components/FUX/ContributorRow";
+import { SoloResolutionForm } from "../../components/FUX/SoloResolutionForm";
 import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueResolutionForm } from "../../components/FUX/ValueResolutionForm";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
@@ -41,6 +42,34 @@ const Resolve: NextPage = () => {
     (uw) => uw.workstream.id === workstreamID
   )?.workstream;
 
+  const generateContent = () => {
+    if (!_workstream && !user) {
+      return undefined;
+    }
+
+    const _user = user?.toLowerCase();
+    const _coordinator = _workstream?.coordinator?.id.toLowerCase();
+    const _contributors = _workstream?.contributors;
+
+    let form = <></>;
+
+    if (
+      _user === _coordinator &&
+      _contributors?.length === 1 &&
+      _contributors[0].user.id.toLowerCase() === _user
+    ) {
+      form = <SoloResolutionForm workstream={_workstream} />;
+    } else if (_user === _coordinator) {
+      form = <ValueResolutionForm workstream={_workstream} />;
+    } else {
+      form = <ValueReviewForm workstream={_workstream} />;
+    }
+
+    return form;
+  };
+
+  const form = generateContent();
+
   return _workstream ? (
     <>
       <VStack w={"100%"}>
@@ -60,12 +89,7 @@ const Resolve: NextPage = () => {
                 : "Deadline unknown"}
             </Text>
           </HStack>
-          {user?.toLowerCase() ===
-          _workstream?.coordinator?.id.toLowerCase() ? (
-            <ValueResolutionForm workstream={_workstream} />
-          ) : (
-            <ValueReviewForm workstream={_workstream} />
-          )}
+          {form ? form : ""}
         </VStack>
       </VStack>
     </>

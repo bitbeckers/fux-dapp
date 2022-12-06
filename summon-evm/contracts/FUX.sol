@@ -22,7 +22,7 @@ error TokensAlreadyMinted();
 error EvaluationAlreadySubmitted();
 error NonExistentWorkstream();
 error NotApprovedOrOwner();
-error InvalidInput(string inputVar);
+error InvalidInput(string message);
 
 contract FUX is
     Initializable,
@@ -158,9 +158,9 @@ contract FUX is
     function mintWorkstream(
         string memory name,
         address[] calldata contributors,
+        uint256 selfFux,
         uint256 deadline
     ) public payable {
-        if (contributors.length == 0) revert InvalidInput("contributors");
         uint256 workstreamID = counter;
         Workstream memory _workstream;
         _workstream.name = name;
@@ -171,32 +171,39 @@ contract FUX is
         _workstream.funds = msg.value;
         workstreams[workstreamID] = _workstream;
 
-        addContributors(workstreamID, contributors);
+        if (contributors.length > 0) {
+            addContributors(workstreamID, contributors);
+        }
 
         emit WorkstreamMinted(workstreamID, msg.value, deadline, "http://example.com");
-        counter = counter + 1;
+        counter += 1;
+
+        commitToWorkstream(workstreamID, selfFux);
     }
 
     //TODO more efficient state changes
     function addContributors(uint256 workstreamId, address[] calldata contributors) public {
-        if (!workstreams[workstreamId].exists) revert NonExistentWorkstream();
-        if (workstreams[workstreamId].creator != msg.sender) revert NotApprovedOrOwner();
+        Workstream storage workstream = workstreams[workstreamId];
+        if (!workstream.exists) revert NonExistentWorkstream();
+        if (workstream.creator != msg.sender) revert NotApprovedOrOwner();
         uint256 contributorsLength = contributors.length;
         for (uint256 i = 0; i < contributorsLength; i++) {
             address contributor = contributors[i];
             contributorWorkstreams[contributor].push(workstreamId);
-            workstreams[workstreamId].contributors.push(contributor);
+            workstream.contributors.push(contributor);
             isContributor[contributor][workstreamId] = true;
         }
         emit ContributorsAdded(workstreamId, contributors);
     }
 
-    function commitToWorkstream(uint256 workstreamID, uint8 fuxGiven) public {
+    function commitToWorkstream(uint256 workstreamID, uint256 fuxGiven) public {
         if (balanceOf(msg.sender, FUX_TOKEN_ID) < fuxGiven) revert NotEnoughFux();
         if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
         uint256 currentFux = contributorCommitments[msg.sender][workstreamID];
 
         require(currentFux != fuxGiven, "Same amount of FUX");
+
+        contributorCommitments[msg.sender][workstreamID] = fuxGiven;
 
         if (currentFux < fuxGiven) {
             _safeTransferFrom(msg.sender, address(this), FUX_TOKEN_ID, fuxGiven - currentFux, "");
@@ -205,7 +212,6 @@ contract FUX is
             _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, currentFux - fuxGiven, "");
         }
 
-        contributorCommitments[msg.sender][workstreamID] = fuxGiven;
         emit FuxGiven(msg.sender, workstreamID, fuxGiven);
     }
 
@@ -242,8 +248,11 @@ contract FUX is
         _submitEvaluations(workstreamID, contributors, vFuxGiven);
 
         _payVFux(contributors, vFuxGiven, workstreamID);
-        if (workstream.funds > 0) {
-            _reserveFunds(contributors, vFuxGiven, workstream.funds);
+
+        uint256 funds = workstream.funds;
+        if (funds > 0) {
+            workstream.funds = 0;
+            _reserveFunds(contributors, vFuxGiven, funds);
         }
         _returnFux(contributors, workstreamID);
         _withdrawFux(workstreamID);
@@ -252,24 +261,28 @@ contract FUX is
         workstream.exists = false;
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) public pure override {
-        revert NonTransferableFux();
-    }
+    function resolveSoloWorkstream(uint256 workstreamID) public {
+        Workstream storage workstream = workstreams[workstreamID];
+        if (!workstream.exists) revert NonExistentWorkstream();
+        if (msg.sender != workstream.creator) revert NotApprovedOrOwner();
+        if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
 
-    function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) public pure virtual override {
-        revert NonTransferableFux();
+        console.log("COntributors: ", workstream.contributors.length);
+
+        if (workstream.contributors.length != 1) revert InvalidInput("Not solo");
+
+        uint256 funds = workstream.funds;
+
+        if (funds > 0) {
+            workstream.funds = 0;
+            balances[msg.sender] += workstream.funds;
+            emit RewardsReserved(workstream.creator, funds);
+        }
+
+        _withdrawFux(workstreamID);
+
+        emit WorkstreamClosed(workstreamID);
+        workstream.exists = false;
     }
 
     function _withdrawFux(uint256 workstreamID) internal {
@@ -373,6 +386,26 @@ contract FUX is
         }
 
         return _total == total;
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public pure override {
+        revert NonTransferableFux();
+    }
+
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public pure virtual override {
+        revert NonTransferableFux();
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}

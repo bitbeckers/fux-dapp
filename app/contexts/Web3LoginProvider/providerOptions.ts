@@ -1,4 +1,3 @@
-import { defaultChain } from "../../utils/constants";
 import { NetworkConfig } from "@raidguild/quiver";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { IProviderOptions } from "web3modal";
@@ -45,5 +44,3 @@ export const WEB3_MODAL_OPTIONS = {
   providerOptions,
   theme: "dark",
 };
-
-export const DEFAULT_CHAIN_ID = defaultChain;
