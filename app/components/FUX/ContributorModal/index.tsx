@@ -70,6 +70,8 @@ const ContributorModal: React.FC<{
   };
 
   const input = (
+    <>
+    <Text mb={3}>Contributors</Text>
     <form onSubmit={handleSubmit(onSubmit)}>
       {contributors?.map(({ user }, index) => (
         <ContributorRow key={index} address={user.id} />
@@ -107,6 +109,7 @@ const ContributorModal: React.FC<{
         </Button>
       </ButtonGroup>
     </form>
+    </>
   );
 
   return (
@@ -122,7 +125,7 @@ const ContributorModal: React.FC<{
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />
         <ModalContent bg="#221527">
-          <ModalHeader>Contributors</ModalHeader>
+          <ModalHeader>{workstreamName}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>
         </ModalContent>
