@@ -152,6 +152,47 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
           </VStack>
 
           <VStack>
+            
+            <Controller
+              name={`fuxGiven`}
+              control={control}
+              rules={{ required: true }}
+              key={`fuxGiven`}
+              render={({ field: { ref, onChange, ...restField } }) => (
+                <>
+                  <FormHelperText textColor={"white"} w={"100%"}>
+                    How many FUX do you give?
+                  </FormHelperText>
+                  <InputGroup>
+                    <NumberInput
+                      precision={0}
+                      step={1}
+                      onChange={onChange}
+                      min={0}
+                      max={fuxBalance}
+                      {...restField}
+                    >
+                      <NumberInputField
+                        ref={ref}
+                        name={restField.name}
+                        borderRightRadius={0}
+                      />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
+                      <Text>FUX</Text>
+                    </InputRightAddon>
+                  </InputGroup>
+                  <FormHelperText textColor={"white"} w={"100%"}>
+                    {`${fuxBalance} FUX to give`}
+                  </FormHelperText>
+                </>
+              )}
+            />
+
             <Controller
               name={`funding`}
               control={control}
@@ -192,45 +233,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                 </>
               )}
             />
-            <Controller
-              name={`fuxGiven`}
-              control={control}
-              rules={{ required: true }}
-              key={`fuxGiven`}
-              render={({ field: { ref, onChange, ...restField } }) => (
-                <>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    How many FUX do you give?
-                  </FormHelperText>
-                  <InputGroup>
-                    <NumberInput
-                      precision={0}
-                      step={1}
-                      onChange={onChange}
-                      min={0}
-                      max={fuxBalance}
-                      {...restField}
-                    >
-                      <NumberInputField
-                        ref={ref}
-                        name={restField.name}
-                        borderRightRadius={0}
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-                      <Text>FUX</Text>
-                    </InputRightAddon>
-                  </InputGroup>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    {`${fuxBalance} FUX to give`}
-                  </FormHelperText>
-                </>
-              )}
-            />
+
           </VStack>
         </HStack>
       </FormControl>

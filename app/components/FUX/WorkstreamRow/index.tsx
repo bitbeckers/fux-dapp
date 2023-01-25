@@ -8,6 +8,7 @@ import {
   GridItem,
   IconButton,
   Text,
+  Tooltip,
   useToast,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
@@ -44,10 +45,11 @@ const WorkstreamRow: React.FC<{
 
   return _workstream ? (
     <>
-      <GridItem display={"flex"} alignItems={"center"} bg="#301A3A" colSpan={7}>
-        <Checkbox alignContent="center" pl={"1em"}>
+      <GridItem display={"flex"} alignItems={"center"} bg="#301A3A" colSpan={7} pl={5}>
+        {/* <Checkbox alignContent="center" pl={"1em"}>
           {_workstream.name}
-        </Checkbox>
+        </Checkbox> */}
+        {_workstream.name}
       </GridItem>
       <GridItem
         display={"flex"}
@@ -84,10 +86,11 @@ const WorkstreamRow: React.FC<{
           contributors={_workstream.contributors?.filter(
             (contributor) => contributor
           )}
-        />
+          />
       </GridItem>
-
+      
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
+        
         {allowResolve ? (
           <NextLink
             href={{
@@ -95,19 +98,25 @@ const WorkstreamRow: React.FC<{
               query: { workstreamID },
             }}
           >
-            <IconButton
-              aria-label="resolve workstream"
-              icon={<ArrowRightIcon />}
-            />
+            <Tooltip hasArrow label="Evaluate" aria-label="Evaluate">
+              <IconButton
+                aria-label="resolve workstream"
+                icon={<ArrowRightIcon />}
+              />
+            </Tooltip>
           </NextLink>
         ) : (
-          <IconButton
-            onClick={handleClick}
-            aria-label="resolve workstream"
-            icon={<ArrowRightIcon />}
-          />
+            <Tooltip hasArrow label="Evaluate" aria-label="Evaluate">
+              <IconButton
+                onClick={handleClick}
+                aria-label="resolve workstream"
+                icon={<ArrowRightIcon />}
+              />
+            </Tooltip>
+          
         )}
       </GridItem>
+      
     </>
   ) : (
     <></>
