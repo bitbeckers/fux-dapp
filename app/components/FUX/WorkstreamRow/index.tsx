@@ -83,6 +83,7 @@ const WorkstreamRow: React.FC<{
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <ContributorModal
           workstreamID={workstreamID}
+          worstreamName={_workstream.name}
           contributors={_workstream.contributors?.filter(
             (contributor) => contributor
           )}

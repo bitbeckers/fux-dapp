@@ -243,7 +243,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
         </Button>
         <Spacer />
         <Button isLoading={isSubmitting} type="submit">
-          Create workstream
+          Create Workstream
         </Button>
       </ButtonGroup>
     </form>
@@ -252,13 +252,13 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   return (
     <>
       <Button onClick={onOpen} leftIcon={<AddIcon />}>
-        Add workstream
+        Add Workstream
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />
         <ModalContent bg="#221527">
-          <ModalHeader>Add workstream</ModalHeader>
+          <ModalHeader>Add Workstream</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>
         </ModalContent>

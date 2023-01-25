@@ -15,20 +15,19 @@ export const ContributorRow: React.FC<{ address: string }> = ({ address }) => {
   };
 
   return ens ? (
-    <HStack>
+    <HStack spacing={3} mb={3}>
       <Avatar name={ens} src={avatar} />
       <Button variant={"link"} onClick={() => handleClick()}>
-        <Text>{ens}</Text>
+        <Text mr={2}>{ens}</Text>
         <CopyIcon />
       </Button>
     </HStack>
   ) : (
-    <HStack>
+    <HStack spacing={3} mb={3}>
       <Avatar name={address} src={avatar} />
       <Button variant={"link"} onClick={() => handleClick()}>
-        <Text>{formatAddress(address)}</Text>
-        <Icon as={CopyIcon} />
-        <Text>Bugger</Text>
+        <Text mr={2}>{formatAddress(address)}</Text>
+        <CopyIcon />
       </Button>
     </HStack>
   );
