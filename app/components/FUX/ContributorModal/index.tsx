@@ -16,6 +16,7 @@ import {
   InputRightElement,
   Spacer,
   Icon,
+  Tooltip,
 } from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -103,11 +104,13 @@ const ContributorModal: React.FC<{
 
   return (
     <>
-      <IconButton
-        onClick={onOpen}
-        aria-label="Manage contributors"
-        icon={<Icon as={BsFillPersonPlusFill} />}
-      ></IconButton>
+      <Tooltip hasArrow label="Manage Contributors" aria-label="Manage Contributors">
+        <IconButton
+          onClick={onOpen}
+          aria-label="Manage contributors"
+          icon={<Icon as={BsFillPersonPlusFill} />}
+        ></IconButton>
+      </Tooltip>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />
