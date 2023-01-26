@@ -1,5 +1,5 @@
-import type { NextPage } from "next";
 import { Box, Button, VStack, Text, Link } from "@chakra-ui/react";
+import type { NextPage } from "next";
 import NextLink from "next/link";
 
 const Home: NextPage = () => {
@@ -17,9 +17,7 @@ const Home: NextPage = () => {
 
       <NextLink href="/start" passHref>
         <Button p={"1em"}>
-          <Link>
-            Get started
-          </Link>
+          <Link>Get started</Link>
         </Button>
       </NextLink>
 
@@ -29,7 +27,7 @@ const Home: NextPage = () => {
           amount of time between here and there, you have a limited amount of
           fucks to give. Very few, in fact. And if you go around giving a fuck
           about everything and everyone without conscious thought or
-          choice—well, then you&aposre going to get fucked.”
+          choice—well, then you&apos;re going to get fucked.”
         </Text>
         <Text fontSize="sm" fontWeight="bold" p={"2em"}>
           Mark Manson, The Subtle Art of Not Giving a F*ck: A Counterintuitive
