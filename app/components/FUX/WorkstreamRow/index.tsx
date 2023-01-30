@@ -8,6 +8,7 @@ import {
   GridItem,
   IconButton,
   Text,
+  Tooltip,
   useToast,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
@@ -44,10 +45,17 @@ const WorkstreamRow: React.FC<{
 
   return _workstream ? (
     <>
-      <GridItem display={"flex"} alignItems={"center"} bg="#301A3A" colSpan={7}>
-        <Checkbox alignContent="center" pl={"1em"}>
+      <GridItem
+        display={"flex"}
+        alignItems={"center"}
+        bg="#301A3A"
+        colSpan={7}
+        pl={5}
+      >
+        {/* <Checkbox alignContent="center" pl={"1em"}>
           {_workstream.name}
-        </Checkbox>
+        </Checkbox> */}
+        {_workstream.name}
       </GridItem>
       <GridItem
         display={"flex"}
@@ -81,6 +89,7 @@ const WorkstreamRow: React.FC<{
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <ContributorModal
           workstreamID={workstreamID}
+          workstreamName={_workstream.name || "N/A"}
           contributors={_workstream.contributors?.filter(
             (contributor) => contributor
           )}
@@ -95,17 +104,21 @@ const WorkstreamRow: React.FC<{
               query: { workstreamID },
             }}
           >
+            <Tooltip hasArrow label="Evaluate" aria-label="Evaluate">
+              <IconButton
+                aria-label="resolve workstream"
+                icon={<ArrowRightIcon />}
+              />
+            </Tooltip>
+          </NextLink>
+        ) : (
+          <Tooltip hasArrow label="Evaluate" aria-label="Evaluate">
             <IconButton
+              onClick={handleClick}
               aria-label="resolve workstream"
               icon={<ArrowRightIcon />}
             />
-          </NextLink>
-        ) : (
-          <IconButton
-            onClick={handleClick}
-            aria-label="resolve workstream"
-            icon={<ArrowRightIcon />}
-          />
+          </Tooltip>
         )}
       </GridItem>
     </>

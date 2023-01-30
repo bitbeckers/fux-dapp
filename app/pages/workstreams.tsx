@@ -5,7 +5,7 @@ import {
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
-import { VStack, Divider, Grid } from "@chakra-ui/react";
+import { VStack, Divider, Grid, GridItem } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import type { NextPage } from "next";
 import React from "react";
@@ -47,18 +47,26 @@ const Workstreams: NextPage = () => {
       {fetching ? (
         "Loading... "
       ) : (
-        <Grid w="40%" gap={2} templateColumns="repeat(16, 1fr)">
-          {data?.userWorkstreams
-            ? data?.userWorkstreams.map(({ workstream }, index) => (
-                <WorkstreamRow
-                  workstream={workstream}
-                  fuxAvailable={balance?.balance}
-                  showInactive={false}
-                  key={index}
-                />
-              ))
-            : undefined}
-        </Grid>
+        <>
+          <Grid w="40%" gap={2} templateColumns="repeat(16, 1fr)" textTransform={'uppercase'} letterSpacing={'0.1em'} fontSize="sm">
+            <GridItem colSpan={7}>Title</GridItem>
+            <GridItem colSpan={4}>Funding</GridItem>
+            <GridItem colSpan={2}>FUX</GridItem>
+            <GridItem colSpan={3}>Actions</GridItem>
+          </Grid>
+          <Grid w="40%" gap={2} templateColumns="repeat(16, 1fr)">
+            {data?.userWorkstreams
+              ? data?.userWorkstreams.map(({ workstream }, index) => (
+                  <WorkstreamRow
+                    workstream={workstream}
+                    fuxAvailable={balance?.balance}
+                    showInactive={false}
+                    key={index}
+                  />
+                ))
+              : undefined}
+          </Grid>
+        </>
       )}
     </VStack>
   );

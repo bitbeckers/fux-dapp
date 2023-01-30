@@ -1,6 +1,7 @@
 import { useAddContributors } from "../../../hooks/workstream";
 import { ContributorRow } from "../ContributorRow";
 import {
+  Box,
   Button,
   ButtonGroup,
   Input,
@@ -16,6 +17,8 @@ import {
   InputRightElement,
   Spacer,
   Icon,
+  Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -28,8 +31,9 @@ type FormData = {
 
 const ContributorModal: React.FC<{
   workstreamID: number;
+  workstreamName: string;
   contributors?: { user: { id: string } }[];
-}> = ({ workstreamID, contributors }) => {
+}> = ({ workstreamID, workstreamName, contributors }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const addContributors = useAddContributors();
 
@@ -66,10 +70,14 @@ const ContributorModal: React.FC<{
   };
 
   const input = (
+    <>
+    <Text mb={3}>Contributors</Text>
     <form onSubmit={handleSubmit(onSubmit)}>
       {contributors?.map(({ user }, index) => (
         <ContributorRow key={index} address={user.id} />
       ))}
+      <Box mt={6}><hr /></Box>
+      <Text mt={6}>Invite Contributors</Text>
 
       {fields.map((field, index) => (
         <InputGroup key={field.id} marginTop={"1em"}>
@@ -80,11 +88,13 @@ const ContributorModal: React.FC<{
           />
           {index == fields.length - 1 ? (
             <InputRightElement>
-              <IconButton
-                aria-label="Add contributor"
-                onClick={() => append({ address: "" })}
-                icon={<Icon as={BsFillPersonPlusFill} />}
-              />
+              <Tooltip hasArrow label="Add Another Contributor" aria-label="Add Another Contributor">
+                <IconButton
+                  aria-label="Add another contributor"
+                  onClick={() => append({ address: "" })}
+                  icon={<Icon as={BsFillPersonPlusFill} />}
+                />
+              </Tooltip>
             </InputRightElement>
           ) : undefined}
         </InputGroup>
@@ -95,24 +105,27 @@ const ContributorModal: React.FC<{
         </Button>
         <Spacer />
         <Button isLoading={isSubmitting} type="submit">
-          Store
+          Submit
         </Button>
       </ButtonGroup>
     </form>
+    </>
   );
 
   return (
     <>
-      <IconButton
-        onClick={onOpen}
-        aria-label="Manage contributors"
-        icon={<Icon as={BsFillPersonPlusFill} />}
-      ></IconButton>
+      <Tooltip hasArrow label="Manage Contributors" aria-label="Manage Contributors">
+        <IconButton
+          onClick={onOpen}
+          aria-label="Manage contributors"
+          icon={<Icon as={BsFillPersonPlusFill} />}
+        ></IconButton>
+      </Tooltip>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />
         <ModalContent bg="#221527">
-          <ModalHeader>Workstream contributors</ModalHeader>
+          <ModalHeader>{workstreamName}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>
         </ModalContent>

@@ -18,6 +18,7 @@ import {
   NumberInputField,
   NumberInputStepper,
   Spacer,
+  Tooltip,
 } from "@chakra-ui/react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -95,11 +96,13 @@ const AssignFuxModal: React.FC<{
 
   return (
     <>
-      <IconButton
-        onClick={onOpen}
-        aria-label="Give FUX"
-        icon={<AddIcon />}
-      ></IconButton>
+      <Tooltip hasArrow label="Update FUX Given" aria-label="Update FUX Given">
+        <IconButton
+          onClick={onOpen}
+          aria-label="Give FUX"
+          icon={<AddIcon />}
+        ></IconButton>
+      </Tooltip>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />

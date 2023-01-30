@@ -27,7 +27,7 @@ const Header: React.FC<{}> = () => {
       direction={["column", "row"]}
       as="nav"
       w="100%"
-      p="5"
+      p="10"
       justify="space-around"
       align="center"
       bg="#221527"
