@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import setupTest from "../setup";
+import { setupTest } from "../setup";
 import { shouldBehaveLikeFuxContributor } from "./fux.contributor.behavior";
 import { shouldBehaveLikeFuxEvaluation } from "./fux.evaluation.behavior";
 import { shouldBehaveLikeFuxResolution } from "./fux.resolution.behavior";

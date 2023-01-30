@@ -374,7 +374,7 @@ const _abi = [
     stateMutability: "view",
     type: "function",
   },
-];
+] as const;
 
 export class ERC1155SupplyUpgradeable__factory {
   static readonly abi = _abi;
