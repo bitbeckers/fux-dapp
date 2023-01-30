@@ -1,29 +1,25 @@
-import { deployments } from "hardhat";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { ethers } from "hardhat";
 
-import { FUX } from "../types";
+import { getDefaultSigners } from "./utils";
 
-const setupTest = deployments.createFixture(async ({ deployments, getNamedAccounts, ethers }) => {
-  await deployments.fixture(); // ensure you start from a fresh deployments
-  const { deployer, owner, user } = await getNamedAccounts();
+const buildFixture = async () => {
+  const { deployer, owner, user } = await getDefaultSigners();
 
+  // Contract factory
+  const fuxFactory = await ethers.getContractFactory("FUX");
   // Contracts
-  const fux = <FUX>await ethers.getContract("FUX");
-
-  // Account config
-  const setupAddress = async (address: string) => {
-    return {
-      address,
-      fux: <FUX>await ethers.getContract("FUX", address),
-    };
-  };
+  const fux = await fuxFactory.connect(owner).deploy();
 
   // Struct
   return {
     fux,
-    deployer: await setupAddress(deployer),
-    owner: await setupAddress(owner),
-    user: await setupAddress(user),
+    deployer,
+    owner,
+    user,
   };
-});
+};
 
-export default setupTest;
+export const setupTest = async () => {
+  return await loadFixture(buildFixture);
+};
