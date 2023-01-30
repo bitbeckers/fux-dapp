@@ -152,6 +152,47 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
           </VStack>
 
           <VStack>
+            
+            <Controller
+              name={`fuxGiven`}
+              control={control}
+              rules={{ required: true }}
+              key={`fuxGiven`}
+              render={({ field: { ref, onChange, ...restField } }) => (
+                <>
+                  <FormHelperText textColor={"white"} w={"100%"}>
+                    How many FUX do you give?
+                  </FormHelperText>
+                  <InputGroup>
+                    <NumberInput
+                      precision={0}
+                      step={1}
+                      onChange={onChange}
+                      min={0}
+                      max={fuxBalance}
+                      {...restField}
+                    >
+                      <NumberInputField
+                        ref={ref}
+                        name={restField.name}
+                        borderRightRadius={0}
+                      />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
+                      <Text>FUX</Text>
+                    </InputRightAddon>
+                  </InputGroup>
+                  <FormHelperText textColor={"white"} w={"100%"}>
+                    {`${fuxBalance} FUX to give`}
+                  </FormHelperText>
+                </>
+              )}
+            />
+
             <Controller
               name={`funding`}
               control={control}
@@ -192,45 +233,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                 </>
               )}
             />
-            <Controller
-              name={`fuxGiven`}
-              control={control}
-              rules={{ required: true }}
-              key={`fuxGiven`}
-              render={({ field: { ref, onChange, ...restField } }) => (
-                <>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    How many FUX do you give?
-                  </FormHelperText>
-                  <InputGroup>
-                    <NumberInput
-                      precision={0}
-                      step={1}
-                      onChange={onChange}
-                      min={0}
-                      max={fuxBalance}
-                      {...restField}
-                    >
-                      <NumberInputField
-                        ref={ref}
-                        name={restField.name}
-                        borderRightRadius={0}
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-                      <Text>FUX</Text>
-                    </InputRightAddon>
-                  </InputGroup>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    {`${fuxBalance} FUX to give`}
-                  </FormHelperText>
-                </>
-              )}
-            />
+
           </VStack>
         </HStack>
       </FormControl>
@@ -240,7 +243,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
         </Button>
         <Spacer />
         <Button isLoading={isSubmitting} type="submit">
-          Create workstream
+          Create Workstream
         </Button>
       </ButtonGroup>
     </form>
@@ -249,13 +252,13 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   return (
     <>
       <Button onClick={onOpen} leftIcon={<AddIcon />}>
-        Add workstream
+        Add Workstream
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />
         <ModalContent bg="#221527">
-          <ModalHeader>Add workstream</ModalHeader>
+          <ModalHeader>Add Workstream</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>
         </ModalContent>

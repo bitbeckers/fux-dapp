@@ -1,5 +1,6 @@
-import { HStack, Avatar, Text, Button, useToast } from "@chakra-ui/react";
+import { HStack, Avatar, Icon, Text, Button, useToast } from "@chakra-ui/react";
 import { formatAddress, useENS } from "@raidguild/quiver";
+import { CopyIcon }from "@chakra-ui/icons";
 
 export const ContributorRow: React.FC<{ address: string }> = ({ address }) => {
   const { address: _address, ens, avatar } = useENS({ address });
@@ -14,17 +15,19 @@ export const ContributorRow: React.FC<{ address: string }> = ({ address }) => {
   };
 
   return ens ? (
-    <HStack>
+    <HStack spacing={3} mb={3}>
       <Avatar name={ens} src={avatar} />
       <Button variant={"link"} onClick={() => handleClick()}>
-        <Text>{ens}</Text>
+        <Text mr={2}>{ens}</Text>
+        <CopyIcon />
       </Button>
     </HStack>
   ) : (
-    <HStack>
+    <HStack spacing={3} mb={3}>
       <Avatar name={address} src={avatar} />
       <Button variant={"link"} onClick={() => handleClick()}>
-        <Text>{formatAddress(address)}</Text>
+        <Text mr={2}>{formatAddress(address)}</Text>
+        <CopyIcon />
       </Button>
     </HStack>
   );
