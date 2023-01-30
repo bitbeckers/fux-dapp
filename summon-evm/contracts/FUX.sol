@@ -100,12 +100,9 @@ contract FUX is
         counter = 0;
     }
 
-    function uri(uint256 tokenId)
-        public
-        view
-        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
-        returns (string memory)
-    {
+    function uri(
+        uint256 tokenId
+    ) public view override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable) returns (string memory) {
         return super.uri(tokenId);
     }
 
@@ -161,24 +158,35 @@ contract FUX is
         uint256 selfFux,
         uint256 deadline
     ) public payable {
+        counter += 1;
         uint256 workstreamID = counter;
         Workstream memory _workstream;
         _workstream.name = name;
         _workstream.creator = msg.sender;
         _workstream.deadline = deadline;
-        _workstream.contributors = new address[](0);
         _workstream.exists = true;
         _workstream.funds = msg.value;
-        workstreams[workstreamID] = _workstream;
 
-        if (contributors.length > 0) {
-            addContributors(workstreamID, contributors);
+        uint256 contributorsLength = contributors.length;
+        _workstream.contributors = new address[](contributorsLength);
+
+        for (uint256 i = 0; i < contributorsLength; i++) {
+            address contributor = contributors[i];
+
+            //TODO triple accounting?
+            isContributor[contributor][workstreamID] = true;
+            contributorWorkstreams[contributor].push(workstreamID);
+            _workstream.contributors[i] = (contributor);
         }
 
-        emit WorkstreamMinted(workstreamID, msg.value, deadline, "http://example.com");
-        counter += 1;
+        emit ContributorsAdded(workstreamID, contributors);
 
-        commitToWorkstream(workstreamID, selfFux);
+        contributorCommitments[msg.sender][workstreamID] = selfFux;
+        workstreams[workstreamID] = _workstream;
+
+        contributorCommitments[msg.sender][workstreamID] = selfFux;
+        _safeTransferFrom(msg.sender, address(this), FUX_TOKEN_ID, selfFux, "");
+        emit WorkstreamMinted(workstreamID, msg.value, deadline, "");
     }
 
     //TODO more efficient state changes
@@ -197,7 +205,7 @@ contract FUX is
     }
 
     function commitToWorkstream(uint256 workstreamID, uint256 fuxGiven) public {
-        if (balanceOf(msg.sender, FUX_TOKEN_ID) < fuxGiven) revert NotEnoughFux();
+        if (balanceOf(msg.sender, FUX_TOKEN_ID) < fuxGiven || fuxGiven == 0) revert NotEnoughFux();
         if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
         uint256 currentFux = contributorCommitments[msg.sender][workstreamID];
 
@@ -226,7 +234,7 @@ contract FUX is
         address[] memory contributors,
         uint256[] memory ratings
     ) public {
-        if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
+        if (!_isContributor(msg.sender, workstreamID) || !_isCoordinator(workstreamID)) revert NotApprovedOrOwner();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
         if (contributors.length == 0 || contributors.length != ratings.length)
             revert InvalidInput("contributors, vFuxGiven");
@@ -241,7 +249,7 @@ contract FUX is
     ) public {
         Workstream storage workstream = workstreams[workstreamID];
         if (!workstream.exists) revert NonExistentWorkstream();
-        if (msg.sender != workstream.creator) revert NotApprovedOrOwner();
+        if (!_isCoordinator(workstreamID)) revert NotCoordinator();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
         if (getVFuxForEvaluation(workstreamID) == 0) revert NotEnoughVFux();
 
@@ -257,17 +265,15 @@ contract FUX is
         _returnFux(contributors, workstreamID);
         _withdrawFux(workstreamID);
 
-        emit WorkstreamClosed(workstreamID);
         workstream.exists = false;
+        emit WorkstreamClosed(workstreamID);
     }
 
     function resolveSoloWorkstream(uint256 workstreamID) public {
         Workstream storage workstream = workstreams[workstreamID];
         if (!workstream.exists) revert NonExistentWorkstream();
-        if (msg.sender != workstream.creator) revert NotApprovedOrOwner();
+        if (!_isCoordinator(workstreamID)) revert NotCoordinator();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
-
-        console.log("COntributors: ", workstream.contributors.length);
 
         if (workstream.contributors.length != 1) revert InvalidInput("Not solo");
 
@@ -281,8 +287,8 @@ contract FUX is
 
         _withdrawFux(workstreamID);
 
-        emit WorkstreamClosed(workstreamID);
         workstream.exists = false;
+        emit WorkstreamClosed(workstreamID);
     }
 
     function _withdrawFux(uint256 workstreamID) internal {
@@ -298,7 +304,7 @@ contract FUX is
         address[] memory contributors,
         uint256[] memory ratings
     ) internal {
-        if (!_checkTotal(ratings, 100)) revert NotEnoughFux();
+        if (_getTotal(ratings) != 100) revert InvalidInput("ratings != 100");
         _noSelfFuxing(contributors);
 
         if (contributors.length == 0 || contributors.length != ratings.length)
@@ -316,42 +322,32 @@ contract FUX is
         }
     }
 
-    function _payVFux(
-        address[] memory contributors,
-        uint256[] memory vFuxGiven,
-        uint256 workstreamID
-    ) internal {
-        if (!_checkTotal(vFuxGiven, 100)) revert NotEnoughVFux();
+    function _payVFux(address[] memory contributors, uint256[] memory vFuxGiven, uint256 workstreamID) internal {
+        uint256 total = _getTotal(vFuxGiven);
+
+        if (total != 100 || total != vFuxAvailableForWorkstream[msg.sender][workstreamID]) revert NotEnoughVFux();
         uint256 size = vFuxGiven.length;
-        uint256 total = 0;
-        for (uint256 i = 0; i < size; i++) {
-            total += vFuxGiven[i];
+
+        for (uint256 i = 0; i < size; ++i) {
             _safeTransferFrom(msg.sender, contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
         }
-
-        if (total != vFuxAvailableForWorkstream[msg.sender][workstreamID]) revert NotEnoughFux();
     }
 
     function _returnFux(address[] memory contributors, uint256 workstreamID) internal {
         uint256 size = contributors.length;
-        uint256 commitment = 0;
         for (uint256 i = 0; i < size; i++) {
             address contributor = contributors[i];
-            commitment = getWorkstreamCommitment(contributor, workstreamID);
+            uint256 commitment = contributorCommitments[contributor][workstreamID];
             contributorCommitments[contributor][workstreamID] = 0;
 
             _safeTransferFrom(address(this), contributor, FUX_TOKEN_ID, commitment, "");
         }
     }
 
-    function _reserveFunds(
-        address[] memory contributors,
-        uint256[] memory vFuxGiven,
-        uint256 balance
-    ) internal {
+    function _reserveFunds(address[] memory contributors, uint256[] memory vFuxGiven, uint256 balance) internal {
         uint256 size = vFuxGiven.length;
         uint256 total = 0;
-        for (uint256 i = 0; i < size; i++) {
+        for (uint256 i = 0; i < size; ++i) {
             uint256 portion = (vFuxGiven[i] * balance) / 100;
             total += portion;
             balances[contributors[i]] += portion;
@@ -378,14 +374,11 @@ contract FUX is
         return workstreams[workstreamID].creator == msg.sender;
     }
 
-    function _checkTotal(uint256[] memory values, uint256 total) internal pure returns (bool) {
+    function _getTotal(uint256[] memory values) internal pure returns (uint256 total) {
         uint256 len = values.length;
-        uint256 _total = 0;
         for (uint256 i = 0; i < len; i++) {
-            _total += values[i];
+            total += values[i];
         }
-
-        return _total == total;
     }
 
     function safeTransferFrom(
@@ -423,12 +416,9 @@ contract FUX is
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
