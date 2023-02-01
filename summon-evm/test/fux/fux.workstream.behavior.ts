@@ -108,6 +108,7 @@ export function shouldBehaveLikeFuxWorkstream(): void {
     expect(await contractWithUser.balanceOf(user.address, 0)).to.be.eq(50);
 
     await expect(contractWithOwner.withdrawFromWorkstream(1)).to.be.revertedWithCustomError(fux, "NotContributor");
+    
     await expect(contractWithUser.withdrawFromWorkstream(1)).to.emit(fux, "FuxWithdraw").withArgs(user.address, 1, 50);
     expect(await contractWithUser.balanceOf(user.address, 0)).to.be.eq(100);
 

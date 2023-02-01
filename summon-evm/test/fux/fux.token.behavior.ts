@@ -28,5 +28,7 @@ export function shouldBehaveLikeFuxToken(): void {
     await expect(
       contractWithUser.safeBatchTransferFrom(user.address, owner.address, [0, 1], [10, 10], []),
     ).to.be.revertedWithCustomError(fux, "NonTransferableFux");
+
+    //TODO double check on no alternative way to burn
   });
 }
