@@ -4,7 +4,7 @@ import AssignFuxModal from "../AssignFuxModal";
 import ContributorModal from "../ContributorModal";
 import { ArrowRightIcon } from "@chakra-ui/icons";
 import {
-  Checkbox,
+  Button,
   GridItem,
   IconButton,
   Text,
@@ -32,17 +32,6 @@ const WorkstreamRow: React.FC<{
 
   const _fuxGiven = _workstream?.fuxGiven?.find((fux) => fux.balance);
 
-  const allowResolve = Number(_fuxGiven?.balance) !== 0;
-
-  const handleClick = () => {
-    if (!allowResolve) {
-      toast({
-        title: `Cannot evaluate without giving FUX`,
-        status: "error",
-      });
-    }
-  };
-
   return _workstream ? (
     <>
       <GridItem
@@ -52,10 +41,16 @@ const WorkstreamRow: React.FC<{
         colSpan={7}
         pl={5}
       >
-        {/* <Checkbox alignContent="center" pl={"1em"}>
-          {_workstream.name}
-        </Checkbox> */}
-        {_workstream.name}
+        <NextLink
+          href={{
+            pathname: "/workstream/[workstreamID]",
+            query: { workstreamID },
+          }}
+        >
+          <Button variant={"link"}>
+            <Text mr={2}> {_workstream.name}</Text>
+          </Button>
+        </NextLink>
       </GridItem>
       <GridItem
         display={"flex"}
@@ -94,32 +89,6 @@ const WorkstreamRow: React.FC<{
             (contributor) => contributor
           )}
         />
-      </GridItem>
-
-      <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
-        {allowResolve ? (
-          <NextLink
-            href={{
-              pathname: "/resolve/[workstreamID]",
-              query: { workstreamID },
-            }}
-          >
-            <Tooltip hasArrow label="Evaluate" aria-label="Evaluate">
-              <IconButton
-                aria-label="resolve workstream"
-                icon={<ArrowRightIcon />}
-              />
-            </Tooltip>
-          </NextLink>
-        ) : (
-          <Tooltip hasArrow label="Evaluate" aria-label="Evaluate">
-            <IconButton
-              onClick={handleClick}
-              aria-label="resolve workstream"
-              icon={<ArrowRightIcon />}
-            />
-          </Tooltip>
-        )}
       </GridItem>
     </>
   ) : (
