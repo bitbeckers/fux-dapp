@@ -1,6 +1,4 @@
-import {
-  UserDocument,
-} from "../../../.graphclient";
+import { UserDocument } from "../../../.graphclient";
 import { useMintFux } from "../../../hooks/fux";
 import { ContributorRow } from "../ContributorRow";
 import {
@@ -12,10 +10,10 @@ import {
   StatHelpText,
   StatGroup,
 } from "@chakra-ui/react";
+import { useWallet } from "@raidguild/quiver";
 import NextLink from "next/link";
 import React from "react";
 import { useQuery } from "urql";
-import { useWallet } from "@raidguild/quiver";
 
 const FuxOverview: React.FC<{}> = ({}) => {
   const claimFux = useMintFux();
@@ -52,11 +50,9 @@ const FuxOverview: React.FC<{}> = ({}) => {
           <StatGroup textAlign="left">
             <Stat p={"1em"}>
               <StatLabel>FUX available</StatLabel>
-              <StatNumber
-                bg="#301A3A"
-                pl={"5"}
-                w="8em"
-              >{`${fuxBalance} / 100 FUX`}</StatNumber>
+              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
+                fuxBalance ? fuxBalance : "..."
+              } / 100 FUX`}</StatNumber>
               {fuxBalance ? (
                 <></>
               ) : (

@@ -1,14 +1,25 @@
 import { task } from "hardhat/config";
 
+import { FUX__factory } from "../types";
+
 task("upgrade", "Upgrade implementation contract and verify")
   .addParam("proxy", "Provider proxy address")
-  .setAction(async ({ proxy }, { ethers, upgrades }) => {
+  .addOptionalParam("force", "Force registration?")
+  .setAction(async ({ proxy, force }, { ethers, upgrades }) => {
     const FUX = await ethers.getContractFactory("FUX");
 
     // Validate (redundant?)
     console.log("Validating upgrade..");
-    await upgrades.validateUpgrade(proxy, FUX).then(() => console.log("Valid upgrade. Deploying.."));
-
+    const valid = await upgrades
+      .validateUpgrade(proxy, FUX, {
+        kind: "uups",
+        unsafeAllow: ["constructor"],
+      })
+      .then(() => {
+        console.log("Valid upgrade. Deploying..");
+        return true;
+      });
+      
     // Upgrade
     const fuxUpgrade = await upgrades.upgradeProxy(proxy, FUX, {
       kind: "uups",

@@ -205,8 +205,8 @@ contract FUX is
     }
 
     function commitToWorkstream(uint256 workstreamID, uint256 fuxGiven) public {
-        if (balanceOf(msg.sender, FUX_TOKEN_ID) < fuxGiven || fuxGiven == 0) revert NotEnoughFux();
         if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
+
         uint256 currentFux = contributorCommitments[msg.sender][workstreamID];
 
         require(currentFux != fuxGiven, "Same amount of FUX");
