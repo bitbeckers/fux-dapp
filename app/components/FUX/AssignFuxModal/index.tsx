@@ -65,7 +65,7 @@ const AssignFuxModal: React.FC<{
               onChange={onChange}
               {...restField}
               defaultValue={fuxGiven}
-              min={1}
+              min={0}
               max={fuxGiven + fuxAvailable}
             >
               <NumberInputField
