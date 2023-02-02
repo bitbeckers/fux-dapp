@@ -1,11 +1,17 @@
 import { WorkstreamEvaluationsDocument } from "../../.graphclient";
 import { ContributorRow } from "../../components/FUX/ContributorRow";
-import { SoloResolutionForm } from "../../components/FUX/SoloResolutionForm";
 import ValueHeader from "../../components/FUX/ValueHeader";
-import { ValueResolutionForm } from "../../components/FUX/ValueResolutionForm";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
-import { VStack, Text, Heading, HStack } from "@chakra-ui/react";
-import { useWallet } from "@raidguild/quiver";
+import {
+  VStack,
+  Text,
+  Heading,
+  HStack,
+  Stat,
+  StatLabel,
+  StatNumber,
+} from "@chakra-ui/react";
+import { formatAddress, useWallet } from "@raidguild/quiver";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -42,54 +48,34 @@ const Resolve: NextPage = () => {
     (uw) => uw.workstream.id === workstreamID
   )?.workstream;
 
-  const generateContent = () => {
-    if (!_workstream && !user) {
-      return undefined;
-    }
-
-    const _user = user?.toLowerCase();
-    const _coordinator = _workstream?.coordinator?.id.toLowerCase();
-    const _contributors = _workstream?.contributors;
-
-    let form = <></>;
-
-    if (
-      _user === _coordinator &&
-      _contributors?.length === 1 &&
-      _contributors[0].user.id.toLowerCase() === _user
-    ) {
-      form = <SoloResolutionForm workstream={_workstream} />;
-    } else if (_user === _coordinator) {
-      form = <ValueResolutionForm workstream={_workstream} />;
-    } else {
-      form = <ValueReviewForm workstream={_workstream} />;
-    }
-
-    return form;
-  };
-
-  const form = generateContent();
-
   return _workstream ? (
     <>
       <VStack w={"100%"}>
-        <ValueHeader />
+        <ValueHeader name={_workstream?.name ? _workstream.name : undefined} />
         <VStack w={"70%"} maxW={"700px"}>
           <HStack paddingTop={"2em"} paddingBottom={"2em"}>
-            <ContributorRow address={_workstream.coordinator?.id || ""} />
-
-            <Heading size={"md"}>{`${
-              _workstream?.name || "No name found"
-            }`}</Heading>
-            <Text>
-              {_workstream?.deadline
-                ? `${calculateTimeToDeadline(
-                    _workstream.deadline
-                  )} left to resolve`
-                : "Deadline unknown"}
-            </Text>
+            <Stat p={"1em"}>
+              <StatLabel>Coordinator</StatLabel>
+              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
+                ${
+                  _workstream.coordinator
+                    ? formatAddress(_workstream.coordinator.id)
+                    : "0"
+                }`}</StatNumber>
+            </Stat>
+            <Stat p={"1em"}>
+              <StatLabel>Deadline</StatLabel>
+              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
+                ${
+                  _workstream.deadline
+                    ? DateTime.fromSeconds(
+                        +_workstream.deadline
+                      ).toLocaleString()
+                    : ""
+                }`}</StatNumber>
+            </Stat>
           </HStack>
-          {form ? form : ""}
+          <ValueReviewForm workstream={_workstream} />
         </VStack>
       </VStack>
     </>
