@@ -150,17 +150,17 @@ const ValueReviewForm: React.FC<{
           </Text>
         </Center>
         <FormControl>
-          <Grid gap={2} templateColumns="repeat(10, 1fr)">
+          <Grid gap={3} templateColumns="repeat(10, 1fr)">
             {contributors.map((contributor, index) => {
               return contributor.user.id.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
                   <GridItem
-                    display={"flex"}
-                    alignItems={"center"}
-                    bg="#301A3A"
+                    display={"inline-grid"}
                     colSpan={6}
                     borderLeftRadius="3xl"
+                    bg="#301A3A"
+                    placeItems={"left"}
                   >
                     <ContributorRow address={contributor.user.id} />
                     <Spacer />
@@ -171,13 +171,7 @@ const ValueReviewForm: React.FC<{
                       <></>
                     )}
                   </GridItem>
-                  <GridItem
-                    bg="#301A3A"
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    colSpan={3}
-                  >
+                  <GridItem bg="#301A3A" display={"inline-grid"} colSpan={3}>
                     <Controller
                       name={`ratings.${contributor.user.id}`}
                       control={control}

@@ -1,7 +1,7 @@
 import { Text, VStack, Heading } from "@chakra-ui/react";
 import React from "react";
 
-const ValueHeader: React.FC<{}> = ({}) => {
+const ValueHeader: React.FC<{ name?: string }> = ({ name }) => {
   return (
     <VStack
       w={"100%"}
@@ -10,7 +10,7 @@ const ValueHeader: React.FC<{}> = ({}) => {
       align="center"
       pb={"2em"}
     >
-      <Heading>Evaluate value add</Heading>
+      <Heading>{`Evaluate ${name ? name : ""}`}</Heading>
       <Text w={"50%"} textAlign="center">
         Allocate points based on how well you think collaborators executed on
         their commitment.
