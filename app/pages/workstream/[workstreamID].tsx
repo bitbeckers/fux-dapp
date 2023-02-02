@@ -1,95 +1,140 @@
-import { WorkstreamEvaluationsDocument } from "../../.graphclient";
+import {
+  TokenBalanceDocument,
+  WorkstreamByIDDocument,
+} from "../../.graphclient";
+import CommitFuxModal from "../../components/FUX/CommitFuxModal";
 import { ContributorRow } from "../../components/FUX/ContributorRow";
-import { SoloResolutionForm } from "../../components/FUX/SoloResolutionForm";
-import ValueHeader from "../../components/FUX/ValueHeader";
-import { ValueResolutionForm } from "../../components/FUX/ValueResolutionForm";
-import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
-import { VStack, Text, Heading, HStack } from "@chakra-ui/react";
+import { useConstants } from "../../utils/constants";
+import {
+  VStack,
+  Text,
+  Heading,
+  HStack,
+  ButtonGroup,
+  Button,
+  Link,
+  Stat,
+  StatLabel,
+  StatNumber,
+  Flex,
+} from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
+import { ethers } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "urql";
 
-const calculateTimeToDeadline = (timestamp?: number) => {
-  if (!timestamp || isNaN(timestamp)) {
-    return undefined;
-  }
-
-  const now = DateTime.now();
-  const deadline = DateTime.fromSeconds(Number(timestamp));
-
-  return deadline
-    .diff(now, ["months", "days", "hours", "minutes"])
-    .toFormat("d 'days ' h 'hours ' mm 'minutes'");
-};
-
-const Resolve: NextPage = () => {
+const Workstream: NextPage = () => {
   const router = useRouter();
   const { address: user } = useWallet();
+  const { nativeToken } = useConstants();
   const { workstreamID } = router.query;
 
   const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamEvaluationsDocument,
+    query: WorkstreamByIDDocument,
     variables: {
-      address: user?.toLowerCase() || "",
       workstreamID: (workstreamID as string) || "",
     },
   });
 
   const { data, fetching, error } = result;
-  const _workstream = data?.userWorkstreams.find(
-    (uw) => uw.workstream.id === workstreamID
-  )?.workstream;
+  const _workstream = data?.workstream;
 
-  const generateContent = () => {
-    if (!_workstream && !user) {
-      return undefined;
-    }
+  const fuxGiven = _workstream?.fuxGiven?.find(
+    (contributor) => contributor.user.id === user
+  )?.balance;
 
-    const _user = user?.toLowerCase();
-    const _coordinator = _workstream?.coordinator?.id.toLowerCase();
-    const _contributors = _workstream?.contributors;
+  const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
+    query: TokenBalanceDocument,
+    variables: {
+      address: user?.toLowerCase() || "",
+      symbol: "FUX",
+    },
+  });
 
-    let form = <></>;
+  const {
+    data: fuxAvailableData,
+    fetching: fetchingBalance,
+    error: fuxBalance,
+  } = fuxBalanceResponse;
 
-    if (
-      _user === _coordinator &&
-      _contributors?.length === 1 &&
-      _contributors[0].user.id.toLowerCase() === _user
-    ) {
-      form = <SoloResolutionForm workstream={_workstream} />;
-    } else if (_user === _coordinator) {
-      form = <ValueResolutionForm workstream={_workstream} />;
-    } else {
-      form = <ValueReviewForm workstream={_workstream} />;
-    }
-
-    return form;
-  };
-
-  const form = generateContent();
+  const balance = fuxAvailableData?.tokenBalances.find((balance) => balance);
 
   return _workstream ? (
     <>
       <VStack w={"100%"}>
-        <ValueHeader />
         <VStack w={"70%"} maxW={"700px"}>
           <HStack paddingTop={"2em"} paddingBottom={"2em"}>
-            <ContributorRow address={_workstream.coordinator?.id || ""} />
-
-            <Heading size={"md"}>{`${
+            <Heading size={"md"}>{`Workstream: ${
               _workstream?.name || "No name found"
             }`}</Heading>
-            <Text>
-              {_workstream?.deadline
-                ? `${calculateTimeToDeadline(
-                    _workstream.deadline
-                  )} left to resolve`
-                : "Deadline unknown"}
-            </Text>
           </HStack>
-          {form ? form : ""}
+          <HStack>
+            <ButtonGroup>
+              <CommitFuxModal
+                workstreamID={+_workstream.id}
+                fuxGiven={fuxGiven}
+                fuxAvailable={balance ? balance.balance : 0}
+              />{" "}
+              <NextLink
+                href={{
+                  pathname: "/resolve/[workstreamID]",
+                  query: { workstreamID },
+                }}
+                passHref
+              >
+                <Button p={"1em"}>
+                  <Link>EVALUATE</Link>
+                </Button>
+              </NextLink>
+              <Button>CLOSE</Button>
+            </ButtonGroup>
+          </HStack>
+          <HStack>
+            <Stat p={"1em"}>
+              <StatLabel>Commitment</StatLabel>
+              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
+                ${fuxGiven ? fuxGiven : "0"} FUX`}</StatNumber>
+            </Stat>
+            <Stat p={"1em"}>
+              <StatLabel>Deadline</StatLabel>
+              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
+                ${
+                  _workstream.deadline
+                    ? DateTime.fromSeconds(
+                        +_workstream.deadline
+                      ).toLocaleString()
+                    : ""
+                }`}</StatNumber>
+            </Stat>
+            <Stat p={"1em"}>
+              <StatLabel>Funding</StatLabel>
+              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
+                ${
+                  _workstream.funding
+                    ? Number(
+                        ethers.utils.formatEther(_workstream.funding)
+                      ).toPrecision(2)
+                    : ""
+                } ${nativeToken}`}</StatNumber>
+            </Stat>
+          </HStack>
+          <HStack>
+            <VStack alignItems={"flex-start"}>
+              <Heading size="sm">Coordinator:</Heading>
+              <ContributorRow address={_workstream.coordinator?.id || ""} />
+            </VStack>
+            <VStack alignItems={"flex-start"}>
+              <Heading size="sm">Contributors:</Heading>
+              <Flex gap="2">
+                {_workstream.contributors?.map(({ id }, index) => (
+                  <ContributorRow key={index} address={id} />
+                ))}
+              </Flex>
+            </VStack>
+          </HStack>
         </VStack>
       </VStack>
     </>
@@ -98,4 +143,4 @@ const Resolve: NextPage = () => {
   );
 };
 
-export default Resolve;
+export default Workstream;
