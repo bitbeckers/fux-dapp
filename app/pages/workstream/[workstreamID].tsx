@@ -1,5 +1,10 @@
-import { WorkstreamByIDDocument } from "../../.graphclient";
+import {
+  TokenBalanceDocument,
+  WorkstreamByIDDocument,
+} from "../../.graphclient";
+import CommitFuxModal from "../../components/FUX/CommitFuxModal";
 import { ContributorRow } from "../../components/FUX/ContributorRow";
+import { useConstants } from "../../utils/constants";
 import {
   VStack,
   Text,
@@ -20,7 +25,6 @@ import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "urql";
-import { useConstants } from "../../utils/constants";
 
 const Workstream: NextPage = () => {
   const router = useRouter();
@@ -42,6 +46,22 @@ const Workstream: NextPage = () => {
     (contributor) => contributor.user.id === user
   )?.balance;
 
+  const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
+    query: TokenBalanceDocument,
+    variables: {
+      address: user?.toLowerCase() || "",
+      symbol: "FUX",
+    },
+  });
+
+  const {
+    data: fuxAvailableData,
+    fetching: fetchingBalance,
+    error: fuxBalance,
+  } = fuxBalanceResponse;
+
+  const balance = fuxAvailableData?.tokenBalances.find((balance) => balance);
+
   return _workstream ? (
     <>
       <VStack w={"100%"}>
@@ -53,7 +73,11 @@ const Workstream: NextPage = () => {
           </HStack>
           <HStack>
             <ButtonGroup>
-              <Button>COMMIT</Button>
+              <CommitFuxModal
+                workstreamID={+_workstream.id}
+                fuxGiven={fuxGiven}
+                fuxAvailable={balance ? balance.balance : 0}
+              />{" "}
               <NextLink
                 href={{
                   pathname: "/resolve/[workstreamID]",
