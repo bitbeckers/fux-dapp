@@ -84,9 +84,12 @@ const Workstream: NextPage = () => {
     (contributor) => contributor.user
   );
 
+  //TODO Merge evaluations into averages
   const getAverageEvaluations = (evaluations: Evaluation[]) => {
-    const merged = _.mergeWith({}, ...evaluations, (objValue, srcValue) =>
-      (objValue || []).concat(srcValue)
+    const merged = _.mergeWith(
+      {},
+      ...evaluations,
+      (objValue: any, srcValue: any) => (objValue || []).concat(srcValue)
     );
 
     console.log("merged: ", merged);
@@ -104,7 +107,7 @@ const Workstream: NextPage = () => {
     const _contributors = contributors?.map((contributor) => contributor.id);
     const _vFux: BigNumberish[] = [];
 
-    if (!_contributors || !_vFux) {
+    if (!_contributors || !_vFux || _vFux.length === 0) {
       console.log("invalid input");
       return;
     }
