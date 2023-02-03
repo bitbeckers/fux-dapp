@@ -136,6 +136,8 @@ export type Evaluation_filter = {
   ratings_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Evaluation_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Evaluation_filter>>>;
 };
 
 export type Evaluation_orderBy =
@@ -213,6 +215,8 @@ export type FuxGiven_filter = {
   balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<FuxGiven_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<FuxGiven_filter>>>;
 };
 
 export type FuxGiven_orderBy =
@@ -650,6 +654,8 @@ export type TokenBalance_filter = {
   balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<TokenBalance_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<TokenBalance_filter>>>;
 };
 
 export type TokenBalance_orderBy =
@@ -710,6 +716,8 @@ export type Token_filter = {
   tokenBalances_?: InputMaybe<TokenBalance_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Token_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Token_filter>>>;
 };
 
 export type Token_orderBy =
@@ -813,6 +821,8 @@ export type UserWorkstream_filter = {
   workstream_?: InputMaybe<Workstream_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<UserWorkstream_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<UserWorkstream_filter>>>;
 };
 
 export type UserWorkstream_orderBy =
@@ -846,6 +856,8 @@ export type User_filter = {
   rewards_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<User_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<User_filter>>>;
 };
 
 export type User_orderBy =
@@ -924,6 +936,8 @@ export type VFuxWorkstream_filter = {
   balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VFuxWorkstream_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VFuxWorkstream_filter>>>;
 };
 
 export type VFuxWorkstream_orderBy =
@@ -1046,6 +1060,8 @@ export type Workstream_filter = {
   resolved_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Workstream_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Workstream_filter>>>;
 };
 
 export type Workstream_orderBy =
@@ -1729,9 +1745,12 @@ export type WorkstreamByIDQueryVariables = Exact<{
 
 export type WorkstreamByIDQuery = { workstream?: Maybe<(
     Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-    & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+    & { contributors?: Maybe<Array<(
+      Pick<UserWorkstream, 'id'>
+      & { user: Pick<User, 'id'> }
+    )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
       Pick<Evaluation, 'ratings'>
-      & { contributors: Array<Pick<User, 'id'>> }
+      & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
     )>>, fuxGiven?: Maybe<Array<(
       Pick<FuxGiven, 'balance'>
       & { user: Pick<User, 'id'> }
@@ -1740,9 +1759,12 @@ export type WorkstreamByIDQuery = { workstream?: Maybe<(
 
 export type WorkstreamByIDFragmentFragment = (
   Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-  & { contributors?: Maybe<Array<Pick<UserWorkstream, 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+  & { contributors?: Maybe<Array<(
+    Pick<UserWorkstream, 'id'>
+    & { user: Pick<User, 'id'> }
+  )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
     Pick<Evaluation, 'ratings'>
-    & { contributors: Array<Pick<User, 'id'>> }
+    & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
   )>>, fuxGiven?: Maybe<Array<(
     Pick<FuxGiven, 'balance'>
     & { user: Pick<User, 'id'> }
@@ -1855,7 +1877,7 @@ export const WorkstreamsByUserFragmentFragmentDoc = gql`
 export const WorkstreamByIDFragmentFragmentDoc = gql`
     fragment WorkstreamByIDFragment on Workstream {
   contributors {
-    id
+    ...ContributorFragment
   }
   coordinator {
     id
@@ -1866,10 +1888,7 @@ export const WorkstreamByIDFragmentFragmentDoc = gql`
   name
   resolved
   evaluations {
-    contributors {
-      id
-    }
-    ratings
+    ...EvaluationFragment
   }
   fuxGiven {
     balance
@@ -1878,7 +1897,8 @@ export const WorkstreamByIDFragmentFragmentDoc = gql`
     }
   }
 }
-    ` as unknown as DocumentNode<WorkstreamByIDFragmentFragment, unknown>;
+    ${ContributorFragmentFragmentDoc}
+${EvaluationFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamByIDFragmentFragment, unknown>;
 export const BalancesDocument = gql`
     query Balances($address: ID!) @live {
   user(id: $address) {
