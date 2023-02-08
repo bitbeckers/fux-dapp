@@ -1,9 +1,12 @@
 import {
+  EvaluationFragmentFragment,
   TokenBalanceDocument,
+  UserWorkstream,
   WorkstreamByIDDocument,
 } from "../../.graphclient";
 import CommitFuxModal from "../../components/FUX/CommitFuxModal";
 import { ContributorRow } from "../../components/FUX/ContributorRow";
+import { useCloseWorkstream } from "../../hooks/resolution";
 import { useConstants } from "../../utils/constants";
 import {
   VStack,
@@ -19,17 +22,32 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
-import { ethers } from "ethers";
+import { BigNumberish, ethers } from "ethers";
+import _ from "lodash";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useQuery } from "urql";
+
+type Evaluation = {
+  creator: {
+    id: string;
+  };
+  contributors: [
+    {
+      id: string;
+    }
+  ];
+  ratings: BigNumberish[];
+};
 
 const Workstream: NextPage = () => {
   const router = useRouter();
   const { address: user } = useWallet();
   const { nativeToken } = useConstants();
+  const closeWorkstream = useCloseWorkstream();
   const { workstreamID } = router.query;
 
   const [result, reexecuteQuery] = useQuery({
@@ -43,7 +61,7 @@ const Workstream: NextPage = () => {
   const _workstream = data?.workstream;
 
   const fuxGiven = _workstream?.fuxGiven?.find(
-    (contributor) => contributor.user.id === user
+    (contributor) => contributor.user.id.toLowerCase() === user?.toLowerCase()
   )?.balance;
 
   const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
@@ -61,6 +79,41 @@ const Workstream: NextPage = () => {
   } = fuxBalanceResponse;
 
   const balance = fuxAvailableData?.tokenBalances.find((balance) => balance);
+
+  const contributors = _workstream?.contributors?.map(
+    (contributor) => contributor.user
+  );
+
+  //TODO Merge evaluations into averages
+  const getAverageEvaluations = (evaluations: Evaluation[]) => {
+    const merged = _.mergeWith(
+      {},
+      ...evaluations,
+      (objValue: any, srcValue: any) => (objValue || []).concat(srcValue)
+    );
+
+    console.log("merged: ", merged);
+  };
+
+  useEffect(() => {
+    if (_workstream?.evaluations) {
+      const evaluations = _workstream?.evaluations as Evaluation[];
+
+      getAverageEvaluations(evaluations);
+    }
+  }, [_workstream]);
+
+  const handleFinalize = async () => {
+    const _contributors = contributors?.map((contributor) => contributor.id);
+    const _vFux: BigNumberish[] = [];
+
+    if (!_contributors || !_vFux || _vFux.length === 0) {
+      console.log("invalid input");
+      return;
+    }
+
+    closeWorkstream(Number(workstreamID), _contributors, _vFux);
+  };
 
   return _workstream ? (
     <>
@@ -89,7 +142,10 @@ const Workstream: NextPage = () => {
                   <Link>EVALUATE</Link>
                 </Button>
               </NextLink>
-              <Button>CLOSE</Button>
+              {_workstream.coordinator?.id.toLowerCase() ===
+              user?.toLowerCase() ? (
+                <Button onClick={handleFinalize}>FINALIZE</Button>
+              ) : undefined}
             </ButtonGroup>
           </HStack>
           <HStack>
@@ -129,8 +185,8 @@ const Workstream: NextPage = () => {
             <VStack alignItems={"flex-start"}>
               <Heading size="sm">Contributors:</Heading>
               <Flex gap="2">
-                {_workstream.contributors?.map(({ id }, index) => (
-                  <ContributorRow key={index} address={id} />
+                {_workstream.contributors?.map(({ user }, index) => (
+                  <ContributorRow key={index} address={user.id} />
                 ))}
               </Flex>
             </VStack>

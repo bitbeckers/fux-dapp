@@ -73,6 +73,7 @@ const ValueReviewForm: React.FC<{
     );
 
     if (!currentEvaluation) {
+      console.log("No current founr");
       return;
     }
 
@@ -107,7 +108,7 @@ const ValueReviewForm: React.FC<{
   }, [formData]);
 
   const onSubmit = (data: FormData) => {
-    if (!total || !workstream?.id || Object.values(data.ratings).length == 0) {
+    if (!total || !workstream) {
       toast({
         title: `Missing input data`,
         status: "error",
@@ -117,7 +118,7 @@ const ValueReviewForm: React.FC<{
 
     if (total != 100) {
       toast({
-        title: `Not enough: ${total.toString() || "..."}/100`,
+        title: `Not enough: ${total || "..."}/100`,
         status: "error",
       });
       return;
@@ -126,6 +127,7 @@ const ValueReviewForm: React.FC<{
     const filteredData = Object.entries(data.ratings).filter(
       (entry) => entry[0] !== user
     );
+    console.log("DATA RATING: ", filteredData);
 
     if (filteredData?.length > 0) {
       submitEvaluation(
@@ -140,6 +142,7 @@ const ValueReviewForm: React.FC<{
   const owner = workstream?.coordinator?.id;
 
   console.log("Ratings: ", ratings);
+  console.log("Workstream: ", workstream);
 
   const reviewForm =
     contributors && contributors?.length > 0 && user ? (
@@ -150,7 +153,7 @@ const ValueReviewForm: React.FC<{
           </Text>
         </Center>
         <FormControl>
-          <Grid gap={3} templateColumns="repeat(10, 1fr)">
+          <Grid gap={2} templateColumns="repeat(10, 1fr)">
             {contributors.map((contributor, index) => {
               return contributor.user.id.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
@@ -160,16 +163,15 @@ const ValueReviewForm: React.FC<{
                     colSpan={6}
                     borderLeftRadius="3xl"
                     bg="#301A3A"
-                    placeItems={"left"}
                   >
-                    <ContributorRow address={contributor.user.id} />
-                    <Spacer />
-                    {contributor.user.id.toLowerCase() ===
-                    owner?.toLowerCase() ? (
-                      <StarIcon mr={"1em"} />
-                    ) : (
-                      <></>
-                    )}
+                    <HStack>
+                      <ContributorRow address={contributor.user.id} />
+                      <Spacer />
+                      {contributor.user.id.toLowerCase() ===
+                      owner?.toLowerCase() ? (
+                        <StarIcon mr={"1em"} />
+                      ) : undefined}
+                    </HStack>
                   </GridItem>
                   <GridItem bg="#301A3A" display={"inline-grid"} colSpan={3}>
                     <Controller
@@ -185,7 +187,8 @@ const ValueReviewForm: React.FC<{
                             borderRadius={0}
                             max={100}
                             placeholder={
-                              ratings
+                              ratings &&
+                              ratings[contributor.user.id.toLowerCase()]
                                 ? ratings[
                                     contributor.user.id.toLowerCase()
                                   ].toString()

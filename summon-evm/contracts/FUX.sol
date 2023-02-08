@@ -224,8 +224,6 @@ contract FUX is
     }
 
     function withdrawFromWorkstream(uint256 workstreamID) public {
-        if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
-
         _withdrawFux(workstreamID);
     }
 
@@ -234,7 +232,7 @@ contract FUX is
         address[] memory contributors,
         uint256[] memory ratings
     ) public {
-        if (!_isContributor(msg.sender, workstreamID) || !_isCoordinator(workstreamID)) revert NotApprovedOrOwner();
+        if (!_isContributor(msg.sender, workstreamID)) revert NotApprovedOrOwner();
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
         if (contributors.length == 0 || contributors.length != ratings.length)
             revert InvalidInput("contributors, vFuxGiven");
@@ -253,11 +251,11 @@ contract FUX is
         if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
         if (getVFuxForEvaluation(workstreamID) == 0) revert NotEnoughVFux();
 
-        _submitEvaluations(workstreamID, contributors, vFuxGiven);
-
         _payVFux(contributors, vFuxGiven, workstreamID);
 
         uint256 funds = workstream.funds;
+        workstream.exists = false;
+
         if (funds > 0) {
             workstream.funds = 0;
             _reserveFunds(contributors, vFuxGiven, funds);
@@ -265,7 +263,6 @@ contract FUX is
         _returnFux(contributors, workstreamID);
         _withdrawFux(workstreamID);
 
-        workstream.exists = false;
         emit WorkstreamClosed(workstreamID);
     }
 
@@ -285,9 +282,9 @@ contract FUX is
             emit RewardsReserved(workstream.creator, funds);
         }
 
-        _withdrawFux(workstreamID);
-
         workstream.exists = false;
+
+        _withdrawFux(workstreamID);
         emit WorkstreamClosed(workstreamID);
     }
 

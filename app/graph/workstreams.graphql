@@ -36,7 +36,7 @@ query WorkstreamByID($workstreamID: ID!) {
 
 fragment WorkstreamByIDFragment on Workstream {
   contributors {
-    id
+    ...ContributorFragment
   }
   coordinator {
     id
@@ -47,10 +47,7 @@ fragment WorkstreamByIDFragment on Workstream {
   name
   resolved
   evaluations {
-    contributors {
-      id
-    }
-    ratings
+    ...EvaluationFragment
   }
   fuxGiven {
     balance
@@ -58,6 +55,23 @@ fragment WorkstreamByIDFragment on Workstream {
       id
     }
   }
+}
+
+fragment ContributorFragment on UserWorkstream {
+  id
+  user {
+    id
+  }
+}
+
+fragment EvaluationFragment on Evaluation {
+  creator {
+    id
+  }
+  contributors {
+    id
+  }
+  ratings
 }
 
 query WorkstreamVFux($address: ID!, $workstreamID: ID!) {
