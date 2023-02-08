@@ -129,8 +129,8 @@ const Workstream: NextPage = () => {
             <VStack alignItems={"flex-start"}>
               <Heading size="sm">Contributors:</Heading>
               <Flex gap="2">
-                {_workstream.contributors?.map(({ id }, index) => (
-                  <ContributorRow key={index} address={id} />
+                {_workstream.contributors?.map((user, index) => (
+                  <ContributorRow key={index} address={user.id} />
                 ))}
               </Flex>
             </VStack>
