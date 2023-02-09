@@ -38,6 +38,6 @@ export const ContributorRow: React.FC<{ address: string }> = ({ address }) => {
       </Td>
       <Td><Stat>69%</Stat></Td>
       <Td>--</Td>
-      </Tr>
+    </Tr>
   );
 };
