@@ -2,43 +2,56 @@ import { CopyIcon } from "@chakra-ui/icons";
 import {
   HStack,
   Avatar,
-  Icon,
   Text,
-  Tr,
-  Td,
   Button,
-  Stat,
   useToast,
   VStack,
-  Box,
 } from "@chakra-ui/react";
-import { formatAddress, useENS } from "@raidguild/quiver";
+import { formatAddress } from "@raidguild/quiver";
 import { useEffect, useState } from "react";
+import { useEnsAvatar, useEnsName, useNetwork } from "wagmi";
 
 const User: React.FC<{
-  address: string;
+  address: `0x${string}`;
   direction?: "horizontal" | "vertical";
-  avatar?: boolean;
+  displayAvatar?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
-}> = ({ address, direction, avatar, size }) => {
+}> = ({ address, direction, displayAvatar, size }) => {
+  const { chain } = useNetwork();
+
   const {
-    address: _address,
-    ens,
-    avatar: _avatar,
-    loading,
-  } = useENS({ address });
-  const [displayName, setDisplayName] = useState<string>(address);
+    data: name,
+    isError: nameError,
+    isLoading: nameLoading,
+  } = useEnsName({
+    address,
+    chainId: chain?.id,
+  });
+  const {
+    data: _avatar,
+    isError: avatarError,
+    isLoading: avatarLoading,
+  } = useEnsAvatar({
+    address,
+  });
+  const [displayName, setDisplayName] = useState<string>(
+    formatAddress(address)
+  );
+  const [avatar, setAvatar] = useState<string>();
   const toast = useToast();
   const _size = size ? size : "md";
 
   useEffect(() => {
-    if (!loading && !ens) {
-      setDisplayName(formatAddress(address));
+    if (!nameLoading && !nameError && name) {
+      setDisplayName(name);
     }
-    if (!loading && ens) {
-      setDisplayName(ens);
+  }, [name, nameLoading, nameError]);
+
+  useEffect(() => {
+    if (!avatarLoading && !avatarError && _avatar) {
+      setAvatar(_avatar);
     }
-  }, [address, ens, loading]);
+  }, [_avatar, avatarLoading, avatarError]);
 
   const handleClick = () => {
     navigator.clipboard.writeText(address);
@@ -48,12 +61,12 @@ const User: React.FC<{
     });
   };
 
-  let component;
+  let component = <></>;
 
   if (direction === "vertical") {
     component = (
       <VStack>
-        {avatar ? <Avatar name={address} src={_avatar} /> : undefined}
+        {displayAvatar ? <Avatar name={address} src={avatar} /> : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
           <Text mr={2}>{displayName}</Text> <CopyIcon />
         </Button>
@@ -64,7 +77,7 @@ const User: React.FC<{
   if (!direction || direction === "horizontal") {
     component = (
       <HStack>
-        {avatar ? <Avatar name={address} src={_avatar} /> : undefined}
+        {displayAvatar ? <Avatar name={address} src={avatar} /> : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
           <Text mr={2} size={size}>
             {displayName}

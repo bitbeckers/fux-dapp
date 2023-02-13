@@ -11,13 +11,13 @@ import {
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import NextLink from "next/link";
 import React from "react";
 
 const WorkstreamRow: React.FC<{
   workstream: WorkstreamsByUserFragmentFragment;
-  fuxAvailable?: number;
+  fuxAvailable?: BigNumber;
   showInactive: boolean;
 }> = ({ workstream, fuxAvailable, showInactive }) => {
   const toast = useToast();
@@ -28,7 +28,7 @@ const WorkstreamRow: React.FC<{
     : workstream.resolved
     ? undefined
     : workstream;
-  const workstreamID = Number(_workstream?.id);
+  const workstreamID = BigNumber.from(_workstream?.id);
 
   const _fuxGiven = _workstream?.fuxGiven?.find((fux) => fux.balance);
 

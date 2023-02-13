@@ -20,42 +20,48 @@ import {
   Spacer,
   Tooltip,
 } from "@chakra-ui/react";
+import { BigNumber, BigNumberish } from "ethers";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 type FormData = {
-  fuxGiven: number;
+  fuxGiven: BigNumber;
 };
 
 const AssignFuxModal: React.FC<{
-  workstreamID: number;
-  fuxGiven: number;
-  fuxAvailable: number;
+  workstreamID: BigNumber;
+  fuxGiven: BigNumber;
+  fuxAvailable: BigNumber;
 }> = ({ workstreamID, fuxGiven, fuxAvailable }) => {
+  const [newFux, setNewFux] = useState(fuxGiven);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const giveFUX = useCommitToWorkstream();
+  const { data, write } = useCommitToWorkstream(workstreamID, newFux);
 
   const {
     control,
     handleSubmit,
-    register,
     reset,
-    watch,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
       fuxGiven,
     },
   });
 
+  const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
+    setNewFux(BigNumber.from(event.currentTarget.value));
+  };
+
   const onSubmit = (form: FormData) => {
     if (form.fuxGiven !== fuxGiven) {
-      giveFUX(workstreamID, form.fuxGiven).then(() => onClose());
+      write?.();
+      onClose();
     }
   };
 
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl mb={"1em"}>
+      <FormControl mb={"1em"} onChange={handleChange}>
         <Controller
           name={`fuxGiven`}
           control={control}
@@ -64,9 +70,9 @@ const AssignFuxModal: React.FC<{
             <NumberInput
               onChange={onChange}
               {...restField}
-              defaultValue={fuxGiven}
+              defaultValue={fuxGiven.toString()}
               min={0}
-              max={fuxGiven + fuxAvailable}
+              max={fuxGiven.add(fuxAvailable)}
             >
               <NumberInputField
                 ref={ref}

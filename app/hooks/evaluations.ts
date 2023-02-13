@@ -1,45 +1,26 @@
-import { useFuxContract } from "./contract";
-import { useToast } from "@chakra-ui/react";
-import {
-  parseTxErrorMessage,
-  useWriteContract,
-} from "@raidguild/quiver";
-import { BigNumberish } from "ethers";
+import { contractAddresses, contractABI } from "../utils/constants";
+import { useCustomToasts } from "./toast";
 import _ from "lodash";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
 export const useSubmitValueEvaluation = () => {
   console.log("useSubmitValueEvaluation");
-  const toast = useToast();
-  const contract = useFuxContract();
-
-  const { mutate } = useWriteContract(contract, "submitValueEvaluation", {
-    onError: (e) => {
-      toast({
-        title: `Couldn't submit value evaluation workstream: ${parseTxErrorMessage(
-          e
-        )}`,
-        status: "error",
-      });
-      throw new Error(e.message);
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "submitValueEvaluation",
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
     },
-    onResponse: () => {
-      toast({
-        title: `Submitting evaluation`,
-        status: "info",
-        duration: 30000,
-      });
-    },
-    onConfirmation: () => {
-      toast({
-        title: "Evaluation submitted",
-        status: "success",
-      });
+    onSuccess(data) {
+      success("Submitted Evaluation", "Evaluation submitted succesfully");
+      console.log(data);
     },
   });
 
-  return (
-    workstreamID: number,
-    contributors: string[],
-    ratings: BigNumberish[]
-  ) => mutate(workstreamID, contributors, ratings);
+  return { data, isLoading, isSuccess, write };
 };

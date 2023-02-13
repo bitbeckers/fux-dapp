@@ -1,39 +1,26 @@
-import { useFuxContract } from "./contract";
-import { useToast } from "@chakra-ui/react";
-import {
-  parseTxErrorMessage,
-  useWriteContract,
-} from "@raidguild/quiver";
+import { contractAddresses, contractABI } from "../utils/constants";
+import { useCustomToasts } from "./toast";
 import _ from "lodash";
-import { BigNumberish } from "ethers";
+import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
 export const useCloseWorkstream = () => {
-  const toast = useToast();
-  const contract = useFuxContract();
-
-  const { mutate } = useWriteContract(contract, "resolveValueEvaluation", {
-    onError: (e) => {
-      toast({
-        title: `Couldn't close workstream: ${parseTxErrorMessage(e)}`,
-        status: "error",
-      });
-      throw new Error(e.message);
+  console.log("useCloseWorkstream");
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "resolveValueEvaluation",
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
     },
-    onResponse: () => {
-      toast({
-        title: `Closing workstream`,
-        status: "info",
-        duration: 30000,
-      });
-    },
-    onConfirmation: () => {
-      toast({
-        title: "Workstream closed",
-        status: "success",
-      });
+    onSuccess(data) {
+      success("Closed workstream", "Evaluation submitted succesfully");
+      console.log(data);
     },
   });
 
-  return (workstreamID: number, contributors: string[], ratings: BigNumberish[]) =>
-    mutate(workstreamID, contributors, ratings);
+  return { data, isLoading, isSuccess, write };
 };

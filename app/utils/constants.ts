@@ -1,4 +1,5 @@
-import { useWallet } from "@raidguild/quiver";
+import FUX_ABI from "../../summon-evm/abis/contracts/FUX.sol/FUX.json";
+import { useNetwork } from "wagmi";
 
 export const checkEnvVarConfig = () => {
   const requiredEnvVarNames = [
@@ -27,31 +28,37 @@ export const checkEnvVarConfig = () => {
 checkEnvVarConfig();
 
 export const contractAddresses = {
-  fuxContractAddress: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"]!,
+  fuxContractAddress: process.env[
+    "NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"
+  ]! as `0x${string}`,
+};
+
+export const contractABI = {
+  fux: FUX_ABI,
 };
 
 export const defaultChain = process.env["NEXT_PUBLIC_DEFAULT_CHAIN"];
 
 export const useConstants = () => {
-  const { chainId } = useWallet();
+  const { chain } = useNetwork();
 
-  const nativeToken = getNativeSymbol(chainId || "");
+  const nativeToken = getNativeSymbol(chain?.id);
 
   return {
     nativeToken,
   };
 };
 
-const getNativeSymbol = (chainID: string) => {
+const getNativeSymbol = (chainID?: number) => {
   let symbol = "";
   switch (chainID) {
-    case "0x1":
+    case 1:
       symbol = "ETH";
       break;
-    case "0x5":
+    case 5:
       symbol = "gETH";
       break;
-    case "0x539":
+    case 1337:
       symbol = "hhETH";
       break;
     default:

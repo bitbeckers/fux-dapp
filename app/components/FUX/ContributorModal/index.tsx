@@ -21,9 +21,11 @@ import {
   Tooltip,
   Table,
 } from "@chakra-ui/react";
+import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill } from "react-icons/bs";
+import { useState } from "react";
 
 type FormData = {
   contributors: string[];
@@ -31,12 +33,13 @@ type FormData = {
 };
 
 const ContributorModal: React.FC<{
-  workstreamID: number;
+  workstreamID: BigNumber;
   workstreamName: string;
   contributors?: { user: { id: string } }[];
 }> = ({ workstreamID, workstreamName, contributors }) => {
+  const [newContributors, setNewContributors] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const addContributors = useAddContributors();
+  const { data, write } = useAddContributors(workstreamID, newContributors);
 
   const {
     control,
@@ -61,12 +64,15 @@ const ContributorModal: React.FC<{
       name: "newContributors",
     });
 
+  
+
   const onSubmit = (form: FormData) => {
     if (form.newContributors.length > 0) {
       const addressArray = form.newContributors
         .map((entry) => entry.address)
         .filter((address) => isAddress(address));
-      addContributors(workstreamID, addressArray).then(() => onClose());
+      write?.();
+      onClose();
     }
   };
 
