@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 import { useQuery } from "urql";
 
 const ClaimRewards: React.FC = () => {
-  const claimRewards = useClaimRewards();
+  const { data: response, write } = useClaimRewards();
   const { nativeToken } = useConstants();
   const { address } = useWallet();
 
@@ -24,7 +24,7 @@ const ClaimRewards: React.FC = () => {
 
   return (
     <>
-      <Button colorScheme="red" onClick={() => claimRewards()}>
+      <Button colorScheme="red" onClick={() => write?.()}>
         <Text>{`Claim ${
           rewards
             ? ethers.utils.formatEther(rewards.toString()).toString()

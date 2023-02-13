@@ -1,143 +1,101 @@
-import { useFuxContract } from "./contract";
+import { contractAddresses, contractABI } from "../utils/constants";
+import { useCustomToasts } from "./toast";
 import { useToast } from "@chakra-ui/react";
-import {
-  parseTxErrorMessage,
-  useWriteContract,
-} from "@raidguild/quiver";
+import { parseTxErrorMessage, useWriteContract } from "@raidguild/quiver";
+import { BigNumber, BigNumberish } from "ethers";
 import _ from "lodash";
+import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
 
 export const useMintWorkstream = () => {
-  const toast = useToast();
-  const contract = useFuxContract();
+  const { address } = useAccount();
 
-  const { mutate } = useWriteContract(contract, "mintWorkstream", {
-    onError: (e) => {
-      toast({
-        title: `Couldn't mint workstream: ${parseTxErrorMessage(e)}`,
-        status: "error",
-      });
-      throw new Error(e.message);
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "mintWorkstream",
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
     },
-    onResponse: () => {
-      toast({
-        title: `Minting workstream`,
-        status: "info",
-        duration: 30000,
-      });
-    },
-    onConfirmation: () => {
-      toast({
-        title: "Workstream minted",
-        status: "success",
-      });
+    onSuccess(data) {
+      success("Created workstream", ``);
+      console.log(data);
     },
   });
 
-  return async (
-    name: string,
-    contributors: string[],
-    fux: number,
-    deadline: number,
-    value?: string
-  ) => mutate(name, contributors, fux, deadline, { value });
+  return { data, isLoading, isSuccess, write };
 };
 
-export const useCommitToWorkstream = () => {
-  const toast = useToast();
-  const contract = useFuxContract();
+export const useCommitToWorkstream = (
+  workstreamID: BigNumberish,
+  newFux: BigNumberish
+) => {
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "commitToWorkstream",
+    args: [workstreamID, newFux],
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
+    },
+    onSuccess(data) {
+      success("FUX Given", `Committed to workstream`);
+      console.log(data);
+    },
+  });
 
-  const { mutate: commitToWorkstream } = useWriteContract(
-    contract,
-    "commitToWorkstream",
-    {
-      onError: (e) => {
-        toast({
-          title: `Couldn't commit to workstream: ${parseTxErrorMessage(e)}`,
-          status: "error",
-        });
-        throw new Error(e.message);
-      },
-      onResponse: () => {
-        toast({
-          title: `Committing to workstream`,
-          status: "info",
-          duration: 30000,
-        });
-      },
-      onConfirmation: () => {
-        toast({
-          title: "FUX were given",
-          status: "success",
-        });
-      },
-    }
-  );
-
-  return (workstreamID: number, fuxGiven: number) =>
-    commitToWorkstream(workstreamID, fuxGiven);
+  return { data, isLoading, isSuccess, write };
 };
 
 export const useWithdrawFromWorkstream = () => {
-  const toast = useToast();
-  const contract = useFuxContract();
-
-  const { mutate: withdrawFromWorkstream } = useWriteContract(
-    contract,
-    "withdrawFromWorkstream",
-    {
-      onError: (e) => {
-        toast({
-          title: `Couldn't withdraw FUX: ${parseTxErrorMessage(e)}`,
-          status: "error",
-        });
-        throw new Error(e.message);
-      },
-      onResponse: () => {
-        toast({
-          title: `Withdrawing FUX`,
-          status: "info",
-          duration: 30000,
-        });
-      },
-      onConfirmation: () => {
-        toast({
-          title: "FUX withdrawn",
-          status: "success",
-        });
-      },
-    }
-  );
-
-  return (workstreamID: number) => withdrawFromWorkstream(workstreamID);
-};
-
-export const useAddContributors = () => {
-
-  const toast = useToast();
-  const contract = useFuxContract();
-
-  const { mutate } = useWriteContract(contract, "addContributors", {
-    onError: (e) => {
-      toast({
-        title: `Couldn't add contributor: ${parseTxErrorMessage(e)}`,
-        status: "error",
-      });
-      throw new Error(e.message);
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "withdrawFromWorkstream",
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
     },
-    onResponse: () => {
-      toast({
-        title: `Adding contributor`,
-        status: "info",
-        duration: 30000,
-      });
-    },
-    onConfirmation: () => {
-      toast({
-        title: "Contributor added",
-        status: "success",
-      });
+    onSuccess(data) {
+      success("FUX withdrawn", ``);
+      console.log(data);
     },
   });
 
-  return (id: number, contributors: string[]) => mutate(id, contributors);
+  return { data, isLoading, isSuccess, write };
+};
+
+export const useAddContributors = (
+  workstreamID: BigNumber,
+  contributors: `0x${string}`[]
+) => {
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "addContributors",
+    args: [workstreamID, contributors],
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
+    },
+    onSuccess(data) {
+      success("Contributors added", ``);
+      console.log(data);
+    },
+  });
+
+  return { data, isLoading, isSuccess, write };
 };

@@ -1,37 +1,26 @@
-import { useFuxContract } from "./contract";
-import { useToast } from "@chakra-ui/react";
-import {
-  parseTxErrorMessage,
-  useWriteContract,
-} from "@raidguild/quiver";
+import { contractAddresses, contractABI } from "../utils/constants";
+import { useCustomToasts } from "./toast";
 import _ from "lodash";
+import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 export const useClaimRewards = () => {
-  const toast = useToast();
-  const contract = useFuxContract();
-
-  const { mutate: claimRewards } = useWriteContract(contract, "claimRewards", {
-    onError: (e) => {
-      toast({
-        title: `Couldn't resolve value evaluation: ${parseTxErrorMessage(e)}`,
-        status: "error",
-      });
-      throw new Error(e.message);
+  const { address } = useAccount();
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "claimRewards",
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
     },
-    onResponse: () => {
-      toast({
-        title: `Submitting resolution`,
-        status: "info",
-        duration: 30000,
-      });
-    },
-    onConfirmation: () => {
-      toast({
-        title: "Resolution submitted",
-        status: "success",
-      });
+    onSuccess(data) {
+      success("Claimed rewards", `FUX rewards claimed for ${address}`);
+      console.log(data);
     },
   });
 
-  return () => claimRewards();
+  return { data, isLoading, isSuccess, write };
 };

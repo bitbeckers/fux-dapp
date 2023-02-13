@@ -1,80 +1,78 @@
-import { useFuxContract } from "./contract";
-import { useToast } from "@chakra-ui/react";
+import { contractAddresses, contractABI } from "../utils/constants";
+import { useCustomToasts } from "./toast";
+import { BigNumber } from "ethers";
 import {
-  parseTxErrorMessage,
-  useReadContract,
-  useWriteContract,
-} from "@raidguild/quiver";
+  usePrepareContractWrite,
+  useContractWrite,
+  useAccount,
+  useContractRead,
+} from "wagmi";
 
 export const useMintFux = () => {
-  const toast = useToast();
-  const contract = useFuxContract();
-  const { mutate: mintFux } = useWriteContract(contract, "mintFux", {
-    onError: (e) => {
-      toast({
-        title: `Couldn't mint FUX: ${parseTxErrorMessage(e)}`,
-        status: "error",
-      });
-      throw new Error(e.message);
+  const { address } = useAccount();
+
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "mintFux",
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
     },
-    onResponse: () => {
-      toast({
-        title: `Minting FUX`,
-        status: "info",
-        duration: 30000,
-      });
-    },
-    onConfirmation: () => {
-      toast({
-        title: "FUX minted",
-        status: "success",
-      });
+    onSuccess(data) {
+      success("Minted FUX", `FUX minted to ${address}`);
+      console.log(data);
     },
   });
 
-  return mintFux;
+  return { data, isLoading, isSuccess, write };
 };
 
 export const useMintVFux = () => {
-  const toast = useToast();
-  const contract = useFuxContract();
-  const { mutate: mintVFux } = useWriteContract(contract, "mintVFux", {
-    onError: (e) => {
-      toast({
-        title: `Couldn't mint vFUX: ${parseTxErrorMessage(e)}`,
-        status: "error",
-      });
-      throw new Error(e.message);
+  const { address } = useAccount();
+
+  const { error, success } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "mintFux",
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
     },
-    onResponse: () => {
-      toast({
-        title: `Minting vFUX`,
-        status: "info",
-        duration: 30000,
-      });
-    },
-    onConfirmation: () => {
-      toast({
-        title: "vFUX minted",
-        status: "success",
-      });
+    onSuccess(data) {
+      success("Minted vFUX", `vFUX minted to ${address}`);
+      console.log(data);
     },
   });
 
-  return (workstreamID: number) => mintVFux(workstreamID);
+  return { data, isLoading, isSuccess, write };
 };
 
-export const useVFuxBalanceForWorkstreamEvaluation = (
-  workstreamID: number
-) => {
-  const contract = useFuxContract();
+export const useVFuxBalanceForWorkstreamEvaluation = (workstreamID: number) => {
+  const { error, success } = useCustomToasts();
 
-  const { response: vFuxAvailable } = useReadContract(
-    contract,
-    "getVFuxForEvaluation",
-    [workstreamID],
-    { autoUpdateInterval: 10000 }
-  );
+  const {
+    data,
+    error: e,
+    isError,
+    isLoading,
+  } = useContractRead({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "getVFuxForEvaluation",
+    args: [workstreamID],
+  });
 
-  return vFuxAvailable;
+  if (isError) {
+    error(e!);
+    return undefined;
+  }
+
+  return data as BigNumber;
 };
