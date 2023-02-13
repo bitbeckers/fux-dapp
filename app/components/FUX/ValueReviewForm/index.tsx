@@ -23,6 +23,7 @@ import {
   HStack,
   Center,
   Icon,
+  Table,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import { BigNumber, BigNumberish } from "ethers";
@@ -165,7 +166,9 @@ const ValueReviewForm: React.FC<{
                     bg="#301A3A"
                   >
                     <HStack>
-                      <ContributorRow address={contributor.user.id} />
+                      <Table>
+                        <ContributorRow address={contributor.user.id} />
+                      </Table>
                       <Spacer />
                       {contributor.user.id.toLowerCase() ===
                       owner?.toLowerCase() ? (

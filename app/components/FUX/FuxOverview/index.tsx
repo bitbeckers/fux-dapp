@@ -1,6 +1,7 @@
 import { UserDocument } from "../../../.graphclient";
 import { useMintFux } from "../../../hooks/fux";
 import { ContributorRow } from "../ContributorRow";
+import User from "../User";
 import {
   HStack,
   Link,
@@ -9,6 +10,7 @@ import {
   StatNumber,
   StatHelpText,
   StatGroup,
+  Table,
 } from "@chakra-ui/react";
 import { useWallet } from "@raidguild/quiver";
 import NextLink from "next/link";
@@ -46,7 +48,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
     >
       {!address || fetching ? undefined : (
         <>
-          <ContributorRow address={address} />
+          <User address={address} avatar={true} />
           <StatGroup textAlign="left">
             <Stat p={"1em"}>
               <StatLabel>FUX available</StatLabel>

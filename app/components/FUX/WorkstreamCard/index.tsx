@@ -1,5 +1,9 @@
-import { User, UserWorkstreamFragmentFragment } from "../../../.graphclient";
+import {
+  User as GraphUser,
+  UserWorkstreamFragmentFragment,
+} from "../../../.graphclient";
 import { ContributorRow } from "../ContributorRow";
+import User from "../User";
 import {
   AccordionButton,
   AccordionIcon,
@@ -34,7 +38,7 @@ type Evaluation = {
     id: string;
   };
   ratings: BigNumberish[];
-  contributors: Pick<User, "id">[];
+  contributors: Pick<GraphUser, "id">[];
 };
 
 const WorkstreamCard: React.FC<{
@@ -59,7 +63,7 @@ const WorkstreamCard: React.FC<{
     return (
       <Tr key={evaluation.creator.id}>
         <Td>
-          <Heading size="sm">{formatAddress(evaluation.creator.id)}</Heading>
+          <User address={evaluation.creator.id} />
         </Td>
         {mapped.map((rating, index) => (
           <Td key={index}>{rating.toString()}</Td>
@@ -81,7 +85,9 @@ const WorkstreamCard: React.FC<{
         <Tr>
           <Th>Evaluator</Th>
           {sortedContributors.map((contributor, index) => (
-            <Th key={index}>{formatAddress(contributor?.user?.id) || ""}</Th>
+            <Th key={index}>
+              <User address={contributor.user.id} />
+            </Th>
           ))}
         </Tr>
       </Thead>
@@ -116,14 +122,18 @@ const WorkstreamCard: React.FC<{
       <AccordionPanel pb={4}>
         <VStack alignItems={"flex-start"}>
           <Heading size="sm">Coordinator:</Heading>
-          <ContributorRow address={_workstream.coordinator?.id || ""} />
+          <Table>
+            <ContributorRow address={_workstream.coordinator?.id || ""} />
+          </Table>
         </VStack>
         <VStack alignItems={"flex-start"}>
           <Heading size="sm">Contributor:</Heading>
           <Flex gap="2">
-            {_workstream.contributors?.map(({ user }, index) => (
-              <ContributorRow key={index} address={user.id} />
-            ))}
+            <Table>
+              {_workstream.contributors?.map(({ user }, index) => (
+                <ContributorRow key={index} address={user.id} />
+              ))}
+            </Table>
           </Flex>
         </VStack>
 
