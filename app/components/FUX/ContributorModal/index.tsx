@@ -19,6 +19,7 @@ import {
   Icon,
   Text,
   Tooltip,
+  Table,
 } from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -71,50 +72,63 @@ const ContributorModal: React.FC<{
 
   const input = (
     <>
-    <Text mb={3}>Contributors</Text>
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {contributors?.map(({ user }, index) => (
-        <ContributorRow key={index} address={user.id} />
-      ))}
-      <Box mt={6}><hr /></Box>
-      <Text mt={6}>Invite Contributors</Text>
+      <Text mb={3}>Contributors</Text>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Table>
+          {contributors?.map(({ user }, index) => (
+            <ContributorRow key={index} address={user.id} />
+          ))}
+        </Table>
 
-      {fields.map((field, index) => (
-        <InputGroup key={field.id} marginTop={"1em"}>
-          <Input
-            id="newContributors"
-            defaultValue={`${field.address}`}
-            {...register(`newContributors.${index}.address`)}
-          />
-          {index == fields.length - 1 ? (
-            <InputRightElement>
-              <Tooltip hasArrow label="Add Another Contributor" aria-label="Add Another Contributor">
-                <IconButton
-                  aria-label="Add another contributor"
-                  onClick={() => append({ address: "" })}
-                  icon={<Icon as={BsFillPersonPlusFill} />}
-                />
-              </Tooltip>
-            </InputRightElement>
-          ) : undefined}
-        </InputGroup>
-      ))}
-      <ButtonGroup justifyContent="space-between" w="100%" marginTop={"1em"}>
-        <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-          Reset
-        </Button>
-        <Spacer />
-        <Button isLoading={isSubmitting} type="submit">
-          Submit
-        </Button>
-      </ButtonGroup>
-    </form>
+        <Box mt={6}>
+          <hr />
+        </Box>
+        <Text mt={6}>Invite Contributors</Text>
+
+        {fields.map((field, index) => (
+          <InputGroup key={field.id} marginTop={"1em"}>
+            <Input
+              id="newContributors"
+              defaultValue={`${field.address}`}
+              {...register(`newContributors.${index}.address`)}
+            />
+            {index == fields.length - 1 ? (
+              <InputRightElement>
+                <Tooltip
+                  hasArrow
+                  label="Add Another Contributor"
+                  aria-label="Add Another Contributor"
+                >
+                  <IconButton
+                    aria-label="Add another contributor"
+                    onClick={() => append({ address: "" })}
+                    icon={<Icon as={BsFillPersonPlusFill} />}
+                  />
+                </Tooltip>
+              </InputRightElement>
+            ) : undefined}
+          </InputGroup>
+        ))}
+        <ButtonGroup justifyContent="space-between" w="100%" marginTop={"1em"}>
+          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
+            Reset
+          </Button>
+          <Spacer />
+          <Button isLoading={isSubmitting} type="submit">
+            Submit
+          </Button>
+        </ButtonGroup>
+      </form>
     </>
   );
 
   return (
     <>
-      <Tooltip hasArrow label="Manage Contributors" aria-label="Manage Contributors">
+      <Tooltip
+        hasArrow
+        label="Manage Contributors"
+        aria-label="Manage Contributors"
+      >
         <IconButton
           onClick={onOpen}
           aria-label="Manage contributors"

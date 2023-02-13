@@ -1,11 +1,10 @@
 import { WorkstreamEvaluationsDocument } from "../../.graphclient";
-import { ContributorRow } from "../../components/FUX/ContributorRow";
+import User from "../../components/FUX/User";
 import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
 import {
   VStack,
   Text,
-  Heading,
   HStack,
   Stat,
   StatLabel,
@@ -56,12 +55,9 @@ const Resolve: NextPage = () => {
           <HStack paddingTop={"2em"} paddingBottom={"2em"}>
             <Stat p={"1em"}>
               <StatLabel>Coordinator</StatLabel>
-              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
-                ${
-                  _workstream.coordinator
-                    ? formatAddress(_workstream.coordinator.id)
-                    : "0"
-                }`}</StatNumber>
+              <StatNumber bg="#301A3A" pl={"5"} w="8em">
+                <User address={_workstream?.coordinator?.id || ""} size={"2xl"}/>
+              </StatNumber>
             </Stat>
             <Stat p={"1em"}>
               <StatLabel>Deadline</StatLabel>
