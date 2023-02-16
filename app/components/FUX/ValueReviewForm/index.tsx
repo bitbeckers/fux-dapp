@@ -2,7 +2,8 @@ import {
   WorkstreamFragmentFragment,
   EvaluationFragmentFragment,
 } from "../../../.graphclient";
-import { useSubmitValueEvaluation } from "../../../hooks/evaluations";
+import { useCustomToasts } from "../../../hooks/toast";
+import { contractAddresses, contractABI } from "../../../utils/constants";
 import { ContributorRow } from "../ContributorRow";
 import { StarIcon } from "@chakra-ui/icons";
 import {
@@ -19,131 +20,114 @@ import {
   Text,
   ButtonGroup,
   VStack,
-  useToast,
   HStack,
   Center,
-  Icon,
   Table,
+  Spinner,
 } from "@chakra-ui/react";
-import { useWallet } from "@raidguild/quiver";
-import { BigNumber, BigNumberish } from "ethers";
+import { BigNumberish } from "ethers";
 import _ from "lodash";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 type FormData = {
   [address: string]: BigNumberish;
 };
 
-//TODO cleanup form
+const findEvaluations = (
+  workstream: WorkstreamFragmentFragment,
+  user: `0x${string}`
+) => {
+  const currentEvaluation = workstream.evaluations?.find(
+    (evaluation: EvaluationFragmentFragment) =>
+      evaluation.creator.id.toLowerCase() === user.toLowerCase()
+  );
+
+  if (!currentEvaluation) {
+    console.log("No current founr");
+    return;
+  }
+
+  const addresses = currentEvaluation.contributors.map(
+    (contributor) => contributor.id
+  );
+
+  return _.zipObject(addresses, currentEvaluation.ratings);
+};
+
 const ValueReviewForm: React.FC<{
-  workstream?: WorkstreamFragmentFragment;
+  workstream: WorkstreamFragmentFragment;
 }> = ({ workstream }) => {
   if (!workstream) {
-    <Text>Loading...</Text>;
+    <Spinner
+      thickness="4px"
+      speed="0.65s"
+      emptyColor="gray.200"
+      color="white.500"
+      size="xl"
+    />;
   }
-  const { address: user } = useWallet();
-  const toast = useToast();
-  const submitEvaluation = useSubmitValueEvaluation();
-
-  const [ratings, setRatings] = useState<{ [address: string]: BigNumberish }>();
-  const [total, setTotal] = useState<number>(0);
+  const { address: user } = useAccount();
+  const toast = useCustomToasts();
 
   const {
     handleSubmit,
+    register,
     reset,
     watch,
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      ratings: ratings,
+      ratings: findEvaluations(workstream, user || "0x"),
     },
   });
 
   const formData = watch();
 
-  useEffect(() => {
-    if (!workstream?.evaluations || !user) {
-      return;
-    }
+  const total = Object.values(formData.ratings)
+    .map((rating) => (rating ? +rating : 0))
+    .reduce((_total, value) => _total + value, 0);
 
-    const currentEvaluation = workstream.evaluations.find(
-      (evaluation: EvaluationFragmentFragment) =>
-        evaluation.creator.id.toLowerCase() === user.toLowerCase()
-    );
+  const filteredData = Object.entries(formData.ratings).filter(
+    (entry) => entry[0] !== user
+  );
 
-    if (!currentEvaluation) {
-      console.log("No current founr");
-      return;
-    }
-
-    const addresses = currentEvaluation.contributors.map(
-      (contributor) => contributor.id
-    );
-
-    const merged = _.zipObject(addresses, currentEvaluation.ratings);
-
-    console.log("Merged: ", merged);
-
-    setRatings(merged);
-  }, [user, workstream]);
-
-  //TODO cleanup useEffect with all the !!!!
-  useEffect(() => {
-    if (!formData.ratings) {
-      return;
-    }
-
-    const values = Object.values(formData.ratings);
-
-    if (!values) {
-      return;
-    }
-
-    const totalVFux = values
-      .map((rating) => (rating ? +rating : 0))
-      .reduce((_total, value) => _total + value, 0);
-
-    if (totalVFux) setTotal(totalVFux);
-  }, [formData]);
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "submitValueEvaluation",
+    args: [
+      workstream.id,
+      Object.keys(filteredData),
+      Object.values(filteredData),
+    ],
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      toast.error(e);
+    },
+    onSuccess(data) {
+      toast.success("Submitted Evaluation", "Evaluation submitted succesfully");
+      console.log(data);
+    },
+  });
 
   const onSubmit = (data: FormData) => {
-    if (!total || !workstream) {
-      toast({
-        title: `Missing input data`,
-        status: "error",
-      });
-      return;
-    }
-
     if (total != 100) {
-      toast({
-        title: `Not enough: ${total || "..."}/100`,
-        status: "error",
-      });
+      toast.warning(`Not enough FUX`, `${total || "..."}/100`);
       return;
     }
 
-    const filteredData = Object.entries(data.ratings).filter(
-      (entry) => entry[0] !== user
-    );
-    console.log("DATA RATING: ", filteredData);
-
-    if (filteredData?.length > 0) {
-      submitEvaluation(
-        Number(workstream.id),
-        filteredData.map((data) => data[0]),
-        filteredData.map((data) => BigNumber.from(data[1]))
-      );
+    if (data.length > 0) {
+      write?.();
     }
   };
 
   const contributors = workstream?.contributors;
   const owner = workstream?.coordinator?.id;
-
-  console.log("Ratings: ", ratings);
-  console.log("Workstream: ", workstream);
 
   const reviewForm =
     contributors && contributors?.length > 0 && user ? (
@@ -167,7 +151,9 @@ const ValueReviewForm: React.FC<{
                   >
                     <HStack>
                       <Table>
-                        <ContributorRow address={contributor.user.id} />
+                        <ContributorRow
+                          address={contributor.user.id as `0x${string}`}
+                        />
                       </Table>
                       <Spacer />
                       {contributor.user.id.toLowerCase() ===
@@ -182,17 +168,17 @@ const ValueReviewForm: React.FC<{
                       control={control}
                       rules={{ required: true }}
                       key={`ratings.${contributor.user.id}`}
-                      render={({ field }) => (
-                        <NumberInput {...field}>
+                      render={({ field: { ...restField } }) => (
+                        <NumberInput {...restField}>
                           <NumberInputField
-                            ref={field.ref}
-                            name={field.name}
+                            {...register(`ratings.${contributor.user.id}`)}
+                            name={restField.name}
                             borderRadius={0}
                             max={100}
                             placeholder={
-                              ratings &&
-                              ratings[contributor.user.id.toLowerCase()]
-                                ? ratings[
+                              formData &&
+                              formData[contributor.user.id.toLowerCase()]
+                                ? formData[
                                     contributor.user.id.toLowerCase()
                                   ].toString()
                                 : "0"

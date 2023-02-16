@@ -1,4 +1,5 @@
-import { useCommitToWorkstream } from "../../../hooks/workstream";
+import { useCustomToasts } from "../../../hooks/toast";
+import { contractAddresses, contractABI } from "../../../utils/constants";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -20,37 +21,69 @@ import {
   Spacer,
   Tooltip,
 } from "@chakra-ui/react";
+import { BigNumber } from "ethers";
 import { Controller, useForm } from "react-hook-form";
+import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
 type FormData = {
-  fuxGiven: number;
+  fux: number;
 };
 
 const CommitFuxModal: React.FC<{
-  workstreamID: number;
-  fuxGiven: number;
-  fuxAvailable: number;
-  disabled?: boolean;
-}> = ({ workstreamID, fuxGiven, fuxAvailable, disabled }) => {
+  workstreamID: BigNumber;
+  fuxGiven: BigNumber;
+  fuxAvailable: BigNumber;
+  tiny?: boolean;
+}> = ({ workstreamID, fuxGiven, fuxAvailable, tiny }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const giveFUX = useCommitToWorkstream();
+  const { error, success } = useCustomToasts();
 
   const {
     control,
     handleSubmit,
-    register,
     reset,
     watch,
+    register,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      fuxGiven,
+      fux: fuxGiven.toNumber(),
     },
   });
 
-  const onSubmit = (form: FormData) => {
-    if (form.fuxGiven !== fuxGiven) {
-      giveFUX(workstreamID, form.fuxGiven).then(() => onClose());
+  const newFux = watch("fux");
+
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "commitToWorkstream",
+    args: [workstreamID, newFux],
+  });
+  const { data, write, variables } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
+    },
+    onSuccess() {
+      success(
+        "FUX Given",
+        `Committed ${variables?.args![1]} FUX to workstream`
+      );
+    },
+    onMutate() {
+      onClose();
+    },
+  });
+
+  const fuxChanged = newFux !== fuxGiven.toNumber();
+  const maxValue = fuxGiven.add(fuxAvailable).toString();
+
+  console.log(fuxGiven);
+  console.log("MaxValue: ", maxValue);
+
+  const onSubmit = () => {
+    if (fuxChanged) {
+      write?.();
     }
   };
 
@@ -58,19 +91,20 @@ const CommitFuxModal: React.FC<{
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl mb={"1em"}>
         <Controller
-          name={`fuxGiven`}
+          name={`fux`}
           control={control}
           rules={{ required: true }}
-          render={({ field: { ref, onChange, ...restField } }) => (
+          render={({ field: { ...restField } }) => (
             <NumberInput
-              onChange={onChange}
               {...restField}
               defaultValue={fuxGiven}
+              step={1}
               min={0}
-              max={fuxGiven + fuxAvailable}
+              keepWithinRange={true}
+              max={maxValue}
             >
               <NumberInputField
-                ref={ref}
+                {...register("fux")}
                 name={restField.name}
                 borderRadius={0}
               />
@@ -95,12 +129,23 @@ const CommitFuxModal: React.FC<{
     </form>
   );
 
+  const component = tiny ? (
+    <IconButton
+      onClick={onOpen}
+      aria-label="Give FUX"
+      icon={<AddIcon />}
+    ></IconButton>
+  ) : (
+    <Button disabled={fuxChanged} onClick={onOpen} aria-label="Give FUX">
+      COMMIT
+    </Button>
+  );
+
   return (
     <>
-      <Button disabled={disabled} onClick={onOpen} aria-label="COMMIT">
-        COMMIT
-      </Button>
-
+      <Tooltip hasArrow label="Update FUX Given" aria-label="Update FUX Given">
+        {component}
+      </Tooltip>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />
         <ModalContent bg="#221527">

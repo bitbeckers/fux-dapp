@@ -7,7 +7,6 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { formatAddress } from "@raidguild/quiver";
 import { useEffect, useState } from "react";
 import { useEnsAvatar, useEnsName, useNetwork } from "wagmi";
 
@@ -35,7 +34,7 @@ const User: React.FC<{
     address,
   });
   const [displayName, setDisplayName] = useState<string>(
-    formatAddress(address)
+    `${address.slice(0, 4)}...`
   );
   const [avatar, setAvatar] = useState<string>();
   const toast = useToast();

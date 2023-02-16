@@ -131,10 +131,7 @@ export function handleTransfer(event: TransferSingle): void {
   }
 
   // Transfer between users
-  if (
-    event.params.from != event.address &&
-    event.params.to != event.address
-  ) {
+  if (event.params.from != event.address && event.params.to != event.address) {
     tokenBalanceSender.balance = tokenBalanceSender.balance.minus(
       event.params.value
     );
@@ -142,7 +139,7 @@ export function handleTransfer(event: TransferSingle): void {
       event.params.value
     );
     tokenBalanceSender.save();
-    tokenBalanceRecipient.save()
+    tokenBalanceRecipient.save();
   }
 }
 
@@ -177,5 +174,17 @@ export function handleWorkstreamMinted(event: WorkstreamMinted): void {
   workstream.funding = event.params.funds;
   workstream.deadline = event.params.deadline;
   workstream.name = wsOnChain.name;
+
+  let coordinator = getOrCreateUser(event.transaction.from.toHexString());
+
+  let fuxGiven = getOrCreateFuxGiven(coordinator, workstream);
+
+  fuxGiven.balance = contract.getWorkstreamCommitment(
+    event.transaction.from,
+    event.params.id
+  );
+
+  coordinator.save();
+  fuxGiven.save();
   workstream.save();
 }

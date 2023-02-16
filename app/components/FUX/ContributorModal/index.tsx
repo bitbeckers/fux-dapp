@@ -1,4 +1,5 @@
-import { useAddContributors } from "../../../hooks/workstream";
+import { useCustomToasts } from "../../../hooks/toast";
+import { contractAddresses, contractABI } from "../../../utils/constants";
 import { ContributorRow } from "../ContributorRow";
 import {
   Box,
@@ -23,9 +24,10 @@ import {
 } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill } from "react-icons/bs";
-import { useState } from "react";
+import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
 type FormData = {
   contributors: string[];
@@ -37,9 +39,8 @@ const ContributorModal: React.FC<{
   workstreamName: string;
   contributors?: { user: { id: string } }[];
 }> = ({ workstreamID, workstreamName, contributors }) => {
-  const [newContributors, setNewContributors] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data, write } = useAddContributors(workstreamID, newContributors);
+  const { error, success } = useCustomToasts();
 
   const {
     control,
@@ -58,19 +59,38 @@ const ContributorModal: React.FC<{
     },
   });
 
-  const { fields, append, prepend, remove, swap, move, insert } =
-    useFieldArray<FormData>({
-      control,
-      name: "newContributors",
-    });
+  const { fields, append } = useFieldArray<FormData>({
+    control,
+    name: "newContributors",
+  });
 
-  
+  const newContributors = watch("newContributors");
 
-  const onSubmit = (form: FormData) => {
-    if (form.newContributors.length > 0) {
-      const addressArray = form.newContributors
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "addContributors",
+    args: [
+      workstreamID,
+      newContributors
         .map((entry) => entry.address)
-        .filter((address) => isAddress(address));
+        .filter((address) => isAddress(address)),
+    ],
+  });
+
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
+    },
+    onSuccess(data) {
+      success("Contributors added", ``);
+      console.log(data);
+    },
+  });
+
+  const onSubmit = () => {
+    if (newContributors.length > 0) {
       write?.();
       onClose();
     }
@@ -82,7 +102,7 @@ const ContributorModal: React.FC<{
       <form onSubmit={handleSubmit(onSubmit)}>
         <Table>
           {contributors?.map(({ user }, index) => (
-            <ContributorRow key={index} address={user.id} />
+            <ContributorRow key={index} address={user.id as `0x${string}`} />
           ))}
         </Table>
 
