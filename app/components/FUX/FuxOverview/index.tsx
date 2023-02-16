@@ -1,5 +1,4 @@
 import { UserDocument } from "../../../.graphclient";
-import { useMintFux } from "../../../hooks/fux";
 import User from "../User";
 import {
   HStack,
@@ -13,11 +12,34 @@ import {
 import NextLink from "next/link";
 import React from "react";
 import { useQuery } from "urql";
-import { useAccount } from "wagmi";
+import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useCustomToasts } from "../../../hooks/toast";
+import { contractAddresses, contractABI } from "../../../utils/constants";
 
 const FuxOverview: React.FC<{}> = ({}) => {
-  const { data: response, write } = useMintFux();
   const { address } = useAccount();
+
+  const { error: errorToast, success: successToast } = useCustomToasts();
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "mintFux",
+  });
+  const {
+    data: tx,
+    isLoading,
+    isSuccess,
+    write,
+  } = useContractWrite({
+    ...config,
+    onError(e) {
+      errorToast(e);
+    },
+    onSuccess(tx) {
+      successToast("Minted FUX", `FUX minted to ${address}`);
+      console.log(tx);
+    },
+  });
 
   const [result, reexecuteQuery] = useQuery({
     query: UserDocument,

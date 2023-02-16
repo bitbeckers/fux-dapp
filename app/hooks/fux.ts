@@ -8,29 +8,6 @@ import {
   useContractRead,
 } from "wagmi";
 
-export const useMintFux = () => {
-  const { address } = useAccount();
-
-  const { error, success } = useCustomToasts();
-  const { config } = usePrepareContractWrite({
-    address: contractAddresses.fuxContractAddress,
-    abi: contractABI.fux,
-    functionName: "mintFux",
-  });
-  const { data, isLoading, isSuccess, write } = useContractWrite({
-    ...config,
-    onError(e) {
-      error(e);
-    },
-    onSuccess(data) {
-      success("Minted FUX", `FUX minted to ${address}`);
-      console.log(data);
-    },
-  });
-
-  return { data, isLoading, isSuccess, write };
-};
-
 export const useMintVFux = () => {
   const { address } = useAccount();
 

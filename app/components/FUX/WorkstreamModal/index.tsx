@@ -1,6 +1,10 @@
 import { UserDocument } from "../../../.graphclient";
-import { useMintWorkstream } from "../../../hooks/workstream";
-import { useConstants } from "../../../utils/constants";
+import { useCustomToasts } from "../../../hooks/toast";
+import {
+  contractABI,
+  contractAddresses,
+  useConstants,
+} from "../../../utils/constants";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -27,12 +31,17 @@ import {
   VStack,
   FormHelperText,
 } from "@chakra-ui/react";
-import { useWallet } from "@raidguild/quiver";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { DateTime } from "luxon";
-import { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useQuery } from "urql";
+import {
+  useAccount,
+  useBalance,
+  useNetwork,
+  usePrepareContractWrite,
+  useContractWrite,
+} from "wagmi";
 
 type FormData = {
   name: string;
@@ -44,15 +53,69 @@ type FormData = {
 const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   onCloseAction,
 }) => {
-  const { provider, address: user } = useWallet();
+  const { address, isConnected } = useAccount();
+  const { error: errorToast, success: successToast } = useCustomToasts();
+
+  const {
+    getValues,
+    handleSubmit,
+    watch,
+    register,
+    reset,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    defaultValues: {
+      name: "",
+      duration: DateTime.now().plus({ day: 1 }).toISODate(),
+      funding: 0,
+      fuxGiven: 0,
+    },
+  });
+
+  const name = watch("name");
+  const fuxGiven = watch("fuxGiven");
+  const funding = watch("funding");
+  const duration = watch("duration");
+
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "mintWorkstream",
+    args: [
+      name,
+      [address],
+      fuxGiven,
+      DateTime.fromISO(duration).endOf("day").toSeconds().toFixed(),
+    ],
+    overrides: {
+      value: ethers.utils.parseEther(funding.toString()),
+    },
+  });
+
+  const { data: tx, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      errorToast(e);
+    },
+    onSuccess(tx) {
+      successToast(`Created workstream`, "");
+      console.log(tx);
+    },
+  });
+
+  const { chain } = useNetwork();
+  const { data: balance, isLoading: balanceLoading } = useBalance({
+    address,
+    chainId: chain?.id,
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const addWorkstream = useMintWorkstream();
   const { nativeToken } = useConstants();
 
-  const [result, reexecuteQuery] = useQuery({
+  const [result] = useQuery({
     query: UserDocument,
     variables: {
-      address: user?.toLowerCase() || "",
+      address: address?.toLowerCase() || "",
     },
   });
 
@@ -62,57 +125,10 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     (balance) => balance.token.name === "FUX"
   )?.balance;
 
-  const [ethBalance, setEthBalance] = useState(BigNumber.from(0));
-
-  useEffect(() => {
-    if (!user) return;
-    if (!provider) return;
-
-    const getEthBalance = async (user: string) => {
-      const balance = await provider.getBalance(user); // can also set a custom address
-      setEthBalance(balance);
-    };
-    getEthBalance(user); // can be a custom address
-  }, [provider, user]);
-
-  const {
-    handleSubmit,
-    register,
-    reset,
-    watch,
-    control,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    defaultValues: {
-      name: "",
-      duration: "7",
-      funding: 0,
-      fuxGiven: fuxBalance,
-    },
-  });
-
-  const handleOnClose = () => {
+  const onSubmit = () => {
+    write?.();
     onClose();
     onCloseAction();
-  };
-
-  const onSubmit = (form: FormData) => {
-    const funding = ethers.utils.parseEther(form.funding.toString()).toString();
-    // Mint workstream
-    const deadline = Number(
-      DateTime.fromISO(form.duration).endOf("day").toSeconds().toFixed()
-    );
-
-    const _fuxGiven = form.fuxGiven;
-    if (user) {
-      addWorkstream(
-        form.name,
-        [user],
-        _fuxGiven,
-        deadline,
-        funding
-      ).then(handleOnClose);
-    }
   };
 
   const input = (
@@ -152,13 +168,12 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
           </VStack>
 
           <VStack>
-            
             <Controller
               name={`fuxGiven`}
               control={control}
               rules={{ required: true }}
               key={`fuxGiven`}
-              render={({ field: { ref, onChange, ...restField } }) => (
+              render={({ field: { ref, ...restField } }) => (
                 <>
                   <FormHelperText textColor={"white"} w={"100%"}>
                     How many FUX do you give?
@@ -167,13 +182,12 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                     <NumberInput
                       precision={0}
                       step={1}
-                      onChange={onChange}
                       min={0}
                       max={fuxBalance}
                       {...restField}
                     >
                       <NumberInputField
-                        ref={ref}
+                        {...register("fuxGiven")}
                         name={restField.name}
                         borderRightRadius={0}
                       />
@@ -196,9 +210,9 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
             <Controller
               name={`funding`}
               control={control}
-              rules={{ required: true }}
+              rules={{ required: false }}
               key={`funding`}
-              render={({ field: { ref, onChange, ...restField } }) => (
+              render={({ field: { ...restField } }) => (
                 <>
                   <FormHelperText textColor={"white"} w={"100%"}>
                     Fund workstream
@@ -207,12 +221,11 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                     <NumberInput
                       precision={2}
                       step={0.05}
-                      onChange={onChange}
                       min={0}
                       {...restField}
                     >
                       <NumberInputField
-                        ref={ref}
+                        {...register("funding")}
                         name={restField.name}
                         borderRightRadius={0}
                       />
@@ -226,14 +239,15 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                     </InputRightAddon>
                   </InputGroup>
                   <FormHelperText textColor={"white"} w={"100%"}>
-                    {`Balance: ${parseFloat(
-                      ethers.utils.formatEther(ethBalance)
-                    ).toFixed(2)} ${nativeToken}`}
+                    {!balanceLoading
+                      ? `${parseFloat(balance?.formatted!).toFixed(2)} ${
+                          balance?.symbol
+                        } to fund`
+                      : "Loading"}
                   </FormHelperText>
                 </>
               )}
             />
-
           </VStack>
         </HStack>
       </FormControl>

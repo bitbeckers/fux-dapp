@@ -5,7 +5,7 @@ import {
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
-import { VStack, Divider, Grid, GridItem } from "@chakra-ui/react";
+import { VStack, Divider, Grid, GridItem, Spinner } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import React from "react";
 import { useQuery } from "urql";
@@ -45,7 +45,13 @@ const Workstreams: NextPage = () => {
       <WorkstreamModal onCloseAction={reexecuteQuery} />
       <Divider />
       {fetching ? (
-        "Loading... "
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="white.500"
+          size="xl"
+        />
       ) : (
         <>
           <Grid

@@ -29,11 +29,6 @@ const Header: React.FC<{}> = () => {
           <Heading fontSize="lg">MY HISTORY</Heading>
         </Link>
       </NextLink>
-      <NextLink href="/rewards" passHref>
-        <Link>
-          <Heading fontSize="lg">MY REWARDS</Heading>
-        </Link>
-      </NextLink>
 
       <Spacer />
       <ButtonGroup>

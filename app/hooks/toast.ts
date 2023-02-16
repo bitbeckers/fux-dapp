@@ -12,6 +12,15 @@ export const useCustomToasts = () => {
       isClosable: true,
     });
 
+  const warning = (title: string, description: string) =>
+    toast({
+      title,
+      status: "warning",
+      description,
+      duration: 5000,
+      isClosable: true,
+    });
+
   const error = (e: Error) => {
     toast({
       title: `Error: ${e.name}`,
@@ -21,5 +30,5 @@ export const useCustomToasts = () => {
     });
     throw new Error(e.message);
   };
-  return { success, error };
+  return { success, warning, error };
 };

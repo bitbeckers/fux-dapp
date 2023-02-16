@@ -11,7 +11,6 @@ import {
   AccordionPanel,
   Flex,
   Heading,
-  HStack,
   Table,
   TableContainer,
   Tbody,
@@ -22,7 +21,6 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { formatAddress } from "@raidguild/quiver";
 import { BigNumberish } from "ethers";
 import sortBy from "lodash/sortBy";
 import React from "react";
@@ -63,7 +61,7 @@ const WorkstreamCard: React.FC<{
     return (
       <Tr key={evaluation.creator.id}>
         <Td>
-          <User address={evaluation.creator.id} />
+          <User address={evaluation.creator.id as `0x${string}`} />
         </Td>
         {mapped.map((rating, index) => (
           <Td key={index}>{rating.toString()}</Td>
@@ -86,7 +84,7 @@ const WorkstreamCard: React.FC<{
           <Th>Evaluator</Th>
           {sortedContributors.map((contributor, index) => (
             <Th key={index}>
-              <User address={contributor.user.id} />
+              <User address={contributor.user.id as `0x${string}`} />
             </Th>
           ))}
         </Tr>
@@ -123,7 +121,9 @@ const WorkstreamCard: React.FC<{
         <VStack alignItems={"flex-start"}>
           <Heading size="sm">Coordinator:</Heading>
           <Table>
-            <ContributorRow address={_workstream.coordinator?.id || ""} />
+            <ContributorRow
+              address={(_workstream.coordinator?.id as `0x${string}`) || "0x"}
+            />
           </Table>
         </VStack>
         <VStack alignItems={"flex-start"}>
@@ -131,7 +131,10 @@ const WorkstreamCard: React.FC<{
           <Flex gap="2">
             <Table>
               {_workstream.contributors?.map(({ user }, index) => (
-                <ContributorRow key={index} address={user.id} />
+                <ContributorRow
+                  key={index}
+                  address={user.id as `0x${string}`}
+                />
               ))}
             </Table>
           </Flex>
