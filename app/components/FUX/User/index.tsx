@@ -16,15 +16,13 @@ const User: React.FC<{
   displayAvatar?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
 }> = ({ address, direction, displayAvatar, size }) => {
-  const { chain } = useNetwork();
-
   const {
     data: name,
     isError: nameError,
     isLoading: nameLoading,
   } = useEnsName({
     address,
-    chainId: chain?.id,
+    chainId: 1,
   });
   const {
     data: _avatar,
@@ -33,18 +31,14 @@ const User: React.FC<{
   } = useEnsAvatar({
     address,
   });
-  const [displayName, setDisplayName] = useState<string>(
-    `${address.slice(0, 4)}...`
-  );
   const [avatar, setAvatar] = useState<string>();
   const toast = useToast();
   const _size = size ? size : "md";
 
-  useEffect(() => {
-    if (!nameLoading && !nameError && name) {
-      setDisplayName(name);
-    }
-  }, [name, nameLoading, nameError]);
+  console.log("Address: ", address);
+  console.log("Name: ", name);
+  console.log("Name loading: ", nameLoading);
+  console.log("Name error: ", nameError);
 
   useEffect(() => {
     if (!avatarLoading && !avatarError && _avatar) {
@@ -67,7 +61,8 @@ const User: React.FC<{
       <VStack>
         {displayAvatar ? <Avatar name={address} src={avatar} /> : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
-          <Text mr={2}>{displayName}</Text> <CopyIcon />
+          <Text mr={2}>{name ? name : `${address.slice(0, 6)}...`}</Text>{" "}
+          <CopyIcon />
         </Button>
       </VStack>
     );
@@ -79,7 +74,7 @@ const User: React.FC<{
         {displayAvatar ? <Avatar name={address} src={avatar} /> : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
           <Text mr={2} size={size}>
-            {displayName}
+            {name ? name : `${address.slice(0, 6)}...`}
           </Text>{" "}
           <CopyIcon />
         </Button>

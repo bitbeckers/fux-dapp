@@ -172,32 +172,6 @@ export class FuxGiven__Params {
   }
 }
 
-export class FuxWithdraw extends ethereum.Event {
-  get params(): FuxWithdraw__Params {
-    return new FuxWithdraw__Params(this);
-  }
-}
-
-export class FuxWithdraw__Params {
-  _event: FuxWithdraw;
-
-  constructor(event: FuxWithdraw) {
-    this._event = event;
-  }
-
-  get user(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get workstreamId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-}
-
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -335,6 +309,28 @@ export class RoleRevoked__Params {
 
   get sender(): Address {
     return this._event.parameters[2].value.toAddress();
+  }
+}
+
+export class StateUpdate extends ethereum.Event {
+  get params(): StateUpdate__Params {
+    return new StateUpdate__Params(this);
+  }
+}
+
+export class StateUpdate__Params {
+  _event: StateUpdate;
+
+  constructor(event: StateUpdate) {
+    this._event = event;
+  }
+
+  get workstreamID(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get state(): i32 {
+    return this._event.parameters[1].value.toI32();
   }
 }
 
@@ -516,7 +512,7 @@ export class WorkstreamMinted__Params {
   }
 }
 
-export class FUX__getValueEvaluationResultEvaluationStruct extends ethereum.Tuple {
+export class FUX__getEvaluationResultEvaluationStruct extends ethereum.Tuple {
   get contributors(): Array<Address> {
     return this[0].toAddressArray();
   }
@@ -524,13 +520,9 @@ export class FUX__getValueEvaluationResultEvaluationStruct extends ethereum.Tupl
   get ratings(): Array<BigInt> {
     return this[1].toBigIntArray();
   }
-
-  get exists(): boolean {
-    return this[2].toBoolean();
-  }
 }
 
-export class FUX__getWorkstreamByIDResultWorkstreamStruct extends ethereum.Tuple {
+export class FUX__getWorkstreamResultWorkstreamStruct extends ethereum.Tuple {
   get name(): string {
     return this[0].toString();
   }
@@ -539,24 +531,20 @@ export class FUX__getWorkstreamByIDResultWorkstreamStruct extends ethereum.Tuple
     return this[1].toAddress();
   }
 
-  get contributors(): Array<Address> {
-    return this[2].toAddressArray();
-  }
-
-  get evaluations(): Array<BigInt> {
-    return this[3].toBigIntArray();
-  }
-
   get deadline(): BigInt {
-    return this[4].toBigInt();
+    return this[2].toBigInt();
   }
 
   get funds(): BigInt {
-    return this[5].toBigInt();
+    return this[3].toBigInt();
+  }
+
+  get state(): i32 {
+    return this[4].toI32();
   }
 
   get exists(): boolean {
-    return this[6].toBoolean();
+    return this[5].toBoolean();
   }
 }
 
@@ -744,22 +732,89 @@ export class FUX extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  getAvailableBalance(account: Address): BigInt {
+  getCommitment(user: Address, workstreamID: BigInt): BigInt {
     let result = super.call(
-      "getAvailableBalance",
-      "getAvailableBalance(address):(uint256)",
-      [ethereum.Value.fromAddress(account)]
+      "getCommitment",
+      "getCommitment(address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(user),
+        ethereum.Value.fromUnsignedBigInt(workstreamID)
+      ]
     );
 
     return result[0].toBigInt();
   }
 
-  try_getAvailableBalance(account: Address): ethereum.CallResult<BigInt> {
+  try_getCommitment(
+    user: Address,
+    workstreamID: BigInt
+  ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "getAvailableBalance",
-      "getAvailableBalance(address):(uint256)",
-      [ethereum.Value.fromAddress(account)]
+      "getCommitment",
+      "getCommitment(address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(user),
+        ethereum.Value.fromUnsignedBigInt(workstreamID)
+      ]
     );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getEvaluation(
+    user: Address,
+    workstreamID: BigInt
+  ): FUX__getEvaluationResultEvaluationStruct {
+    let result = super.call(
+      "getEvaluation",
+      "getEvaluation(address,uint256):((address[],uint256[]))",
+      [
+        ethereum.Value.fromAddress(user),
+        ethereum.Value.fromUnsignedBigInt(workstreamID)
+      ]
+    );
+
+    return changetype<FUX__getEvaluationResultEvaluationStruct>(
+      result[0].toTuple()
+    );
+  }
+
+  try_getEvaluation(
+    user: Address,
+    workstreamID: BigInt
+  ): ethereum.CallResult<FUX__getEvaluationResultEvaluationStruct> {
+    let result = super.tryCall(
+      "getEvaluation",
+      "getEvaluation(address,uint256):((address[],uint256[]))",
+      [
+        ethereum.Value.fromAddress(user),
+        ethereum.Value.fromUnsignedBigInt(workstreamID)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<FUX__getEvaluationResultEvaluationStruct>(value[0].toTuple())
+    );
+  }
+
+  getRewards(user: Address): BigInt {
+    let result = super.call("getRewards", "getRewards(address):(uint256)", [
+      ethereum.Value.fromAddress(user)
+    ]);
+
+    return result[0].toBigInt();
+  }
+
+  try_getRewards(user: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("getRewards", "getRewards(address):(uint256)", [
+      ethereum.Value.fromAddress(user)
+    ]);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -788,90 +843,26 @@ export class FUX extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
-  getVFuxForEvaluation(workstreamID: BigInt): BigInt {
-    let result = super.call(
-      "getVFuxForEvaluation",
-      "getVFuxForEvaluation(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(workstreamID)]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getVFuxForEvaluation(workstreamID: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getVFuxForEvaluation",
-      "getVFuxForEvaluation(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(workstreamID)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  getValueEvaluation(
-    user: Address,
+  getWorkstream(
     workstreamID: BigInt
-  ): FUX__getValueEvaluationResultEvaluationStruct {
+  ): FUX__getWorkstreamResultWorkstreamStruct {
     let result = super.call(
-      "getValueEvaluation",
-      "getValueEvaluation(address,uint256):((address[],uint256[],bool))",
-      [
-        ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(workstreamID)
-      ]
+      "getWorkstream",
+      "getWorkstream(uint256):((string,address,uint256,uint256,uint8,bool))",
+      [ethereum.Value.fromUnsignedBigInt(workstreamID)]
     );
 
-    return changetype<FUX__getValueEvaluationResultEvaluationStruct>(
+    return changetype<FUX__getWorkstreamResultWorkstreamStruct>(
       result[0].toTuple()
     );
   }
 
-  try_getValueEvaluation(
-    user: Address,
+  try_getWorkstream(
     workstreamID: BigInt
-  ): ethereum.CallResult<FUX__getValueEvaluationResultEvaluationStruct> {
+  ): ethereum.CallResult<FUX__getWorkstreamResultWorkstreamStruct> {
     let result = super.tryCall(
-      "getValueEvaluation",
-      "getValueEvaluation(address,uint256):((address[],uint256[],bool))",
-      [
-        ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(workstreamID)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      changetype<FUX__getValueEvaluationResultEvaluationStruct>(
-        value[0].toTuple()
-      )
-    );
-  }
-
-  getWorkstreamByID(
-    workstreamID: BigInt
-  ): FUX__getWorkstreamByIDResultWorkstreamStruct {
-    let result = super.call(
-      "getWorkstreamByID",
-      "getWorkstreamByID(uint256):((string,address,address[],uint256[],uint256,uint256,bool))",
-      [ethereum.Value.fromUnsignedBigInt(workstreamID)]
-    );
-
-    return changetype<FUX__getWorkstreamByIDResultWorkstreamStruct>(
-      result[0].toTuple()
-    );
-  }
-
-  try_getWorkstreamByID(
-    workstreamID: BigInt
-  ): ethereum.CallResult<FUX__getWorkstreamByIDResultWorkstreamStruct> {
-    let result = super.tryCall(
-      "getWorkstreamByID",
-      "getWorkstreamByID(uint256):((string,address,address[],uint256[],uint256,uint256,bool))",
+      "getWorkstream",
+      "getWorkstream(uint256):((string,address,uint256,uint256,uint8,bool))",
       [ethereum.Value.fromUnsignedBigInt(workstreamID)]
     );
     if (result.reverted) {
@@ -879,65 +870,8 @@ export class FUX extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<FUX__getWorkstreamByIDResultWorkstreamStruct>(
-        value[0].toTuple()
-      )
+      changetype<FUX__getWorkstreamResultWorkstreamStruct>(value[0].toTuple())
     );
-  }
-
-  getWorkstreamCommitment(user: Address, workstreamID: BigInt): BigInt {
-    let result = super.call(
-      "getWorkstreamCommitment",
-      "getWorkstreamCommitment(address,uint256):(uint256)",
-      [
-        ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(workstreamID)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getWorkstreamCommitment(
-    user: Address,
-    workstreamID: BigInt
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getWorkstreamCommitment",
-      "getWorkstreamCommitment(address,uint256):(uint256)",
-      [
-        ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(workstreamID)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  getWorkstreamIDs(user: Address): Array<BigInt> {
-    let result = super.call(
-      "getWorkstreamIDs",
-      "getWorkstreamIDs(address):(uint256[])",
-      [ethereum.Value.fromAddress(user)]
-    );
-
-    return result[0].toBigIntArray();
-  }
-
-  try_getWorkstreamIDs(user: Address): ethereum.CallResult<Array<BigInt>> {
-    let result = super.tryCall(
-      "getWorkstreamIDs",
-      "getWorkstreamIDs(address):(uint256[])",
-      [ethereum.Value.fromAddress(user)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigIntArray());
   }
 
   hasRole(role: Bytes, account: Address): boolean {
@@ -1106,6 +1040,29 @@ export class FUX extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
+  readWorkstreamState(workstreamID: BigInt): string {
+    let result = super.call(
+      "readWorkstreamState",
+      "readWorkstreamState(uint256):(string)",
+      [ethereum.Value.fromUnsignedBigInt(workstreamID)]
+    );
+
+    return result[0].toString();
+  }
+
+  try_readWorkstreamState(workstreamID: BigInt): ethereum.CallResult<string> {
+    let result = super.tryCall(
+      "readWorkstreamState",
+      "readWorkstreamState(uint256):(string)",
+      [ethereum.Value.fromUnsignedBigInt(workstreamID)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
   supportsInterface(interfaceId: Bytes): boolean {
     let result = super.call(
       "supportsInterface",
@@ -1213,11 +1170,11 @@ export class AddContributorsCall__Inputs {
     this._call = call;
   }
 
-  get workstreamId(): BigInt {
+  get workstreamID(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
 
-  get contributors(): Array<Address> {
+  get _contributors(): Array<Address> {
     return this._call.inputValues[1].value.toAddressArray();
   }
 }
@@ -1286,6 +1243,44 @@ export class CommitToWorkstreamCall__Outputs {
   _call: CommitToWorkstreamCall;
 
   constructor(call: CommitToWorkstreamCall) {
+    this._call = call;
+  }
+}
+
+export class FinalizeWorkstreamCall extends ethereum.Call {
+  get inputs(): FinalizeWorkstreamCall__Inputs {
+    return new FinalizeWorkstreamCall__Inputs(this);
+  }
+
+  get outputs(): FinalizeWorkstreamCall__Outputs {
+    return new FinalizeWorkstreamCall__Outputs(this);
+  }
+}
+
+export class FinalizeWorkstreamCall__Inputs {
+  _call: FinalizeWorkstreamCall;
+
+  constructor(call: FinalizeWorkstreamCall) {
+    this._call = call;
+  }
+
+  get workstreamID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _contributors(): Array<Address> {
+    return this._call.inputValues[1].value.toAddressArray();
+  }
+
+  get vFuxGiven(): Array<BigInt> {
+    return this._call.inputValues[2].value.toBigIntArray();
+  }
+}
+
+export class FinalizeWorkstreamCall__Outputs {
+  _call: FinalizeWorkstreamCall;
+
+  constructor(call: FinalizeWorkstreamCall) {
     this._call = call;
   }
 }
@@ -1427,11 +1422,11 @@ export class MintWorkstreamCall__Inputs {
     return this._call.inputValues[0].value.toString();
   }
 
-  get contributors(): Array<Address> {
+  get _contributors(): Array<Address> {
     return this._call.inputValues[1].value.toAddressArray();
   }
 
-  get selfFux(): BigInt {
+  get coordinatorCommitment(): BigInt {
     return this._call.inputValues[2].value.toBigInt();
   }
 
@@ -1478,74 +1473,6 @@ export class RenounceRoleCall__Outputs {
   _call: RenounceRoleCall;
 
   constructor(call: RenounceRoleCall) {
-    this._call = call;
-  }
-}
-
-export class ResolveSoloWorkstreamCall extends ethereum.Call {
-  get inputs(): ResolveSoloWorkstreamCall__Inputs {
-    return new ResolveSoloWorkstreamCall__Inputs(this);
-  }
-
-  get outputs(): ResolveSoloWorkstreamCall__Outputs {
-    return new ResolveSoloWorkstreamCall__Outputs(this);
-  }
-}
-
-export class ResolveSoloWorkstreamCall__Inputs {
-  _call: ResolveSoloWorkstreamCall;
-
-  constructor(call: ResolveSoloWorkstreamCall) {
-    this._call = call;
-  }
-
-  get workstreamID(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class ResolveSoloWorkstreamCall__Outputs {
-  _call: ResolveSoloWorkstreamCall;
-
-  constructor(call: ResolveSoloWorkstreamCall) {
-    this._call = call;
-  }
-}
-
-export class ResolveValueEvaluationCall extends ethereum.Call {
-  get inputs(): ResolveValueEvaluationCall__Inputs {
-    return new ResolveValueEvaluationCall__Inputs(this);
-  }
-
-  get outputs(): ResolveValueEvaluationCall__Outputs {
-    return new ResolveValueEvaluationCall__Outputs(this);
-  }
-}
-
-export class ResolveValueEvaluationCall__Inputs {
-  _call: ResolveValueEvaluationCall;
-
-  constructor(call: ResolveValueEvaluationCall) {
-    this._call = call;
-  }
-
-  get workstreamID(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get contributors(): Array<Address> {
-    return this._call.inputValues[1].value.toAddressArray();
-  }
-
-  get vFuxGiven(): Array<BigInt> {
-    return this._call.inputValues[2].value.toBigIntArray();
-  }
-}
-
-export class ResolveValueEvaluationCall__Outputs {
-  _call: ResolveValueEvaluationCall;
-
-  constructor(call: ResolveValueEvaluationCall) {
     this._call = call;
   }
 }
@@ -1648,20 +1575,20 @@ export class SetURICall__Outputs {
   }
 }
 
-export class SubmitValueEvaluationCall extends ethereum.Call {
-  get inputs(): SubmitValueEvaluationCall__Inputs {
-    return new SubmitValueEvaluationCall__Inputs(this);
+export class SubmitEvaluationCall extends ethereum.Call {
+  get inputs(): SubmitEvaluationCall__Inputs {
+    return new SubmitEvaluationCall__Inputs(this);
   }
 
-  get outputs(): SubmitValueEvaluationCall__Outputs {
-    return new SubmitValueEvaluationCall__Outputs(this);
+  get outputs(): SubmitEvaluationCall__Outputs {
+    return new SubmitEvaluationCall__Outputs(this);
   }
 }
 
-export class SubmitValueEvaluationCall__Inputs {
-  _call: SubmitValueEvaluationCall;
+export class SubmitEvaluationCall__Inputs {
+  _call: SubmitEvaluationCall;
 
-  constructor(call: SubmitValueEvaluationCall) {
+  constructor(call: SubmitEvaluationCall) {
     this._call = call;
   }
 
@@ -1669,7 +1596,7 @@ export class SubmitValueEvaluationCall__Inputs {
     return this._call.inputValues[0].value.toBigInt();
   }
 
-  get contributors(): Array<Address> {
+  get _contributors(): Array<Address> {
     return this._call.inputValues[1].value.toAddressArray();
   }
 
@@ -1678,10 +1605,10 @@ export class SubmitValueEvaluationCall__Inputs {
   }
 }
 
-export class SubmitValueEvaluationCall__Outputs {
-  _call: SubmitValueEvaluationCall;
+export class SubmitEvaluationCall__Outputs {
+  _call: SubmitEvaluationCall;
 
-  constructor(call: SubmitValueEvaluationCall) {
+  constructor(call: SubmitEvaluationCall) {
     this._call = call;
   }
 }
@@ -1746,36 +1673,6 @@ export class UpgradeToAndCallCall__Outputs {
   _call: UpgradeToAndCallCall;
 
   constructor(call: UpgradeToAndCallCall) {
-    this._call = call;
-  }
-}
-
-export class WithdrawFromWorkstreamCall extends ethereum.Call {
-  get inputs(): WithdrawFromWorkstreamCall__Inputs {
-    return new WithdrawFromWorkstreamCall__Inputs(this);
-  }
-
-  get outputs(): WithdrawFromWorkstreamCall__Outputs {
-    return new WithdrawFromWorkstreamCall__Outputs(this);
-  }
-}
-
-export class WithdrawFromWorkstreamCall__Inputs {
-  _call: WithdrawFromWorkstreamCall;
-
-  constructor(call: WithdrawFromWorkstreamCall) {
-    this._call = call;
-  }
-
-  get workstreamID(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class WithdrawFromWorkstreamCall__Outputs {
-  _call: WithdrawFromWorkstreamCall;
-
-  constructor(call: WithdrawFromWorkstreamCall) {
     this._call = call;
   }
 }

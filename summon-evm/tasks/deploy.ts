@@ -6,7 +6,7 @@ task("deploy", "Deploy contracts and verify").setAction(async ({}, { ethers, upg
     kind: "uups",
     unsafeAllow: ["constructor"],
   });
-  await fux.deployed();
+  await fux.deployTransaction.wait(5);
   console.log(`FUX is deployed to proxy address: ${fux.address}`);
 
   if (hre.network.name !== "hardhat" && hre.network.name !== "localhost") {

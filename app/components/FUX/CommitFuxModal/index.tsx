@@ -76,7 +76,7 @@ const CommitFuxModal: React.FC<{
   });
 
   const fuxChanged = newFux !== fuxGiven.toNumber();
-  const maxValue = fuxGiven.add(fuxAvailable).toString();
+  const maxValue = fuxGiven.add(fuxAvailable).toNumber();
 
   console.log(fuxGiven);
   console.log("MaxValue: ", maxValue);
@@ -97,7 +97,7 @@ const CommitFuxModal: React.FC<{
           render={({ field: { ...restField } }) => (
             <NumberInput
               {...restField}
-              defaultValue={fuxGiven}
+              defaultValue={fuxGiven.toString()}
               step={1}
               min={0}
               keepWithinRange={true}
