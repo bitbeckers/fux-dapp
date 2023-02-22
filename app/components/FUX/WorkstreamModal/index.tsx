@@ -31,7 +31,7 @@ import {
   VStack,
   FormHelperText,
 } from "@chakra-ui/react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { DateTime } from "luxon";
 import { Controller, useForm } from "react-hook-form";
 import { useQuery } from "urql";
@@ -57,11 +57,11 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   const { error: errorToast, success: successToast } = useCustomToasts();
 
   const {
-    getValues,
     handleSubmit,
     watch,
     register,
     reset,
+    setValue,
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
@@ -73,23 +73,20 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     },
   });
 
-  const name = watch("name");
-  const fuxGiven = watch("fuxGiven");
-  const funding = watch("funding");
-  const duration = watch("duration");
+  const formState = watch();
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
     functionName: "mintWorkstream",
     args: [
-      name,
+      formState.name,
       [address],
-      fuxGiven,
-      DateTime.fromISO(duration).endOf("day").toSeconds().toFixed(),
+      formState.fuxGiven,
+      DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
     ],
     overrides: {
-      value: ethers.utils.parseEther(funding.toString()),
+      value: ethers.utils.parseEther(formState.funding.toString()),
     },
   });
 
@@ -212,7 +209,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
               control={control}
               rules={{ required: false }}
               key={`funding`}
-              render={({ field: { ...restField } }) => (
+              render={({ field: { onChange, ...restField } }) => (
                 <>
                   <FormHelperText textColor={"white"} w={"100%"}>
                     Fund workstream
@@ -222,6 +219,9 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                       precision={2}
                       step={0.05}
                       min={0}
+                      onChange={(_, numberValue) =>
+                        setValue("funding", numberValue)
+                      }
                       {...restField}
                     >
                       <NumberInputField
