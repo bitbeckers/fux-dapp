@@ -21,9 +21,9 @@ export function shouldBehaveLikeFuxResolution(): void {
     await contractWithUser.mintFux();
     await contractWithUser.commitToWorkstream(1, 60);
 
-    await expect(contractWithOwner.resolveValueEvaluation(1, [user.address], [100])).to.be.revertedWithCustomError(
+    await expect(contractWithOwner.finalizeWorkstream(1, [user.address], [100])).to.be.revertedWithCustomError(
       fux,
-      "NotEnoughVFux",
+      "NotAllowed",
     );
 
     await contractWithOwner.mintVFux(1);
@@ -33,15 +33,15 @@ export function shouldBehaveLikeFuxResolution(): void {
     expect(await fux.balanceOf(owner.address, 1)).to.be.eq(100);
     expect(await fux.balanceOf(owner.address, 0)).to.be.eq(90);
 
-    expect(await fux.getWorkstreamCommitment(user.address, 1)).to.be.eq(60);
-    expect(await fux.getWorkstreamCommitment(owner.address, 1)).to.be.eq(10);
+    expect(await fux.getCommitment(user.address, 1)).to.be.eq(60);
+    expect(await fux.getCommitment(owner.address, 1)).to.be.eq(10);
 
-    await expect(contractWithUser.resolveValueEvaluation(1, [user.address], [100])).to.be.revertedWithCustomError(
+    await expect(contractWithUser.finalizeWorkstream(1, [user.address], [100])).to.be.revertedWithCustomError(
       fux,
       "NotCoordinator",
     );
 
-    await expect(contractWithOwner.resolveValueEvaluation(1, [user.address], [100]))
+    await expect(contractWithOwner.finalizeWorkstream(1, [user.address], [100]))
       .to.emit(fux, "WorkstreamClosed")
       .withArgs(1);
 
@@ -50,7 +50,7 @@ export function shouldBehaveLikeFuxResolution(): void {
     expect(await fux.balanceOf(owner.address, 1)).to.be.eq(0);
     expect(await fux.balanceOf(owner.address, 0)).to.be.eq(100);
 
-    expect(await fux.getWorkstreamCommitment(user.address, 1)).to.be.eq(0);
-    expect(await fux.getWorkstreamCommitment(owner.address, 1)).to.be.eq(0);
+    expect(await fux.getCommitment(user.address, 1)).to.be.eq(0);
+    expect(await fux.getCommitment(owner.address, 1)).to.be.eq(0);
   });
 }
