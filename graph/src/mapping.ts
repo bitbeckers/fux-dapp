@@ -3,7 +3,6 @@ import {
   EvaluationSubmitted,
   FuxClaimed,
   FuxGiven,
-  FuxWithdraw,
   TransferSingle,
   VFuxClaimed,
   WorkstreamMinted,
@@ -86,15 +85,6 @@ export function handleFuxGiven(event: FuxGiven): void {
   fuxGiven.save();
 }
 
-export function handleFuxWithdraw(event: FuxWithdraw): void {
-  let user = getOrCreateUser(event.params.user.toHexString());
-  let workstream = getOrCreateWorkstream(event.params.workstreamId);
-  let fuxGiven = getOrCreateFuxGiven(user, workstream);
-
-  fuxGiven.balance = fuxGiven.balance.minus(event.params.amount);
-  fuxGiven.save();
-}
-
 export function handleTransfer(event: TransferSingle): void {
   let token = getOrCreateToken(event.params.id);
 
@@ -167,7 +157,7 @@ export function handleVFuxClaimed(event: VFuxClaimed): void {
 
 export function handleWorkstreamMinted(event: WorkstreamMinted): void {
   let contract = FUX.bind(event.address);
-  let wsOnChain = contract.getWorkstreamByID(event.params.id);
+  let wsOnChain = contract.getWorkstream(event.params.id);
 
   let workstream = new Workstream(event.params.id.toString());
   workstream.coordinator = event.transaction.from.toHexString();
@@ -179,7 +169,7 @@ export function handleWorkstreamMinted(event: WorkstreamMinted): void {
 
   let fuxGiven = getOrCreateFuxGiven(coordinator, workstream);
 
-  fuxGiven.balance = contract.getWorkstreamCommitment(
+  fuxGiven.balance = contract.getCommitment(
     event.transaction.from,
     event.params.id
   );

@@ -30,26 +30,3 @@ export const useMintVFux = () => {
 
   return { data, isLoading, isSuccess, write };
 };
-
-export const useVFuxBalanceForWorkstreamEvaluation = (workstreamID: number) => {
-  const { error, success } = useCustomToasts();
-
-  const {
-    data,
-    error: e,
-    isError,
-    isLoading,
-  } = useContractRead({
-    address: contractAddresses.fuxContractAddress,
-    abi: contractABI.fux,
-    functionName: "getVFuxForEvaluation",
-    args: [workstreamID],
-  });
-
-  if (isError) {
-    error(e!);
-    return undefined;
-  }
-
-  return data as BigNumber;
-};

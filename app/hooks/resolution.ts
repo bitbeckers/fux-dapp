@@ -3,13 +3,13 @@ import { useCustomToasts } from "./toast";
 import _ from "lodash";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
-export const useCloseWorkstream = () => {
+export const useFinalizeWorkstream = () => {
   console.log("useCloseWorkstream");
   const { error, success } = useCustomToasts();
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
-    functionName: "resolveValueEvaluation",
+    functionName: "finalizeWorkstream",
   });
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,

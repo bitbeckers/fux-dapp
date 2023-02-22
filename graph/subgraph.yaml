@@ -6,9 +6,9 @@ dataSources:
     name: FUX
     network: goerli
     source:
-      address: "0x1c8376b946f78Ad41278Da9A1f6cfAD160d1d94c"
+      address: "0xefAD3488CD35fc70Fa7B7f6C9e336a8AbbaD8c25"
       abi: FUX
-      startBlock: 8404311
+      startBlock: 8537432
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -34,8 +34,6 @@ dataSources:
           handler: handleFuxClaimed
         - event: FuxGiven(address,uint256,uint256)
           handler: handleFuxGiven
-        - event: FuxWithdraw(address,uint256,uint256)
-          handler: handleFuxWithdraw
         - event: RewardsReserved(address,uint256)
           handler: handleRewardsReserved
         - event: RewardsClaimed(address,uint256)
