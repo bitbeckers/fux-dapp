@@ -12,6 +12,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "hardhat/console.sol";
 
+error NotAllowed();
 error NonTransferableFux();
 error NotContributor();
 error NotCoordinator();
@@ -23,6 +24,12 @@ error EvaluationAlreadySubmitted();
 error NonExistentWorkstream();
 error NotApprovedOrOwner();
 error InvalidInput(string message);
+
+enum WorkstreamState {
+    Started,
+    Evaluation,
+    Closed
+}
 
 contract FUX is
     Initializable,
@@ -46,7 +53,6 @@ contract FUX is
     event FuxClaimed(address user);
     event VFuxClaimed(address user, uint256 workstreamID);
     event FuxGiven(address user, uint256 workstreamId, uint256 amount);
-    event FuxWithdraw(address user, uint256 workstreamId, uint256 amount);
 
     event WorkstreamMinted(uint256 id, uint256 funds, uint256 deadline, string metadataUri);
     event ContributorsAdded(uint256 id, address[] contributors);
@@ -57,29 +63,27 @@ contract FUX is
     event RewardsReserved(address user, uint256 amount);
     event RewardsClaimed(address user, uint256 amount);
 
+    event StateUpdate(uint256 workstreamID, WorkstreamState state);
+
     struct Workstream {
         string name;
         address creator;
-        address[] contributors;
-        uint256[] evaluations;
         uint256 deadline;
         uint256 funds;
+        WorkstreamState state;
         bool exists;
     }
 
     struct Evaluation {
         address[] contributors;
         uint256[] ratings;
-        bool exists;
     }
 
-    mapping(uint256 => Workstream) internal workstreams;
-    mapping(address => uint256[]) internal contributorWorkstreams; //TODO find, replace, pop to keep updated
-    mapping(address => mapping(uint256 => uint256)) internal contributorCommitments;
-    mapping(address => mapping(uint256 => Evaluation)) internal valueEvaluations;
-    mapping(address => mapping(uint256 => uint256)) internal vFuxAvailableForWorkstream;
     mapping(address => bool) internal isFuxer;
-    mapping(address => mapping(uint256 => bool)) internal isContributor;
+    mapping(uint256 => Workstream) internal workstreams;
+    mapping(address => mapping(uint256 => uint256)) internal commitments;
+    mapping(address => mapping(uint256 => Evaluation)) internal evaluations;
+    mapping(address => mapping(uint256 => bool)) internal contributors;
     mapping(address => uint256) internal balances;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -100,6 +104,24 @@ contract FUX is
         counter = 0;
     }
 
+    // READ
+
+    function getCommitment(address user, uint256 workstreamID) external view returns (uint256 fuxGiven) {
+        fuxGiven = commitments[user][workstreamID];
+    }
+
+    function getEvaluation(address user, uint256 workstreamID) external view returns (Evaluation memory evaluation) {
+        evaluation = evaluations[user][workstreamID];
+    }
+
+    function getWorkstream(uint256 workstreamID) external view returns (Workstream memory workstream) {
+        workstream = workstreams[workstreamID];
+    }
+
+    function getRewards(address user) external view returns (uint256 availableRewards) {
+        availableRewards = balances[user];
+    }
+
     function uri(
         uint256 tokenId
     ) public view override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable) returns (string memory) {
@@ -110,108 +132,91 @@ contract FUX is
         _setURI(newuri);
     }
 
-    function getWorkstreamIDs(address user) public view returns (uint256[] memory ids) {
-        ids = contributorWorkstreams[user];
-    }
-
-    function getWorkstreamByID(uint256 workstreamID) public view returns (Workstream memory workstream) {
-        workstream = workstreams[workstreamID];
-    }
-
-    function getWorkstreamCommitment(address user, uint256 workstreamID) public view returns (uint256 fuxGiven) {
-        fuxGiven = contributorCommitments[user][workstreamID];
-    }
-
-    function getValueEvaluation(address user, uint256 workstreamID) public view returns (Evaluation memory evaluation) {
-        evaluation = valueEvaluations[user][workstreamID];
-    }
-
-    function getVFuxForEvaluation(uint256 workstreamID) public view returns (uint256 vFux) {
-        vFux = vFuxAvailableForWorkstream[msg.sender][workstreamID];
-    }
-
-    function getAvailableBalance(address account) public view returns (uint256 balance) {
-        balance = balances[account];
-    }
-
     function mintFux() public {
         if (isFuxer[msg.sender]) revert TokensAlreadyMinted();
-        _mint(msg.sender, FUX_TOKEN_ID, 100, "");
-        emit FuxClaimed(msg.sender);
+
         isFuxer[msg.sender] = true;
+        _mint(msg.sender, FUX_TOKEN_ID, 100, "");
+
+        emit FuxClaimed(msg.sender);
     }
 
-    function mintVFux(uint256 workstreamID) public {
-        if (!_isCoordinator(workstreamID)) revert NotCoordinator();
-        if (vFuxAvailableForWorkstream[msg.sender][workstreamID] > 0) revert TokensAlreadyMinted();
-        if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
-        if (!workstreams[workstreamID].exists) revert NonExistentWorkstream();
+    function mintVFux(uint256 workstreamID) public onlyCoordinator(workstreamID) {
+        Workstream storage workstream = workstreams[workstreamID];
+        if (!workstream.exists || workstream.state != WorkstreamState.Started) revert NotAllowed();
+        if (commitments[msg.sender][workstreamID] == 0) revert NotEnoughFux();
 
+        workstream.state = WorkstreamState.Evaluation;
         _mint(msg.sender, VFUX_TOKEN_ID, 100, "");
-        vFuxAvailableForWorkstream[msg.sender][workstreamID] = uint8(100);
         emit VFuxClaimed(msg.sender, workstreamID);
     }
 
     function mintWorkstream(
         string memory name,
-        address[] calldata contributors,
-        uint256 selfFux,
+        address[] calldata _contributors,
+        uint256 coordinatorCommitment,
         uint256 deadline
     ) public payable {
         counter += 1;
-        uint256 workstreamID = counter;
+
+        // Create workstream
         Workstream memory _workstream;
         _workstream.name = name;
         _workstream.creator = msg.sender;
         _workstream.deadline = deadline;
+        _workstream.state = WorkstreamState.Started;
         _workstream.exists = true;
-        _workstream.funds = msg.value;
 
-        uint256 contributorsLength = contributors.length;
-        _workstream.contributors = new address[](contributorsLength);
-
-        for (uint256 i = 0; i < contributorsLength; i++) {
-            address contributor = contributors[i];
-
-            //TODO triple accounting?
-            isContributor[contributor][workstreamID] = true;
-            contributorWorkstreams[contributor].push(workstreamID);
-            _workstream.contributors[i] = (contributor);
+        if (msg.value > 0) {
+            _workstream.funds = msg.value;
         }
 
-        emit ContributorsAdded(workstreamID, contributors);
+        // Add contributors
+        uint256 contributorsLength = _contributors.length;
 
-        contributorCommitments[msg.sender][workstreamID] = selfFux;
-        workstreams[workstreamID] = _workstream;
+        for (uint256 i = 0; i < contributorsLength; ) {
+            address contributor = _contributors[i];
 
-        contributorCommitments[msg.sender][workstreamID] = selfFux;
-        _safeTransferFrom(msg.sender, address(this), FUX_TOKEN_ID, selfFux, "");
-        emit WorkstreamMinted(workstreamID, msg.value, deadline, "");
+            contributors[contributor][counter] = true;
+            unchecked {
+                ++i;
+            }
+        }
+
+        // Store workstream
+        workstreams[counter] = _workstream;
+
+        // Commit coordinator to workstream
+        commitToWorkstream(counter, coordinatorCommitment);
+
+        emit ContributorsAdded(counter, _contributors);
+        emit WorkstreamMinted(counter, msg.value, deadline, "");
     }
 
-    //TODO more efficient state changes
-    function addContributors(uint256 workstreamId, address[] calldata contributors) public {
-        Workstream storage workstream = workstreams[workstreamId];
-        if (!workstream.exists) revert NonExistentWorkstream();
+    function addContributors(
+        uint256 workstreamID,
+        address[] calldata _contributors
+    ) public isActiveWorkstream(workstreamID) {
+        Workstream storage workstream = workstreams[workstreamID];
         if (workstream.creator != msg.sender) revert NotApprovedOrOwner();
-        uint256 contributorsLength = contributors.length;
-        for (uint256 i = 0; i < contributorsLength; i++) {
-            address contributor = contributors[i];
-            contributorWorkstreams[contributor].push(workstreamId);
-            workstream.contributors.push(contributor);
-            isContributor[contributor][workstreamId] = true;
+        uint256 contributorsLength = _contributors.length;
+        for (uint256 i = 0; i < contributorsLength; ) {
+            contributors[_contributors[i]][workstreamID] = true;
+            unchecked {
+                ++i;
+            }
         }
-        emit ContributorsAdded(workstreamId, contributors);
+        emit ContributorsAdded(workstreamID, _contributors);
     }
 
-    function commitToWorkstream(uint256 workstreamID, uint256 fuxGiven) public {
-        if (!_isContributor(msg.sender, workstreamID)) revert NotContributor();
+    function commitToWorkstream(uint256 workstreamID, uint256 fuxGiven) public isActiveWorkstream(workstreamID) {
+        if (!contributors[msg.sender][workstreamID]) revert NotContributor();
 
-        uint256 currentFux = contributorCommitments[msg.sender][workstreamID];
+        uint256 currentFux = commitments[msg.sender][workstreamID];
 
-        require(currentFux != fuxGiven, "Same amount of FUX");
+        if (currentFux == fuxGiven) revert InvalidInput("Current equals update");
 
-        contributorCommitments[msg.sender][workstreamID] = fuxGiven;
+        commitments[msg.sender][workstreamID] = fuxGiven;
 
         if (currentFux < fuxGiven) {
             _safeTransferFrom(msg.sender, address(this), FUX_TOKEN_ID, fuxGiven - currentFux, "");
@@ -223,132 +228,107 @@ contract FUX is
         emit FuxGiven(msg.sender, workstreamID, fuxGiven);
     }
 
-    function withdrawFromWorkstream(uint256 workstreamID) public {
-        _withdrawFux(workstreamID);
+    function submitEvaluation(uint256 workstreamID, address[] memory _contributors, uint256[] memory ratings) public {
+        if (!contributors[msg.sender][workstreamID]) revert NotContributor();
+        if (commitments[msg.sender][workstreamID] == 0) revert NotAllowed();
+        if (_contributors.length == 0 || _contributors.length != ratings.length)
+            revert InvalidInput("Array size mismatch");
+
+        _submitEvaluations(workstreamID, _contributors, ratings);
     }
 
-    function submitValueEvaluation(
+    function finalizeWorkstream(
         uint256 workstreamID,
-        address[] memory contributors,
-        uint256[] memory ratings
-    ) public {
-        if (!_isContributor(msg.sender, workstreamID)) revert NotApprovedOrOwner();
-        if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
-        if (contributors.length == 0 || contributors.length != ratings.length)
-            revert InvalidInput("contributors, vFuxGiven");
-
-        _submitEvaluations(workstreamID, contributors, ratings);
-    }
-
-    function resolveValueEvaluation(
-        uint256 workstreamID,
-        address[] memory contributors,
+        address[] memory _contributors,
         uint256[] memory vFuxGiven
-    ) public {
+    ) public onlyCoordinator(workstreamID) {
         Workstream storage workstream = workstreams[workstreamID];
-        if (!workstream.exists) revert NonExistentWorkstream();
-        if (!_isCoordinator(workstreamID)) revert NotCoordinator();
-        if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
-        if (getVFuxForEvaluation(workstreamID) == 0) revert NotEnoughVFux();
-
-        _payVFux(contributors, vFuxGiven, workstreamID);
+        if (commitments[msg.sender][workstreamID] == 0) revert NotEnoughFux();
+        if (workstream.state != WorkstreamState.Evaluation) revert NotAllowed();
 
         uint256 funds = workstream.funds;
+        uint256 coordinatorCommitment = commitments[msg.sender][workstreamID];
+
+        commitments[msg.sender][workstreamID] = 0;
+        workstream.state = WorkstreamState.Closed;
         workstream.exists = false;
+
+        _returnFux(_contributors, workstreamID);
+        _payVFux(_contributors, vFuxGiven, workstreamID);
 
         if (funds > 0) {
             workstream.funds = 0;
-            _reserveFunds(contributors, vFuxGiven, funds);
-        }
-        _returnFux(contributors, workstreamID);
-        _withdrawFux(workstreamID);
-
-        emit WorkstreamClosed(workstreamID);
-    }
-
-    function resolveSoloWorkstream(uint256 workstreamID) public {
-        Workstream storage workstream = workstreams[workstreamID];
-        if (!workstream.exists) revert NonExistentWorkstream();
-        if (!_isCoordinator(workstreamID)) revert NotCoordinator();
-        if (getWorkstreamCommitment(msg.sender, workstreamID) == 0) revert NotEnoughFux();
-
-        if (workstream.contributors.length != 1) revert InvalidInput("Not solo");
-
-        uint256 funds = workstream.funds;
-
-        if (funds > 0) {
-            workstream.funds = 0;
-            balances[msg.sender] += workstream.funds;
-            emit RewardsReserved(workstream.creator, funds);
+            _reserveFunds(_contributors, vFuxGiven, funds);
         }
 
-        workstream.exists = false;
+        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, coordinatorCommitment, "");
 
-        _withdrawFux(workstreamID);
         emit WorkstreamClosed(workstreamID);
-    }
-
-    function _withdrawFux(uint256 workstreamID) internal {
-        uint256 commitment = contributorCommitments[msg.sender][workstreamID];
-        if (commitment == 0) revert NotEnoughFux();
-        contributorCommitments[msg.sender][workstreamID] = 0;
-        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, commitment, "");
-        emit FuxWithdraw(msg.sender, workstreamID, commitment);
     }
 
     function _submitEvaluations(
         uint256 workstreamID,
-        address[] memory contributors,
+        address[] memory _contributors,
         uint256[] memory ratings
     ) internal {
         if (_getTotal(ratings) != 100) revert InvalidInput("ratings != 100");
-        _noSelfFuxing(contributors);
+        _noSelfFuxing(_contributors);
 
-        if (contributors.length == 0 || contributors.length != ratings.length)
+        if (_contributors.length == 0 || _contributors.length != ratings.length)
             revert InvalidInput("contributors, ratings");
 
-        valueEvaluations[msg.sender][workstreamID] = Evaluation(contributors, ratings, true);
+        evaluations[msg.sender][workstreamID] = Evaluation(_contributors, ratings);
 
-        emit EvaluationSubmitted(workstreamID, msg.sender, contributors, ratings);
+        emit EvaluationSubmitted(workstreamID, msg.sender, _contributors, ratings);
     }
 
-    function _noSelfFuxing(address[] memory contributors) internal view {
-        uint256 size = contributors.length;
-        for (uint256 i = 0; i < size; i++) {
-            if (contributors[i] == msg.sender) revert InvalidInput("sender is contributor");
+    function _noSelfFuxing(address[] memory _contributors) internal view {
+        uint256 size = _contributors.length;
+        for (uint256 i = 0; i < size; ) {
+            if (_contributors[i] == msg.sender) revert NotAllowed();
+            unchecked {
+                ++i;
+            }
         }
     }
 
-    function _payVFux(address[] memory contributors, uint256[] memory vFuxGiven, uint256 workstreamID) internal {
-        uint256 total = _getTotal(vFuxGiven);
-
-        if (total != 100 || total != vFuxAvailableForWorkstream[msg.sender][workstreamID]) revert NotEnoughVFux();
+    function _payVFux(address[] memory _contributors, uint256[] memory vFuxGiven, uint256 workstreamID) internal {
+        if (_getTotal(vFuxGiven) != 100) revert NotAllowed();
         uint256 size = vFuxGiven.length;
 
-        for (uint256 i = 0; i < size; ++i) {
-            _safeTransferFrom(msg.sender, contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
+        for (uint256 i = 0; i < size; ) {
+            _safeTransferFrom(msg.sender, _contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
+            unchecked {
+                ++i;
+            }
         }
     }
 
-    function _returnFux(address[] memory contributors, uint256 workstreamID) internal {
-        uint256 size = contributors.length;
-        for (uint256 i = 0; i < size; i++) {
-            address contributor = contributors[i];
-            uint256 commitment = contributorCommitments[contributor][workstreamID];
-            contributorCommitments[contributor][workstreamID] = 0;
+    function _returnFux(address[] memory _contributors, uint256 workstreamID) internal {
+        uint256 size = _contributors.length;
+        for (uint256 i = 0; i < size; ) {
+            address contributor = _contributors[i];
+            uint256 commitment = commitments[contributor][workstreamID];
+            commitments[contributor][workstreamID] = 0;
 
             _safeTransferFrom(address(this), contributor, FUX_TOKEN_ID, commitment, "");
+            unchecked {
+                ++i;
+            }
         }
     }
 
-    function _reserveFunds(address[] memory contributors, uint256[] memory vFuxGiven, uint256 balance) internal {
+    function _reserveFunds(address[] memory _contributors, uint256[] memory vFuxGiven, uint256 balance) internal {
         uint256 size = vFuxGiven.length;
         uint256 total = 0;
-        for (uint256 i = 0; i < size; ++i) {
+        for (uint256 i = 0; i < size; ) {
             uint256 portion = (vFuxGiven[i] * balance) / 100;
             total += portion;
-            balances[contributors[i]] += portion;
-            emit RewardsReserved(contributors[i], portion);
+            balances[_contributors[i]] += portion;
+            emit RewardsReserved(_contributors[i], portion);
+            unchecked {
+                ++i;
+            }
         }
 
         if (total > balance) revert NotEnoughFunds();
@@ -359,22 +339,18 @@ contract FUX is
 
         uint256 owed = balances[msg.sender];
         balances[msg.sender] = 0;
+
         payable(msg.sender).transfer(owed);
         emit RewardsClaimed(msg.sender, owed);
     }
 
-    function _isContributor(address contributor, uint256 workstreamID) internal view returns (bool) {
-        return isContributor[contributor][workstreamID];
-    }
-
-    function _isCoordinator(uint256 workstreamID) internal view returns (bool) {
-        return workstreams[workstreamID].creator == msg.sender;
-    }
-
     function _getTotal(uint256[] memory values) internal pure returns (uint256 total) {
         uint256 len = values.length;
-        for (uint256 i = 0; i < len; i++) {
+        for (uint256 i = 0; i < len; ) {
             total += values[i];
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -385,7 +361,7 @@ contract FUX is
         uint256 amount,
         bytes memory data
     ) public pure override {
-        revert NonTransferableFux();
+        revert NotAllowed();
     }
 
     function safeBatchTransferFrom(
@@ -395,7 +371,7 @@ contract FUX is
         uint256[] memory amounts,
         bytes memory data
     ) public pure virtual override {
-        revert NonTransferableFux();
+        revert NotAllowed();
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}
@@ -437,5 +413,24 @@ contract FUX is
         bytes calldata _data
     ) external pure returns (bytes4) {
         return ERC1155_BATCH_ACCEPTED;
+    }
+
+    modifier onlyCoordinator(uint256 workstreamID) {
+        if (workstreams[workstreamID].creator != msg.sender) revert NotCoordinator();
+        _;
+    }
+
+    modifier isActiveWorkstream(uint256 workstreamID) {
+        Workstream storage workstream = workstreams[workstreamID];
+        if (workstream.state == WorkstreamState.Closed || !workstream.exists) revert NotAllowed();
+        _;
+    }
+
+    function readWorkstreamState(uint256 workstreamID) external view returns (string memory) {
+        WorkstreamState temp = workstreams[workstreamID].state;
+        if (temp == WorkstreamState.Started) return "Started";
+        if (temp == WorkstreamState.Evaluation) return "Evaluation";
+        if (temp == WorkstreamState.Closed) return "Closed";
+        return "";
     }
 }

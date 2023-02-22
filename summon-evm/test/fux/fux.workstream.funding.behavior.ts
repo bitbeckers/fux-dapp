@@ -23,7 +23,7 @@ export function shouldBehaveLikeFuxWorkstreamFunding(): void {
       .to.emit(fux, "WorkstreamMinted")
       .withArgs(1, funding, deadline, "");
 
-    const workstream = await fux.getWorkstreamByID(1);
+    const workstream = await fux.getWorkstream(1);
 
     expect(workstream.funds).to.be.eql(ethers.utils.parseEther("10"));
     expect(await ethers.provider.getBalance(fux.address)).to.be.eql(ethers.utils.parseEther("10"));
@@ -57,9 +57,9 @@ export function shouldBehaveLikeFuxWorkstreamFunding(): void {
     await contractWithOwner.mintFux();
     await contractWithOwner.commitToWorkstream(1, 50);
 
-    await contractWithUser.resolveValueEvaluation(1, [deployer.address, owner.address], [60, 40]);
+    await contractWithUser.finalizeWorkstream(1, [deployer.address, owner.address], [60, 40]);
 
-    expect(await fux.getAvailableBalance(deployer.address)).to.be.eql(ethers.utils.parseEther("6"));
-    expect(await fux.getAvailableBalance(owner.address)).to.be.eql(ethers.utils.parseEther("4"));
+    expect(await fux.getRewards(deployer.address)).to.be.eql(ethers.utils.parseEther("6"));
+    expect(await fux.getRewards(owner.address)).to.be.eql(ethers.utils.parseEther("4"));
   });
 }
