@@ -16,7 +16,14 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "./.graphclient/index.ts", "./.graphclient/sources/fux/**.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "./.graphclient/index.ts",
+    "./.graphclient/sources/fux/**.ts",
+    "../summon-evm/abis/contracts/FUX.sol/FUX.json"
+  ],
   "exclude": ["node_modules"],
   "references": [{ "path": "../summon-evm" }]
 }

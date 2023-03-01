@@ -25,8 +25,8 @@ export function shouldBehaveLikeFuxEvaluation(): void {
     await contractWithUser.commitToWorkstream(1, 50);
 
     await expect(contractWithUser.mintVFux(1)).to.emit(fux, "VFuxClaimed").withArgs(user.address, 1);
-    expect(await contractWithUser.getVFuxForEvaluation(1)).to.be.eq(100);
-    await expect(contractWithUser.mintVFux(1)).to.be.revertedWithCustomError(fux, "TokensAlreadyMinted");
+    expect(await contractWithUser.readWorkstreamState(1)).to.be.eq("Evaluation");
+    await expect(contractWithUser.mintVFux(1)).to.be.revertedWithCustomError(fux, "NotAllowed");
   });
 
   it("allows workstream contributor to submit evaluations", async function () {
@@ -46,34 +46,34 @@ export function shouldBehaveLikeFuxEvaluation(): void {
 
     expect(await contractWithUser.balanceOf(user.address, 1)).to.be.eq(0);
 
-    await expect(contractWithUser.submitValueEvaluation(1, [owner.address], [100])).to.not.be.reverted;
+    await expect(contractWithUser.submitEvaluation(1, [owner.address], [100])).to.not.be.reverted;
 
     await fux.connect(owner).commitToWorkstream(1, 42);
 
-    await expect(fux.connect(deployer).submitValueEvaluation(1, [owner.address], [100])).to.be.revertedWithCustomError(
+    await expect(fux.connect(deployer).submitEvaluation(1, [owner.address], [100])).to.be.revertedWithCustomError(
       fux,
-      "NotApprovedOrOwner",
+      "NotContributor",
     );
 
-    await expect(contractWithUser.submitValueEvaluation(1, [owner.address], [100]))
+    await expect(contractWithUser.submitEvaluation(1, [owner.address], [100]))
       .to.emit(fux, "EvaluationSubmitted")
       .withArgs(1, user.address, [owner.address], [100]);
 
-    await expect(contractWithUser.submitValueEvaluation(1, [user.address], [100])).to.be.revertedWithCustomError(
+    await expect(contractWithUser.submitEvaluation(1, [user.address], [100])).to.be.revertedWithCustomError(
+      fux,
+      "NotAllowed",
+    );
+
+    await expect(contractWithUser.submitEvaluation(1, [owner.address], [99])).to.be.revertedWithCustomError(
       fux,
       "InvalidInput",
     );
 
-    await expect(contractWithUser.submitValueEvaluation(1, [owner.address], [99])).to.be.revertedWithCustomError(
-      fux,
-      'InvalidInput',
-    );
-
-    await expect(contractWithUser.submitValueEvaluation(1, [owner.address], [100]))
+    await expect(contractWithUser.submitEvaluation(1, [owner.address], [100]))
       .to.emit(fux, "EvaluationSubmitted")
       .withArgs(1, user.address, [owner.address], [100]);
 
-    const evaluation = await contractWithUser.getValueEvaluation(user.address, 1);
+    const evaluation = await contractWithUser.getEvaluation(user.address, 1);
 
     expect(evaluation.contributors).to.be.eql([owner.address]);
     expect(evaluation.ratings).to.be.eql([BigNumber.from("100")]);

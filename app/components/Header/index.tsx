@@ -1,25 +1,7 @@
-import { defaultChain } from "../../utils/constants";
 import ClaimRewards from "../ClaimRewards";
 import ConnectWallet from "../ConnectWallet";
-import {
-  Button,
-  Stack,
-  Heading,
-  Link,
-  Spacer,
-  ButtonGroup,
-} from "@chakra-ui/react";
-import { useWallet } from "@raidguild/quiver";
+import { Stack, Heading, Link, Spacer, ButtonGroup } from "@chakra-ui/react";
 import NextLink from "next/link";
-
-const NetworkButton = () => {
-  const { switchNetwork, isConnected, chainId } = useWallet();
-  if (!isConnected || chainId === defaultChain) {
-    return <></>;
-  }
-
-  return <Button onClick={() => switchNetwork("0x5")}>Switch to Goerli</Button>;
-};
 
 const Header: React.FC<{}> = () => {
   return (
@@ -47,16 +29,11 @@ const Header: React.FC<{}> = () => {
           <Heading fontSize="lg">MY HISTORY</Heading>
         </Link>
       </NextLink>
-      <NextLink href="/rewards" passHref>
-        <Link>
-          <Heading fontSize="lg">MY REWARDS</Heading>
-        </Link>
-      </NextLink>
 
       <Spacer />
-      <NetworkButton />
       <ButtonGroup>
         <ClaimRewards />
+        <Spacer />
         <ConnectWallet />
       </ButtonGroup>
     </Stack>

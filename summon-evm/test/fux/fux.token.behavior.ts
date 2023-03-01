@@ -23,11 +23,11 @@ export function shouldBehaveLikeFuxToken(): void {
     await expect(contractWithUser.mintFux()).to.emit(fux, "FuxClaimed").withArgs(user.address);
     await expect(
       contractWithUser.safeTransferFrom(user.address, owner.address, 0, 1, []),
-    ).to.be.revertedWithCustomError(fux, "NonTransferableFux");
+    ).to.be.revertedWithCustomError(fux, "NotAllowed");
 
     await expect(
       contractWithUser.safeBatchTransferFrom(user.address, owner.address, [0, 1], [10, 10], []),
-    ).to.be.revertedWithCustomError(fux, "NonTransferableFux");
+    ).to.be.revertedWithCustomError(fux, "NotAllowed");
 
     //TODO double check on no alternative way to burn
   });

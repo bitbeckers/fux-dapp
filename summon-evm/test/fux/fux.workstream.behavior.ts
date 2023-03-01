@@ -47,7 +47,7 @@ export function shouldBehaveLikeFuxWorkstream(): void {
 
     await expect(contractWithUser.commitToWorkstream(1, 50)).to.emit(fux, "FuxGiven");
     expect(await contractWithUser.balanceOf(user.address, 0)).to.be.eq(50);
-    expect(await contractWithUser.getWorkstreamCommitment(user.address, 1)).to.be.eq(50);
+    expect(await contractWithUser.getCommitment(user.address, 1)).to.be.eq(50);
 
     await contractWithOwner.mintFux();
 
@@ -57,7 +57,7 @@ export function shouldBehaveLikeFuxWorkstream(): void {
 
     await expect(contractWithOwner.commitToWorkstream(1, 50)).to.emit(fux, "FuxGiven");
     expect(await contractWithOwner.balanceOf(owner.address, 0)).to.be.eq(50);
-    expect(await contractWithOwner.getWorkstreamCommitment(owner.address, 1)).to.be.eq(50);
+    expect(await contractWithOwner.getCommitment(owner.address, 1)).to.be.eq(50);
   });
 
   it("allows workstream contributor to update committed FUX", async function () {
@@ -73,16 +73,16 @@ export function shouldBehaveLikeFuxWorkstream(): void {
     );
 
     await contractWithUser.commitToWorkstream(1, 50);
-    expect(await contractWithUser.getWorkstreamCommitment(user.address, 1)).to.be.eq(50);
+    expect(await contractWithUser.getCommitment(user.address, 1)).to.be.eq(50);
     expect(await contractWithUser.balanceOf(user.address, 0)).to.be.eq(50);
 
-    await expect(contractWithUser.commitToWorkstream(1, 50)).to.be.revertedWith("Same amount of FUX");
+    await expect(contractWithUser.commitToWorkstream(1, 50)).to.be.revertedWithCustomError(fux, "InvalidInput");
     await expect(contractWithUser.commitToWorkstream(1, 20)).to.emit(fux, "FuxGiven").withArgs(user.address, 1, 20);
-    expect(await contractWithUser.getWorkstreamCommitment(user.address, 1)).to.be.eq(20);
+    expect(await contractWithUser.getCommitment(user.address, 1)).to.be.eq(20);
     expect(await contractWithUser.balanceOf(user.address, 0)).to.be.eq(80);
 
     await expect(contractWithUser.commitToWorkstream(1, 60)).to.emit(fux, "FuxGiven").withArgs(user.address, 1, 60);
-    expect(await contractWithUser.getWorkstreamCommitment(user.address, 1)).to.be.eq(60);
+    expect(await contractWithUser.getCommitment(user.address, 1)).to.be.eq(60);
     expect(await contractWithUser.balanceOf(user.address, 0)).to.be.eq(40);
   });
 
@@ -100,18 +100,19 @@ export function shouldBehaveLikeFuxWorkstream(): void {
       DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
     );
 
-    await expect(contractWithUser.withdrawFromWorkstream(1)).to.not.be.reverted;
+    await expect(contractWithUser.commitToWorkstream(1, 0)).to.not.be.reverted;
 
     await contractWithUser.commitToWorkstream(1, 50);
 
-    expect(await contractWithUser.getWorkstreamCommitment(user.address, 1)).to.be.eq(50);
+    expect(await contractWithUser.getCommitment(user.address, 1)).to.be.eq(50);
     expect(await contractWithUser.balanceOf(user.address, 0)).to.be.eq(50);
 
-    await expect(contractWithOwner.withdrawFromWorkstream(1)).to.be.revertedWithCustomError(fux, "NotEnoughFux");
+    await expect(contractWithOwner.commitToWorkstream(1, 0)).to.be.revertedWithCustomError(fux, "NotContributor");
 
-    await expect(contractWithUser.withdrawFromWorkstream(1)).to.emit(fux, "FuxWithdraw").withArgs(user.address, 1, 50);
+    await contractWithUser.addContributors(1, [owner.address]);
+    await expect(contractWithUser.commitToWorkstream(1, 0)).to.emit(fux, "FuxGiven").withArgs(user.address, 1, 0);
     expect(await contractWithUser.balanceOf(user.address, 0)).to.be.eq(100);
 
-    await expect(contractWithUser.withdrawFromWorkstream(1)).to.be.revertedWithCustomError(fux, "NotEnoughFux");
+    await expect(contractWithUser.commitToWorkstream(1, 0)).to.be.revertedWithCustomError(fux, "InvalidInput");
   });
 }
