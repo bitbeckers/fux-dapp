@@ -8,32 +8,28 @@ const Home: NextPage = () => {
       w={"80%"}
       maxW={"1920px"}
       spacing={8}
-      textAlign="center"
       fontSize="xl"
+      textAlign="left"
     >
       <Text p={"1em"} fontSize="4xl">
-        How many FUX can you give?
+        How many FUX do you give?
       </Text>
+
+      <Text textAlign="left">The FUX flyweel</Text>
+      <Text>1. Create workstreams/projects and invite contributors</Text>
+      <Text>2. GIVE FUX: Contributors stake their attention.</Text>
+      <Text>3. GET vFUX: Peer to Peer evaluations of perceived value created.</Text>
+      <Text>... Repeat</Text>
+      <Text>Gain perspective on how to allocate your attention based on the value created, as evaluated by your peers within.</Text>
+
+      <Text>Claim FUX to get started.</Text>
 
       <NextLink href="/start" passHref>
         <Button p={"1em"}>
-          <Link>Get started</Link>
+          <Link>Claim FUX</Link>
         </Button>
       </NextLink>
 
-      <Box>
-        <Text fontSize="md" as="cite">
-          “You and everyone you know are going to be dead soon. And in the short
-          amount of time between here and there, you have a limited amount of
-          fucks to give. Very few, in fact. And if you go around giving a fuck
-          about everything and everyone without conscious thought or
-          choice—well, then you&apos;re going to get fucked.”
-        </Text>
-        <Text fontSize="sm" fontWeight="bold" p={"2em"}>
-          Mark Manson, The Subtle Art of Not Giving a F*ck: A Counterintuitive
-          Approach to Living a Good Life
-        </Text>
-      </Box>
     </VStack>
   );
 };
