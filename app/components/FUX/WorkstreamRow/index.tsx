@@ -1,38 +1,33 @@
 import { WorkstreamsByUserFragmentFragment } from "../../../.graphclient";
 import { useConstants } from "../../../utils/constants";
-import AssignFuxModal from "../AssignFuxModal";
+import CommitFuxModal from "../CommitFuxModal";
 import ContributorModal from "../ContributorModal";
-import { ArrowRightIcon } from "@chakra-ui/icons";
-import {
-  Button,
-  GridItem,
-  IconButton,
-  Text,
-  Tooltip,
-  useToast,
-} from "@chakra-ui/react";
-import { ethers } from "ethers";
+import { Button, GridItem, Text } from "@chakra-ui/react";
+import { BigNumber, ethers } from "ethers";
 import NextLink from "next/link";
 import React from "react";
 
 const WorkstreamRow: React.FC<{
   workstream: WorkstreamsByUserFragmentFragment;
-  fuxAvailable?: number;
+  fuxAvailable?: BigNumber;
   showInactive: boolean;
 }> = ({ workstream, fuxAvailable, showInactive }) => {
-  const toast = useToast();
   const { nativeToken } = useConstants();
 
-  const _workstream = showInactive
-    ? workstream
-    : workstream.resolved
-    ? undefined
-    : workstream;
-  const workstreamID = Number(_workstream?.id);
+  if (!workstream.id) {
+    return null;
+  }
 
-  const _fuxGiven = _workstream?.fuxGiven?.find((fux) => fux.balance);
+  if (showInactive && workstream.resolved) {
+    return null;
+  }
 
-  return _workstream ? (
+  const workstreamID = workstream.id;
+
+  const _fuxGiven =
+    workstream?.fuxGiven?.find((fux) => fux.balance)?.balance || "0";
+
+  return (
     <>
       <GridItem
         display={"flex"}
@@ -48,7 +43,7 @@ const WorkstreamRow: React.FC<{
           }}
         >
           <Button variant={"link"}>
-            <Text mr={2}> {_workstream.name}</Text>
+            <Text mr={2}> {workstream.name}</Text>
           </Button>
         </NextLink>
       </GridItem>
@@ -60,7 +55,7 @@ const WorkstreamRow: React.FC<{
         colSpan={4}
       >
         <Text pr={"1em"}>{`${
-          ethers.utils.formatEther(_workstream.funding || "0").toString() || 0
+          ethers.utils.formatEther(workstream.funding).toString() || 0
         } ${nativeToken}`}</Text>
       </GridItem>
       <GridItem
@@ -70,29 +65,28 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={2}
       >
-        <Text pr={"1em"}>{`${_fuxGiven ? _fuxGiven.balance : "0"} %`}</Text>
+        <Text pr={"1em"}>{`${_fuxGiven} %`}</Text>
       </GridItem>
       {fuxAvailable ? (
         <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
-          <AssignFuxModal
-            workstreamID={workstreamID}
-            fuxGiven={_fuxGiven?.balance}
+          <CommitFuxModal
+            workstreamID={BigNumber.from(workstreamID)}
+            fuxGiven={BigNumber.from(_fuxGiven)}
             fuxAvailable={fuxAvailable}
+            tiny={true}
           />
         </GridItem>
       ) : undefined}
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <ContributorModal
-          workstreamID={workstreamID}
-          workstreamName={_workstream.name || "N/A"}
-          contributors={_workstream.contributors?.filter(
+          workstreamID={BigNumber.from(workstreamID)}
+          workstreamName={workstream.name || ""}
+          contributors={workstream.contributors?.filter(
             (contributor) => contributor
           )}
         />
       </GridItem>
     </>
-  ) : (
-    <></>
   );
 };
 

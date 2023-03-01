@@ -3,7 +3,6 @@ import {
   EvaluationSubmitted,
   FuxClaimed,
   FuxGiven,
-  FuxWithdraw,
   TransferSingle,
   VFuxClaimed,
   WorkstreamMinted,
@@ -86,15 +85,6 @@ export function handleFuxGiven(event: FuxGiven): void {
   fuxGiven.save();
 }
 
-export function handleFuxWithdraw(event: FuxWithdraw): void {
-  let user = getOrCreateUser(event.params.user.toHexString());
-  let workstream = getOrCreateWorkstream(event.params.workstreamId);
-  let fuxGiven = getOrCreateFuxGiven(user, workstream);
-
-  fuxGiven.balance = fuxGiven.balance.minus(event.params.amount);
-  fuxGiven.save();
-}
-
 export function handleTransfer(event: TransferSingle): void {
   let token = getOrCreateToken(event.params.id);
 
@@ -131,10 +121,7 @@ export function handleTransfer(event: TransferSingle): void {
   }
 
   // Transfer between users
-  if (
-    event.params.from != event.address &&
-    event.params.to != event.address
-  ) {
+  if (event.params.from != event.address && event.params.to != event.address) {
     tokenBalanceSender.balance = tokenBalanceSender.balance.minus(
       event.params.value
     );
@@ -142,7 +129,7 @@ export function handleTransfer(event: TransferSingle): void {
       event.params.value
     );
     tokenBalanceSender.save();
-    tokenBalanceRecipient.save()
+    tokenBalanceRecipient.save();
   }
 }
 
@@ -170,12 +157,24 @@ export function handleVFuxClaimed(event: VFuxClaimed): void {
 
 export function handleWorkstreamMinted(event: WorkstreamMinted): void {
   let contract = FUX.bind(event.address);
-  let wsOnChain = contract.getWorkstreamByID(event.params.id);
+  let wsOnChain = contract.getWorkstream(event.params.id);
 
   let workstream = new Workstream(event.params.id.toString());
   workstream.coordinator = event.transaction.from.toHexString();
   workstream.funding = event.params.funds;
   workstream.deadline = event.params.deadline;
   workstream.name = wsOnChain.name;
+
+  let coordinator = getOrCreateUser(event.transaction.from.toHexString());
+
+  let fuxGiven = getOrCreateFuxGiven(coordinator, workstream);
+
+  fuxGiven.balance = contract.getCommitment(
+    event.transaction.from,
+    event.params.id
+  );
+
+  coordinator.save();
+  fuxGiven.save();
   workstream.save();
 }

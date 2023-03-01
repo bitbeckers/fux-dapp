@@ -1,4 +1,5 @@
-import { useAddContributors } from "../../../hooks/workstream";
+import { useCustomToasts } from "../../../hooks/toast";
+import { contractAddresses, contractABI } from "../../../utils/constants";
 import { ContributorRow } from "../ContributorRow";
 import {
   Box,
@@ -19,10 +20,14 @@ import {
   Icon,
   Text,
   Tooltip,
+  Table,
 } from "@chakra-ui/react";
+import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill } from "react-icons/bs";
+import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
 type FormData = {
   contributors: string[];
@@ -30,12 +35,12 @@ type FormData = {
 };
 
 const ContributorModal: React.FC<{
-  workstreamID: number;
+  workstreamID: BigNumber;
   workstreamName: string;
   contributors?: { user: { id: string } }[];
 }> = ({ workstreamID, workstreamName, contributors }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const addContributors = useAddContributors();
+  const { error, success } = useCustomToasts();
 
   const {
     control,
@@ -54,67 +59,102 @@ const ContributorModal: React.FC<{
     },
   });
 
-  const { fields, append, prepend, remove, swap, move, insert } =
-    useFieldArray<FormData>({
-      control,
-      name: "newContributors",
-    });
+  const { fields, append } = useFieldArray<FormData>({
+    control,
+    name: "newContributors",
+  });
 
-  const onSubmit = (form: FormData) => {
-    if (form.newContributors.length > 0) {
-      const addressArray = form.newContributors
+  const newContributors = watch("newContributors");
+
+  const { config } = usePrepareContractWrite({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "addContributors",
+    args: [
+      workstreamID,
+      newContributors
         .map((entry) => entry.address)
-        .filter((address) => isAddress(address));
-      addContributors(workstreamID, addressArray).then(() => onClose());
+        .filter((address) => isAddress(address)),
+    ],
+  });
+
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(e) {
+      error(e);
+    },
+    onSuccess(data) {
+      success("Contributors added", ``);
+      console.log(data);
+    },
+  });
+
+  const onSubmit = () => {
+    if (newContributors.length > 0) {
+      write?.();
+      onClose();
     }
   };
 
   const input = (
     <>
-    <Text mb={3}>Contributors</Text>
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {contributors?.map(({ user }, index) => (
-        <ContributorRow key={index} address={user.id} />
-      ))}
-      <Box mt={6}><hr /></Box>
-      <Text mt={6}>Invite Contributors</Text>
+      <Text mb={3}>Contributors</Text>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Table>
+          {contributors?.map(({ user }, index) => (
+            <ContributorRow key={index} address={user.id as `0x${string}`} />
+          ))}
+        </Table>
 
-      {fields.map((field, index) => (
-        <InputGroup key={field.id} marginTop={"1em"}>
-          <Input
-            id="newContributors"
-            defaultValue={`${field.address}`}
-            {...register(`newContributors.${index}.address`)}
-          />
-          {index == fields.length - 1 ? (
-            <InputRightElement>
-              <Tooltip hasArrow label="Add Another Contributor" aria-label="Add Another Contributor">
-                <IconButton
-                  aria-label="Add another contributor"
-                  onClick={() => append({ address: "" })}
-                  icon={<Icon as={BsFillPersonPlusFill} />}
-                />
-              </Tooltip>
-            </InputRightElement>
-          ) : undefined}
-        </InputGroup>
-      ))}
-      <ButtonGroup justifyContent="space-between" w="100%" marginTop={"1em"}>
-        <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-          Reset
-        </Button>
-        <Spacer />
-        <Button isLoading={isSubmitting} type="submit">
-          Submit
-        </Button>
-      </ButtonGroup>
-    </form>
+        <Box mt={6}>
+          <hr />
+        </Box>
+        <Text mt={6}>Invite Contributors</Text>
+
+        {fields.map((field, index) => (
+          <InputGroup key={field.id} marginTop={"1em"}>
+            <Input
+              id="newContributors"
+              defaultValue={`${field.address}`}
+              {...register(`newContributors.${index}.address`)}
+            />
+            {index == fields.length - 1 ? (
+              <InputRightElement>
+                <Tooltip
+                  hasArrow
+                  label="Add Another Contributor"
+                  aria-label="Add Another Contributor"
+                >
+                  <IconButton
+                    aria-label="Add another contributor"
+                    onClick={() => append({ address: "" })}
+                    icon={<Icon as={BsFillPersonPlusFill} />}
+                  />
+                </Tooltip>
+              </InputRightElement>
+            ) : undefined}
+          </InputGroup>
+        ))}
+        <ButtonGroup justifyContent="space-between" w="100%" marginTop={"1em"}>
+          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
+            Reset
+          </Button>
+          <Spacer />
+          <Button isLoading={isSubmitting} type="submit">
+            Submit
+          </Button>
+        </ButtonGroup>
+      </form>
     </>
   );
 
   return (
     <>
-      <Tooltip hasArrow label="Manage Contributors" aria-label="Manage Contributors">
+      <Tooltip
+        hasArrow
+        label="Manage Contributors"
+        aria-label="Manage Contributors"
+      >
         <IconButton
           onClick={onOpen}
           aria-label="Manage contributors"

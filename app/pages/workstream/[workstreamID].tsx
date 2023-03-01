@@ -1,12 +1,9 @@
 import {
-  EvaluationFragmentFragment,
   TokenBalanceDocument,
-  UserWorkstream,
   WorkstreamByIDDocument,
 } from "../../.graphclient";
 import CommitFuxModal from "../../components/FUX/CommitFuxModal";
 import { ContributorRow } from "../../components/FUX/ContributorRow";
-import { useCloseWorkstream } from "../../hooks/resolution";
 import { useConstants } from "../../utils/constants";
 import {
   VStack,
@@ -19,17 +16,23 @@ import {
   Stat,
   StatLabel,
   StatNumber,
-  Flex,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  TableContainer,
+  Spinner,
 } from "@chakra-ui/react";
-import { useWallet } from "@raidguild/quiver";
-import { BigNumberish, ethers } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import _ from "lodash";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { useQuery } from "urql";
+import { useAccount } from "wagmi";
 
 type Evaluation = {
   creator: {
@@ -45,75 +48,93 @@ type Evaluation = {
 
 const Workstream: NextPage = () => {
   const router = useRouter();
-  const { address: user } = useWallet();
+  const { address } = useAccount();
   const { nativeToken } = useConstants();
-  const closeWorkstream = useCloseWorkstream();
   const { workstreamID } = router.query;
 
-  const [result, reexecuteQuery] = useQuery({
+  const [result] = useQuery({
     query: WorkstreamByIDDocument,
     variables: {
-      workstreamID: (workstreamID as string) || "",
+      workstreamID: workstreamID as string,
     },
   });
 
-  const { data, fetching, error } = result;
-  const _workstream = data?.workstream;
-
-  const fuxGiven = _workstream?.fuxGiven?.find(
-    (contributor) => contributor.user.id.toLowerCase() === user?.toLowerCase()
-  )?.balance;
-
-  const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
+  const [fuxBalanceResponse] = useQuery({
     query: TokenBalanceDocument,
     variables: {
-      address: user?.toLowerCase() || "",
+      address: address?.toLowerCase() || "",
       symbol: "FUX",
     },
   });
 
-  const {
-    data: fuxAvailableData,
-    fetching: fetchingBalance,
-    error: fuxBalance,
-  } = fuxBalanceResponse;
+  const { data, fetching } = result;
 
-  const balance = fuxAvailableData?.tokenBalances.find((balance) => balance);
+  if (fetching) {
+    return (
+      <Spinner
+        thickness="4px"
+        speed="0.65s"
+        emptyColor="gray.200"
+        color="white.500"
+        size="xl"
+      />
+    );
+  }
+  const _workstream = data?.workstream;
+
+  let fuxGiven = _workstream?.fuxGiven?.find(
+    (contributor) =>
+      contributor.user.id.toLowerCase() === address?.toLowerCase()
+  )?.balance;
+
+  if (!fuxGiven) {
+    fuxGiven = BigNumber.from("0");
+  }
+
+  const { data: fuxAvailableData } = fuxBalanceResponse;
+
+  const fuxAvailable = fuxAvailableData?.tokenBalances.find(
+    (balance) => balance
+  )?.balance;
+
+  if (!fuxAvailable) {
+    fuxGiven = BigNumber.from("0");
+  }
 
   const contributors = _workstream?.contributors?.map(
     (contributor) => contributor.user
   );
 
   //TODO Merge evaluations into averages
-  const getAverageEvaluations = (evaluations: Evaluation[]) => {
-    const merged = _.mergeWith(
-      {},
-      ...evaluations,
-      (objValue: any, srcValue: any) => (objValue || []).concat(srcValue)
-    );
+  // const getAverageEvaluations = (evaluations: Evaluation[]) => {
+  //   const merged = _.mergeWith(
+  //     {},
+  //     ...evaluations,
+  //     (objValue: any, srcValue: any) => (objValue || []).concat(srcValue)
+  //   );
 
-    console.log("merged: ", merged);
-  };
+  //   console.log("merged: ", merged);
+  // };
 
-  useEffect(() => {
-    if (_workstream?.evaluations) {
-      const evaluations = _workstream?.evaluations as Evaluation[];
+  // useEffect(() => {
+  //   if (_workstream?.evaluations) {
+  //     const evaluations = _workstream?.evaluations as Evaluation[];
 
-      getAverageEvaluations(evaluations);
-    }
-  }, [_workstream]);
+  //     getAverageEvaluations(evaluations);
+  //   }
+  // }, [_workstream]);
 
-  const handleFinalize = async () => {
-    const _contributors = contributors?.map((contributor) => contributor.id);
-    const _vFux: BigNumberish[] = [];
+  // const handleFinalize = async () => {
+  //   const _contributors = contributors?.map((contributor) => contributor.id);
+  //   const _vFux: BigNumberish[] = [];
 
-    if (!_contributors || !_vFux || _vFux.length === 0) {
-      console.log("invalid input");
-      return;
-    }
+  //   if (!_contributors || !_vFux || _vFux.length === 0) {
+  //     console.log("invalid input");
+  //     return;
+  //   }
 
-    closeWorkstream(Number(workstreamID), _contributors, _vFux);
-  };
+  //   // closeWorkstream(Number(workstreamID), _contributors, _vFux);
+  // };
 
   return _workstream ? (
     <>
@@ -127,10 +148,10 @@ const Workstream: NextPage = () => {
           <HStack>
             <ButtonGroup>
               <CommitFuxModal
-                workstreamID={+_workstream.id}
+                workstreamID={BigNumber.from(_workstream.id)}
                 fuxGiven={fuxGiven}
-                fuxAvailable={balance ? balance.balance : 0}
-              />{" "}
+                fuxAvailable={fuxAvailable}
+              />
               <NextLink
                 href={{
                   pathname: "/resolve/[workstreamID]",
@@ -143,8 +164,10 @@ const Workstream: NextPage = () => {
                 </Button>
               </NextLink>
               {_workstream.coordinator?.id.toLowerCase() ===
-              user?.toLowerCase() ? (
-                <Button onClick={handleFinalize}>FINALIZE</Button>
+              address?.toLowerCase() ? (
+                <Button onClick={() => console.log("FINALIZE")}>
+                  FINALIZE
+                </Button>
               ) : undefined}
             </ButtonGroup>
           </HStack>
@@ -177,20 +200,38 @@ const Workstream: NextPage = () => {
                 } ${nativeToken}`}</StatNumber>
             </Stat>
           </HStack>
-          <HStack>
-            <VStack alignItems={"flex-start"}>
-              <Heading size="sm">Coordinator:</Heading>
-              <ContributorRow address={_workstream.coordinator?.id || ""} />
-            </VStack>
-            <VStack alignItems={"flex-start"}>
-              <Heading size="sm">Contributors:</Heading>
-              <Flex gap="2">
+
+          <TableContainer>
+            <Table size="md">
+              <Thead>
+                <Tr>
+                  <Th>Contributor</Th>
+                  <Th isNumeric>FUX Given</Th>
+                  <Th isNumeric>vFUX Earned</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <ContributorRow
+                  address={
+                    (_workstream.coordinator?.id as `0x${string}`) || "0x"
+                  }
+                />
                 {_workstream.contributors?.map(({ user }, index) => (
-                  <ContributorRow key={index} address={user.id} />
+                  <ContributorRow
+                    key={index}
+                    address={user.id as `0x${string}`}
+                  />
                 ))}
-              </Flex>
-            </VStack>
-          </HStack>
+              </Tbody>
+              <Tfoot>
+                <Tr>
+                  <Th></Th>
+                  <Th></Th>
+                  <Th></Th>
+                </Tr>
+              </Tfoot>
+            </Table>
+          </TableContainer>
         </VStack>
       </VStack>
     </>
