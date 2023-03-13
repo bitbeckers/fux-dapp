@@ -10,16 +10,23 @@ export const theme = extendTheme({
   fonts: {
     heading: `'Stolzl', sans-serif`,
     body: `'Stolzl', sans-serif`,
+    mono: `'BDR Mono', monotype`,
   },
   styles: {
     global: {
       body: {
         color: "white",
         bg: "#1D131D",
+        fontWeight: "400",
       },
     },
   },
   components: {
+    Stat: {
+      defaultProps: {
+        fontFamily: `"BDR Mono", monotype`,
+      },
+    },
     Button: {
       defaultProps: {
         colorScheme: "primary",

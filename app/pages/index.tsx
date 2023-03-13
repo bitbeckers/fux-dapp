@@ -17,12 +17,16 @@ const Home: NextPage = () => {
             How many FUX do you give?
           </Text>
           <Text fontSize={['lg', null, '2xl']} my={3}>Gain perspective on how to allocate your attention based on perceived value created, as evaluated by your peers.</Text>
-          <Text mt={3}>Claim FUX to get started.</Text>
-          <NextLink href="/start" passHref>
-            <Button mt={6} p={"1em"}>
-              <Link>Claim FUX</Link>
-            </Button>
-          </NextLink>
+          {/* { account && fuxBalance && ( */}
+            <>
+              <Text mt={3}>Claim FUX to get started.</Text>
+              <NextLink href="/start" passHref>
+                <Button mt={6} p={"1em"}>
+                  <Link>Claim FUX</Link>
+                </Button>
+              </NextLink>
+            </>
+          {/* )} */}
         </Box>
         <Box minW={'50%'} pl={[0, null, 6]} pt={[6, null, 0]}>
           <Text textAlign="left" my={3}>The FUX flyweel</Text>

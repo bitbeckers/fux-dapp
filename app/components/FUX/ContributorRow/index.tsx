@@ -10,9 +10,17 @@ export const ContributorRow: React.FC<{ address: `0x${string}` }> = ({
         <User address={address} direction="horizontal" displayAvatar={true} />
       </Td>
       <Td>
-        <Stat>11%</Stat>
+        <Stat>
+        --%
+          {/* committed % */}
+        </Stat>
       </Td>
-      <Td>--</Td>
+      <Td>
+        <Stat>
+        --%
+        {/* vFUX % */}
+        </Stat>
+      </Td>
     </Tr>
   );
 };
