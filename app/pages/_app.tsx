@@ -9,6 +9,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import type { AppProps } from "next/app";
 import { createClient, Provider as GraphProvider } from "urql";
 import { WagmiConfig } from "wagmi";
+import './index.css';
 
 const client = createClient({
   url: "http://localhost:4000/graphql",
