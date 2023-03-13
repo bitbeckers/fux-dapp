@@ -7,6 +7,10 @@ const config: ThemeConfig = {
 
 export const theme = extendTheme({
   config,
+  fonts: {
+    heading: `'Stolzl', sans-serif`,
+    body: `'Stolzl', sans-serif`,
+  },
   styles: {
     global: {
       body: {

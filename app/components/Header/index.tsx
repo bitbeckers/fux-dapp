@@ -32,7 +32,7 @@ const Header: React.FC<{}> = () => {
 
       <Spacer />
       <ButtonGroup>
-        <ClaimRewards />
+        {/* <ClaimRewards /> */}
         <Spacer />
         <ConnectWallet />
       </ButtonGroup>
