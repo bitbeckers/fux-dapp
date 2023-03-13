@@ -7,6 +7,7 @@ import {
 } from "../../../utils/constants";
 import { AddIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
   ButtonGroup,
   FormControl,
@@ -20,6 +21,7 @@ import {
   ModalBody,
   ModalCloseButton,
   Spacer,
+  Tooltip,
   Text,
   useDisclosure,
   NumberDecrementStepper,
@@ -31,6 +33,7 @@ import {
   VStack,
   FormHelperText,
 } from "@chakra-ui/react";
+import { RiInformationLine } from "react-icons/ri";
 import { BigNumber, ethers } from "ethers";
 import { DateTime } from "luxon";
 import { Controller, useForm } from "react-hook-form";
@@ -131,8 +134,13 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl>
-        <FormHelperText textColor={"white"} mb={"1em"}>
-          Name
+        <FormHelperText textColor={"white"} mb={"1em"} display={'flex'} alignItems={'center'}>
+            Name
+            <Tooltip label="Name your workstream">
+              <Box ml={2}>
+                <RiInformationLine />
+              </Box>
+            </Tooltip>
         </FormHelperText>
 
         <Input
@@ -146,8 +154,11 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
         />
         <HStack align={"flex-start"}>
           <VStack justify={"flex-start"}>
-            <FormHelperText textColor={"white"} w={"100%"}>
+            <FormHelperText textColor={"white"} w={"100%"} display={'flex'}>
               Deadline
+              <Tooltip label="Just an estimated time of delivery as reference for contributors. It has no other effect, such as triggering evaluations.">
+                <Box ml={2}><RiInformationLine /></Box>
+              </Tooltip>
             </FormHelperText>
 
             <Input
@@ -172,8 +183,13 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
               key={`fuxGiven`}
               render={({ field: { ref, ...restField } }) => (
                 <>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    How many FUX do you give?
+                  <FormHelperText textColor={"white"} w={"100%"} display={'flex'}>
+                      How many FUX do you give?
+                    <Tooltip label="Stake some FUX if you'll also be contributing">
+                      <Box ml={2}>
+                      <RiInformationLine />
+                      </Box>
+                    </Tooltip>
                   </FormHelperText>
                   <InputGroup>
                     <NumberInput
@@ -211,8 +227,13 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
               key={`funding`}
               render={({ field: { onChange, ...restField } }) => (
                 <>
-                  <FormHelperText textColor={"white"} w={"100%"}>
+                  <FormHelperText textColor={"white"} w={"100%"} display={'flex'}>
                     Fund workstream
+                    <Tooltip label="Funding will auto-split to contributors based on evaluation">
+                    <Box ml={2}>
+                    <RiInformationLine />
+                    </Box>
+                  </Tooltip>
                   </FormHelperText>
                   <InputGroup>
                     <NumberInput

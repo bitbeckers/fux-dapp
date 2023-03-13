@@ -1,4 +1,4 @@
-import { Box, Button, VStack, Text, Link } from "@chakra-ui/react";
+import { Box, Button, Flex, VStack, Text, Link } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import NextLink from "next/link";
 
@@ -8,32 +8,35 @@ const Home: NextPage = () => {
       w={"80%"}
       maxW={"1920px"}
       spacing={8}
-      textAlign="center"
       fontSize="xl"
+      textAlign="left"
     >
-      <Text p={"1em"} fontSize="4xl">
-        How many FUX can you give?
-      </Text>
+      <Flex direction={['column', null, 'row']} >
+        <Box minW={'50%'}>
+          <Text fontSize={['2xl', null, '3xl']}>
+            How many FUX do you give?
+          </Text>
+          <Text fontSize={['lg', null, '2xl']} my={3}>Gain perspective on how to allocate your attention based on perceived value created, as evaluated by your peers.</Text>
+          {/* { account && fuxBalance && ( */}
+            <>
+              <Text mt={3}>Claim FUX to get started.</Text>
+              <NextLink href="/start" passHref>
+                <Button mt={6} p={"1em"}>
+                  <Link>Claim FUX</Link>
+                </Button>
+              </NextLink>
+            </>
+          {/* )} */}
+        </Box>
+        <Box minW={'50%'} pl={[0, null, 6]} pt={[6, null, 0]}>
+          <Text textAlign="left" my={3}>The FUX flyweel</Text>
+          <Text>1. Create workstreams/projects and invite contributors</Text>
+          <Text>2. GIVE FUX: Contributors stake their attention.</Text>
+          <Text>3. GET vFUX: Peer to Peer evaluations of perceived value created.</Text>
+          <Text>... Repeat</Text>
+        </Box>
+      </Flex>
 
-      <NextLink href="/start" passHref>
-        <Button p={"1em"}>
-          <Link>Get started</Link>
-        </Button>
-      </NextLink>
-
-      <Box>
-        <Text fontSize="md" as="cite">
-          “You and everyone you know are going to be dead soon. And in the short
-          amount of time between here and there, you have a limited amount of
-          fucks to give. Very few, in fact. And if you go around giving a fuck
-          about everything and everyone without conscious thought or
-          choice—well, then you&apos;re going to get fucked.”
-        </Text>
-        <Text fontSize="sm" fontWeight="bold" p={"2em"}>
-          Mark Manson, The Subtle Art of Not Giving a F*ck: A Counterintuitive
-          Approach to Living a Good Life
-        </Text>
-      </Box>
     </VStack>
   );
 };
