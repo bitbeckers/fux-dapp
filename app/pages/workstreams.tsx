@@ -55,7 +55,9 @@ const Workstreams: NextPage = () => {
       ) : (
         <>
           <Grid
-            w="40%"
+            maxW={'800px'}
+            w="100%"
+            mx={'auto'}
             gap={2}
             templateColumns="repeat(16, 1fr)"
             textTransform={"uppercase"}
@@ -67,7 +69,7 @@ const Workstreams: NextPage = () => {
             <GridItem colSpan={2}>FUX</GridItem>
             <GridItem colSpan={3}>Actions</GridItem>
           </Grid>
-          <Grid w="40%" gap={2} templateColumns="repeat(16, 1fr)">
+          <Grid maxW={'800px'} mx="auto" w="100%" gap={2} templateColumns="repeat(16, 1fr)">
             {data?.userWorkstreams
               ? data?.userWorkstreams.map(({ workstream }, index) => (
                   <WorkstreamRow

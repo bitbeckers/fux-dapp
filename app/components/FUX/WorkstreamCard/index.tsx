@@ -108,15 +108,13 @@ const WorkstreamCard: React.FC<{
 
   return _workstream ? (
     <AccordionItem>
-      <h2>
-        <AccordionButton>
-          <Heading size="md" flex="1" textAlign="left">
-            {_workstream.name?.toUpperCase()}
-          </Heading>
-          <Text>{_workstream.resolved ? "Closed" : "Active"}</Text>
-          <AccordionIcon />
-        </AccordionButton>
-      </h2>
+      <AccordionButton>
+        <Heading size="md" flex="1" textAlign="left">
+          {_workstream.name?.toUpperCase()}
+        </Heading>
+        <Text>{_workstream.resolved ? "Closed" : "Active"}</Text>
+        <AccordionIcon />
+      </AccordionButton>
       <AccordionPanel pb={4}>
         <VStack alignItems={"flex-start"}>
           <Heading size="sm">Coordinator:</Heading>
@@ -127,8 +125,8 @@ const WorkstreamCard: React.FC<{
           </Table>
         </VStack>
         <VStack alignItems={"flex-start"}>
-          <Heading size="sm">Contributor:</Heading>
-          <Flex gap="2">
+          <Heading size="sm">Contributors:</Heading>
+          <Flex gap="2" w={'100%'}>
             <Table>
               {_workstream.contributors?.map(({ user }, index) => (
                 <ContributorRow
