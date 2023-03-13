@@ -37,7 +37,9 @@ const CommitFuxModal: React.FC<{
 }> = ({ workstreamID, fuxGiven, fuxAvailable, tiny }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { error, success } = useCustomToasts();
+  const _fuxGiven = BigNumber.from(fuxGiven);
 
+  console.log(fuxGiven);
   const {
     control,
     handleSubmit,
@@ -47,7 +49,7 @@ const CommitFuxModal: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      fux: fuxGiven.toNumber(),
+      fux: _fuxGiven.toNumber(),
     },
   });
 
@@ -75,10 +77,10 @@ const CommitFuxModal: React.FC<{
     },
   });
 
-  const fuxChanged = newFux !== fuxGiven.toNumber();
-  const maxValue = fuxGiven.add(fuxAvailable).toNumber();
+  const fuxChanged = _fuxGiven.eq(newFux);
+  const maxValue = _fuxGiven.add(fuxAvailable).toNumber();
 
-  console.log(fuxGiven);
+  console.log(_fuxGiven);
   console.log("MaxValue: ", maxValue);
 
   const onSubmit = () => {

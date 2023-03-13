@@ -1,6 +1,6 @@
 import {
-  WorkstreamFragmentFragment,
   EvaluationFragmentFragment,
+  WorkstreamFragmentFragment,
 } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
@@ -25,6 +25,7 @@ import {
   Table,
   Spinner,
 } from "@chakra-ui/react";
+import { BigNumber } from "ethers";
 import { BigNumberish } from "ethers";
 import _ from "lodash";
 import React, { Fragment } from "react";
@@ -39,7 +40,7 @@ const findEvaluations = (
   workstream: WorkstreamFragmentFragment,
   user: `0x${string}`
 ) => {
-  const currentEvaluation = workstream.evaluations?.find(
+  const currentEvaluation = workstream?.evaluations?.find(
     (evaluation: EvaluationFragmentFragment) =>
       evaluation.creator.id.toLowerCase() === user.toLowerCase()
   );
@@ -59,15 +60,6 @@ const findEvaluations = (
 const ValueReviewForm: React.FC<{
   workstream: WorkstreamFragmentFragment;
 }> = ({ workstream }) => {
-  if (!workstream) {
-    <Spinner
-      thickness="4px"
-      speed="0.65s"
-      emptyColor="gray.200"
-      color="white.500"
-      size="xl"
-    />;
-  }
   const { address: user } = useAccount();
   const toast = useCustomToasts();
 
@@ -80,29 +72,26 @@ const ValueReviewForm: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      ratings: findEvaluations(workstream, user || "0x"),
+      ratings: 0,
     },
   });
 
   const formData = watch();
 
-  const total = Object.values(formData.ratings)
-    .map((rating) => (rating ? +rating : 0))
-    .reduce((_total, value) => _total + value, 0);
+  const _contributors = Object.keys(formData.ratings);
+  const _ratings = Object.values(formData.ratings).map((rating) => +rating);
+  const total = _ratings.length > 0 ? _ratings.reduce((a, b) => a + b, 0) : 0;
 
-  const filteredData = Object.entries(formData.ratings).filter(
-    (entry) => entry[0] !== user
-  );
+  console.log("Total: ", total);
+
+  console.log("Contributors: ", _contributors);
+  console.log("Ratings: ", _ratings);
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
-    functionName: "submitValueEvaluation",
-    args: [
-      workstream.id,
-      Object.keys(filteredData),
-      Object.values(filteredData),
-    ],
+    functionName: "submitEvaluation",
+    args: [workstream.id, _contributors, _ratings],
   });
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
@@ -116,14 +105,23 @@ const ValueReviewForm: React.FC<{
   });
 
   const onSubmit = (data: FormData) => {
+    console.log("DATA: ", data);
+
     if (total != 100) {
       toast.warning(`Not enough FUX`, `${total || "..."}/100`);
       return;
     }
 
-    if (data.length > 0) {
-      write?.();
+    if (_contributors.length !== _ratings.length) {
+      toast.warning(
+        `Contributor <> Evaluation mismatch`,
+        `Did you evaluate everybody?`
+      );
+      return;
     }
+
+    console.log("WRITING");
+    write?.();
   };
 
   const contributors = workstream?.contributors;
