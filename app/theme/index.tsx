@@ -54,5 +54,12 @@ export const theme = extendTheme({
         }),
       },
     },
+    Text: {
+      variants: {
+        mono: () => ({
+          fontFamily: `"BDR Mono", monotype`,
+        }),
+      },
+    },
   },
 });

@@ -43,7 +43,10 @@ const WorkstreamRow: React.FC<{
           }}
         >
           <Button variant={"link"}>
-            <Text mr={2} noOfLines={1}> {workstream.name}</Text>
+            <Text mr={2} noOfLines={1}>
+              {" "}
+              {workstream.name}
+            </Text>
           </Button>
         </NextLink>
       </GridItem>
@@ -54,7 +57,7 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={4}
       >
-        <Text font="mono" pr={"1em"}>{`${
+        <Text variant="mono" pr={"1em"}>{`${
           ethers.utils.formatEther(workstream.funding).toString() || 0
         } ${nativeToken}`}</Text>
       </GridItem>
