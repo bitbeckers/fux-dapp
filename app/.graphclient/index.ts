@@ -57,17 +57,8 @@ export type Evaluation = {
   id: Scalars['ID'];
   creator: User;
   workstream: Workstream;
-  contributors: Array<User>;
-  ratings: Array<Scalars['BigInt']>;
-};
-
-
-export type EvaluationcontributorsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<User_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<User_filter>;
+  contributor: User;
+  rating: Scalars['BigInt'];
 };
 
 export type Evaluation_filter = {
@@ -121,19 +112,35 @@ export type Evaluation_filter = {
   workstream_not_ends_with?: InputMaybe<Scalars['String']>;
   workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   workstream_?: InputMaybe<Workstream_filter>;
-  contributors?: InputMaybe<Array<Scalars['String']>>;
-  contributors_not?: InputMaybe<Array<Scalars['String']>>;
-  contributors_contains?: InputMaybe<Array<Scalars['String']>>;
-  contributors_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  contributors_not_contains?: InputMaybe<Array<Scalars['String']>>;
-  contributors_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  contributors_?: InputMaybe<User_filter>;
-  ratings?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_not?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_contains?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_not_contains?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
+  contributor?: InputMaybe<Scalars['String']>;
+  contributor_not?: InputMaybe<Scalars['String']>;
+  contributor_gt?: InputMaybe<Scalars['String']>;
+  contributor_lt?: InputMaybe<Scalars['String']>;
+  contributor_gte?: InputMaybe<Scalars['String']>;
+  contributor_lte?: InputMaybe<Scalars['String']>;
+  contributor_in?: InputMaybe<Array<Scalars['String']>>;
+  contributor_not_in?: InputMaybe<Array<Scalars['String']>>;
+  contributor_contains?: InputMaybe<Scalars['String']>;
+  contributor_contains_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_contains?: InputMaybe<Scalars['String']>;
+  contributor_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  contributor_starts_with?: InputMaybe<Scalars['String']>;
+  contributor_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_starts_with?: InputMaybe<Scalars['String']>;
+  contributor_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_ends_with?: InputMaybe<Scalars['String']>;
+  contributor_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_ends_with?: InputMaybe<Scalars['String']>;
+  contributor_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_?: InputMaybe<User_filter>;
+  rating?: InputMaybe<Scalars['BigInt']>;
+  rating_not?: InputMaybe<Scalars['BigInt']>;
+  rating_gt?: InputMaybe<Scalars['BigInt']>;
+  rating_lt?: InputMaybe<Scalars['BigInt']>;
+  rating_gte?: InputMaybe<Scalars['BigInt']>;
+  rating_lte?: InputMaybe<Scalars['BigInt']>;
+  rating_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  rating_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Evaluation_filter>>>;
@@ -143,87 +150,20 @@ export type Evaluation_filter = {
 export type Evaluation_orderBy =
   | 'id'
   | 'creator'
+  | 'creator__id'
+  | 'creator__fuxer'
+  | 'creator__rewards'
   | 'workstream'
-  | 'contributors'
-  | 'ratings';
-
-export type FuxGiven = {
-  id: Scalars['ID'];
-  user: User;
-  workstream: Workstream;
-  balance: Scalars['BigInt'];
-};
-
-export type FuxGiven_filter = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  user?: InputMaybe<Scalars['String']>;
-  user_not?: InputMaybe<Scalars['String']>;
-  user_gt?: InputMaybe<Scalars['String']>;
-  user_lt?: InputMaybe<Scalars['String']>;
-  user_gte?: InputMaybe<Scalars['String']>;
-  user_lte?: InputMaybe<Scalars['String']>;
-  user_in?: InputMaybe<Array<Scalars['String']>>;
-  user_not_in?: InputMaybe<Array<Scalars['String']>>;
-  user_contains?: InputMaybe<Scalars['String']>;
-  user_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_not_contains?: InputMaybe<Scalars['String']>;
-  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_starts_with?: InputMaybe<Scalars['String']>;
-  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_starts_with?: InputMaybe<Scalars['String']>;
-  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_ends_with?: InputMaybe<Scalars['String']>;
-  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_ends_with?: InputMaybe<Scalars['String']>;
-  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_?: InputMaybe<User_filter>;
-  workstream?: InputMaybe<Scalars['String']>;
-  workstream_not?: InputMaybe<Scalars['String']>;
-  workstream_gt?: InputMaybe<Scalars['String']>;
-  workstream_lt?: InputMaybe<Scalars['String']>;
-  workstream_gte?: InputMaybe<Scalars['String']>;
-  workstream_lte?: InputMaybe<Scalars['String']>;
-  workstream_in?: InputMaybe<Array<Scalars['String']>>;
-  workstream_not_in?: InputMaybe<Array<Scalars['String']>>;
-  workstream_contains?: InputMaybe<Scalars['String']>;
-  workstream_contains_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_contains?: InputMaybe<Scalars['String']>;
-  workstream_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  workstream_starts_with?: InputMaybe<Scalars['String']>;
-  workstream_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_starts_with?: InputMaybe<Scalars['String']>;
-  workstream_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_ends_with?: InputMaybe<Scalars['String']>;
-  workstream_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_ends_with?: InputMaybe<Scalars['String']>;
-  workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_?: InputMaybe<Workstream_filter>;
-  balance?: InputMaybe<Scalars['BigInt']>;
-  balance_not?: InputMaybe<Scalars['BigInt']>;
-  balance_gt?: InputMaybe<Scalars['BigInt']>;
-  balance_lt?: InputMaybe<Scalars['BigInt']>;
-  balance_gte?: InputMaybe<Scalars['BigInt']>;
-  balance_lte?: InputMaybe<Scalars['BigInt']>;
-  balance_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<FuxGiven_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<FuxGiven_filter>>>;
-};
-
-export type FuxGiven_orderBy =
-  | 'id'
-  | 'user'
-  | 'workstream'
-  | 'balance';
+  | 'workstream__id'
+  | 'workstream__name'
+  | 'workstream__funding'
+  | 'workstream__deadline'
+  | 'workstream__status'
+  | 'contributor'
+  | 'contributor__id'
+  | 'contributor__fuxer'
+  | 'contributor__rewards'
+  | 'rating';
 
 /** Defines the order direction, either ascending or descending */
 export type OrderDirection =
@@ -235,18 +175,14 @@ export type Query = {
   users: Array<User>;
   workstream?: Maybe<Workstream>;
   workstreams: Array<Workstream>;
-  userWorkstream?: Maybe<UserWorkstream>;
-  userWorkstreams: Array<UserWorkstream>;
   evaluation?: Maybe<Evaluation>;
   evaluations: Array<Evaluation>;
+  workstreamContributor?: Maybe<WorkstreamContributor>;
+  workstreamContributors: Array<WorkstreamContributor>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
   tokenBalance?: Maybe<TokenBalance>;
   tokenBalances: Array<TokenBalance>;
-  fuxGiven?: Maybe<FuxGiven>;
-  fuxGivens: Array<FuxGiven>;
-  vfuxWorkstream?: Maybe<VFuxWorkstream>;
-  vfuxWorkstreams: Array<VFuxWorkstream>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -288,24 +224,6 @@ export type QueryworkstreamsArgs = {
 };
 
 
-export type QueryuserWorkstreamArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryuserWorkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserWorkstream_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
 export type QueryevaluationArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
@@ -319,6 +237,24 @@ export type QueryevaluationsArgs = {
   orderBy?: InputMaybe<Evaluation_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Evaluation_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryworkstreamContributorArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryworkstreamContributorsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -360,42 +296,6 @@ export type QuerytokenBalancesArgs = {
 };
 
 
-export type QueryfuxGivenArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryfuxGivensArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FuxGiven_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FuxGiven_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryvfuxWorkstreamArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryvfuxWorkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VFuxWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VFuxWorkstream_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
 export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
@@ -405,18 +305,14 @@ export type Subscription = {
   users: Array<User>;
   workstream?: Maybe<Workstream>;
   workstreams: Array<Workstream>;
-  userWorkstream?: Maybe<UserWorkstream>;
-  userWorkstreams: Array<UserWorkstream>;
   evaluation?: Maybe<Evaluation>;
   evaluations: Array<Evaluation>;
+  workstreamContributor?: Maybe<WorkstreamContributor>;
+  workstreamContributors: Array<WorkstreamContributor>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
   tokenBalance?: Maybe<TokenBalance>;
   tokenBalances: Array<TokenBalance>;
-  fuxGiven?: Maybe<FuxGiven>;
-  fuxGivens: Array<FuxGiven>;
-  vfuxWorkstream?: Maybe<VFuxWorkstream>;
-  vfuxWorkstreams: Array<VFuxWorkstream>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -458,24 +354,6 @@ export type SubscriptionworkstreamsArgs = {
 };
 
 
-export type SubscriptionuserWorkstreamArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionuserWorkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserWorkstream_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
 export type SubscriptionevaluationArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
@@ -489,6 +367,24 @@ export type SubscriptionevaluationsArgs = {
   orderBy?: InputMaybe<Evaluation_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Evaluation_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionworkstreamContributorArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionworkstreamContributorsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -530,42 +426,6 @@ export type SubscriptiontokenBalancesArgs = {
 };
 
 
-export type SubscriptionfuxGivenArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionfuxGivensArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FuxGiven_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FuxGiven_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionvfuxWorkstreamArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionvfuxWorkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VFuxWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VFuxWorkstream_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
 export type Subscription_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
@@ -590,7 +450,7 @@ export type TokenBalance = {
   id: Scalars['ID'];
   user: User;
   token: Token;
-  balance: Scalars['BigInt'];
+  amount: Scalars['BigInt'];
 };
 
 export type TokenBalance_filter = {
@@ -644,14 +504,14 @@ export type TokenBalance_filter = {
   token_not_ends_with?: InputMaybe<Scalars['String']>;
   token_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   token_?: InputMaybe<Token_filter>;
-  balance?: InputMaybe<Scalars['BigInt']>;
-  balance_not?: InputMaybe<Scalars['BigInt']>;
-  balance_gt?: InputMaybe<Scalars['BigInt']>;
-  balance_lt?: InputMaybe<Scalars['BigInt']>;
-  balance_gte?: InputMaybe<Scalars['BigInt']>;
-  balance_lte?: InputMaybe<Scalars['BigInt']>;
-  balance_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount?: InputMaybe<Scalars['BigInt']>;
+  amount_not?: InputMaybe<Scalars['BigInt']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<TokenBalance_filter>>>;
@@ -661,8 +521,14 @@ export type TokenBalance_filter = {
 export type TokenBalance_orderBy =
   | 'id'
   | 'user'
+  | 'user__id'
+  | 'user__fuxer'
+  | 'user__rewards'
   | 'token'
-  | 'balance';
+  | 'token__id'
+  | 'token__name'
+  | 'token__symbol'
+  | 'amount';
 
 export type Token_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -730,8 +596,7 @@ export type User = {
   id: Scalars['ID'];
   fuxer?: Maybe<Scalars['Boolean']>;
   balances?: Maybe<Array<TokenBalance>>;
-  workstreams?: Maybe<Array<UserWorkstream>>;
-  fuxGiven?: Maybe<Array<FuxGiven>>;
+  workstreams?: Maybe<Array<WorkstreamContributor>>;
   rewards?: Maybe<Scalars['BigInt']>;
 };
 
@@ -748,87 +613,10 @@ export type UserbalancesArgs = {
 export type UserworkstreamsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserWorkstream_orderBy>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserWorkstream_filter>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
 };
-
-
-export type UserfuxGivenArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FuxGiven_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FuxGiven_filter>;
-};
-
-export type UserWorkstream = {
-  id: Scalars['ID'];
-  user: User;
-  workstream: Workstream;
-};
-
-export type UserWorkstream_filter = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  user?: InputMaybe<Scalars['String']>;
-  user_not?: InputMaybe<Scalars['String']>;
-  user_gt?: InputMaybe<Scalars['String']>;
-  user_lt?: InputMaybe<Scalars['String']>;
-  user_gte?: InputMaybe<Scalars['String']>;
-  user_lte?: InputMaybe<Scalars['String']>;
-  user_in?: InputMaybe<Array<Scalars['String']>>;
-  user_not_in?: InputMaybe<Array<Scalars['String']>>;
-  user_contains?: InputMaybe<Scalars['String']>;
-  user_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_not_contains?: InputMaybe<Scalars['String']>;
-  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_starts_with?: InputMaybe<Scalars['String']>;
-  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_starts_with?: InputMaybe<Scalars['String']>;
-  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_ends_with?: InputMaybe<Scalars['String']>;
-  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_ends_with?: InputMaybe<Scalars['String']>;
-  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_?: InputMaybe<User_filter>;
-  workstream?: InputMaybe<Scalars['String']>;
-  workstream_not?: InputMaybe<Scalars['String']>;
-  workstream_gt?: InputMaybe<Scalars['String']>;
-  workstream_lt?: InputMaybe<Scalars['String']>;
-  workstream_gte?: InputMaybe<Scalars['String']>;
-  workstream_lte?: InputMaybe<Scalars['String']>;
-  workstream_in?: InputMaybe<Array<Scalars['String']>>;
-  workstream_not_in?: InputMaybe<Array<Scalars['String']>>;
-  workstream_contains?: InputMaybe<Scalars['String']>;
-  workstream_contains_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_contains?: InputMaybe<Scalars['String']>;
-  workstream_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  workstream_starts_with?: InputMaybe<Scalars['String']>;
-  workstream_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_starts_with?: InputMaybe<Scalars['String']>;
-  workstream_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_ends_with?: InputMaybe<Scalars['String']>;
-  workstream_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_ends_with?: InputMaybe<Scalars['String']>;
-  workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_?: InputMaybe<Workstream_filter>;
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<UserWorkstream_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<UserWorkstream_filter>>>;
-};
-
-export type UserWorkstream_orderBy =
-  | 'id'
-  | 'user'
-  | 'workstream';
 
 export type User_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -844,8 +632,7 @@ export type User_filter = {
   fuxer_in?: InputMaybe<Array<Scalars['Boolean']>>;
   fuxer_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   balances_?: InputMaybe<TokenBalance_filter>;
-  workstreams_?: InputMaybe<UserWorkstream_filter>;
-  fuxGiven_?: InputMaybe<FuxGiven_filter>;
+  workstreams_?: InputMaybe<WorkstreamContributor_filter>;
   rewards?: InputMaybe<Scalars['BigInt']>;
   rewards_not?: InputMaybe<Scalars['BigInt']>;
   rewards_gt?: InputMaybe<Scalars['BigInt']>;
@@ -865,17 +652,45 @@ export type User_orderBy =
   | 'fuxer'
   | 'balances'
   | 'workstreams'
-  | 'fuxGiven'
   | 'rewards';
 
-export type VFuxWorkstream = {
+export type Workstream = {
   id: Scalars['ID'];
-  user: User;
-  workstream: Workstream;
-  balance: Scalars['BigInt'];
+  name?: Maybe<Scalars['String']>;
+  coordinator?: Maybe<User>;
+  contributors?: Maybe<Array<WorkstreamContributor>>;
+  evaluations?: Maybe<Array<Evaluation>>;
+  funding?: Maybe<Scalars['BigInt']>;
+  deadline?: Maybe<Scalars['BigInt']>;
+  status?: Maybe<WorkstreamStatus>;
 };
 
-export type VFuxWorkstream_filter = {
+
+export type WorkstreamcontributorsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
+};
+
+
+export type WorkstreamevaluationsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Evaluation_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Evaluation_filter>;
+};
+
+export type WorkstreamContributor = {
+  id: Scalars['ID'];
+  workstream: Workstream;
+  contributor: User;
+  commitment?: Maybe<Scalars['BigInt']>;
+};
+
+export type WorkstreamContributor_filter = {
   id?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_gt?: InputMaybe<Scalars['ID']>;
@@ -884,27 +699,6 @@ export type VFuxWorkstream_filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  user?: InputMaybe<Scalars['String']>;
-  user_not?: InputMaybe<Scalars['String']>;
-  user_gt?: InputMaybe<Scalars['String']>;
-  user_lt?: InputMaybe<Scalars['String']>;
-  user_gte?: InputMaybe<Scalars['String']>;
-  user_lte?: InputMaybe<Scalars['String']>;
-  user_in?: InputMaybe<Array<Scalars['String']>>;
-  user_not_in?: InputMaybe<Array<Scalars['String']>>;
-  user_contains?: InputMaybe<Scalars['String']>;
-  user_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_not_contains?: InputMaybe<Scalars['String']>;
-  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_starts_with?: InputMaybe<Scalars['String']>;
-  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_starts_with?: InputMaybe<Scalars['String']>;
-  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_ends_with?: InputMaybe<Scalars['String']>;
-  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_ends_with?: InputMaybe<Scalars['String']>;
-  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_?: InputMaybe<User_filter>;
   workstream?: InputMaybe<Scalars['String']>;
   workstream_not?: InputMaybe<Scalars['String']>;
   workstream_gt?: InputMaybe<Scalars['String']>;
@@ -926,64 +720,59 @@ export type VFuxWorkstream_filter = {
   workstream_not_ends_with?: InputMaybe<Scalars['String']>;
   workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   workstream_?: InputMaybe<Workstream_filter>;
-  balance?: InputMaybe<Scalars['BigInt']>;
-  balance_not?: InputMaybe<Scalars['BigInt']>;
-  balance_gt?: InputMaybe<Scalars['BigInt']>;
-  balance_lt?: InputMaybe<Scalars['BigInt']>;
-  balance_gte?: InputMaybe<Scalars['BigInt']>;
-  balance_lte?: InputMaybe<Scalars['BigInt']>;
-  balance_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  contributor?: InputMaybe<Scalars['String']>;
+  contributor_not?: InputMaybe<Scalars['String']>;
+  contributor_gt?: InputMaybe<Scalars['String']>;
+  contributor_lt?: InputMaybe<Scalars['String']>;
+  contributor_gte?: InputMaybe<Scalars['String']>;
+  contributor_lte?: InputMaybe<Scalars['String']>;
+  contributor_in?: InputMaybe<Array<Scalars['String']>>;
+  contributor_not_in?: InputMaybe<Array<Scalars['String']>>;
+  contributor_contains?: InputMaybe<Scalars['String']>;
+  contributor_contains_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_contains?: InputMaybe<Scalars['String']>;
+  contributor_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  contributor_starts_with?: InputMaybe<Scalars['String']>;
+  contributor_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_starts_with?: InputMaybe<Scalars['String']>;
+  contributor_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_ends_with?: InputMaybe<Scalars['String']>;
+  contributor_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_ends_with?: InputMaybe<Scalars['String']>;
+  contributor_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_?: InputMaybe<User_filter>;
+  commitment?: InputMaybe<Scalars['BigInt']>;
+  commitment_not?: InputMaybe<Scalars['BigInt']>;
+  commitment_gt?: InputMaybe<Scalars['BigInt']>;
+  commitment_lt?: InputMaybe<Scalars['BigInt']>;
+  commitment_gte?: InputMaybe<Scalars['BigInt']>;
+  commitment_lte?: InputMaybe<Scalars['BigInt']>;
+  commitment_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  commitment_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<VFuxWorkstream_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<VFuxWorkstream_filter>>>;
+  and?: InputMaybe<Array<InputMaybe<WorkstreamContributor_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<WorkstreamContributor_filter>>>;
 };
 
-export type VFuxWorkstream_orderBy =
+export type WorkstreamContributor_orderBy =
   | 'id'
-  | 'user'
   | 'workstream'
-  | 'balance';
+  | 'workstream__id'
+  | 'workstream__name'
+  | 'workstream__funding'
+  | 'workstream__deadline'
+  | 'workstream__status'
+  | 'contributor'
+  | 'contributor__id'
+  | 'contributor__fuxer'
+  | 'contributor__rewards'
+  | 'commitment';
 
-export type Workstream = {
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-  coordinator?: Maybe<User>;
-  contributors?: Maybe<Array<UserWorkstream>>;
-  evaluations?: Maybe<Array<Evaluation>>;
-  fuxGiven?: Maybe<Array<FuxGiven>>;
-  funding?: Maybe<Scalars['BigInt']>;
-  deadline?: Maybe<Scalars['BigInt']>;
-  resolved?: Maybe<Scalars['Boolean']>;
-};
-
-
-export type WorkstreamcontributorsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserWorkstream_filter>;
-};
-
-
-export type WorkstreamevaluationsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Evaluation_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Evaluation_filter>;
-};
-
-
-export type WorkstreamfuxGivenArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FuxGiven_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FuxGiven_filter>;
-};
+export type WorkstreamStatus =
+  | 'Started'
+  | 'Evaluation'
+  | 'Closed';
 
 export type Workstream_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -1035,9 +824,8 @@ export type Workstream_filter = {
   coordinator_not_ends_with?: InputMaybe<Scalars['String']>;
   coordinator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   coordinator_?: InputMaybe<User_filter>;
-  contributors_?: InputMaybe<UserWorkstream_filter>;
+  contributors_?: InputMaybe<WorkstreamContributor_filter>;
   evaluations_?: InputMaybe<Evaluation_filter>;
-  fuxGiven_?: InputMaybe<FuxGiven_filter>;
   funding?: InputMaybe<Scalars['BigInt']>;
   funding_not?: InputMaybe<Scalars['BigInt']>;
   funding_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1054,10 +842,10 @@ export type Workstream_filter = {
   deadline_lte?: InputMaybe<Scalars['BigInt']>;
   deadline_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deadline_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  resolved?: InputMaybe<Scalars['Boolean']>;
-  resolved_not?: InputMaybe<Scalars['Boolean']>;
-  resolved_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  resolved_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  status?: InputMaybe<WorkstreamStatus>;
+  status_not?: InputMaybe<WorkstreamStatus>;
+  status_in?: InputMaybe<Array<WorkstreamStatus>>;
+  status_not_in?: InputMaybe<Array<WorkstreamStatus>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Workstream_filter>>>;
@@ -1068,12 +856,14 @@ export type Workstream_orderBy =
   | 'id'
   | 'name'
   | 'coordinator'
+  | 'coordinator__id'
+  | 'coordinator__fuxer'
+  | 'coordinator__rewards'
   | 'contributors'
   | 'evaluations'
-  | 'fuxGiven'
   | 'funding'
   | 'deadline'
-  | 'resolved';
+  | 'status';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -1200,9 +990,6 @@ export type ResolversTypes = ResolversObject<{
   Evaluation_filter: Evaluation_filter;
   Evaluation_orderBy: Evaluation_orderBy;
   Float: ResolverTypeWrapper<Scalars['Float']>;
-  FuxGiven: ResolverTypeWrapper<FuxGiven>;
-  FuxGiven_filter: FuxGiven_filter;
-  FuxGiven_orderBy: FuxGiven_orderBy;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   OrderDirection: OrderDirection;
@@ -1216,15 +1003,13 @@ export type ResolversTypes = ResolversObject<{
   Token_filter: Token_filter;
   Token_orderBy: Token_orderBy;
   User: ResolverTypeWrapper<User>;
-  UserWorkstream: ResolverTypeWrapper<UserWorkstream>;
-  UserWorkstream_filter: UserWorkstream_filter;
-  UserWorkstream_orderBy: UserWorkstream_orderBy;
   User_filter: User_filter;
   User_orderBy: User_orderBy;
-  VFuxWorkstream: ResolverTypeWrapper<VFuxWorkstream>;
-  VFuxWorkstream_filter: VFuxWorkstream_filter;
-  VFuxWorkstream_orderBy: VFuxWorkstream_orderBy;
   Workstream: ResolverTypeWrapper<Workstream>;
+  WorkstreamContributor: ResolverTypeWrapper<WorkstreamContributor>;
+  WorkstreamContributor_filter: WorkstreamContributor_filter;
+  WorkstreamContributor_orderBy: WorkstreamContributor_orderBy;
+  WorkstreamStatus: WorkstreamStatus;
   Workstream_filter: Workstream_filter;
   Workstream_orderBy: Workstream_orderBy;
   _Block_: ResolverTypeWrapper<_Block_>;
@@ -1243,8 +1028,6 @@ export type ResolversParentTypes = ResolversObject<{
   Evaluation: Evaluation;
   Evaluation_filter: Evaluation_filter;
   Float: Scalars['Float'];
-  FuxGiven: FuxGiven;
-  FuxGiven_filter: FuxGiven_filter;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   Query: {};
@@ -1255,12 +1038,10 @@ export type ResolversParentTypes = ResolversObject<{
   TokenBalance_filter: TokenBalance_filter;
   Token_filter: Token_filter;
   User: User;
-  UserWorkstream: UserWorkstream;
-  UserWorkstream_filter: UserWorkstream_filter;
   User_filter: User_filter;
-  VFuxWorkstream: VFuxWorkstream;
-  VFuxWorkstream_filter: VFuxWorkstream_filter;
   Workstream: Workstream;
+  WorkstreamContributor: WorkstreamContributor;
+  WorkstreamContributor_filter: WorkstreamContributor_filter;
   Workstream_filter: Workstream_filter;
   _Block_: _Block_;
   _Meta_: _Meta_;
@@ -1298,16 +1079,8 @@ export type EvaluationResolvers<ContextType = MeshContext, ParentType extends Re
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   creator?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   workstream?: Resolver<ResolversTypes['Workstream'], ParentType, ContextType>;
-  contributors?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<EvaluationcontributorsArgs, 'skip' | 'first'>>;
-  ratings?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type FuxGivenResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['FuxGiven'] = ResolversParentTypes['FuxGiven']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  workstream?: Resolver<ResolversTypes['Workstream'], ParentType, ContextType>;
-  balance?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  contributor?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  rating?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1316,18 +1089,14 @@ export type QueryResolvers<ContextType = MeshContext, ParentType extends Resolve
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryusersArgs, 'skip' | 'first' | 'subgraphError'>>;
   workstream?: Resolver<Maybe<ResolversTypes['Workstream']>, ParentType, ContextType, RequireFields<QueryworkstreamArgs, 'id' | 'subgraphError'>>;
   workstreams?: Resolver<Array<ResolversTypes['Workstream']>, ParentType, ContextType, RequireFields<QueryworkstreamsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  userWorkstream?: Resolver<Maybe<ResolversTypes['UserWorkstream']>, ParentType, ContextType, RequireFields<QueryuserWorkstreamArgs, 'id' | 'subgraphError'>>;
-  userWorkstreams?: Resolver<Array<ResolversTypes['UserWorkstream']>, ParentType, ContextType, RequireFields<QueryuserWorkstreamsArgs, 'skip' | 'first' | 'subgraphError'>>;
   evaluation?: Resolver<Maybe<ResolversTypes['Evaluation']>, ParentType, ContextType, RequireFields<QueryevaluationArgs, 'id' | 'subgraphError'>>;
   evaluations?: Resolver<Array<ResolversTypes['Evaluation']>, ParentType, ContextType, RequireFields<QueryevaluationsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  workstreamContributor?: Resolver<Maybe<ResolversTypes['WorkstreamContributor']>, ParentType, ContextType, RequireFields<QueryworkstreamContributorArgs, 'id' | 'subgraphError'>>;
+  workstreamContributors?: Resolver<Array<ResolversTypes['WorkstreamContributor']>, ParentType, ContextType, RequireFields<QueryworkstreamContributorsArgs, 'skip' | 'first' | 'subgraphError'>>;
   token?: Resolver<Maybe<ResolversTypes['Token']>, ParentType, ContextType, RequireFields<QuerytokenArgs, 'id' | 'subgraphError'>>;
   tokens?: Resolver<Array<ResolversTypes['Token']>, ParentType, ContextType, RequireFields<QuerytokensArgs, 'skip' | 'first' | 'subgraphError'>>;
   tokenBalance?: Resolver<Maybe<ResolversTypes['TokenBalance']>, ParentType, ContextType, RequireFields<QuerytokenBalanceArgs, 'id' | 'subgraphError'>>;
   tokenBalances?: Resolver<Array<ResolversTypes['TokenBalance']>, ParentType, ContextType, RequireFields<QuerytokenBalancesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  fuxGiven?: Resolver<Maybe<ResolversTypes['FuxGiven']>, ParentType, ContextType, RequireFields<QueryfuxGivenArgs, 'id' | 'subgraphError'>>;
-  fuxGivens?: Resolver<Array<ResolversTypes['FuxGiven']>, ParentType, ContextType, RequireFields<QueryfuxGivensArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vfuxWorkstream?: Resolver<Maybe<ResolversTypes['VFuxWorkstream']>, ParentType, ContextType, RequireFields<QueryvfuxWorkstreamArgs, 'id' | 'subgraphError'>>;
-  vfuxWorkstreams?: Resolver<Array<ResolversTypes['VFuxWorkstream']>, ParentType, ContextType, RequireFields<QueryvfuxWorkstreamsArgs, 'skip' | 'first' | 'subgraphError'>>;
   _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_metaArgs>>;
 }>;
 
@@ -1336,18 +1105,14 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
   users?: SubscriptionResolver<Array<ResolversTypes['User']>, "users", ParentType, ContextType, RequireFields<SubscriptionusersArgs, 'skip' | 'first' | 'subgraphError'>>;
   workstream?: SubscriptionResolver<Maybe<ResolversTypes['Workstream']>, "workstream", ParentType, ContextType, RequireFields<SubscriptionworkstreamArgs, 'id' | 'subgraphError'>>;
   workstreams?: SubscriptionResolver<Array<ResolversTypes['Workstream']>, "workstreams", ParentType, ContextType, RequireFields<SubscriptionworkstreamsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  userWorkstream?: SubscriptionResolver<Maybe<ResolversTypes['UserWorkstream']>, "userWorkstream", ParentType, ContextType, RequireFields<SubscriptionuserWorkstreamArgs, 'id' | 'subgraphError'>>;
-  userWorkstreams?: SubscriptionResolver<Array<ResolversTypes['UserWorkstream']>, "userWorkstreams", ParentType, ContextType, RequireFields<SubscriptionuserWorkstreamsArgs, 'skip' | 'first' | 'subgraphError'>>;
   evaluation?: SubscriptionResolver<Maybe<ResolversTypes['Evaluation']>, "evaluation", ParentType, ContextType, RequireFields<SubscriptionevaluationArgs, 'id' | 'subgraphError'>>;
   evaluations?: SubscriptionResolver<Array<ResolversTypes['Evaluation']>, "evaluations", ParentType, ContextType, RequireFields<SubscriptionevaluationsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  workstreamContributor?: SubscriptionResolver<Maybe<ResolversTypes['WorkstreamContributor']>, "workstreamContributor", ParentType, ContextType, RequireFields<SubscriptionworkstreamContributorArgs, 'id' | 'subgraphError'>>;
+  workstreamContributors?: SubscriptionResolver<Array<ResolversTypes['WorkstreamContributor']>, "workstreamContributors", ParentType, ContextType, RequireFields<SubscriptionworkstreamContributorsArgs, 'skip' | 'first' | 'subgraphError'>>;
   token?: SubscriptionResolver<Maybe<ResolversTypes['Token']>, "token", ParentType, ContextType, RequireFields<SubscriptiontokenArgs, 'id' | 'subgraphError'>>;
   tokens?: SubscriptionResolver<Array<ResolversTypes['Token']>, "tokens", ParentType, ContextType, RequireFields<SubscriptiontokensArgs, 'skip' | 'first' | 'subgraphError'>>;
   tokenBalance?: SubscriptionResolver<Maybe<ResolversTypes['TokenBalance']>, "tokenBalance", ParentType, ContextType, RequireFields<SubscriptiontokenBalanceArgs, 'id' | 'subgraphError'>>;
   tokenBalances?: SubscriptionResolver<Array<ResolversTypes['TokenBalance']>, "tokenBalances", ParentType, ContextType, RequireFields<SubscriptiontokenBalancesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  fuxGiven?: SubscriptionResolver<Maybe<ResolversTypes['FuxGiven']>, "fuxGiven", ParentType, ContextType, RequireFields<SubscriptionfuxGivenArgs, 'id' | 'subgraphError'>>;
-  fuxGivens?: SubscriptionResolver<Array<ResolversTypes['FuxGiven']>, "fuxGivens", ParentType, ContextType, RequireFields<SubscriptionfuxGivensArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vfuxWorkstream?: SubscriptionResolver<Maybe<ResolversTypes['VFuxWorkstream']>, "vfuxWorkstream", ParentType, ContextType, RequireFields<SubscriptionvfuxWorkstreamArgs, 'id' | 'subgraphError'>>;
-  vfuxWorkstreams?: SubscriptionResolver<Array<ResolversTypes['VFuxWorkstream']>, "vfuxWorkstreams", ParentType, ContextType, RequireFields<SubscriptionvfuxWorkstreamsArgs, 'skip' | 'first' | 'subgraphError'>>;
   _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_metaArgs>>;
 }>;
 
@@ -1363,7 +1128,7 @@ export type TokenBalanceResolvers<ContextType = MeshContext, ParentType extends 
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
-  balance?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1371,24 +1136,8 @@ export type UserResolvers<ContextType = MeshContext, ParentType extends Resolver
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   fuxer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   balances?: Resolver<Maybe<Array<ResolversTypes['TokenBalance']>>, ParentType, ContextType, RequireFields<UserbalancesArgs, 'skip' | 'first'>>;
-  workstreams?: Resolver<Maybe<Array<ResolversTypes['UserWorkstream']>>, ParentType, ContextType, RequireFields<UserworkstreamsArgs, 'skip' | 'first'>>;
-  fuxGiven?: Resolver<Maybe<Array<ResolversTypes['FuxGiven']>>, ParentType, ContextType, RequireFields<UserfuxGivenArgs, 'skip' | 'first'>>;
+  workstreams?: Resolver<Maybe<Array<ResolversTypes['WorkstreamContributor']>>, ParentType, ContextType, RequireFields<UserworkstreamsArgs, 'skip' | 'first'>>;
   rewards?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type UserWorkstreamResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['UserWorkstream'] = ResolversParentTypes['UserWorkstream']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  workstream?: Resolver<ResolversTypes['Workstream'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type VFuxWorkstreamResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['VFuxWorkstream'] = ResolversParentTypes['VFuxWorkstream']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  workstream?: Resolver<ResolversTypes['Workstream'], ParentType, ContextType>;
-  balance?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1396,12 +1145,19 @@ export type WorkstreamResolvers<ContextType = MeshContext, ParentType extends Re
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coordinator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  contributors?: Resolver<Maybe<Array<ResolversTypes['UserWorkstream']>>, ParentType, ContextType, RequireFields<WorkstreamcontributorsArgs, 'skip' | 'first'>>;
+  contributors?: Resolver<Maybe<Array<ResolversTypes['WorkstreamContributor']>>, ParentType, ContextType, RequireFields<WorkstreamcontributorsArgs, 'skip' | 'first'>>;
   evaluations?: Resolver<Maybe<Array<ResolversTypes['Evaluation']>>, ParentType, ContextType, RequireFields<WorkstreamevaluationsArgs, 'skip' | 'first'>>;
-  fuxGiven?: Resolver<Maybe<Array<ResolversTypes['FuxGiven']>>, ParentType, ContextType, RequireFields<WorkstreamfuxGivenArgs, 'skip' | 'first'>>;
   funding?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   deadline?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
-  resolved?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['WorkstreamStatus']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type WorkstreamContributorResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['WorkstreamContributor'] = ResolversParentTypes['WorkstreamContributor']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  workstream?: Resolver<ResolversTypes['Workstream'], ParentType, ContextType>;
+  contributor?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  commitment?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1424,15 +1180,13 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   BigInt?: GraphQLScalarType;
   Bytes?: GraphQLScalarType;
   Evaluation?: EvaluationResolvers<ContextType>;
-  FuxGiven?: FuxGivenResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Token?: TokenResolvers<ContextType>;
   TokenBalance?: TokenBalanceResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
-  UserWorkstream?: UserWorkstreamResolvers<ContextType>;
-  VFuxWorkstream?: VFuxWorkstreamResolvers<ContextType>;
   Workstream?: WorkstreamResolvers<ContextType>;
+  WorkstreamContributor?: WorkstreamContributorResolvers<ContextType>;
   _Block_?: _Block_Resolvers<ContextType>;
   _Meta_?: _Meta_Resolvers<ContextType>;
 }>;
@@ -1533,11 +1287,11 @@ const merger = new(BareMerger as any)({
     get documents() {
       return [
       {
-        document: BalancesDocument,
+        document: BalancesForAddressDocument,
         get rawSDL() {
-          return printWithCache(BalancesDocument);
+          return printWithCache(BalancesForAddressDocument);
         },
-        location: 'BalancesDocument.graphql'
+        location: 'BalancesForAddressDocument.graphql'
       },{
         document: TokenBalanceDocument,
         get rawSDL() {
@@ -1545,17 +1299,11 @@ const merger = new(BareMerger as any)({
         },
         location: 'TokenBalanceDocument.graphql'
       },{
-        document: WorkstreamEvaluationsDocument,
+        document: UserWorkstreamEvaluationsDocument,
         get rawSDL() {
-          return printWithCache(WorkstreamEvaluationsDocument);
+          return printWithCache(UserWorkstreamEvaluationsDocument);
         },
-        location: 'WorkstreamEvaluationsDocument.graphql'
-      },{
-        document: WorkstreamHistoryDocument,
-        get rawSDL() {
-          return printWithCache(WorkstreamHistoryDocument);
-        },
-        location: 'WorkstreamHistoryDocument.graphql'
+        location: 'UserWorkstreamEvaluationsDocument.graphql'
       },{
         document: UserDocument,
         get rawSDL() {
@@ -1574,12 +1322,6 @@ const merger = new(BareMerger as any)({
           return printWithCache(WorkstreamByIdDocument);
         },
         location: 'WorkstreamByIdDocument.graphql'
-      },{
-        document: WorkstreamVFuxDocument,
-        get rawSDL() {
-          return printWithCache(WorkstreamVFuxDocument);
-        },
-        location: 'WorkstreamVFuxDocument.graphql'
       }
     ];
     },
@@ -1618,15 +1360,15 @@ export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
   const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
   return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
 }
-export type BalancesQueryVariables = Exact<{
+export type BalancesForAddressQueryVariables = Exact<{
   address: Scalars['ID'];
 }>;
 
 
-export type BalancesQuery = { user?: Maybe<(
+export type BalancesForAddressQuery = { user?: Maybe<(
     Pick<User, 'id'>
     & { balances?: Maybe<Array<(
-      Pick<TokenBalance, 'balance'>
+      Pick<TokenBalance, 'amount'>
       & { token: Pick<Token, 'name' | 'symbol'> }
     )>> }
   )> };
@@ -1637,270 +1379,61 @@ export type TokenBalanceQueryVariables = Exact<{
 }>;
 
 
-export type TokenBalanceQuery = { tokenBalances: Array<Pick<TokenBalance, 'balance'>> };
+export type TokenBalanceQuery = { tokenBalances: Array<Pick<TokenBalance, 'amount'>> };
 
-export type WorkstreamEvaluationsQueryVariables = Exact<{
-  address: Scalars['ID'];
-  workstreamID: Scalars['ID'];
+export type UserWorkstreamEvaluationsQueryVariables = Exact<{
+  creator?: InputMaybe<Scalars['String']>;
+  workstreamID?: InputMaybe<Scalars['ID']>;
 }>;
 
 
-export type WorkstreamEvaluationsQuery = { userWorkstreams: Array<{ workstream: (
-      Pick<Workstream, 'id' | 'name' | 'deadline' | 'funding' | 'resolved'>
-      & { contributors?: Maybe<Array<(
-        Pick<UserWorkstream, 'id'>
-        & { user: Pick<User, 'id'> }
-      )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
-        Pick<Evaluation, 'ratings'>
-        & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-      )>> }
-    ) }> };
-
-export type WorkstreamFragmentFragment = (
-  Pick<Workstream, 'id' | 'name' | 'deadline' | 'funding' | 'resolved'>
-  & { contributors?: Maybe<Array<(
-    Pick<UserWorkstream, 'id'>
-    & { user: Pick<User, 'id'> }
-  )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
-    Pick<Evaluation, 'ratings'>
-    & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-  )>> }
-);
-
-export type ContributorFragmentFragment = (
-  Pick<UserWorkstream, 'id'>
-  & { user: Pick<User, 'id'> }
-);
-
-export type EvaluationFragmentFragment = (
-  Pick<Evaluation, 'ratings'>
-  & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-);
-
-export type WorkstreamHistoryQueryVariables = Exact<{
-  address: Scalars['ID'];
-}>;
-
-
-export type WorkstreamHistoryQuery = { userWorkstreams: Array<{ workstream: (
-      Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-      & { coordinator?: Maybe<Pick<User, 'id'>>, contributors?: Maybe<Array<{ user: Pick<User, 'id'> }>>, evaluations?: Maybe<Array<(
-        Pick<Evaluation, 'ratings'>
-        & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-      )>>, fuxGiven?: Maybe<Array<(
-        Pick<FuxGiven, 'balance'>
-        & { user: Pick<User, 'id'> }
-      )>> }
-    ) }> };
-
-export type UserWorkstreamFragmentFragment = { workstream: (
-    Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-    & { coordinator?: Maybe<Pick<User, 'id'>>, contributors?: Maybe<Array<{ user: Pick<User, 'id'> }>>, evaluations?: Maybe<Array<(
-      Pick<Evaluation, 'ratings'>
-      & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-    )>>, fuxGiven?: Maybe<Array<(
-      Pick<FuxGiven, 'balance'>
-      & { user: Pick<User, 'id'> }
-    )>> }
-  ) };
+export type UserWorkstreamEvaluationsQuery = { evaluations: Array<(
+    Pick<Evaluation, 'rating'>
+    & { contributor: Pick<User, 'id'> }
+  )> };
 
 export type UserQueryVariables = Exact<{
-  address: Scalars['ID'];
+  address?: InputMaybe<Scalars['ID']>;
 }>;
 
 
 export type UserQuery = { user?: Maybe<(
-    Pick<User, 'id' | 'fuxer' | 'rewards'>
+    Pick<User, 'fuxer' | 'id' | 'rewards'>
     & { balances?: Maybe<Array<(
-      Pick<TokenBalance, 'balance'>
-      & { token: Pick<Token, 'name' | 'symbol'> }
+      Pick<TokenBalance, 'amount'>
+      & { token: Pick<Token, 'name'> }
     )>> }
   )> };
 
 export type WorkstreamsByUserQueryVariables = Exact<{
-  address: Scalars['ID'];
+  contributor?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type WorkstreamsByUserQuery = { userWorkstreams: Array<{ workstream: (
-      Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-      & { fuxGiven?: Maybe<Array<(
-        Pick<FuxGiven, 'balance'>
-        & { user: Pick<User, 'id'> }
-      )>>, contributors?: Maybe<Array<{ user: Pick<User, 'id'> }>>, coordinator?: Maybe<Pick<User, 'id'>> }
+export type WorkstreamsByUserQuery = { workstreamContributors: Array<{ workstream: (
+      Pick<Workstream, 'status' | 'name' | 'deadline' | 'funding' | 'id'>
+      & { contributors?: Maybe<Array<Pick<WorkstreamContributor, 'commitment' | 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+        Pick<Evaluation, 'rating'>
+        & { contributor: Pick<User, 'id'>, creator: Pick<User, 'id'> }
+      )>> }
     ) }> };
 
-export type WorkstreamsByUserFragmentFragment = (
-  Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-  & { fuxGiven?: Maybe<Array<(
-    Pick<FuxGiven, 'balance'>
-    & { user: Pick<User, 'id'> }
-  )>>, contributors?: Maybe<Array<{ user: Pick<User, 'id'> }>>, coordinator?: Maybe<Pick<User, 'id'>> }
-);
-
 export type WorkstreamByIDQueryVariables = Exact<{
-  workstreamID: Scalars['ID'];
+  id?: InputMaybe<Scalars['ID']>;
 }>;
 
 
 export type WorkstreamByIDQuery = { workstream?: Maybe<(
-    Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-    & { contributors?: Maybe<Array<(
-      Pick<UserWorkstream, 'id'>
-      & { user: Pick<User, 'id'> }
-    )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
-      Pick<Evaluation, 'ratings'>
-      & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-    )>>, fuxGiven?: Maybe<Array<(
-      Pick<FuxGiven, 'balance'>
-      & { user: Pick<User, 'id'> }
+    Pick<Workstream, 'deadline' | 'funding' | 'name' | 'status' | 'id'>
+    & { contributors?: Maybe<Array<Pick<WorkstreamContributor, 'id' | 'commitment'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+      Pick<Evaluation, 'rating'>
+      & { creator: Pick<User, 'id'>, contributor: Pick<User, 'id'> }
     )>> }
   )> };
 
-export type WorkstreamByIDFragmentFragment = (
-  Pick<Workstream, 'deadline' | 'funding' | 'id' | 'name' | 'resolved'>
-  & { contributors?: Maybe<Array<(
-    Pick<UserWorkstream, 'id'>
-    & { user: Pick<User, 'id'> }
-  )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
-    Pick<Evaluation, 'ratings'>
-    & { creator: Pick<User, 'id'>, contributors: Array<Pick<User, 'id'>> }
-  )>>, fuxGiven?: Maybe<Array<(
-    Pick<FuxGiven, 'balance'>
-    & { user: Pick<User, 'id'> }
-  )>> }
-);
 
-export type WorkstreamVFuxQueryVariables = Exact<{
-  address: Scalars['ID'];
-  workstreamID: Scalars['ID'];
-}>;
-
-
-export type WorkstreamVFuxQuery = { vfuxWorkstreams: Array<Pick<VFuxWorkstream, 'balance'>> };
-
-export const ContributorFragmentFragmentDoc = gql`
-    fragment ContributorFragment on UserWorkstream {
-  id
-  user {
-    id
-  }
-}
-    ` as unknown as DocumentNode<ContributorFragmentFragment, unknown>;
-export const EvaluationFragmentFragmentDoc = gql`
-    fragment EvaluationFragment on Evaluation {
-  creator {
-    id
-  }
-  contributors {
-    id
-  }
-  ratings
-}
-    ` as unknown as DocumentNode<EvaluationFragmentFragment, unknown>;
-export const WorkstreamFragmentFragmentDoc = gql`
-    fragment WorkstreamFragment on Workstream {
-  id
-  name
-  contributors {
-    ...ContributorFragment
-  }
-  coordinator {
-    id
-  }
-  deadline
-  funding
-  resolved
-  evaluations(where: {creator_: {id: $address}}) {
-    ...EvaluationFragment
-  }
-}
-    ${ContributorFragmentFragmentDoc}
-${EvaluationFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamFragmentFragment, unknown>;
-export const UserWorkstreamFragmentFragmentDoc = gql`
-    fragment UserWorkstreamFragment on UserWorkstream {
-  workstream {
-    coordinator {
-      id
-    }
-    contributors {
-      user {
-        id
-      }
-    }
-    deadline
-    evaluations {
-      creator {
-        id
-      }
-      ratings
-      contributors {
-        id
-      }
-    }
-    funding
-    id
-    name
-    resolved
-    fuxGiven {
-      balance
-      user {
-        id
-      }
-    }
-  }
-}
-    ` as unknown as DocumentNode<UserWorkstreamFragmentFragment, unknown>;
-export const WorkstreamsByUserFragmentFragmentDoc = gql`
-    fragment WorkstreamsByUserFragment on Workstream {
-  fuxGiven(where: {user_: {id: $address}}) {
-    balance
-    user {
-      id
-    }
-  }
-  deadline
-  funding
-  id
-  name
-  resolved
-  contributors {
-    user {
-      id
-    }
-  }
-  coordinator {
-    id
-  }
-}
-    ` as unknown as DocumentNode<WorkstreamsByUserFragmentFragment, unknown>;
-export const WorkstreamByIDFragmentFragmentDoc = gql`
-    fragment WorkstreamByIDFragment on Workstream {
-  contributors {
-    ...ContributorFragment
-  }
-  coordinator {
-    id
-  }
-  deadline
-  funding
-  id
-  name
-  resolved
-  evaluations {
-    ...EvaluationFragment
-  }
-  fuxGiven {
-    balance
-    user {
-      id
-    }
-  }
-}
-    ${ContributorFragmentFragmentDoc}
-${EvaluationFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamByIDFragmentFragment, unknown>;
-export const BalancesDocument = gql`
-    query Balances($address: ID!) @live {
+export const BalancesForAddressDocument = gql`
+    query BalancesForAddress($address: ID!) @live {
   user(id: $address) {
     id
     balances {
@@ -1908,79 +1441,99 @@ export const BalancesDocument = gql`
         name
         symbol
       }
-      balance
+      amount
     }
   }
 }
-    ` as unknown as DocumentNode<BalancesQuery, BalancesQueryVariables>;
+    ` as unknown as DocumentNode<BalancesForAddressQuery, BalancesForAddressQueryVariables>;
 export const TokenBalanceDocument = gql`
     query TokenBalance($address: ID!, $symbol: String!) @live {
   tokenBalances(where: {token_: {symbol: $symbol}, user_: {id: $address}}) {
-    balance
+    amount
   }
 }
     ` as unknown as DocumentNode<TokenBalanceQuery, TokenBalanceQueryVariables>;
-export const WorkstreamEvaluationsDocument = gql`
-    query WorkstreamEvaluations($address: ID!, $workstreamID: ID!) {
-  userWorkstreams(
-    where: {user_: {id: $address}, workstream_: {id: $workstreamID}}
-  ) {
-    workstream {
-      ...WorkstreamFragment
+export const UserWorkstreamEvaluationsDocument = gql`
+    query UserWorkstreamEvaluations($creator: String = "", $workstreamID: ID = "") {
+  evaluations(where: {creator: $creator, workstream_: {id: $workstreamID}}) {
+    contributor {
+      id
     }
+    rating
   }
 }
-    ${WorkstreamFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamEvaluationsQuery, WorkstreamEvaluationsQueryVariables>;
-export const WorkstreamHistoryDocument = gql`
-    query WorkstreamHistory($address: ID!) {
-  userWorkstreams(where: {user_: {id: $address}}) {
-    ...UserWorkstreamFragment
-  }
-}
-    ${UserWorkstreamFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamHistoryQuery, WorkstreamHistoryQueryVariables>;
+    ` as unknown as DocumentNode<UserWorkstreamEvaluationsQuery, UserWorkstreamEvaluationsQueryVariables>;
 export const UserDocument = gql`
-    query User($address: ID!) @live {
+    query User($address: ID = "") {
   user(id: $address) {
-    id
     fuxer
+    id
     rewards
     balances {
+      amount
       token {
         name
-        symbol
       }
-      balance
     }
   }
 }
     ` as unknown as DocumentNode<UserQuery, UserQueryVariables>;
 export const WorkstreamsByUserDocument = gql`
-    query WorkstreamsByUser($address: ID!) {
-  userWorkstreams(where: {user_: {id: $address}}) {
+    query WorkstreamsByUser($contributor: String = "id") {
+  workstreamContributors(where: {contributor: $contributor}) {
     workstream {
-      ...WorkstreamsByUserFragment
+      status
+      name
+      contributors {
+        commitment
+        id
+      }
+      coordinator {
+        id
+      }
+      deadline
+      funding
+      id
+      evaluations {
+        contributor {
+          id
+        }
+        creator {
+          id
+        }
+        rating
+      }
     }
   }
 }
-    ${WorkstreamsByUserFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamsByUserQuery, WorkstreamsByUserQueryVariables>;
+    ` as unknown as DocumentNode<WorkstreamsByUserQuery, WorkstreamsByUserQueryVariables>;
 export const WorkstreamByIDDocument = gql`
-    query WorkstreamByID($workstreamID: ID!) {
-  workstream(id: $workstreamID) {
-    ...WorkstreamByIDFragment
+    query WorkstreamByID($id: ID = "") {
+  workstream(id: $id) {
+    contributors {
+      id
+      commitment
+    }
+    deadline
+    funding
+    name
+    status
+    id
+    coordinator {
+      id
+    }
+    evaluations {
+      creator {
+        id
+      }
+      contributor {
+        id
+      }
+      rating
+    }
   }
 }
-    ${WorkstreamByIDFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>;
-export const WorkstreamVFuxDocument = gql`
-    query WorkstreamVFux($address: ID!, $workstreamID: ID!) {
-  vfuxWorkstreams(
-    where: {user_: {id: $address}, workstream_: {id: $workstreamID}}
-  ) {
-    balance
-  }
-}
-    ` as unknown as DocumentNode<WorkstreamVFuxQuery, WorkstreamVFuxQueryVariables>;
-
-
+    ` as unknown as DocumentNode<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>;
 
 
 
@@ -1991,29 +1544,23 @@ export const WorkstreamVFuxDocument = gql`
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
-    Balances(variables: BalancesQueryVariables, options?: C): AsyncIterable<BalancesQuery> {
-      return requester<BalancesQuery, BalancesQueryVariables>(BalancesDocument, variables, options) as AsyncIterable<BalancesQuery>;
+    BalancesForAddress(variables: BalancesForAddressQueryVariables, options?: C): AsyncIterable<BalancesForAddressQuery> {
+      return requester<BalancesForAddressQuery, BalancesForAddressQueryVariables>(BalancesForAddressDocument, variables, options) as AsyncIterable<BalancesForAddressQuery>;
     },
     TokenBalance(variables: TokenBalanceQueryVariables, options?: C): AsyncIterable<TokenBalanceQuery> {
       return requester<TokenBalanceQuery, TokenBalanceQueryVariables>(TokenBalanceDocument, variables, options) as AsyncIterable<TokenBalanceQuery>;
     },
-    WorkstreamEvaluations(variables: WorkstreamEvaluationsQueryVariables, options?: C): Promise<WorkstreamEvaluationsQuery> {
-      return requester<WorkstreamEvaluationsQuery, WorkstreamEvaluationsQueryVariables>(WorkstreamEvaluationsDocument, variables, options) as Promise<WorkstreamEvaluationsQuery>;
+    UserWorkstreamEvaluations(variables?: UserWorkstreamEvaluationsQueryVariables, options?: C): Promise<UserWorkstreamEvaluationsQuery> {
+      return requester<UserWorkstreamEvaluationsQuery, UserWorkstreamEvaluationsQueryVariables>(UserWorkstreamEvaluationsDocument, variables, options) as Promise<UserWorkstreamEvaluationsQuery>;
     },
-    WorkstreamHistory(variables: WorkstreamHistoryQueryVariables, options?: C): Promise<WorkstreamHistoryQuery> {
-      return requester<WorkstreamHistoryQuery, WorkstreamHistoryQueryVariables>(WorkstreamHistoryDocument, variables, options) as Promise<WorkstreamHistoryQuery>;
+    User(variables?: UserQueryVariables, options?: C): Promise<UserQuery> {
+      return requester<UserQuery, UserQueryVariables>(UserDocument, variables, options) as Promise<UserQuery>;
     },
-    User(variables: UserQueryVariables, options?: C): AsyncIterable<UserQuery> {
-      return requester<UserQuery, UserQueryVariables>(UserDocument, variables, options) as AsyncIterable<UserQuery>;
-    },
-    WorkstreamsByUser(variables: WorkstreamsByUserQueryVariables, options?: C): Promise<WorkstreamsByUserQuery> {
+    WorkstreamsByUser(variables?: WorkstreamsByUserQueryVariables, options?: C): Promise<WorkstreamsByUserQuery> {
       return requester<WorkstreamsByUserQuery, WorkstreamsByUserQueryVariables>(WorkstreamsByUserDocument, variables, options) as Promise<WorkstreamsByUserQuery>;
     },
-    WorkstreamByID(variables: WorkstreamByIDQueryVariables, options?: C): Promise<WorkstreamByIDQuery> {
+    WorkstreamByID(variables?: WorkstreamByIDQueryVariables, options?: C): Promise<WorkstreamByIDQuery> {
       return requester<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>(WorkstreamByIDDocument, variables, options) as Promise<WorkstreamByIDQuery>;
-    },
-    WorkstreamVFux(variables: WorkstreamVFuxQueryVariables, options?: C): Promise<WorkstreamVFuxQuery> {
-      return requester<WorkstreamVFuxQuery, WorkstreamVFuxQueryVariables>(WorkstreamVFuxDocument, variables, options) as Promise<WorkstreamVFuxQuery>;
     }
   };
 }
