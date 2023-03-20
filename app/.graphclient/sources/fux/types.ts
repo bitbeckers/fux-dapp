@@ -35,17 +35,8 @@ export type Evaluation = {
   id: Scalars['ID'];
   creator: User;
   workstream: Workstream;
-  contributors: Array<User>;
-  ratings: Array<Scalars['BigInt']>;
-};
-
-
-export type EvaluationcontributorsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<User_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<User_filter>;
+  contributor: User;
+  rating: Scalars['BigInt'];
 };
 
 export type Evaluation_filter = {
@@ -99,19 +90,35 @@ export type Evaluation_filter = {
   workstream_not_ends_with?: InputMaybe<Scalars['String']>;
   workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   workstream_?: InputMaybe<Workstream_filter>;
-  contributors?: InputMaybe<Array<Scalars['String']>>;
-  contributors_not?: InputMaybe<Array<Scalars['String']>>;
-  contributors_contains?: InputMaybe<Array<Scalars['String']>>;
-  contributors_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  contributors_not_contains?: InputMaybe<Array<Scalars['String']>>;
-  contributors_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  contributors_?: InputMaybe<User_filter>;
-  ratings?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_not?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_contains?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_not_contains?: InputMaybe<Array<Scalars['BigInt']>>;
-  ratings_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
+  contributor?: InputMaybe<Scalars['String']>;
+  contributor_not?: InputMaybe<Scalars['String']>;
+  contributor_gt?: InputMaybe<Scalars['String']>;
+  contributor_lt?: InputMaybe<Scalars['String']>;
+  contributor_gte?: InputMaybe<Scalars['String']>;
+  contributor_lte?: InputMaybe<Scalars['String']>;
+  contributor_in?: InputMaybe<Array<Scalars['String']>>;
+  contributor_not_in?: InputMaybe<Array<Scalars['String']>>;
+  contributor_contains?: InputMaybe<Scalars['String']>;
+  contributor_contains_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_contains?: InputMaybe<Scalars['String']>;
+  contributor_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  contributor_starts_with?: InputMaybe<Scalars['String']>;
+  contributor_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_starts_with?: InputMaybe<Scalars['String']>;
+  contributor_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_ends_with?: InputMaybe<Scalars['String']>;
+  contributor_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_ends_with?: InputMaybe<Scalars['String']>;
+  contributor_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_?: InputMaybe<User_filter>;
+  rating?: InputMaybe<Scalars['BigInt']>;
+  rating_not?: InputMaybe<Scalars['BigInt']>;
+  rating_gt?: InputMaybe<Scalars['BigInt']>;
+  rating_lt?: InputMaybe<Scalars['BigInt']>;
+  rating_gte?: InputMaybe<Scalars['BigInt']>;
+  rating_lte?: InputMaybe<Scalars['BigInt']>;
+  rating_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  rating_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Evaluation_filter>>>;
@@ -121,87 +128,20 @@ export type Evaluation_filter = {
 export type Evaluation_orderBy =
   | 'id'
   | 'creator'
+  | 'creator__id'
+  | 'creator__fuxer'
+  | 'creator__rewards'
   | 'workstream'
-  | 'contributors'
-  | 'ratings';
-
-export type FuxGiven = {
-  id: Scalars['ID'];
-  user: User;
-  workstream: Workstream;
-  balance: Scalars['BigInt'];
-};
-
-export type FuxGiven_filter = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  user?: InputMaybe<Scalars['String']>;
-  user_not?: InputMaybe<Scalars['String']>;
-  user_gt?: InputMaybe<Scalars['String']>;
-  user_lt?: InputMaybe<Scalars['String']>;
-  user_gte?: InputMaybe<Scalars['String']>;
-  user_lte?: InputMaybe<Scalars['String']>;
-  user_in?: InputMaybe<Array<Scalars['String']>>;
-  user_not_in?: InputMaybe<Array<Scalars['String']>>;
-  user_contains?: InputMaybe<Scalars['String']>;
-  user_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_not_contains?: InputMaybe<Scalars['String']>;
-  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_starts_with?: InputMaybe<Scalars['String']>;
-  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_starts_with?: InputMaybe<Scalars['String']>;
-  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_ends_with?: InputMaybe<Scalars['String']>;
-  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_ends_with?: InputMaybe<Scalars['String']>;
-  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_?: InputMaybe<User_filter>;
-  workstream?: InputMaybe<Scalars['String']>;
-  workstream_not?: InputMaybe<Scalars['String']>;
-  workstream_gt?: InputMaybe<Scalars['String']>;
-  workstream_lt?: InputMaybe<Scalars['String']>;
-  workstream_gte?: InputMaybe<Scalars['String']>;
-  workstream_lte?: InputMaybe<Scalars['String']>;
-  workstream_in?: InputMaybe<Array<Scalars['String']>>;
-  workstream_not_in?: InputMaybe<Array<Scalars['String']>>;
-  workstream_contains?: InputMaybe<Scalars['String']>;
-  workstream_contains_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_contains?: InputMaybe<Scalars['String']>;
-  workstream_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  workstream_starts_with?: InputMaybe<Scalars['String']>;
-  workstream_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_starts_with?: InputMaybe<Scalars['String']>;
-  workstream_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_ends_with?: InputMaybe<Scalars['String']>;
-  workstream_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_ends_with?: InputMaybe<Scalars['String']>;
-  workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_?: InputMaybe<Workstream_filter>;
-  balance?: InputMaybe<Scalars['BigInt']>;
-  balance_not?: InputMaybe<Scalars['BigInt']>;
-  balance_gt?: InputMaybe<Scalars['BigInt']>;
-  balance_lt?: InputMaybe<Scalars['BigInt']>;
-  balance_gte?: InputMaybe<Scalars['BigInt']>;
-  balance_lte?: InputMaybe<Scalars['BigInt']>;
-  balance_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<FuxGiven_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<FuxGiven_filter>>>;
-};
-
-export type FuxGiven_orderBy =
-  | 'id'
-  | 'user'
-  | 'workstream'
-  | 'balance';
+  | 'workstream__id'
+  | 'workstream__name'
+  | 'workstream__funding'
+  | 'workstream__deadline'
+  | 'workstream__status'
+  | 'contributor'
+  | 'contributor__id'
+  | 'contributor__fuxer'
+  | 'contributor__rewards'
+  | 'rating';
 
 /** Defines the order direction, either ascending or descending */
 export type OrderDirection =
@@ -213,18 +153,14 @@ export type Query = {
   users: Array<User>;
   workstream?: Maybe<Workstream>;
   workstreams: Array<Workstream>;
-  userWorkstream?: Maybe<UserWorkstream>;
-  userWorkstreams: Array<UserWorkstream>;
   evaluation?: Maybe<Evaluation>;
   evaluations: Array<Evaluation>;
+  workstreamContributor?: Maybe<WorkstreamContributor>;
+  workstreamContributors: Array<WorkstreamContributor>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
   tokenBalance?: Maybe<TokenBalance>;
   tokenBalances: Array<TokenBalance>;
-  fuxGiven?: Maybe<FuxGiven>;
-  fuxGivens: Array<FuxGiven>;
-  vfuxWorkstream?: Maybe<VFuxWorkstream>;
-  vfuxWorkstreams: Array<VFuxWorkstream>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -266,24 +202,6 @@ export type QueryworkstreamsArgs = {
 };
 
 
-export type QueryuserWorkstreamArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryuserWorkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserWorkstream_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
 export type QueryevaluationArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
@@ -297,6 +215,24 @@ export type QueryevaluationsArgs = {
   orderBy?: InputMaybe<Evaluation_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Evaluation_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryworkstreamContributorArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryworkstreamContributorsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -338,42 +274,6 @@ export type QuerytokenBalancesArgs = {
 };
 
 
-export type QueryfuxGivenArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryfuxGivensArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FuxGiven_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FuxGiven_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryvfuxWorkstreamArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryvfuxWorkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VFuxWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VFuxWorkstream_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
 export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
@@ -383,18 +283,14 @@ export type Subscription = {
   users: Array<User>;
   workstream?: Maybe<Workstream>;
   workstreams: Array<Workstream>;
-  userWorkstream?: Maybe<UserWorkstream>;
-  userWorkstreams: Array<UserWorkstream>;
   evaluation?: Maybe<Evaluation>;
   evaluations: Array<Evaluation>;
+  workstreamContributor?: Maybe<WorkstreamContributor>;
+  workstreamContributors: Array<WorkstreamContributor>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
   tokenBalance?: Maybe<TokenBalance>;
   tokenBalances: Array<TokenBalance>;
-  fuxGiven?: Maybe<FuxGiven>;
-  fuxGivens: Array<FuxGiven>;
-  vfuxWorkstream?: Maybe<VFuxWorkstream>;
-  vfuxWorkstreams: Array<VFuxWorkstream>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -436,24 +332,6 @@ export type SubscriptionworkstreamsArgs = {
 };
 
 
-export type SubscriptionuserWorkstreamArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionuserWorkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserWorkstream_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
 export type SubscriptionevaluationArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
@@ -467,6 +345,24 @@ export type SubscriptionevaluationsArgs = {
   orderBy?: InputMaybe<Evaluation_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Evaluation_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionworkstreamContributorArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionworkstreamContributorsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -508,42 +404,6 @@ export type SubscriptiontokenBalancesArgs = {
 };
 
 
-export type SubscriptionfuxGivenArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionfuxGivensArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FuxGiven_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FuxGiven_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionvfuxWorkstreamArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionvfuxWorkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VFuxWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VFuxWorkstream_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
 export type Subscription_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
@@ -568,7 +428,7 @@ export type TokenBalance = {
   id: Scalars['ID'];
   user: User;
   token: Token;
-  balance: Scalars['BigInt'];
+  amount: Scalars['BigInt'];
 };
 
 export type TokenBalance_filter = {
@@ -622,14 +482,14 @@ export type TokenBalance_filter = {
   token_not_ends_with?: InputMaybe<Scalars['String']>;
   token_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   token_?: InputMaybe<Token_filter>;
-  balance?: InputMaybe<Scalars['BigInt']>;
-  balance_not?: InputMaybe<Scalars['BigInt']>;
-  balance_gt?: InputMaybe<Scalars['BigInt']>;
-  balance_lt?: InputMaybe<Scalars['BigInt']>;
-  balance_gte?: InputMaybe<Scalars['BigInt']>;
-  balance_lte?: InputMaybe<Scalars['BigInt']>;
-  balance_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount?: InputMaybe<Scalars['BigInt']>;
+  amount_not?: InputMaybe<Scalars['BigInt']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<TokenBalance_filter>>>;
@@ -639,8 +499,14 @@ export type TokenBalance_filter = {
 export type TokenBalance_orderBy =
   | 'id'
   | 'user'
+  | 'user__id'
+  | 'user__fuxer'
+  | 'user__rewards'
   | 'token'
-  | 'balance';
+  | 'token__id'
+  | 'token__name'
+  | 'token__symbol'
+  | 'amount';
 
 export type Token_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -708,8 +574,7 @@ export type User = {
   id: Scalars['ID'];
   fuxer?: Maybe<Scalars['Boolean']>;
   balances?: Maybe<Array<TokenBalance>>;
-  workstreams?: Maybe<Array<UserWorkstream>>;
-  fuxGiven?: Maybe<Array<FuxGiven>>;
+  workstreams?: Maybe<Array<WorkstreamContributor>>;
   rewards?: Maybe<Scalars['BigInt']>;
 };
 
@@ -726,87 +591,10 @@ export type UserbalancesArgs = {
 export type UserworkstreamsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserWorkstream_orderBy>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserWorkstream_filter>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
 };
-
-
-export type UserfuxGivenArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FuxGiven_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FuxGiven_filter>;
-};
-
-export type UserWorkstream = {
-  id: Scalars['ID'];
-  user: User;
-  workstream: Workstream;
-};
-
-export type UserWorkstream_filter = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  user?: InputMaybe<Scalars['String']>;
-  user_not?: InputMaybe<Scalars['String']>;
-  user_gt?: InputMaybe<Scalars['String']>;
-  user_lt?: InputMaybe<Scalars['String']>;
-  user_gte?: InputMaybe<Scalars['String']>;
-  user_lte?: InputMaybe<Scalars['String']>;
-  user_in?: InputMaybe<Array<Scalars['String']>>;
-  user_not_in?: InputMaybe<Array<Scalars['String']>>;
-  user_contains?: InputMaybe<Scalars['String']>;
-  user_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_not_contains?: InputMaybe<Scalars['String']>;
-  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_starts_with?: InputMaybe<Scalars['String']>;
-  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_starts_with?: InputMaybe<Scalars['String']>;
-  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_ends_with?: InputMaybe<Scalars['String']>;
-  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_ends_with?: InputMaybe<Scalars['String']>;
-  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_?: InputMaybe<User_filter>;
-  workstream?: InputMaybe<Scalars['String']>;
-  workstream_not?: InputMaybe<Scalars['String']>;
-  workstream_gt?: InputMaybe<Scalars['String']>;
-  workstream_lt?: InputMaybe<Scalars['String']>;
-  workstream_gte?: InputMaybe<Scalars['String']>;
-  workstream_lte?: InputMaybe<Scalars['String']>;
-  workstream_in?: InputMaybe<Array<Scalars['String']>>;
-  workstream_not_in?: InputMaybe<Array<Scalars['String']>>;
-  workstream_contains?: InputMaybe<Scalars['String']>;
-  workstream_contains_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_contains?: InputMaybe<Scalars['String']>;
-  workstream_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  workstream_starts_with?: InputMaybe<Scalars['String']>;
-  workstream_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_starts_with?: InputMaybe<Scalars['String']>;
-  workstream_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_ends_with?: InputMaybe<Scalars['String']>;
-  workstream_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_not_ends_with?: InputMaybe<Scalars['String']>;
-  workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  workstream_?: InputMaybe<Workstream_filter>;
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<UserWorkstream_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<UserWorkstream_filter>>>;
-};
-
-export type UserWorkstream_orderBy =
-  | 'id'
-  | 'user'
-  | 'workstream';
 
 export type User_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -822,8 +610,7 @@ export type User_filter = {
   fuxer_in?: InputMaybe<Array<Scalars['Boolean']>>;
   fuxer_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   balances_?: InputMaybe<TokenBalance_filter>;
-  workstreams_?: InputMaybe<UserWorkstream_filter>;
-  fuxGiven_?: InputMaybe<FuxGiven_filter>;
+  workstreams_?: InputMaybe<WorkstreamContributor_filter>;
   rewards?: InputMaybe<Scalars['BigInt']>;
   rewards_not?: InputMaybe<Scalars['BigInt']>;
   rewards_gt?: InputMaybe<Scalars['BigInt']>;
@@ -843,17 +630,45 @@ export type User_orderBy =
   | 'fuxer'
   | 'balances'
   | 'workstreams'
-  | 'fuxGiven'
   | 'rewards';
 
-export type VFuxWorkstream = {
+export type Workstream = {
   id: Scalars['ID'];
-  user: User;
-  workstream: Workstream;
-  balance: Scalars['BigInt'];
+  name?: Maybe<Scalars['String']>;
+  coordinator?: Maybe<User>;
+  contributors?: Maybe<Array<WorkstreamContributor>>;
+  evaluations?: Maybe<Array<Evaluation>>;
+  funding?: Maybe<Scalars['BigInt']>;
+  deadline?: Maybe<Scalars['BigInt']>;
+  status?: Maybe<WorkstreamStatus>;
 };
 
-export type VFuxWorkstream_filter = {
+
+export type WorkstreamcontributorsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
+};
+
+
+export type WorkstreamevaluationsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Evaluation_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Evaluation_filter>;
+};
+
+export type WorkstreamContributor = {
+  id: Scalars['ID'];
+  workstream: Workstream;
+  contributor: User;
+  commitment?: Maybe<Scalars['BigInt']>;
+};
+
+export type WorkstreamContributor_filter = {
   id?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_gt?: InputMaybe<Scalars['ID']>;
@@ -862,27 +677,6 @@ export type VFuxWorkstream_filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  user?: InputMaybe<Scalars['String']>;
-  user_not?: InputMaybe<Scalars['String']>;
-  user_gt?: InputMaybe<Scalars['String']>;
-  user_lt?: InputMaybe<Scalars['String']>;
-  user_gte?: InputMaybe<Scalars['String']>;
-  user_lte?: InputMaybe<Scalars['String']>;
-  user_in?: InputMaybe<Array<Scalars['String']>>;
-  user_not_in?: InputMaybe<Array<Scalars['String']>>;
-  user_contains?: InputMaybe<Scalars['String']>;
-  user_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_not_contains?: InputMaybe<Scalars['String']>;
-  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  user_starts_with?: InputMaybe<Scalars['String']>;
-  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_starts_with?: InputMaybe<Scalars['String']>;
-  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  user_ends_with?: InputMaybe<Scalars['String']>;
-  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_not_ends_with?: InputMaybe<Scalars['String']>;
-  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  user_?: InputMaybe<User_filter>;
   workstream?: InputMaybe<Scalars['String']>;
   workstream_not?: InputMaybe<Scalars['String']>;
   workstream_gt?: InputMaybe<Scalars['String']>;
@@ -904,64 +698,59 @@ export type VFuxWorkstream_filter = {
   workstream_not_ends_with?: InputMaybe<Scalars['String']>;
   workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   workstream_?: InputMaybe<Workstream_filter>;
-  balance?: InputMaybe<Scalars['BigInt']>;
-  balance_not?: InputMaybe<Scalars['BigInt']>;
-  balance_gt?: InputMaybe<Scalars['BigInt']>;
-  balance_lt?: InputMaybe<Scalars['BigInt']>;
-  balance_gte?: InputMaybe<Scalars['BigInt']>;
-  balance_lte?: InputMaybe<Scalars['BigInt']>;
-  balance_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  balance_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  contributor?: InputMaybe<Scalars['String']>;
+  contributor_not?: InputMaybe<Scalars['String']>;
+  contributor_gt?: InputMaybe<Scalars['String']>;
+  contributor_lt?: InputMaybe<Scalars['String']>;
+  contributor_gte?: InputMaybe<Scalars['String']>;
+  contributor_lte?: InputMaybe<Scalars['String']>;
+  contributor_in?: InputMaybe<Array<Scalars['String']>>;
+  contributor_not_in?: InputMaybe<Array<Scalars['String']>>;
+  contributor_contains?: InputMaybe<Scalars['String']>;
+  contributor_contains_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_contains?: InputMaybe<Scalars['String']>;
+  contributor_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  contributor_starts_with?: InputMaybe<Scalars['String']>;
+  contributor_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_starts_with?: InputMaybe<Scalars['String']>;
+  contributor_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_ends_with?: InputMaybe<Scalars['String']>;
+  contributor_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_not_ends_with?: InputMaybe<Scalars['String']>;
+  contributor_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contributor_?: InputMaybe<User_filter>;
+  commitment?: InputMaybe<Scalars['BigInt']>;
+  commitment_not?: InputMaybe<Scalars['BigInt']>;
+  commitment_gt?: InputMaybe<Scalars['BigInt']>;
+  commitment_lt?: InputMaybe<Scalars['BigInt']>;
+  commitment_gte?: InputMaybe<Scalars['BigInt']>;
+  commitment_lte?: InputMaybe<Scalars['BigInt']>;
+  commitment_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  commitment_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<VFuxWorkstream_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<VFuxWorkstream_filter>>>;
+  and?: InputMaybe<Array<InputMaybe<WorkstreamContributor_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<WorkstreamContributor_filter>>>;
 };
 
-export type VFuxWorkstream_orderBy =
+export type WorkstreamContributor_orderBy =
   | 'id'
-  | 'user'
   | 'workstream'
-  | 'balance';
+  | 'workstream__id'
+  | 'workstream__name'
+  | 'workstream__funding'
+  | 'workstream__deadline'
+  | 'workstream__status'
+  | 'contributor'
+  | 'contributor__id'
+  | 'contributor__fuxer'
+  | 'contributor__rewards'
+  | 'commitment';
 
-export type Workstream = {
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-  coordinator?: Maybe<User>;
-  contributors?: Maybe<Array<UserWorkstream>>;
-  evaluations?: Maybe<Array<Evaluation>>;
-  fuxGiven?: Maybe<Array<FuxGiven>>;
-  funding?: Maybe<Scalars['BigInt']>;
-  deadline?: Maybe<Scalars['BigInt']>;
-  resolved?: Maybe<Scalars['Boolean']>;
-};
-
-
-export type WorkstreamcontributorsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserWorkstream_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserWorkstream_filter>;
-};
-
-
-export type WorkstreamevaluationsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Evaluation_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Evaluation_filter>;
-};
-
-
-export type WorkstreamfuxGivenArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FuxGiven_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FuxGiven_filter>;
-};
+export type WorkstreamStatus =
+  | 'Started'
+  | 'Evaluation'
+  | 'Closed';
 
 export type Workstream_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -1013,9 +802,8 @@ export type Workstream_filter = {
   coordinator_not_ends_with?: InputMaybe<Scalars['String']>;
   coordinator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   coordinator_?: InputMaybe<User_filter>;
-  contributors_?: InputMaybe<UserWorkstream_filter>;
+  contributors_?: InputMaybe<WorkstreamContributor_filter>;
   evaluations_?: InputMaybe<Evaluation_filter>;
-  fuxGiven_?: InputMaybe<FuxGiven_filter>;
   funding?: InputMaybe<Scalars['BigInt']>;
   funding_not?: InputMaybe<Scalars['BigInt']>;
   funding_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1032,10 +820,10 @@ export type Workstream_filter = {
   deadline_lte?: InputMaybe<Scalars['BigInt']>;
   deadline_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deadline_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  resolved?: InputMaybe<Scalars['Boolean']>;
-  resolved_not?: InputMaybe<Scalars['Boolean']>;
-  resolved_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  resolved_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  status?: InputMaybe<WorkstreamStatus>;
+  status_not?: InputMaybe<WorkstreamStatus>;
+  status_in?: InputMaybe<Array<WorkstreamStatus>>;
+  status_not_in?: InputMaybe<Array<WorkstreamStatus>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Workstream_filter>>>;
@@ -1046,12 +834,14 @@ export type Workstream_orderBy =
   | 'id'
   | 'name'
   | 'coordinator'
+  | 'coordinator__id'
+  | 'coordinator__fuxer'
+  | 'coordinator__rewards'
   | 'contributors'
   | 'evaluations'
-  | 'fuxGiven'
   | 'funding'
   | 'deadline'
-  | 'resolved';
+  | 'status';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -1094,13 +884,13 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   workstreams: InContextSdkMethod<Query['workstreams'], QueryworkstreamsArgs, MeshContext>,
   /** null **/
-  userWorkstream: InContextSdkMethod<Query['userWorkstream'], QueryuserWorkstreamArgs, MeshContext>,
-  /** null **/
-  userWorkstreams: InContextSdkMethod<Query['userWorkstreams'], QueryuserWorkstreamsArgs, MeshContext>,
-  /** null **/
   evaluation: InContextSdkMethod<Query['evaluation'], QueryevaluationArgs, MeshContext>,
   /** null **/
   evaluations: InContextSdkMethod<Query['evaluations'], QueryevaluationsArgs, MeshContext>,
+  /** null **/
+  workstreamContributor: InContextSdkMethod<Query['workstreamContributor'], QueryworkstreamContributorArgs, MeshContext>,
+  /** null **/
+  workstreamContributors: InContextSdkMethod<Query['workstreamContributors'], QueryworkstreamContributorsArgs, MeshContext>,
   /** null **/
   token: InContextSdkMethod<Query['token'], QuerytokenArgs, MeshContext>,
   /** null **/
@@ -1109,14 +899,6 @@ export type _SubgraphErrorPolicy_ =
   tokenBalance: InContextSdkMethod<Query['tokenBalance'], QuerytokenBalanceArgs, MeshContext>,
   /** null **/
   tokenBalances: InContextSdkMethod<Query['tokenBalances'], QuerytokenBalancesArgs, MeshContext>,
-  /** null **/
-  fuxGiven: InContextSdkMethod<Query['fuxGiven'], QueryfuxGivenArgs, MeshContext>,
-  /** null **/
-  fuxGivens: InContextSdkMethod<Query['fuxGivens'], QueryfuxGivensArgs, MeshContext>,
-  /** null **/
-  vfuxWorkstream: InContextSdkMethod<Query['vfuxWorkstream'], QueryvfuxWorkstreamArgs, MeshContext>,
-  /** null **/
-  vfuxWorkstreams: InContextSdkMethod<Query['vfuxWorkstreams'], QueryvfuxWorkstreamsArgs, MeshContext>,
   /** Access to subgraph metadata **/
   _meta: InContextSdkMethod<Query['_meta'], Query_metaArgs, MeshContext>
   };
@@ -1135,13 +917,13 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   workstreams: InContextSdkMethod<Subscription['workstreams'], SubscriptionworkstreamsArgs, MeshContext>,
   /** null **/
-  userWorkstream: InContextSdkMethod<Subscription['userWorkstream'], SubscriptionuserWorkstreamArgs, MeshContext>,
-  /** null **/
-  userWorkstreams: InContextSdkMethod<Subscription['userWorkstreams'], SubscriptionuserWorkstreamsArgs, MeshContext>,
-  /** null **/
   evaluation: InContextSdkMethod<Subscription['evaluation'], SubscriptionevaluationArgs, MeshContext>,
   /** null **/
   evaluations: InContextSdkMethod<Subscription['evaluations'], SubscriptionevaluationsArgs, MeshContext>,
+  /** null **/
+  workstreamContributor: InContextSdkMethod<Subscription['workstreamContributor'], SubscriptionworkstreamContributorArgs, MeshContext>,
+  /** null **/
+  workstreamContributors: InContextSdkMethod<Subscription['workstreamContributors'], SubscriptionworkstreamContributorsArgs, MeshContext>,
   /** null **/
   token: InContextSdkMethod<Subscription['token'], SubscriptiontokenArgs, MeshContext>,
   /** null **/
@@ -1150,14 +932,6 @@ export type _SubgraphErrorPolicy_ =
   tokenBalance: InContextSdkMethod<Subscription['tokenBalance'], SubscriptiontokenBalanceArgs, MeshContext>,
   /** null **/
   tokenBalances: InContextSdkMethod<Subscription['tokenBalances'], SubscriptiontokenBalancesArgs, MeshContext>,
-  /** null **/
-  fuxGiven: InContextSdkMethod<Subscription['fuxGiven'], SubscriptionfuxGivenArgs, MeshContext>,
-  /** null **/
-  fuxGivens: InContextSdkMethod<Subscription['fuxGivens'], SubscriptionfuxGivensArgs, MeshContext>,
-  /** null **/
-  vfuxWorkstream: InContextSdkMethod<Subscription['vfuxWorkstream'], SubscriptionvfuxWorkstreamArgs, MeshContext>,
-  /** null **/
-  vfuxWorkstreams: InContextSdkMethod<Subscription['vfuxWorkstreams'], SubscriptionvfuxWorkstreamsArgs, MeshContext>,
   /** Access to subgraph metadata **/
   _meta: InContextSdkMethod<Subscription['_meta'], Subscription_metaArgs, MeshContext>
   };

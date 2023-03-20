@@ -1,83 +1,53 @@
-query WorkstreamsByUser($address: ID!) {
-  userWorkstreams(where: { user_: { id: $address } }) {
+query WorkstreamsByUser($contributor: String = "id") {
+  workstreamContributors(where: { contributor: $contributor }) {
     workstream {
-      ...WorkstreamsByUserFragment
+      status
+      name
+      contributors {
+        commitment
+        id
+      }
+      coordinator {
+        id
+      }
+      deadline
+      funding
+      id
+      evaluations {
+        contributor {
+          id
+        }
+        creator {
+          id
+        }
+        rating
+      }
     }
   }
 }
 
-fragment WorkstreamsByUserFragment on Workstream {
-  fuxGiven(where: { user_: { id: $address } }) {
-    balance
-    user {
+query WorkstreamByID($id: ID = "") {
+  workstream(id: $id) {
+    contributors {
+      id
+      commitment
+    }
+    deadline
+    funding
+    name
+    status
+    id
+    coordinator {
       id
     }
-  }
-  deadline
-  funding
-  id
-  name
-  resolved
-  contributors {
-    user {
-      id
+    evaluations {
+      creator {
+        id
+      }
+      contributor {
+        id
+      }
+      rating
     }
-  }
-  coordinator {
-    id
-  }
-}
-
-query WorkstreamByID($workstreamID: ID!) {
-  workstream(id: $workstreamID) {
-    ...WorkstreamByIDFragment
-  }
-}
-
-fragment WorkstreamByIDFragment on Workstream {
-  contributors {
-    ...ContributorFragment
-  }
-  coordinator {
-    id
-  }
-  deadline
-  funding
-  id
-  name
-  resolved
-  evaluations {
-    ...EvaluationFragment
-  }
-  fuxGiven {
-    balance
-    user {
-      id
-    }
-  }
-}
-
-fragment ContributorFragment on UserWorkstream {
-  id
-  user {
-    id
-  }
-}
-
-fragment EvaluationFragment on Evaluation {
-  creator {
-    id
-  }
-  contributors {
-    id
-  }
-  ratings
-}
-
-query WorkstreamVFux($address: ID!, $workstreamID: ID!) {
-  vfuxWorkstreams(
-    where: { user_: { id: $address }, workstream_: { id: $workstreamID } }
-  ) {
-    balance
   }
 }
