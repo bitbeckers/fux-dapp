@@ -2,35 +2,40 @@ type User @entity {
   id: ID!
   fuxer: Boolean
   balances: [TokenBalance!] @derivedFrom(field: "user")
-  workstreams: [UserWorkstream!] @derivedFrom(field: "user")
-  fuxGiven: [FuxGiven!] @derivedFrom(field: "user")
+  workstreams: [WorkstreamContributor!] @derivedFrom(field: "contributor")
   rewards: BigInt
+}
+
+enum WorkstreamStatus {
+  Started
+  Evaluation
+  Closed
 }
 
 type Workstream @entity {
   id: ID!
   name: String
   coordinator: User
-  contributors: [UserWorkstream!] @derivedFrom(field: "workstream")
+  contributors: [WorkstreamContributor!] @derivedFrom(field: "workstream")
   evaluations: [Evaluation!] @derivedFrom(field: "workstream")
-  fuxGiven: [FuxGiven!] @derivedFrom(field: "workstream")
   funding: BigInt
   deadline: BigInt
-  resolved: Boolean
-}
-
-type UserWorkstream @entity {
-  id: ID!
-  user: User!
-  workstream: Workstream!
+  status: WorkstreamStatus
 }
 
 type Evaluation @entity {
   id: ID!
   creator: User!
   workstream: Workstream!
-  contributors: [User!]!
-  ratings: [BigInt!]!
+  contributor: User!
+  rating: BigInt!
+}
+
+type WorkstreamContributor @entity {
+  id: ID!
+  workstream: Workstream!
+  contributor: User!
+  commitment: BigInt
 }
 
 type Token @entity {
@@ -44,19 +49,5 @@ type TokenBalance @entity {
   id: ID!
   user: User!
   token: Token!
-  balance: BigInt!
-}
-
-type FuxGiven @entity {
-  id: ID!
-  user: User!
-  workstream: Workstream!
-  balance: BigInt!
-}
-
-type VFuxWorkstream @entity {
-  id: ID!
-  user: User!
-  workstream: Workstream!
-  balance: BigInt!
+  amount: BigInt!
 }
