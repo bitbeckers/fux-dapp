@@ -63,6 +63,11 @@ const ValueReviewForm: React.FC<{
 
   const _workstream = workstream as Workstream;
 
+  const currentEvaluations = findEvaluations(
+    _workstream,
+    user || ("" as `0x${string}`)
+  );
+
   const {
     handleSubmit,
     register,
@@ -72,7 +77,7 @@ const ValueReviewForm: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      ratings: findEvaluations(_workstream, user || ("" as `0x${string}`)),
+      ratings: currentEvaluations,
     },
   });
 
@@ -88,6 +93,7 @@ const ValueReviewForm: React.FC<{
     functionName: "submitEvaluation",
     args: [workstream.id, _contributors, _ratings],
   });
+
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
     onError(e) {
@@ -103,7 +109,7 @@ const ValueReviewForm: React.FC<{
     return <Text>Cannot determine user</Text>;
   }
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (_: FormData) => {
     if (total != 100) {
       toast.warning(`Not enough FUX`, `${total || "..."}/100`);
       return;
@@ -154,7 +160,7 @@ const ValueReviewForm: React.FC<{
               <Text>Rating</Text>
             </GridItem>
             {contributors.map((contributor, index) => {
-              const address = contributor.contributor.id;
+              const address = contributor.contributor.id as `0x${string}`;
               return address.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
@@ -188,17 +194,14 @@ const ValueReviewForm: React.FC<{
                       control={control}
                       rules={{ required: true }}
                       key={`ratings.${address}`}
-                      render={({ field: { ...restField } }) => (
-                        <NumberInput {...restField}>
+                      render={({ field: { ref, ...restField } }) => (
+                        <NumberInput min={0} max={100} step={1} {...restField}>
                           <NumberInputField
-                            {...register(`ratings.${address}`)}
+                            ref={ref}
                             name={restField.name}
                             borderRadius={0}
-                            max={100}
                             placeholder={
-                              formData && formData[address.toLowerCase()]
-                                ? formData[address.toLowerCase()].toString()
-                                : "0"
+                              formData[address.toLowerCase()]?.toString() ?? "0"
                             }
                           />
                           <NumberInputStepper>
