@@ -1,8 +1,10 @@
 import {
+  Evaluation,
   User as GraphUser,
-  UserWorkstreamFragmentFragment,
+  Workstream,
+  WorkstreamContributor,
 } from "../../../.graphclient";
-import { ContributorRow } from "../ContributorRow";
+import { ContributorOverview } from "../ContributorOverview";
 import User from "../User";
 import {
   AccordionButton,
@@ -21,47 +23,31 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { BigNumberish } from "ethers";
+import { groupBy, map, uniqBy } from "lodash";
 import sortBy from "lodash/sortBy";
 import React from "react";
 
-type Contributor = {
-  user: {
-    id: string;
-  };
-};
-
-type Evaluation = {
-  creator: {
-    id: string;
-  };
-  ratings: BigNumberish[];
-  contributors: Pick<GraphUser, "id">[];
-};
-
 const WorkstreamCard: React.FC<{
-  workstream: UserWorkstreamFragmentFragment;
+  workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
   const _workstream = workstream.workstream;
 
   const evaluationRow = (
-    sortedContributors: Contributor[],
-    evaluation: Evaluation
+    sortedContributors: string[],
+    user: string,
+    evaluation: Evaluation[]
   ) => {
-    const _contributors = evaluation.contributors;
-    const _ratings = evaluation.ratings;
-
     const mapped = sortedContributors.map((contributor) => {
-      const _index = _contributors.findIndex(
-        ({ id }) => id.toLowerCase() === contributor?.user?.id.toLowerCase()
+      const _index = evaluation.findIndex(
+        ({ id }) => id.toLowerCase() === contributor?.toLowerCase()
       );
-      return _index >= 0 ? _ratings[_index] : "-";
+      return _index >= 0 ? evaluation[_index].rating : "-";
     });
 
     return (
-      <Tr key={evaluation.creator.id}>
+      <Tr key={user}>
         <Td>
-          <User address={evaluation.creator.id as `0x${string}`} />
+          <User address={user as `0x${string}`} />
         </Td>
         {mapped.map((rating, index) => (
           <Td key={index}>{rating.toString()}</Td>
@@ -70,13 +56,12 @@ const WorkstreamCard: React.FC<{
     );
   };
 
-  const evaluationOverview = (
-    contributors: Contributor[],
-    evaluations: Evaluation[]
-  ) => {
-    const sortedContributors = sortBy(contributors).filter(
-      (contributor) => contributor
+  const evaluationOverview = (evaluations: Evaluation[]) => {
+    const sortedContributors = sortBy(uniqBy(evaluations, "contributor")).map(
+      (contributor) => contributor.id
     );
+
+    const groupedEvaluations = groupBy(evaluations, "creator.id");
 
     const headers = (
       <Thead>
@@ -84,16 +69,16 @@ const WorkstreamCard: React.FC<{
           <Th>Evaluator</Th>
           {sortedContributors.map((contributor, index) => (
             <Th key={index}>
-              <User address={contributor.user.id as `0x${string}`} />
+              <User address={contributor as `0x${string}`} />
             </Th>
           ))}
         </Tr>
       </Thead>
     );
 
-    const rows = evaluations.map((evaluation) => {
-      return evaluationRow(sortedContributors, evaluation);
-    });
+    const rows = map(groupedEvaluations, (evaluationsPerUser, user) =>
+      evaluationRow(sortedContributors, user, evaluationsPerUser)
+    );
 
     return (
       <TableContainer flex={"flex-start"}>
@@ -110,41 +95,30 @@ const WorkstreamCard: React.FC<{
     <AccordionItem>
       <AccordionButton>
         <Heading size="md" flex="1" textAlign="left">
-          {_workstream.name?.toUpperCase()}
+          {_workstream?.name?.toUpperCase()}
         </Heading>
-        <Text>{_workstream.resolved ? "Closed" : "Active"}</Text>
+        <Text>{_workstream.status}</Text>
         <AccordionIcon />
       </AccordionButton>
       <AccordionPanel pb={4}>
         <VStack alignItems={"flex-start"}>
           <Heading size="sm">Coordinator:</Heading>
-          <Table>
-            <ContributorRow
-              address={(_workstream.coordinator?.id as `0x${string}`) || "0x"}
-            />
-          </Table>
+          <User
+            address={_workstream.coordinator?.id as `0x${string}`}
+            direction="horizontal"
+            displayAvatar={true}
+          />
         </VStack>
         <VStack alignItems={"flex-start"}>
           <Heading size="sm">Contributors:</Heading>
-          <Flex gap="2" w={'100%'}>
-            <Table>
-              {_workstream.contributors?.map(({ user }, index) => (
-                <ContributorRow
-                  key={index}
-                  address={user.id as `0x${string}`}
-                />
-              ))}
-            </Table>
-          </Flex>
+          <ContributorOverview workstream={_workstream} />
         </VStack>
 
-        {_workstream.resolved &&
+        {_workstream.status &&
+        _workstream.contributors &&
         _workstream.evaluations &&
-        _workstream.contributors
-          ? evaluationOverview(
-              _workstream.contributors.map((contributor) => contributor),
-              _workstream.evaluations
-            )
+        ["Evaluation", "Closed"].includes(_workstream.status)
+          ? evaluationOverview(_workstream.evaluations)
           : undefined}
       </AccordionPanel>
     </AccordionItem>

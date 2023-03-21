@@ -1,4 +1,7 @@
-import { WorkstreamHistoryDocument } from "../.graphclient";
+import {
+  WorkstreamContributor,
+  WorkstreamsByUserDocument,
+} from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamCard from "../components/FUX/WorkstreamCard";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
@@ -18,15 +21,18 @@ const History: NextPage = () => {
   const { address: user } = useAccount();
 
   const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamHistoryDocument,
+    query: WorkstreamsByUserDocument,
     variables: {
-      address: user?.toLowerCase() || "",
+      contributor: user?.toLowerCase() || "",
     },
   });
 
   const { data, fetching, error } = result;
 
-  const workstreams = data?.userWorkstreams || [];
+  const workstreams =
+    data?.workstreamContributors as Partial<WorkstreamContributor>[];
+
+  console.log("History workstreams: ", workstreams);
 
   return (
     <VStack spacing={8} w={"100%"}>
@@ -46,7 +52,7 @@ const History: NextPage = () => {
         />
       ) : (
         <>
-          {workstreams.length > 0 ? (
+          {workstreams && workstreams.length > 0 ? (
             <Accordion w={"80%"} maxW={"769px"} allowToggle={true}>
               {workstreams.map((workstream, index) => (
                 <WorkstreamCard workstream={workstream} key={index} />

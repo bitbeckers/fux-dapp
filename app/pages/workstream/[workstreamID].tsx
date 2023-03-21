@@ -1,9 +1,11 @@
 import {
   TokenBalanceDocument,
+  Workstream,
   WorkstreamByIDDocument,
 } from "../../.graphclient";
 import CommitFuxModal from "../../components/FUX/CommitFuxModal";
-import { ContributorRow } from "../../components/FUX/ContributorRow";
+import { Contributor } from "../../components/FUX/Contributor";
+import { ContributorOverview } from "../../components/FUX/ContributorOverview";
 import { useConstants } from "../../utils/constants";
 import {
   VStack,
@@ -48,21 +50,21 @@ type Evaluation = {
 
 const Workstream: NextPage = () => {
   const router = useRouter();
-  const { address } = useAccount();
+  const { address: user } = useAccount();
   const { nativeToken } = useConstants();
   const { workstreamID } = router.query;
 
   const [result] = useQuery({
     query: WorkstreamByIDDocument,
     variables: {
-      workstreamID: workstreamID as string,
+      id: workstreamID as string,
     },
   });
 
   const [fuxBalanceResponse] = useQuery({
     query: TokenBalanceDocument,
     variables: {
-      address: address?.toLowerCase() || "",
+      address: user?.toLowerCase() || "",
       symbol: "FUX",
     },
   });
@@ -81,11 +83,11 @@ const Workstream: NextPage = () => {
     );
   }
   const _workstream = data?.workstream;
+  const contributor = _workstream?.contributors?.find(
+    (cont) => cont.contributor.id.toLowerCase() === user?.toLowerCase()
+  );
 
-  let fuxGiven = _workstream?.fuxGiven?.find(
-    (contributor) =>
-      contributor.user.id.toLowerCase() === address?.toLowerCase()
-  )?.balance;
+  let fuxGiven = contributor?.commitment;
 
   if (!fuxGiven) {
     fuxGiven = BigNumber.from("0");
@@ -95,15 +97,13 @@ const Workstream: NextPage = () => {
 
   const fuxAvailable = fuxAvailableData?.tokenBalances.find(
     (balance) => balance
-  )?.balance;
+  )?.amount;
 
   if (!fuxAvailable) {
     fuxGiven = BigNumber.from("0");
   }
 
-  const contributors = _workstream?.contributors?.map(
-    (contributor) => contributor.user
-  );
+  const contributors = _workstream?.contributors;
 
   //TODO Merge evaluations into averages
   // const getAverageEvaluations = (evaluations: Evaluation[]) => {
@@ -154,7 +154,7 @@ const Workstream: NextPage = () => {
               />
               <NextLink
                 href={{
-                  pathname: "/resolve/[workstreamID]",
+                  pathname: "/evaluate/[workstreamID]",
                   query: { workstreamID },
                 }}
                 passHref
@@ -164,7 +164,7 @@ const Workstream: NextPage = () => {
                 </Button>
               </NextLink>
               {_workstream.coordinator?.id.toLowerCase() ===
-              address?.toLowerCase() ? (
+              user?.toLowerCase() ? (
                 <Button onClick={() => console.log("FINALIZE")}>
                   FINALIZE
                 </Button>
@@ -200,38 +200,7 @@ const Workstream: NextPage = () => {
                 } ${nativeToken}`}</StatNumber>
             </Stat>
           </HStack>
-
-          <TableContainer>
-            <Table size="md">
-              <Thead>
-                <Tr>
-                  <Th>Contributor</Th>
-                  <Th isNumeric>FUX Given</Th>
-                  <Th isNumeric>vFUX Earned</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <ContributorRow
-                  address={
-                    (_workstream.coordinator?.id as `0x${string}`) || "0x"
-                  }
-                />
-                {_workstream.contributors?.map(({ user }, index) => (
-                  <ContributorRow
-                    key={index}
-                    address={user.id as `0x${string}`}
-                  />
-                ))}
-              </Tbody>
-              <Tfoot>
-                <Tr>
-                  <Th></Th>
-                  <Th></Th>
-                  <Th></Th>
-                </Tr>
-              </Tfoot>
-            </Table>
-          </TableContainer>
+          <ContributorOverview workstream={_workstream as Partial<Workstream>} />
         </VStack>
       </VStack>
     </>

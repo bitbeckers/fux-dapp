@@ -11,11 +11,7 @@ import {
   RewardsClaimed,
   WorkstreamClosed,
 } from "../generated/FUX/FUX";
-import {
-  User,
-  Workstream,
-  Evaluation,
-} from "../generated/schema";
+import { User, Workstream, Evaluation } from "../generated/schema";
 import { FUX_TOKEN, ZERO_ADDRESS, VFUX_TOKEN } from "./utils/constants";
 import {
   getOrCreateToken,
@@ -47,8 +43,7 @@ export function handleEvaluationSubmitted(event: EvaluationSubmitted): void {
   for (let i = 0; i < contributors.length; i++) {
     let cont = getOrCreateUser(contributors[i].toHexString());
 
-    let evaluationID = creator.id.concat(workstream.id);
-
+    let evaluationID = creator.id + "-" + workstream.id + "-" + cont.id;
     let evaluation = new Evaluation(evaluationID);
     evaluation.creator = creator.id;
     evaluation.workstream = workstream.id;
