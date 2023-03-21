@@ -105,37 +105,6 @@ const Workstream: NextPage = () => {
 
   const contributors = _workstream?.contributors;
 
-  //TODO Merge evaluations into averages
-  // const getAverageEvaluations = (evaluations: Evaluation[]) => {
-  //   const merged = _.mergeWith(
-  //     {},
-  //     ...evaluations,
-  //     (objValue: any, srcValue: any) => (objValue || []).concat(srcValue)
-  //   );
-
-  //   console.log("merged: ", merged);
-  // };
-
-  // useEffect(() => {
-  //   if (_workstream?.evaluations) {
-  //     const evaluations = _workstream?.evaluations as Evaluation[];
-
-  //     getAverageEvaluations(evaluations);
-  //   }
-  // }, [_workstream]);
-
-  // const handleFinalize = async () => {
-  //   const _contributors = contributors?.map((contributor) => contributor.id);
-  //   const _vFux: BigNumberish[] = [];
-
-  //   if (!_contributors || !_vFux || _vFux.length === 0) {
-  //     console.log("invalid input");
-  //     return;
-  //   }
-
-  //   // closeWorkstream(Number(workstreamID), _contributors, _vFux);
-  // };
-
   return _workstream ? (
     <>
       <VStack w={"100%"}>
@@ -165,9 +134,17 @@ const Workstream: NextPage = () => {
               </NextLink>
               {_workstream.coordinator?.id.toLowerCase() ===
               user?.toLowerCase() ? (
-                <Button onClick={() => console.log("FINALIZE")}>
-                  FINALIZE
+                <NextLink
+                href={{
+                  pathname: "/finalize/[workstreamID]",
+                  query: { workstreamID },
+                }}
+                passHref
+              >
+                <Button p={"1em"}>
+                  <Link>FINALIZE</Link>
                 </Button>
+              </NextLink>
               ) : undefined}
             </ButtonGroup>
           </HStack>
