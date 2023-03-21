@@ -1,4 +1,3 @@
-import ClaimRewards from "../ClaimRewards";
 import ConnectWallet from "../ConnectWallet";
 import { Stack, Heading, Link, Spacer, ButtonGroup } from "@chakra-ui/react";
 import NextLink from "next/link";

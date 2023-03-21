@@ -1,11 +1,13 @@
-query WorkstreamsByUser($contributor: String = "id") {
+query WorkstreamsByUser($contributor: String = "") {
   workstreamContributors(where: { contributor: $contributor }) {
     workstream {
       status
       name
       contributors {
         commitment
-        id
+        contributor {
+          id
+        }
       }
       coordinator {
         id
@@ -29,8 +31,10 @@ query WorkstreamsByUser($contributor: String = "id") {
 query WorkstreamByID($id: ID = "") {
   workstream(id: $id) {
     contributors {
-      id
       commitment
+      contributor {
+        id
+      }
     }
     deadline
     funding

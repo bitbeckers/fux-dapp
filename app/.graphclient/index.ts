@@ -1412,7 +1412,10 @@ export type WorkstreamsByUserQueryVariables = Exact<{
 
 export type WorkstreamsByUserQuery = { workstreamContributors: Array<{ workstream: (
       Pick<Workstream, 'status' | 'name' | 'deadline' | 'funding' | 'id'>
-      & { contributors?: Maybe<Array<Pick<WorkstreamContributor, 'commitment' | 'id'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+      & { contributors?: Maybe<Array<(
+        Pick<WorkstreamContributor, 'commitment'>
+        & { contributor: Pick<User, 'id'> }
+      )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
         Pick<Evaluation, 'rating'>
         & { contributor: Pick<User, 'id'>, creator: Pick<User, 'id'> }
       )>> }
@@ -1425,7 +1428,10 @@ export type WorkstreamByIDQueryVariables = Exact<{
 
 export type WorkstreamByIDQuery = { workstream?: Maybe<(
     Pick<Workstream, 'deadline' | 'funding' | 'name' | 'status' | 'id'>
-    & { contributors?: Maybe<Array<Pick<WorkstreamContributor, 'id' | 'commitment'>>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
+    & { contributors?: Maybe<Array<(
+      Pick<WorkstreamContributor, 'commitment'>
+      & { contributor: Pick<User, 'id'> }
+    )>>, coordinator?: Maybe<Pick<User, 'id'>>, evaluations?: Maybe<Array<(
       Pick<Evaluation, 'rating'>
       & { creator: Pick<User, 'id'>, contributor: Pick<User, 'id'> }
     )>> }
@@ -1479,14 +1485,16 @@ export const UserDocument = gql`
 }
     ` as unknown as DocumentNode<UserQuery, UserQueryVariables>;
 export const WorkstreamsByUserDocument = gql`
-    query WorkstreamsByUser($contributor: String = "id") {
+    query WorkstreamsByUser($contributor: String = "") {
   workstreamContributors(where: {contributor: $contributor}) {
     workstream {
       status
       name
       contributors {
         commitment
-        id
+        contributor {
+          id
+        }
       }
       coordinator {
         id
@@ -1511,8 +1519,10 @@ export const WorkstreamByIDDocument = gql`
     query WorkstreamByID($id: ID = "") {
   workstream(id: $id) {
     contributors {
-      id
       commitment
+      contributor {
+        id
+      }
     }
     deadline
     funding

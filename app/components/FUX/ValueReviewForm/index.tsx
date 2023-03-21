@@ -1,10 +1,8 @@
-import {
-  EvaluationFragmentFragment,
-  WorkstreamFragmentFragment,
-} from "../../../.graphclient";
+import { Workstream, WorkstreamContributor } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
-import { ContributorRow } from "../ContributorRow";
+import { Contributor } from "../Contributor";
+import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -20,12 +18,11 @@ import {
   Text,
   ButtonGroup,
   VStack,
-  HStack,
   Center,
-  Table,
-  Spinner,
+  Flex,
+  Stat,
+  StatNumber,
 } from "@chakra-ui/react";
-import { BigNumber } from "ethers";
 import { BigNumberish } from "ethers";
 import _ from "lodash";
 import React, { Fragment } from "react";
@@ -36,32 +33,35 @@ type FormData = {
   [address: string]: BigNumberish;
 };
 
-const findEvaluations = (
-  workstream: WorkstreamFragmentFragment,
-  user: `0x${string}`
-) => {
-  const currentEvaluation = workstream?.evaluations?.find(
-    (evaluation: EvaluationFragmentFragment) =>
-      evaluation.creator.id.toLowerCase() === user.toLowerCase()
+const findEvaluations = (workstream: Workstream, user: `0x${string}`) => {
+  let data: FormData = {};
+  const currentEvaluations = workstream?.evaluations?.filter(
+    (evaluation) => evaluation.creator.id.toLowerCase() === user.toLowerCase()
   );
 
-  if (!currentEvaluation) {
-    console.log("No current founr");
-    return;
+  if (!currentEvaluations) {
+    console.log("No current found");
+    return data;
   }
 
-  const addresses = currentEvaluation.contributors.map(
-    (contributor) => contributor.id
+  data = _.transform(
+    currentEvaluations,
+    (result, v, _) => {
+      result[v.contributor.id] = v.rating;
+    },
+    {} as FormData
   );
 
-  return _.zipObject(addresses, currentEvaluation.ratings);
+  return data;
 };
 
 const ValueReviewForm: React.FC<{
-  workstream: WorkstreamFragmentFragment;
+  workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
   const { address: user } = useAccount();
   const toast = useCustomToasts();
+
+  const _workstream = workstream as Workstream;
 
   const {
     handleSubmit,
@@ -72,7 +72,7 @@ const ValueReviewForm: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      ratings: 0,
+      ratings: findEvaluations(_workstream, user || ("" as `0x${string}`)),
     },
   });
 
@@ -81,11 +81,6 @@ const ValueReviewForm: React.FC<{
   const _contributors = Object.keys(formData.ratings);
   const _ratings = Object.values(formData.ratings).map((rating) => +rating);
   const total = _ratings.length > 0 ? _ratings.reduce((a, b) => a + b, 0) : 0;
-
-  console.log("Total: ", total);
-
-  console.log("Contributors: ", _contributors);
-  console.log("Ratings: ", _ratings);
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
@@ -104,9 +99,11 @@ const ValueReviewForm: React.FC<{
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("DATA: ", data);
+  if (!user) {
+    return <Text>Cannot determine user</Text>;
+  }
 
+  const onSubmit = (data: FormData) => {
     if (total != 100) {
       toast.warning(`Not enough FUX`, `${total || "..."}/100`);
       return;
@@ -124,11 +121,15 @@ const ValueReviewForm: React.FC<{
     write?.();
   };
 
-  const contributors = workstream?.contributors;
-  const owner = workstream?.coordinator?.id;
+  console.log("Workstream: ", workstream);
+
+  const contributors = _workstream.contributors;
+  const coordinator = _workstream.coordinator?.id;
+
+  console.log("Contributors: ", contributors);
 
   const reviewForm =
-    contributors && contributors?.length > 0 && user ? (
+    contributors && contributors?.length > 0 ? (
       <form onSubmit={handleSubmit(onSubmit)}>
         <Center>
           <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
@@ -136,49 +137,67 @@ const ValueReviewForm: React.FC<{
           </Text>
         </Center>
         <FormControl>
-          <Grid gap={2} templateColumns="repeat(10, 1fr)">
+          <Grid gap={2} templateColumns="repeat(12, 1fr)">
+            <GridItem colSpan={5}>
+              <Text>User</Text>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <Text>Committed</Text>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <Text>vFUX</Text>
+            </GridItem>
+            <GridItem colSpan={1}>
+              <Text>Coordinator</Text>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <Text>Rating</Text>
+            </GridItem>
             {contributors.map((contributor, index) => {
-              return contributor.user.id.toLowerCase() ===
+              const address = contributor.contributor.id;
+              return address.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
-                  <GridItem
-                    display={"inline-grid"}
-                    colSpan={6}
-                    borderLeftRadius="3xl"
-                    bg="#301A3A"
-                  >
-                    <HStack>
-                      <Table>
-                        <ContributorRow
-                          address={contributor.user.id as `0x${string}`}
-                        />
-                      </Table>
-                      <Spacer />
-                      {contributor.user.id.toLowerCase() ===
-                      owner?.toLowerCase() ? (
-                        <StarIcon mr={"1em"} />
-                      ) : undefined}
-                    </HStack>
+                  <GridItem colSpan={5}>
+                    <User
+                      address={address as `0x${string}`}
+                      direction="horizontal"
+                      displayAvatar={true}
+                    />
                   </GridItem>
-                  <GridItem bg="#301A3A" display={"inline-grid"} colSpan={3}>
+                  <GridItem colSpan={2}>
+                    <Stat>
+                      <StatNumber>{`${
+                        contributor.commitment || 0
+                      }%`}</StatNumber>
+                    </Stat>
+                  </GridItem>
+                  <GridItem colSpan={2}>
+                    <Stat>
+                      <StatNumber>--%</StatNumber>
+                    </Stat>
+                  </GridItem>
+                  <GridItem colSpan={1}>
+                    {coordinator?.toLowerCase() === address.toLowerCase() ? (
+                      <StarIcon mr={"1em"} />
+                    ) : undefined}
+                  </GridItem>
+                  <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
                     <Controller
-                      name={`ratings.${contributor.user.id}`}
+                      name={`ratings.${address}`}
                       control={control}
                       rules={{ required: true }}
-                      key={`ratings.${contributor.user.id}`}
+                      key={`ratings.${address}`}
                       render={({ field: { ...restField } }) => (
                         <NumberInput {...restField}>
                           <NumberInputField
-                            {...register(`ratings.${contributor.user.id}`)}
+                            {...register(`ratings.${address}`)}
                             name={restField.name}
                             borderRadius={0}
                             max={100}
                             placeholder={
-                              formData &&
-                              formData[contributor.user.id.toLowerCase()]
-                                ? formData[
-                                    contributor.user.id.toLowerCase()
-                                  ].toString()
+                              formData && formData[address.toLowerCase()]
+                                ? formData[address.toLowerCase()].toString()
                                 : "0"
                             }
                           />
