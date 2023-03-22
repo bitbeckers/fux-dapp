@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useEnsAvatar, useEnsName, useNetwork } from "wagmi";
+import { useEnsAvatar, useEnsName } from "wagmi";
 
 const User: React.FC<{
   address: `0x${string}`;

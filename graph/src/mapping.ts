@@ -11,78 +11,70 @@ import {
   RewardsClaimed,
   WorkstreamClosed,
 } from "../generated/FUX/FUX";
+import { User, Workstream, Evaluation } from "../generated/schema";
+import { FUX_TOKEN, ZERO_ADDRESS, VFUX_TOKEN } from "./utils/constants";
 import {
-  User,
-  Workstream,
-  Evaluation,
-  UserWorkstream,
-} from "../generated/schema";
-import { FUX_TOKEN, ZERO_ADDRESS } from "./utils/constants";
-import {
-  getOrCreateFuxGiven,
   getOrCreateToken,
   getOrCreateTokenBalance,
   getOrCreateUser,
-  getOrCreateUserWorkstreams,
-  getOrCreateVFuxWorkstream,
   getOrCreateWorkstream,
+  getOrCreateWorkstreamContributor,
 } from "./utils/helpers";
 import { BigInt } from "@graphprotocol/graph-ts";
 
 //TODO error handling and logging
 
-// workaround Closure error
-let workstream: Workstream;
-
 export function handleContributorsAdded(event: ContributorsAdded): void {
-  workstream = getOrCreateWorkstream(event.params.id);
+  let workstream = getOrCreateWorkstream(event.params.id);
   let contributors = event.params.contributors.map<User>((contributor) =>
     getOrCreateUser(contributor.toHexString())
   );
 
-  contributors.map<UserWorkstream>((contributor) =>
-    getOrCreateUserWorkstreams(contributor, workstream)
-  );
-}
-
-export function handleWorkstreamClosed(event: WorkstreamClosed): void {
-  let workstream = getOrCreateWorkstream(event.params.workstreamID);
-  workstream.resolved = true;
-  workstream.save();
+  for (let i = 0; i < contributors.length; i++) {
+    getOrCreateWorkstreamContributor(contributors[i], workstream);
+  }
 }
 
 export function handleEvaluationSubmitted(event: EvaluationSubmitted): void {
-  let user = getOrCreateUser(event.params.creator.toHexString());
   let workstream = getOrCreateWorkstream(event.params.workstreamID);
+  let contributors = event.params.contributors;
+  let creator = getOrCreateUser(event.params.creator.toHexString());
 
-  let evaluationID = user.id.concat(workstream.id);
-  let contributors = event.params.contributors.map<User>((contributor) =>
-    getOrCreateUser(contributor.toHexString())
-  );
+  for (let i = 0; i < contributors.length; i++) {
+    let cont = getOrCreateUser(contributors[i].toHexString());
 
-  let evaluation = new Evaluation(evaluationID);
-  evaluation.creator = user.id;
-  evaluation.workstream = workstream.id;
-  evaluation.contributors = contributors.map<string>(
-    (contributor) => contributor.id
-  );
-  evaluation.ratings = event.params.ratings;
-  evaluation.save();
+    let evaluationID = creator.id + "-" + workstream.id + "-" + cont.id;
+    let evaluation = new Evaluation(evaluationID);
+    evaluation.creator = creator.id;
+    evaluation.workstream = workstream.id;
+    evaluation.contributor = cont.id;
+    evaluation.rating = event.params.ratings[i];
+    evaluation.save();
+  }
 }
 
 export function handleFuxClaimed(event: FuxClaimed): void {
   let user = getOrCreateUser(event.params.user.toHexString());
   user.fuxer = true;
   user.save();
+
+  let token = getOrCreateToken(FUX_TOKEN);
+
+  let tokenBalance = getOrCreateTokenBalance(user, token);
+  tokenBalance.amount = BigInt.fromI32(100);
+  tokenBalance.save();
 }
 
 export function handleFuxGiven(event: FuxGiven): void {
-  let user = getOrCreateUser(event.params.user.toHexString());
+  let contributor = getOrCreateUser(event.params.user.toHexString());
   let workstream = getOrCreateWorkstream(event.params.workstreamId);
-  let fuxGiven = getOrCreateFuxGiven(user, workstream);
+  let workstreamContributor = getOrCreateWorkstreamContributor(
+    contributor,
+    workstream
+  );
 
-  fuxGiven.balance = event.params.amount;
-  fuxGiven.save();
+  workstreamContributor.commitment = event.params.amount;
+  workstreamContributor.save();
 }
 
 export function handleTransfer(event: TransferSingle): void {
@@ -93,7 +85,7 @@ export function handleTransfer(event: TransferSingle): void {
 
   //Mint
   if (event.params.from == ZERO_ADDRESS) {
-    tokenBalanceRecipient.balance = tokenBalanceRecipient.balance.plus(
+    tokenBalanceRecipient.amount = tokenBalanceRecipient.amount.plus(
       event.params.value
     );
     tokenBalanceRecipient.save();
@@ -106,7 +98,7 @@ export function handleTransfer(event: TransferSingle): void {
 
   // deposit to contract
   if (event.params.to == event.address) {
-    tokenBalanceSender.balance = tokenBalanceSender.balance.minus(
+    tokenBalanceSender.amount = tokenBalanceSender.amount.minus(
       event.params.value
     );
     tokenBalanceSender.save();
@@ -114,7 +106,7 @@ export function handleTransfer(event: TransferSingle): void {
 
   // returned from contract
   if (event.params.from == event.address) {
-    tokenBalanceRecipient.balance = tokenBalanceRecipient.balance.plus(
+    tokenBalanceRecipient.amount = tokenBalanceRecipient.amount.plus(
       event.params.value
     );
     tokenBalanceRecipient.save();
@@ -122,10 +114,10 @@ export function handleTransfer(event: TransferSingle): void {
 
   // Transfer between users
   if (event.params.from != event.address && event.params.to != event.address) {
-    tokenBalanceSender.balance = tokenBalanceSender.balance.minus(
+    tokenBalanceSender.amount = tokenBalanceSender.amount.minus(
       event.params.value
     );
-    tokenBalanceRecipient.balance = tokenBalanceRecipient.balance.plus(
+    tokenBalanceRecipient.amount = tokenBalanceRecipient.amount.plus(
       event.params.value
     );
     tokenBalanceSender.save();
@@ -151,30 +143,36 @@ export function handleRewardsClaimed(event: RewardsClaimed): void {
 
 export function handleVFuxClaimed(event: VFuxClaimed): void {
   let user = getOrCreateUser(event.params.user.toHexString());
+  let token = getOrCreateToken(VFUX_TOKEN);
+
+  let tokenBalance = getOrCreateTokenBalance(user, token);
+  tokenBalance.amount = BigInt.fromI32(100);
+  tokenBalance.save();
+
   let workstream = getOrCreateWorkstream(event.params.workstreamID);
-  getOrCreateVFuxWorkstream(user, workstream);
+  workstream.status = "Evaluation";
+
+  workstream.save();
+}
+
+export function handleWorkstreamClosed(event: WorkstreamClosed): void {
+  let workstream = getOrCreateWorkstream(event.params.workstreamID);
+  workstream.status = "Closed";
+  workstream.save();
 }
 
 export function handleWorkstreamMinted(event: WorkstreamMinted): void {
   let contract = FUX.bind(event.address);
   let wsOnChain = contract.getWorkstream(event.params.id);
 
+  let coordinator = getOrCreateUser(event.transaction.from.toHexString());
+
   let workstream = new Workstream(event.params.id.toString());
-  workstream.coordinator = event.transaction.from.toHexString();
+  workstream.coordinator = coordinator.id;
   workstream.funding = event.params.funds;
   workstream.deadline = event.params.deadline;
   workstream.name = wsOnChain.name;
+  workstream.status = "Started";
 
-  let coordinator = getOrCreateUser(event.transaction.from.toHexString());
-
-  let fuxGiven = getOrCreateFuxGiven(coordinator, workstream);
-
-  fuxGiven.balance = contract.getCommitment(
-    event.transaction.from,
-    event.params.id
-  );
-
-  coordinator.save();
-  fuxGiven.save();
   workstream.save();
 }

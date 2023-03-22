@@ -1,5 +1,6 @@
 import {
   TokenBalanceDocument,
+  Workstream,
   WorkstreamsByUserDocument,
 } from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
@@ -17,11 +18,13 @@ const Workstreams: NextPage = () => {
   const [result, reexecuteQuery] = useQuery({
     query: WorkstreamsByUserDocument,
     variables: {
-      address: user?.toLowerCase() || "",
+      contributor: user?.toLowerCase() || "",
     },
   });
 
   const { data, fetching, error } = result;
+
+  console.log("WorkstreamsByUser: ", data);
 
   const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
     query: TokenBalanceDocument,
@@ -55,9 +58,9 @@ const Workstreams: NextPage = () => {
       ) : (
         <>
           <Grid
-            maxW={'800px'}
+            maxW={"800px"}
             w="100%"
-            mx={'auto'}
+            mx={"auto"}
             gap={2}
             templateColumns="repeat(16, 1fr)"
             textTransform={"uppercase"}
@@ -69,12 +72,18 @@ const Workstreams: NextPage = () => {
             <GridItem colSpan={2}>FUX</GridItem>
             <GridItem colSpan={3}>Actions</GridItem>
           </Grid>
-          <Grid maxW={'800px'} mx="auto" w="100%" gap={2} templateColumns="repeat(16, 1fr)">
-            {data?.userWorkstreams
-              ? data?.userWorkstreams.map(({ workstream }, index) => (
+          <Grid
+            maxW={"800px"}
+            mx="auto"
+            w="100%"
+            gap={2}
+            templateColumns="repeat(16, 1fr)"
+          >
+            {data?.workstreamContributors
+              ? data?.workstreamContributors.map(({ workstream }, index) => (
                   <WorkstreamRow
-                    workstream={workstream}
-                    fuxAvailable={balance?.balance}
+                    workstream={workstream as Partial<Workstream>}
+                    fuxAvailable={balance?.amount}
                     showInactive={false}
                     key={index}
                   />

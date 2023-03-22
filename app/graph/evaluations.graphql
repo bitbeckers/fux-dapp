@@ -1,43 +1,8 @@
-query WorkstreamEvaluations($address: ID!, $workstreamID: ID!) {
-  userWorkstreams(
-    where: { user_: { id: $address }, workstream_: { id: $workstreamID } }
-  ) {
-    workstream {
-      ...WorkstreamFragment
+query UserWorkstreamEvaluations($creator: String = "", $workstreamID: ID = "") {
+  evaluations(where: {creator: $creator, workstream_: {id: $workstreamID}}) {
+    contributor {
+      id
     }
+    rating
   }
-}
-
-fragment WorkstreamFragment on Workstream {
-  id
-  name
-  contributors {
-    ...ContributorFragment
-  }
-  coordinator {
-    id
-  }
-  deadline
-  funding
-  resolved
-  evaluations(where: { creator_: { id: $address } }) {
-    ...EvaluationFragment
-  }
-}
-
-fragment ContributorFragment on UserWorkstream {
-  id
-  user {
-    id
-  }
-}
-
-fragment EvaluationFragment on Evaluation {
-  creator {
-    id
-  }
-  contributors {
-    id
-  }
-  ratings
 }

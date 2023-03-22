@@ -1,15 +1,12 @@
 import {
-  Evaluation,
   Token,
   TokenBalance,
   User,
   Workstream,
-  FuxGiven,
-  UserWorkstream,
-  VFuxWorkstream,
+  WorkstreamContributor,
 } from "../../generated/schema";
 import { FUX_TOKEN, VFUX_TOKEN } from "./constants";
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 
 export function getOrCreateUser(address: string): User {
   let id = address;
@@ -78,65 +75,26 @@ export function getOrCreateTokenBalance(
   balance = new TokenBalance(id);
   balance.user = user.id;
   balance.token = token.id;
-  balance.balance = BigInt.fromI32(0);
+  balance.amount = BigInt.fromI32(0);
   balance.save();
 
   return balance;
 }
 
-export function getOrCreateFuxGiven(
+export function getOrCreateWorkstreamContributor(
   user: User,
   workstream: Workstream
-): FuxGiven {
+): WorkstreamContributor {
   let id = user.id.concat(workstream.id);
-  let fuxGiven = FuxGiven.load(id);
+  let workstreamContributor = WorkstreamContributor.load(id);
 
-  if (fuxGiven != null) {
-    return fuxGiven;
+  if (workstreamContributor != null) {
+    return workstreamContributor;
   }
 
-  fuxGiven = new FuxGiven(id);
-  fuxGiven.user = user.id;
-  fuxGiven.workstream = workstream.id;
-  fuxGiven.save();
-
-  return fuxGiven;
-}
-
-export function getOrCreateUserWorkstreams(
-  user: User,
-  workstream: Workstream
-): UserWorkstream {
-  let id = user.id.concat(workstream.id);
-  let userWorkstream = UserWorkstream.load(id);
-
-  if (userWorkstream != null) {
-    return userWorkstream;
-  }
-
-  userWorkstream = new UserWorkstream(id);
-  userWorkstream.user = user.id;
-  userWorkstream.workstream = workstream.id;
-  userWorkstream.save();
-  return userWorkstream;
-}
-
-export function getOrCreateVFuxWorkstream(
-  user: User,
-  workstream: Workstream
-): VFuxWorkstream {
-  let id = user.id.concat(workstream.id);
-  let vFuxWorkstream = VFuxWorkstream.load(id);
-
-  if (vFuxWorkstream != null) {
-    return vFuxWorkstream;
-  }
-
-  vFuxWorkstream = new VFuxWorkstream(id);
-  vFuxWorkstream.user = user.id;
-  vFuxWorkstream.workstream = workstream.id;
-  vFuxWorkstream.balance = BigInt.fromI32(100);
-  vFuxWorkstream.save();
-
-  return vFuxWorkstream;
+  workstreamContributor = new WorkstreamContributor(id);
+  workstreamContributor.contributor = user.id;
+  workstreamContributor.workstream = workstream.id;
+  workstreamContributor.save();
+  return workstreamContributor;
 }

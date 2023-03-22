@@ -1,4 +1,4 @@
-import { WorkstreamEvaluationsDocument } from "../../.graphclient";
+import { WorkstreamByIDDocument } from "../../.graphclient";
 import User from "../../components/FUX/User";
 import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
@@ -35,18 +35,14 @@ const Resolve: NextPage = () => {
   const { workstreamID } = router.query;
 
   const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamEvaluationsDocument,
+    query: WorkstreamByIDDocument,
     variables: {
-      address: user?.toLowerCase() || "",
-      workstreamID: (workstreamID as string) || "",
+      id: (workstreamID as string) || "",
     },
   });
 
   const { data, fetching, error } = result;
-  const _workstream = data?.userWorkstreams.find(
-    (uw) => uw.workstream.id === workstreamID
-  )?.workstream;
-
+  const _workstream = data?.workstream;
   return _workstream ? (
     <>
       <VStack w={"100%"}>

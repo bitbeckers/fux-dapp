@@ -1,4 +1,4 @@
-query Balances($address: ID!) @live {
+query BalancesForAddress($address: ID!) @live {
   user(id: $address) {
     id
     balances {
@@ -6,13 +6,15 @@ query Balances($address: ID!) @live {
         name
         symbol
       }
-      balance
+      amount
     }
   }
 }
 
 query TokenBalance($address: ID!, $symbol: String!) @live {
-  tokenBalances(where: {token_: {symbol: $symbol}, user_: {id: $address}}){
-    balance
+  tokenBalances(
+    where: { token_: { symbol: $symbol }, user_: { id: $address } }
+  ) {
+    amount
   }
 }
