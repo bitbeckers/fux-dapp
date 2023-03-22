@@ -1,20 +1,22 @@
 import { Workstream, WorkstreamContributor } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
-import { contractAddresses, contractABI } from "../../../utils/constants";
+import {
+  contractAddresses,
+  contractABI,
+  useConstants,
+} from "../../../utils/constants";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
 import {
   Button,
-  FormControl,
   Grid,
   GridItem,
   Text,
-  VStack,
   Stat,
   StatNumber,
 } from "@chakra-ui/react";
-import { BigNumberish } from "ethers";
-import _ from "lodash";
+import { BigNumberish, ethers } from "ethers";
+import _, { groupBy, mapValues, meanBy } from "lodash";
 import React, { Fragment } from "react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
@@ -24,25 +26,43 @@ type Ratings = {
 
 const parseEvaluations = (workstream: Workstream) => {
   let data: Ratings = {};
-  const currentEvaluations = workstream?.evaluations;
+  const currentEvaluations = groupBy(workstream?.evaluations, "contributor.id");
+  console.log("CURRENT GROUPED: ", currentEvaluations);
+
+  data = mapValues(currentEvaluations, (ratings) => meanBy(ratings, "rating"));
+  console.log("AVERAGES: ", data);
 
   return data;
+};
+
+const calculateRelative = (data: Ratings) => {
+  const total = _.sum(Object.values(data));
+
+  console.log("TOTAL: ", total);
+
+  return mapValues(data, (value) => _.divide(Number(value), Number(total)));
 };
 
 const FinalizeForm: React.FC<{
   workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
   const toast = useCustomToasts();
+  const { nativeToken } = useConstants();
 
   const _workstream = workstream as Workstream;
 
   const averages = parseEvaluations(_workstream);
+  const relative = calculateRelative(averages);
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
     functionName: "finalizeWorkstream",
-    args: [workstream.id, Object.keys(averages), Object.values(averages)],
+    args: [
+      workstream.id,
+      Object.keys(averages) as `0x${string}`[],
+      Object.values(averages),
+    ],
   });
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
@@ -85,6 +105,7 @@ const FinalizeForm: React.FC<{
 
   const contributors = _workstream.contributors;
   const coordinator = _workstream.coordinator?.id;
+  const funding = ethers.utils.formatEther(_workstream.funding);
 
   console.log("Contributors: ", contributors);
 
@@ -93,7 +114,7 @@ const FinalizeForm: React.FC<{
       <>
         <Grid gap={2} templateColumns="repeat(12, 1fr)">
           <GridItem colSpan={5}>
-            <Text>User</Text>
+            <Text>Contributor</Text>
           </GridItem>
           <GridItem colSpan={2}>
             <Text>Committed</Text>
@@ -125,7 +146,9 @@ const FinalizeForm: React.FC<{
                 </GridItem>
                 <GridItem colSpan={2}>
                   <Stat>
-                    <StatNumber>--%</StatNumber>
+                    <StatNumber>
+                      {averages[address]?.toString() ?? "0"}
+                    </StatNumber>
                   </Stat>
                 </GridItem>
                 <GridItem colSpan={1}>
@@ -133,8 +156,19 @@ const FinalizeForm: React.FC<{
                     <StarIcon mr={"1em"} />
                   ) : undefined}
                 </GridItem>
-                <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
-                  Loot
+                <GridItem
+                  bg="#301A3A"
+                  display={"inline-grid"}
+                  colSpan={2}
+                  justifyContent="end"
+                  alignContent="center"
+                >
+                  {relative[address]
+                    ? `${_.multiply(
+                        Number(funding),
+                        relative[address]
+                      )} ${nativeToken}`
+                    : `0 ${nativeToken}`}
                 </GridItem>
               </Fragment>
             );

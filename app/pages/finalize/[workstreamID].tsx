@@ -1,7 +1,8 @@
 import { WorkstreamByIDDocument } from "../../.graphclient";
 import { FinalizeForm } from "../../components/FUX/FinalizeForm";
+import { StartEvaluation } from "../../components/FUX/StartEvaluation";
 import User from "../../components/FUX/User";
-import ValueHeader from "../../components/FUX/ValueHeader";
+import { useConstants } from "../../utils/constants";
 import {
   VStack,
   Text,
@@ -11,28 +12,16 @@ import {
   StatNumber,
   Heading,
 } from "@chakra-ui/react";
+import { ethers } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useQuery } from "urql";
-import { useAccount } from "wagmi";
-
-const calculateTimeToDeadline = (timestamp?: number) => {
-  if (!timestamp || isNaN(timestamp)) {
-    return undefined;
-  }
-
-  const now = DateTime.now();
-  const deadline = DateTime.fromSeconds(Number(timestamp));
-
-  return deadline
-    .diff(now, ["months", "days", "hours", "minutes"])
-    .toFormat("d 'days ' h 'hours ' mm 'minutes'");
-};
 
 const Resolve: NextPage = () => {
   const router = useRouter();
-  const { address: user } = useAccount();
+  const { nativeToken } = useConstants();
+
   const { workstreamID } = router.query;
 
   const [result, reexecuteQuery] = useQuery({
@@ -44,37 +33,6 @@ const Resolve: NextPage = () => {
 
   const { data, fetching, error } = result;
   const _workstream = data?.workstream;
-
-  //TODO Merge evaluations into averages
-  // const getAverageEvaluations = (evaluations: Evaluation[]) => {
-  //   const merged = _.mergeWith(
-  //     {},
-  //     ...evaluations,
-  //     (objValue: any, srcValue: any) => (objValue || []).concat(srcValue)
-  //   );
-
-  //   console.log("merged: ", merged);
-  // };
-
-  // useEffect(() => {
-  //   if (_workstream?.evaluations) {
-  //     const evaluations = _workstream?.evaluations as Evaluation[];
-
-  //     getAverageEvaluations(evaluations);
-  //   }
-  // }, [_workstream]);
-
-  // const handleFinalize = async () => {
-  //   const _contributors = contributors?.map((contributor) => contributor.id);
-  //   const _vFux: BigNumberish[] = [];
-
-  //   if (!_contributors || !_vFux || _vFux.length === 0) {
-  //     console.log("invalid input");
-  //     return;
-  //   }
-
-  //   // closeWorkstream(Number(workstreamID), _contributors, _vFux);
-  // };
 
   return _workstream ? (
     <>
@@ -118,8 +76,21 @@ const Resolve: NextPage = () => {
                     : ""
                 }`}</StatNumber>
             </Stat>
+            <Stat p={"1em"}>
+              <StatLabel>Funding</StatLabel>
+              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
+                ${ethers.utils.formatEther(
+                  _workstream.funding
+                )} ${nativeToken}`}</StatNumber>
+            </Stat>
           </HStack>
-          <FinalizeForm workstream={_workstream} />
+          {_workstream.status === "Started" ? (
+            <StartEvaluation workstream={_workstream} />
+          ) : _workstream.status === "Evaluation" ? (
+            <FinalizeForm workstream={_workstream} />
+          ) : (
+            <Heading>Workstream not active</Heading>
+          )}
         </VStack>
       </VStack>
     </>
