@@ -1,7 +1,6 @@
 import {
   Evaluation,
   User as GraphUser,
-  Workstream,
   WorkstreamContributor,
 } from "../../../.graphclient";
 import { ContributorOverview } from "../ContributorOverview";
@@ -21,10 +20,8 @@ import {
   Th,
   Thead,
   Tr,
-  VStack,
 } from "@chakra-ui/react";
 import { groupBy, map, uniqBy } from "lodash";
-import sortBy from "lodash/sortBy";
 import React from "react";
 
 const WorkstreamCard: React.FC<{
@@ -35,13 +32,15 @@ const WorkstreamCard: React.FC<{
   const evaluationRow = (
     sortedContributors: string[],
     user: string,
-    evaluation: Evaluation[]
+    evaluations: Evaluation[]
   ) => {
     const mapped = sortedContributors.map((contributor) => {
-      const _index = evaluation.findIndex(
-        ({ id }) => id.toLowerCase() === contributor?.toLowerCase()
+      const _index = evaluations.findIndex(
+        (evaluation) =>
+          evaluation.contributor?.id?.toLowerCase() ===
+          contributor.toLowerCase()
       );
-      return _index >= 0 ? evaluation[_index].rating : "-";
+      return _index >= 0 ? evaluations[_index].rating : "-";
     });
 
     return (
@@ -50,25 +49,33 @@ const WorkstreamCard: React.FC<{
           <User address={user as `0x${string}`} />
         </Td>
         {mapped.map((rating, index) => (
-          <Td key={index}>{rating.toString()}</Td>
+          <Td key={index} textAlign={"center"}>
+            {rating.toString()}
+          </Td>
         ))}
       </Tr>
     );
   };
 
   const evaluationOverview = (evaluations: Evaluation[]) => {
-    const sortedContributors = sortBy(uniqBy(evaluations, "contributor")).map(
-      (contributor) => contributor.id
+    console.log("Evalutaions: ", evaluations);
+
+    const sortedContributors = uniqBy(evaluations, "contributor.id").map(
+      (sorted) => sorted.contributor.id
     );
 
+    console.log("Sorted: ", sortedContributors);
+
     const groupedEvaluations = groupBy(evaluations, "creator.id");
+
+    console.log("Grouped: ", groupedEvaluations);
 
     const headers = (
       <Thead>
         <Tr>
           <Th>Evaluator</Th>
           {sortedContributors.map((contributor, index) => (
-            <Th key={index}>
+            <Th key={index} alignContent="center">
               <User address={contributor as `0x${string}`} />
             </Th>
           ))}
@@ -101,18 +108,18 @@ const WorkstreamCard: React.FC<{
         <AccordionIcon />
       </AccordionButton>
       <AccordionPanel pb={4}>
-        <VStack alignItems={"flex-start"}>
-          <Heading size="sm">Coordinator:</Heading>
+        <Flex direction="column" alignItems={"flex-start"} pb={2}>
+          <Heading size="md">Coordinator:</Heading>
           <User
             address={_workstream.coordinator?.id as `0x${string}`}
             direction="horizontal"
             displayAvatar={true}
           />
-        </VStack>
-        <VStack alignItems={"flex-start"}>
-          <Heading size="sm">Contributors:</Heading>
+        </Flex>
+        <Flex direction="column" alignItems={"flex-start"} pb={2}>
+          <Heading size="md">Contributors:</Heading>
           <ContributorOverview workstream={_workstream} />
-        </VStack>
+        </Flex>
 
         {_workstream.status &&
         _workstream.contributors &&
