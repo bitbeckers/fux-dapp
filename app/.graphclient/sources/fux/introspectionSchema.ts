@@ -302,106 +302,16 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors"
+            "value": "contributor"
           },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "User_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "User_filter"
-                }
-              },
-              "directives": []
-            }
-          ],
+          "arguments": [],
           "type": {
             "kind": "NonNullType",
             "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "User"
-                  }
-                }
+              "kind": "NamedType",
+              "name": {
+                "kind": "Name",
+                "value": "User"
               }
             }
           },
@@ -411,22 +321,16 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "ratings"
+            "value": "rating"
           },
           "arguments": [],
           "type": {
             "kind": "NonNullType",
             "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "BigInt"
-                  }
-                }
+              "kind": "NamedType",
+              "name": {
+                "kind": "Name",
+                "value": "BigInt"
               }
             }
           },
@@ -1233,7 +1137,97 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors"
+            "value": "contributor"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_gt"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_lt"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_gte"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_lte"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_in"
           },
           "type": {
             "kind": "ListType",
@@ -1254,7 +1248,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors_not"
+            "value": "contributor_not_in"
           },
           "type": {
             "kind": "ListType",
@@ -1275,19 +1269,13 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors_contains"
+            "value": "contributor_contains"
           },
           "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
             }
           },
           "directives": []
@@ -1296,19 +1284,13 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors_contains_nocase"
+            "value": "contributor_contains_nocase"
           },
           "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
             }
           },
           "directives": []
@@ -1317,19 +1299,13 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors_not_contains"
+            "value": "contributor_not_contains"
           },
           "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
             }
           },
           "directives": []
@@ -1338,19 +1314,13 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors_not_contains_nocase"
+            "value": "contributor_not_contains_nocase"
           },
           "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
             }
           },
           "directives": []
@@ -1359,7 +1329,127 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors_"
+            "value": "contributor_starts_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_starts_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_starts_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_starts_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_ends_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_ends_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_ends_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_ends_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_"
           },
           "type": {
             "kind": "NamedType",
@@ -1374,7 +1464,97 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "ratings"
+            "value": "rating"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "rating_not"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "rating_gt"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "rating_lt"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "rating_gte"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "rating_lte"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "rating_in"
           },
           "type": {
             "kind": "ListType",
@@ -1395,91 +1575,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "ratings_not"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "BigInt"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "ratings_contains"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "BigInt"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "ratings_contains_nocase"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "BigInt"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "ratings_not_contains"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "BigInt"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "ratings_not_contains_nocase"
+            "value": "rating_not_in"
           },
           "type": {
             "kind": "ListType",
@@ -1582,7 +1678,7 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "workstream"
+            "value": "creator__id"
           },
           "directives": []
         },
@@ -1590,7 +1686,7 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "contributors"
+            "value": "creator__fuxer"
           },
           "directives": []
         },
@@ -1598,1104 +1694,7 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "ratings"
-          },
-          "directives": []
-        }
-      ],
-      "directives": []
-    },
-    {
-      "kind": "ObjectTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "FuxGiven"
-      },
-      "fields": [
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "ID"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "User"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "Workstream"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "BigInt"
-              }
-            }
-          },
-          "directives": []
-        }
-      ],
-      "interfaces": [],
-      "directives": []
-    },
-    {
-      "kind": "InputObjectTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "FuxGiven_filter"
-      },
-      "fields": [
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "ID"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "ID"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "User_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Workstream_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "BigInt"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "balance_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "BigInt"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "description": {
-            "kind": "StringValue",
-            "value": "Filter for the block changed event.",
-            "block": true
-          },
-          "name": {
-            "kind": "Name",
-            "value": "_change_block"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BlockChangedFilter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "and"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "FuxGiven_filter"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "or"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "FuxGiven_filter"
-              }
-            }
-          },
-          "directives": []
-        }
-      ],
-      "directives": []
-    },
-    {
-      "kind": "EnumTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "FuxGiven_orderBy"
-      },
-      "values": [
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
+            "value": "creator__rewards"
           },
           "directives": []
         },
@@ -2711,7 +1710,79 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance"
+            "value": "workstream__id"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstream__name"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstream__funding"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstream__deadline"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstream__status"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor__id"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor__fuxer"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor__rewards"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "rating"
           },
           "directives": []
         }
@@ -3236,244 +2307,6 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "userWorkstream"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "id"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "ID"
-                  }
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "UserWorkstream"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "userWorkstreams"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserWorkstream_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserWorkstream_filter"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "UserWorkstream"
-                  }
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
             "value": "evaluation"
           },
           "arguments": [
@@ -3701,6 +2534,244 @@ const schemaAST = {
                   "name": {
                     "kind": "Name",
                     "value": "Evaluation"
+                  }
+                }
+              }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstreamContributor"
+          },
+          "arguments": [
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "id"
+              },
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "ID"
+                  }
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "description": {
+                "kind": "StringValue",
+                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
+                "block": true
+              },
+              "name": {
+                "kind": "Name",
+                "value": "block"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Block_height"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "description": {
+                "kind": "StringValue",
+                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
+                "block": true
+              },
+              "name": {
+                "kind": "Name",
+                "value": "subgraphError"
+              },
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "_SubgraphErrorPolicy_"
+                  }
+                }
+              },
+              "defaultValue": {
+                "kind": "EnumValue",
+                "value": "deny"
+              },
+              "directives": []
+            }
+          ],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "WorkstreamContributor"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstreamContributors"
+          },
+          "arguments": [
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "skip"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Int"
+                }
+              },
+              "defaultValue": {
+                "kind": "IntValue",
+                "value": "0"
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "first"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Int"
+                }
+              },
+              "defaultValue": {
+                "kind": "IntValue",
+                "value": "100"
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "orderBy"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "WorkstreamContributor_orderBy"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "orderDirection"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "OrderDirection"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "where"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "WorkstreamContributor_filter"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "description": {
+                "kind": "StringValue",
+                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
+                "block": true
+              },
+              "name": {
+                "kind": "Name",
+                "value": "block"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Block_height"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "description": {
+                "kind": "StringValue",
+                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
+                "block": true
+              },
+              "name": {
+                "kind": "Name",
+                "value": "subgraphError"
+              },
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "_SubgraphErrorPolicy_"
+                  }
+                }
+              },
+              "defaultValue": {
+                "kind": "EnumValue",
+                "value": "deny"
+              },
+              "directives": []
+            }
+          ],
+          "type": {
+            "kind": "NonNullType",
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "WorkstreamContributor"
                   }
                 }
               }
@@ -4177,482 +3248,6 @@ const schemaAST = {
                   "name": {
                     "kind": "Name",
                     "value": "TokenBalance"
-                  }
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGiven"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "id"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "ID"
-                  }
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "FuxGiven"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGivens"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven_filter"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "FuxGiven"
-                  }
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "vfuxWorkstream"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "id"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "ID"
-                  }
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "VFuxWorkstream"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "vfuxWorkstreams"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "VFuxWorkstream_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "VFuxWorkstream_filter"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "VFuxWorkstream"
                   }
                 }
               }
@@ -5188,244 +3783,6 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "userWorkstream"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "id"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "ID"
-                  }
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "UserWorkstream"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "userWorkstreams"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserWorkstream_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserWorkstream_filter"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "UserWorkstream"
-                  }
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
             "value": "evaluation"
           },
           "arguments": [
@@ -5653,6 +4010,244 @@ const schemaAST = {
                   "name": {
                     "kind": "Name",
                     "value": "Evaluation"
+                  }
+                }
+              }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstreamContributor"
+          },
+          "arguments": [
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "id"
+              },
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "ID"
+                  }
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "description": {
+                "kind": "StringValue",
+                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
+                "block": true
+              },
+              "name": {
+                "kind": "Name",
+                "value": "block"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Block_height"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "description": {
+                "kind": "StringValue",
+                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
+                "block": true
+              },
+              "name": {
+                "kind": "Name",
+                "value": "subgraphError"
+              },
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "_SubgraphErrorPolicy_"
+                  }
+                }
+              },
+              "defaultValue": {
+                "kind": "EnumValue",
+                "value": "deny"
+              },
+              "directives": []
+            }
+          ],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "WorkstreamContributor"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstreamContributors"
+          },
+          "arguments": [
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "skip"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Int"
+                }
+              },
+              "defaultValue": {
+                "kind": "IntValue",
+                "value": "0"
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "first"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Int"
+                }
+              },
+              "defaultValue": {
+                "kind": "IntValue",
+                "value": "100"
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "orderBy"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "WorkstreamContributor_orderBy"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "orderDirection"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "OrderDirection"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "where"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "WorkstreamContributor_filter"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "description": {
+                "kind": "StringValue",
+                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
+                "block": true
+              },
+              "name": {
+                "kind": "Name",
+                "value": "block"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Block_height"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "description": {
+                "kind": "StringValue",
+                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
+                "block": true
+              },
+              "name": {
+                "kind": "Name",
+                "value": "subgraphError"
+              },
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "_SubgraphErrorPolicy_"
+                  }
+                }
+              },
+              "defaultValue": {
+                "kind": "EnumValue",
+                "value": "deny"
+              },
+              "directives": []
+            }
+          ],
+          "type": {
+            "kind": "NonNullType",
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "WorkstreamContributor"
                   }
                 }
               }
@@ -6138,482 +4733,6 @@ const schemaAST = {
         },
         {
           "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGiven"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "id"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "ID"
-                  }
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "FuxGiven"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGivens"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven_filter"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "FuxGiven"
-                  }
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "vfuxWorkstream"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "id"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "ID"
-                  }
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "VFuxWorkstream"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "vfuxWorkstreams"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "VFuxWorkstream_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "VFuxWorkstream_filter"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "VFuxWorkstream"
-                  }
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
           "description": {
             "kind": "StringValue",
             "value": "Access to subgraph metadata",
@@ -6889,7 +5008,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance"
+            "value": "amount"
           },
           "arguments": [],
           "type": {
@@ -7705,7 +5824,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance"
+            "value": "amount"
           },
           "type": {
             "kind": "NamedType",
@@ -7720,7 +5839,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_not"
+            "value": "amount_not"
           },
           "type": {
             "kind": "NamedType",
@@ -7735,7 +5854,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_gt"
+            "value": "amount_gt"
           },
           "type": {
             "kind": "NamedType",
@@ -7750,7 +5869,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_lt"
+            "value": "amount_lt"
           },
           "type": {
             "kind": "NamedType",
@@ -7765,7 +5884,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_gte"
+            "value": "amount_gte"
           },
           "type": {
             "kind": "NamedType",
@@ -7780,7 +5899,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_lte"
+            "value": "amount_lte"
           },
           "type": {
             "kind": "NamedType",
@@ -7795,7 +5914,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_in"
+            "value": "amount_in"
           },
           "type": {
             "kind": "ListType",
@@ -7816,7 +5935,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_not_in"
+            "value": "amount_not_in"
           },
           "type": {
             "kind": "ListType",
@@ -7919,6 +6038,30 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
+            "value": "user__id"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "user__fuxer"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "user__rewards"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
             "value": "token"
           },
           "directives": []
@@ -7927,7 +6070,31 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance"
+            "value": "token__id"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "token__name"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "token__symbol"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "amount"
           },
           "directives": []
         }
@@ -9016,7 +7183,7 @@ const schemaAST = {
                 "kind": "NamedType",
                 "name": {
                   "kind": "Name",
-                  "value": "UserWorkstream_orderBy"
+                  "value": "WorkstreamContributor_orderBy"
                 }
               },
               "directives": []
@@ -9046,7 +7213,7 @@ const schemaAST = {
                 "kind": "NamedType",
                 "name": {
                   "kind": "Name",
-                  "value": "UserWorkstream_filter"
+                  "value": "WorkstreamContributor_filter"
                 }
               },
               "directives": []
@@ -9060,113 +7227,7 @@ const schemaAST = {
                 "kind": "NamedType",
                 "name": {
                   "kind": "Name",
-                  "value": "UserWorkstream"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGiven"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven_filter"
-                }
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven"
+                  "value": "WorkstreamContributor"
                 }
               }
             }
@@ -9191,960 +7252,6 @@ const schemaAST = {
         }
       ],
       "interfaces": [],
-      "directives": []
-    },
-    {
-      "kind": "ObjectTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "UserWorkstream"
-      },
-      "fields": [
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "ID"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "User"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "Workstream"
-              }
-            }
-          },
-          "directives": []
-        }
-      ],
-      "interfaces": [],
-      "directives": []
-    },
-    {
-      "kind": "InputObjectTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "UserWorkstream_filter"
-      },
-      "fields": [
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "ID"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "ID"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "ID"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "User_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_not_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Workstream_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "description": {
-            "kind": "StringValue",
-            "value": "Filter for the block changed event.",
-            "block": true
-          },
-          "name": {
-            "kind": "Name",
-            "value": "_change_block"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BlockChangedFilter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "and"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "UserWorkstream_filter"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "or"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "UserWorkstream_filter"
-              }
-            }
-          },
-          "directives": []
-        }
-      ],
-      "directives": []
-    },
-    {
-      "kind": "EnumTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "UserWorkstream_orderBy"
-      },
-      "values": [
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "workstream"
-          },
-          "directives": []
-        }
-      ],
       "directives": []
     },
     {
@@ -10383,22 +7490,7 @@ const schemaAST = {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "UserWorkstream_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGiven_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "FuxGiven_filter"
+              "value": "WorkstreamContributor_filter"
             }
           },
           "directives": []
@@ -10637,14 +7729,6 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "fuxGiven"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
             "value": "rewards"
           },
           "directives": []
@@ -10656,7 +7740,7 @@ const schemaAST = {
       "kind": "ObjectTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "VFuxWorkstream"
+        "value": "Workstream"
       },
       "fields": [
         {
@@ -10682,7 +7766,310 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "user"
+            "value": "name"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "coordinator"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "User"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributors"
+          },
+          "arguments": [
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "skip"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Int"
+                }
+              },
+              "defaultValue": {
+                "kind": "IntValue",
+                "value": "0"
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "first"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Int"
+                }
+              },
+              "defaultValue": {
+                "kind": "IntValue",
+                "value": "100"
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "orderBy"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "WorkstreamContributor_orderBy"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "orderDirection"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "OrderDirection"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "where"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "WorkstreamContributor_filter"
+                }
+              },
+              "directives": []
+            }
+          ],
+          "type": {
+            "kind": "ListType",
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "WorkstreamContributor"
+                }
+              }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "evaluations"
+          },
+          "arguments": [
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "skip"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Int"
+                }
+              },
+              "defaultValue": {
+                "kind": "IntValue",
+                "value": "0"
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "first"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Int"
+                }
+              },
+              "defaultValue": {
+                "kind": "IntValue",
+                "value": "100"
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "orderBy"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Evaluation_orderBy"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "orderDirection"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "OrderDirection"
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "where"
+              },
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Evaluation_filter"
+                }
+              },
+              "directives": []
+            }
+          ],
+          "type": {
+            "kind": "ListType",
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "Evaluation"
+                }
+              }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "funding"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "deadline"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "status"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "WorkstreamStatus"
+            }
+          },
+          "directives": []
+        }
+      ],
+      "interfaces": [],
+      "directives": []
+    },
+    {
+      "kind": "ObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "WorkstreamContributor"
+      },
+      "fields": [
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "id"
           },
           "arguments": [],
           "type": {
@@ -10691,7 +8078,7 @@ const schemaAST = {
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "User"
+                "value": "ID"
               }
             }
           },
@@ -10720,7 +8107,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance"
+            "value": "contributor"
           },
           "arguments": [],
           "type": {
@@ -10729,8 +8116,24 @@ const schemaAST = {
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "BigInt"
+                "value": "User"
               }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "commitment"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "BigInt"
             }
           },
           "directives": []
@@ -10743,7 +8146,7 @@ const schemaAST = {
       "kind": "InputObjectTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "VFuxWorkstream_filter"
+        "value": "WorkstreamContributor_filter"
       },
       "fields": [
         {
@@ -10874,333 +8277,6 @@ const schemaAST = {
                   "value": "ID"
                 }
               }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "User_filter"
             }
           },
           "directives": []
@@ -11536,7 +8612,334 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance"
+            "value": "contributor"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_gt"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_lt"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_gte"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_lte"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_in"
+          },
+          "type": {
+            "kind": "ListType",
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "String"
+                }
+              }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_in"
+          },
+          "type": {
+            "kind": "ListType",
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "String"
+                }
+              }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_contains"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_contains_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_contains"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_contains_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_starts_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_starts_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_starts_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_starts_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_ends_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_ends_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_ends_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_not_ends_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor_"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "User_filter"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "commitment"
           },
           "type": {
             "kind": "NamedType",
@@ -11551,7 +8954,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_not"
+            "value": "commitment_not"
           },
           "type": {
             "kind": "NamedType",
@@ -11566,7 +8969,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_gt"
+            "value": "commitment_gt"
           },
           "type": {
             "kind": "NamedType",
@@ -11581,7 +8984,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_lt"
+            "value": "commitment_lt"
           },
           "type": {
             "kind": "NamedType",
@@ -11596,7 +8999,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_gte"
+            "value": "commitment_gte"
           },
           "type": {
             "kind": "NamedType",
@@ -11611,7 +9014,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_lte"
+            "value": "commitment_lte"
           },
           "type": {
             "kind": "NamedType",
@@ -11626,7 +9029,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_in"
+            "value": "commitment_in"
           },
           "type": {
             "kind": "ListType",
@@ -11647,7 +9050,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance_not_in"
+            "value": "commitment_not_in"
           },
           "type": {
             "kind": "ListType",
@@ -11696,7 +9099,7 @@ const schemaAST = {
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "VFuxWorkstream_filter"
+                "value": "WorkstreamContributor_filter"
               }
             }
           },
@@ -11714,7 +9117,7 @@ const schemaAST = {
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "VFuxWorkstream_filter"
+                "value": "WorkstreamContributor_filter"
               }
             }
           },
@@ -11727,7 +9130,7 @@ const schemaAST = {
       "kind": "EnumTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "VFuxWorkstream_orderBy"
+        "value": "WorkstreamContributor_orderBy"
       },
       "values": [
         {
@@ -11735,14 +9138,6 @@ const schemaAST = {
           "name": {
             "kind": "Name",
             "value": "id"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
           },
           "directives": []
         },
@@ -11758,7 +9153,79 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "balance"
+            "value": "workstream__id"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstream__name"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstream__funding"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstream__deadline"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "workstream__status"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor__id"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor__fuxer"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "contributor__rewards"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "commitment"
           },
           "directives": []
         }
@@ -11766,431 +9233,37 @@ const schemaAST = {
       "directives": []
     },
     {
-      "kind": "ObjectTypeDefinition",
+      "kind": "EnumTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "Workstream"
+        "value": "WorkstreamStatus"
       },
-      "fields": [
+      "values": [
         {
-          "kind": "FieldDefinition",
+          "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "id"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "ID"
-              }
-            }
+            "value": "Started"
           },
           "directives": []
         },
         {
-          "kind": "FieldDefinition",
+          "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "name"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
+            "value": "Evaluation"
           },
           "directives": []
         },
         {
-          "kind": "FieldDefinition",
+          "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "coordinator"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "User"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "contributors"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserWorkstream_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserWorkstream_filter"
-                }
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserWorkstream"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "evaluations"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Evaluation_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Evaluation_filter"
-                }
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Evaluation"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGiven"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven_filter"
-                }
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "FuxGiven"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "funding"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "deadline"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "resolved"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Boolean"
-            }
+            "value": "Closed"
           },
           "directives": []
         }
       ],
-      "interfaces": [],
       "directives": []
     },
     {
@@ -12981,7 +10054,7 @@ const schemaAST = {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "UserWorkstream_filter"
+              "value": "WorkstreamContributor_filter"
             }
           },
           "directives": []
@@ -12997,21 +10070,6 @@ const schemaAST = {
             "name": {
               "kind": "Name",
               "value": "Evaluation_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGiven_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "FuxGiven_filter"
             }
           },
           "directives": []
@@ -13284,13 +10342,13 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "resolved"
+            "value": "status"
           },
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "Boolean"
+              "value": "WorkstreamStatus"
             }
           },
           "directives": []
@@ -13299,13 +10357,13 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "resolved_not"
+            "value": "status_not"
           },
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "Boolean"
+              "value": "WorkstreamStatus"
             }
           },
           "directives": []
@@ -13314,7 +10372,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "resolved_in"
+            "value": "status_in"
           },
           "type": {
             "kind": "ListType",
@@ -13324,7 +10382,7 @@ const schemaAST = {
                 "kind": "NamedType",
                 "name": {
                   "kind": "Name",
-                  "value": "Boolean"
+                  "value": "WorkstreamStatus"
                 }
               }
             }
@@ -13335,7 +10393,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "resolved_not_in"
+            "value": "status_not_in"
           },
           "type": {
             "kind": "ListType",
@@ -13345,7 +10403,7 @@ const schemaAST = {
                 "kind": "NamedType",
                 "name": {
                   "kind": "Name",
-                  "value": "Boolean"
+                  "value": "WorkstreamStatus"
                 }
               }
             }
@@ -13446,6 +10504,30 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
+            "value": "coordinator__id"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "coordinator__fuxer"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "coordinator__rewards"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
             "value": "contributors"
           },
           "directives": []
@@ -13455,14 +10537,6 @@ const schemaAST = {
           "name": {
             "kind": "Name",
             "value": "evaluations"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "fuxGiven"
           },
           "directives": []
         },
@@ -13486,7 +10560,7 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "resolved"
+            "value": "status"
           },
           "directives": []
         }

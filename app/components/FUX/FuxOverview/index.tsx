@@ -52,11 +52,11 @@ const FuxOverview: React.FC<{}> = ({}) => {
 
   const fuxBalance = data?.user?.balances?.find(
     (balance) => balance.token.name === "FUX"
-  )?.balance;
+  )?.amount;
 
   const vFuxBalance = data?.user?.balances?.find(
     (balance) => balance.token.name === "vFUX"
-  )?.balance;
+  )?.amount;
 
   return (
     <HStack

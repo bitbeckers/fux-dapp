@@ -1,7 +1,4 @@
-import {
-  connectorsForWallets,
-  getDefaultWallets,
-} from "@rainbow-me/rainbowkit";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   injectedWallet,
   rainbowWallet,

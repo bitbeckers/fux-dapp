@@ -1,9 +1,11 @@
 import {
   TokenBalanceDocument,
+  Workstream,
   WorkstreamByIDDocument,
 } from "../../.graphclient";
 import CommitFuxModal from "../../components/FUX/CommitFuxModal";
-import { ContributorRow } from "../../components/FUX/ContributorRow";
+import { Contributor } from "../../components/FUX/Contributor";
+import { ContributorOverview } from "../../components/FUX/ContributorOverview";
 import { useConstants } from "../../utils/constants";
 import {
   VStack,
@@ -48,21 +50,21 @@ type Evaluation = {
 
 const Workstream: NextPage = () => {
   const router = useRouter();
-  const { address } = useAccount();
+  const { address: user } = useAccount();
   const { nativeToken } = useConstants();
   const { workstreamID } = router.query;
 
   const [result] = useQuery({
     query: WorkstreamByIDDocument,
     variables: {
-      workstreamID: workstreamID as string,
+      id: workstreamID as string,
     },
   });
 
   const [fuxBalanceResponse] = useQuery({
     query: TokenBalanceDocument,
     variables: {
-      address: address?.toLowerCase() || "",
+      address: user?.toLowerCase() || "",
       symbol: "FUX",
     },
   });
@@ -81,11 +83,11 @@ const Workstream: NextPage = () => {
     );
   }
   const _workstream = data?.workstream;
+  const contributor = _workstream?.contributors?.find(
+    (cont) => cont.contributor.id.toLowerCase() === user?.toLowerCase()
+  );
 
-  let fuxGiven = _workstream?.fuxGiven?.find(
-    (contributor) =>
-      contributor.user.id.toLowerCase() === address?.toLowerCase()
-  )?.balance;
+  let fuxGiven = contributor?.commitment;
 
   if (!fuxGiven) {
     fuxGiven = BigNumber.from("0");
@@ -95,46 +97,13 @@ const Workstream: NextPage = () => {
 
   const fuxAvailable = fuxAvailableData?.tokenBalances.find(
     (balance) => balance
-  )?.balance;
+  )?.amount;
 
   if (!fuxAvailable) {
     fuxGiven = BigNumber.from("0");
   }
 
-  const contributors = _workstream?.contributors?.map(
-    (contributor) => contributor.user
-  );
-
-  //TODO Merge evaluations into averages
-  // const getAverageEvaluations = (evaluations: Evaluation[]) => {
-  //   const merged = _.mergeWith(
-  //     {},
-  //     ...evaluations,
-  //     (objValue: any, srcValue: any) => (objValue || []).concat(srcValue)
-  //   );
-
-  //   console.log("merged: ", merged);
-  // };
-
-  // useEffect(() => {
-  //   if (_workstream?.evaluations) {
-  //     const evaluations = _workstream?.evaluations as Evaluation[];
-
-  //     getAverageEvaluations(evaluations);
-  //   }
-  // }, [_workstream]);
-
-  // const handleFinalize = async () => {
-  //   const _contributors = contributors?.map((contributor) => contributor.id);
-  //   const _vFux: BigNumberish[] = [];
-
-  //   if (!_contributors || !_vFux || _vFux.length === 0) {
-  //     console.log("invalid input");
-  //     return;
-  //   }
-
-  //   // closeWorkstream(Number(workstreamID), _contributors, _vFux);
-  // };
+  const contributors = _workstream?.contributors;
 
   return _workstream ? (
     <>
@@ -154,7 +123,7 @@ const Workstream: NextPage = () => {
               />
               <NextLink
                 href={{
-                  pathname: "/resolve/[workstreamID]",
+                  pathname: "/evaluate/[workstreamID]",
                   query: { workstreamID },
                 }}
                 passHref
@@ -164,10 +133,18 @@ const Workstream: NextPage = () => {
                 </Button>
               </NextLink>
               {_workstream.coordinator?.id.toLowerCase() ===
-              address?.toLowerCase() ? (
-                <Button onClick={() => console.log("FINALIZE")}>
-                  FINALIZE
+              user?.toLowerCase() ? (
+                <NextLink
+                href={{
+                  pathname: "/finalize/[workstreamID]",
+                  query: { workstreamID },
+                }}
+                passHref
+              >
+                <Button p={"1em"}>
+                  <Link>FINALIZE</Link>
                 </Button>
+              </NextLink>
               ) : undefined}
             </ButtonGroup>
           </HStack>
@@ -200,38 +177,7 @@ const Workstream: NextPage = () => {
                 } ${nativeToken}`}</StatNumber>
             </Stat>
           </HStack>
-
-          <TableContainer>
-            <Table size="md">
-              <Thead>
-                <Tr>
-                  <Th>Contributor</Th>
-                  <Th isNumeric>FUX Given</Th>
-                  <Th isNumeric>vFUX Earned</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <ContributorRow
-                  address={
-                    (_workstream.coordinator?.id as `0x${string}`) || "0x"
-                  }
-                />
-                {_workstream.contributors?.map(({ user }, index) => (
-                  <ContributorRow
-                    key={index}
-                    address={user.id as `0x${string}`}
-                  />
-                ))}
-              </Tbody>
-              <Tfoot>
-                <Tr>
-                  <Th></Th>
-                  <Th></Th>
-                  <Th></Th>
-                </Tr>
-              </Tfoot>
-            </Table>
-          </TableContainer>
+          <ContributorOverview workstream={_workstream as Partial<Workstream>} />
         </VStack>
       </VStack>
     </>

@@ -1,6 +1,8 @@
+import { WorkstreamContributor } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
-import { ContributorRow } from "../ContributorRow";
+import { Contributor } from "../Contributor";
+import User from "../User";
 import {
   Box,
   Button,
@@ -20,11 +22,13 @@ import {
   Icon,
   Text,
   Tooltip,
-  Table,
+  Grid,
+  GridItem,
+  Stat,
+  StatNumber,
 } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
-import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill } from "react-icons/bs";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
@@ -37,7 +41,7 @@ type FormData = {
 const ContributorModal: React.FC<{
   workstreamID: BigNumber;
   workstreamName: string;
-  contributors?: { user: { id: string } }[];
+  contributors?: WorkstreamContributor[];
 }> = ({ workstreamID, workstreamName, contributors }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { error, success } = useCustomToasts();
@@ -51,10 +55,7 @@ const ContributorModal: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      contributors:
-        contributors?.map(({ user }) => {
-          return user.id;
-        }) || [],
+      contributors: contributors?.map((contributor) => contributor.id),
       newContributors: [{ address: "" }],
     },
   });
@@ -98,13 +99,33 @@ const ContributorModal: React.FC<{
 
   const input = (
     <>
-      <Text mb={3}>Contributors</Text>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Table>
-          {contributors?.map(({ user }, index) => (
-            <ContributorRow key={index} address={user.id as `0x${string}`} />
-          ))}
-        </Table>
+        <Grid gap={2} templateColumns="repeat(7, 1fr)">
+          <GridItem colSpan={5}>
+            <Text>Contributor</Text>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <Text>Committed</Text>
+          </GridItem>
+          {contributors !== undefined
+            ? contributors.map((cont) => (
+                <>
+                  <GridItem colSpan={5}>
+                    <User
+                      address={cont.contributor.id as `0x${string}`}
+                      direction="horizontal"
+                      displayAvatar={true}
+                    />
+                  </GridItem>
+                  <GridItem colSpan={2}>
+                    <Stat>
+                      <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
+                    </Stat>
+                  </GridItem>
+                </>
+              ))
+            : undefined}
+        </Grid>
 
         <Box mt={6}>
           <hr />

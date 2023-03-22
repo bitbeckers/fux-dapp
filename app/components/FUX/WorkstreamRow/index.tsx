@@ -1,4 +1,4 @@
-import { WorkstreamsByUserFragmentFragment } from "../../../.graphclient";
+import { Workstream, WorkstreamContributor } from "../../../.graphclient";
 import { useConstants } from "../../../utils/constants";
 import CommitFuxModal from "../CommitFuxModal";
 import ContributorModal from "../ContributorModal";
@@ -6,26 +6,33 @@ import { Button, GridItem, Text } from "@chakra-ui/react";
 import { BigNumber, ethers } from "ethers";
 import NextLink from "next/link";
 import React from "react";
+import { useAccount } from "wagmi";
 
 const WorkstreamRow: React.FC<{
-  workstream: WorkstreamsByUserFragmentFragment;
+  workstream: Partial<Workstream>;
   fuxAvailable?: BigNumber;
   showInactive: boolean;
 }> = ({ workstream, fuxAvailable, showInactive }) => {
+  const { address: user } = useAccount();
   const { nativeToken } = useConstants();
 
-  if (!workstream.id) {
+  console.log("workstream: ", workstream);
+
+  if (!workstream) {
     return null;
   }
 
-  if (showInactive && workstream.resolved) {
+  if (showInactive && workstream?.status === "Closed") {
     return null;
   }
 
-  const workstreamID = workstream.id;
+  const contributor = workstream.contributors?.find(
+    (cont) => cont.contributor.id.toLowerCase() === user?.toLowerCase()
+  );
 
-  const _fuxGiven =
-    workstream?.fuxGiven?.find((fux) => fux.balance)?.balance || "0";
+  console.log("CONTRIBUTOR: ", contributor);
+
+  const commitment = contributor?.commitment ?? 0;
 
   return (
     <>
@@ -38,13 +45,11 @@ const WorkstreamRow: React.FC<{
       >
         <NextLink
           href={{
-            pathname: "/workstream/[workstreamID]",
-            query: { workstreamID },
+            pathname: `/workstream/${workstream.id}`,
           }}
         >
           <Button variant={"link"}>
             <Text mr={2} noOfLines={1}>
-              {" "}
               {workstream.name}
             </Text>
           </Button>
@@ -68,13 +73,13 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={2}
       >
-        <Text pr={"1em"}>{`${_fuxGiven} %`}</Text>
+        <Text pr={"1em"}>{`${commitment} %`}</Text>
       </GridItem>
       {fuxAvailable ? (
         <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
           <CommitFuxModal
-            workstreamID={BigNumber.from(workstreamID)}
-            fuxGiven={BigNumber.from(_fuxGiven)}
+            workstreamID={BigNumber.from(workstream.id)}
+            fuxGiven={BigNumber.from(commitment)}
             fuxAvailable={fuxAvailable}
             tiny={true}
           />
@@ -82,11 +87,9 @@ const WorkstreamRow: React.FC<{
       ) : undefined}
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
         <ContributorModal
-          workstreamID={BigNumber.from(workstreamID)}
+          workstreamID={BigNumber.from(workstream.id)}
           workstreamName={workstream.name || ""}
-          contributors={workstream.contributors?.filter(
-            (contributor) => contributor
-          )}
+          contributors={workstream.contributors ?? []}
         />
       </GridItem>
     </>

@@ -89,23 +89,6 @@ export class User extends Entity {
     }
   }
 
-  get fuxGiven(): Array<string> | null {
-    let value = this.get("fuxGiven");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
-  }
-
-  set fuxGiven(value: Array<string> | null) {
-    if (!value) {
-      this.unset("fuxGiven");
-    } else {
-      this.set("fuxGiven", Value.fromStringArray(<Array<string>>value));
-    }
-  }
-
   get rewards(): BigInt | null {
     let value = this.get("rewards");
     if (!value || value.kind == ValueKind.NULL) {
@@ -128,8 +111,6 @@ export class Workstream extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
-
-    this.set("resolved", Value.fromBoolean(false));
   }
 
   save(): void {
@@ -226,23 +207,6 @@ export class Workstream extends Entity {
     }
   }
 
-  get fuxGiven(): Array<string> | null {
-    let value = this.get("fuxGiven");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
-  }
-
-  set fuxGiven(value: Array<string> | null) {
-    if (!value) {
-      this.unset("fuxGiven");
-    } else {
-      this.set("fuxGiven", Value.fromStringArray(<Array<string>>value));
-    }
-  }
-
   get funding(): BigInt | null {
     let value = this.get("funding");
     if (!value || value.kind == ValueKind.NULL) {
@@ -277,67 +241,21 @@ export class Workstream extends Entity {
     }
   }
 
-  get resolved(): boolean {
-    let value = this.get("resolved");
-    return value!.toBoolean();
-  }
-
-  set resolved(value: boolean) {
-    this.set("resolved", Value.fromBoolean(value));
-  }
-}
-
-export class UserWorkstream extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-
-    this.set("user", Value.fromString(""));
-    this.set("workstream", Value.fromString(""));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save UserWorkstream entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        "Cannot save UserWorkstream entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
-      );
-      store.set("UserWorkstream", id.toString(), this);
+  get status(): string | null {
+    let value = this.get("status");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
     }
   }
 
-  static load(id: string): UserWorkstream | null {
-    return changetype<UserWorkstream | null>(store.get("UserWorkstream", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value!.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
-  }
-
-  get workstream(): string {
-    let value = this.get("workstream");
-    return value!.toString();
-  }
-
-  set workstream(value: string) {
-    this.set("workstream", Value.fromString(value));
+  set status(value: string | null) {
+    if (!value) {
+      this.unset("status");
+    } else {
+      this.set("status", Value.fromString(<string>value));
+    }
   }
 }
 
@@ -348,8 +266,8 @@ export class Evaluation extends Entity {
 
     this.set("creator", Value.fromString(""));
     this.set("workstream", Value.fromString(""));
-    this.set("contributors", Value.fromStringArray(new Array(0)));
-    this.set("ratings", Value.fromBigIntArray(new Array(0)));
+    this.set("contributor", Value.fromString(""));
+    this.set("rating", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -396,22 +314,98 @@ export class Evaluation extends Entity {
     this.set("workstream", Value.fromString(value));
   }
 
-  get contributors(): Array<string> {
-    let value = this.get("contributors");
-    return value!.toStringArray();
+  get contributor(): string {
+    let value = this.get("contributor");
+    return value!.toString();
   }
 
-  set contributors(value: Array<string>) {
-    this.set("contributors", Value.fromStringArray(value));
+  set contributor(value: string) {
+    this.set("contributor", Value.fromString(value));
   }
 
-  get ratings(): Array<BigInt> {
-    let value = this.get("ratings");
-    return value!.toBigIntArray();
+  get rating(): BigInt {
+    let value = this.get("rating");
+    return value!.toBigInt();
   }
 
-  set ratings(value: Array<BigInt>) {
-    this.set("ratings", Value.fromBigIntArray(value));
+  set rating(value: BigInt) {
+    this.set("rating", Value.fromBigInt(value));
+  }
+}
+
+export class WorkstreamContributor extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("workstream", Value.fromString(""));
+    this.set("contributor", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save WorkstreamContributor entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save WorkstreamContributor entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("WorkstreamContributor", id.toString(), this);
+    }
+  }
+
+  static load(id: string): WorkstreamContributor | null {
+    return changetype<WorkstreamContributor | null>(
+      store.get("WorkstreamContributor", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get workstream(): string {
+    let value = this.get("workstream");
+    return value!.toString();
+  }
+
+  set workstream(value: string) {
+    this.set("workstream", Value.fromString(value));
+  }
+
+  get contributor(): string {
+    let value = this.get("contributor");
+    return value!.toString();
+  }
+
+  set contributor(value: string) {
+    this.set("contributor", Value.fromString(value));
+  }
+
+  get commitment(): BigInt | null {
+    let value = this.get("commitment");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set commitment(value: BigInt | null) {
+    if (!value) {
+      this.unset("commitment");
+    } else {
+      this.set("commitment", Value.fromBigInt(<BigInt>value));
+    }
   }
 }
 
@@ -506,7 +500,7 @@ export class TokenBalance extends Entity {
 
     this.set("user", Value.fromString(""));
     this.set("token", Value.fromString(""));
-    this.set("balance", Value.fromBigInt(BigInt.zero()));
+    this.set("amount", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -553,140 +547,12 @@ export class TokenBalance extends Entity {
     this.set("token", Value.fromString(value));
   }
 
-  get balance(): BigInt {
-    let value = this.get("balance");
+  get amount(): BigInt {
+    let value = this.get("amount");
     return value!.toBigInt();
   }
 
-  set balance(value: BigInt) {
-    this.set("balance", Value.fromBigInt(value));
-  }
-}
-
-export class FuxGiven extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-
-    this.set("user", Value.fromString(""));
-    this.set("workstream", Value.fromString(""));
-    this.set("balance", Value.fromBigInt(BigInt.zero()));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save FuxGiven entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        "Cannot save FuxGiven entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
-      );
-      store.set("FuxGiven", id.toString(), this);
-    }
-  }
-
-  static load(id: string): FuxGiven | null {
-    return changetype<FuxGiven | null>(store.get("FuxGiven", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value!.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
-  }
-
-  get workstream(): string {
-    let value = this.get("workstream");
-    return value!.toString();
-  }
-
-  set workstream(value: string) {
-    this.set("workstream", Value.fromString(value));
-  }
-
-  get balance(): BigInt {
-    let value = this.get("balance");
-    return value!.toBigInt();
-  }
-
-  set balance(value: BigInt) {
-    this.set("balance", Value.fromBigInt(value));
-  }
-}
-
-export class VFuxWorkstream extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-
-    this.set("user", Value.fromString(""));
-    this.set("workstream", Value.fromString(""));
-    this.set("balance", Value.fromBigInt(BigInt.zero()));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save VFuxWorkstream entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        "Cannot save VFuxWorkstream entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
-      );
-      store.set("VFuxWorkstream", id.toString(), this);
-    }
-  }
-
-  static load(id: string): VFuxWorkstream | null {
-    return changetype<VFuxWorkstream | null>(store.get("VFuxWorkstream", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value!.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
-  }
-
-  get workstream(): string {
-    let value = this.get("workstream");
-    return value!.toString();
-  }
-
-  set workstream(value: string) {
-    this.set("workstream", Value.fromString(value));
-  }
-
-  get balance(): BigInt {
-    let value = this.get("balance");
-    return value!.toBigInt();
-  }
-
-  set balance(value: BigInt) {
-    this.set("balance", Value.fromBigInt(value));
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 }
