@@ -21,7 +21,7 @@ import {
   Spacer,
   Tooltip,
 } from "@chakra-ui/react";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { Controller, useForm } from "react-hook-form";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
@@ -31,15 +31,14 @@ type FormData = {
 
 const CommitFuxModal: React.FC<{
   workstreamID: BigNumber;
-  fuxGiven: BigNumber;
-  fuxAvailable: BigNumber;
+  fuxGiven: BigNumberish;
+  fuxAvailable: BigNumberish;
   tiny?: boolean;
 }> = ({ workstreamID, fuxGiven, fuxAvailable, tiny }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { error, success } = useCustomToasts();
   const _fuxGiven = BigNumber.from(fuxGiven);
 
-  console.log(fuxGiven);
   const {
     control,
     handleSubmit,
@@ -80,11 +79,8 @@ const CommitFuxModal: React.FC<{
   const fuxChanged = _fuxGiven.eq(newFux);
   const maxValue = _fuxGiven.add(fuxAvailable).toNumber();
 
-  console.log(_fuxGiven);
-  console.log("MaxValue: ", maxValue);
-
-  const onSubmit = () => {
-    if (fuxChanged) {
+  const onSubmit = (e: FormData) => {
+    if (!BigNumber.from(e.fux).eq(_fuxGiven)) {
       write?.();
     }
   };
@@ -98,18 +94,17 @@ const CommitFuxModal: React.FC<{
           rules={{ required: true }}
           render={({ field: { ref, ...restField } }) => (
             <NumberInput
-              {...restField}
-              defaultValue={fuxGiven.toString()}
               step={1}
               min={0}
-              keepWithinRange={true}
               max={maxValue}
+              keepWithinRange={true}
+              {...restField}
             >
               <NumberInputField
-                {...register("fux")}
                 ref={ref}
                 name={restField.name}
                 borderRadius={0}
+                placeholder={fuxGiven.toString()}
               />
               <NumberInputStepper>
                 <NumberIncrementStepper />
