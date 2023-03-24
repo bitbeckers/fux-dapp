@@ -1485,7 +1485,7 @@ export const UserDocument = gql`
 }
     ` as unknown as DocumentNode<UserQuery, UserQueryVariables>;
 export const WorkstreamsByUserDocument = gql`
-    query WorkstreamsByUser($contributor: String = "") {
+    query WorkstreamsByUser($contributor: String = "") @live {
   workstreamContributors(where: {contributor: $contributor}) {
     workstream {
       status
@@ -1516,7 +1516,7 @@ export const WorkstreamsByUserDocument = gql`
 }
     ` as unknown as DocumentNode<WorkstreamsByUserQuery, WorkstreamsByUserQueryVariables>;
 export const WorkstreamByIDDocument = gql`
-    query WorkstreamByID($id: ID = "") {
+    query WorkstreamByID($id: ID = "") @live {
   workstream(id: $id) {
     contributors {
       commitment
@@ -1566,11 +1566,11 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     User(variables?: UserQueryVariables, options?: C): Promise<UserQuery> {
       return requester<UserQuery, UserQueryVariables>(UserDocument, variables, options) as Promise<UserQuery>;
     },
-    WorkstreamsByUser(variables?: WorkstreamsByUserQueryVariables, options?: C): Promise<WorkstreamsByUserQuery> {
-      return requester<WorkstreamsByUserQuery, WorkstreamsByUserQueryVariables>(WorkstreamsByUserDocument, variables, options) as Promise<WorkstreamsByUserQuery>;
+    WorkstreamsByUser(variables?: WorkstreamsByUserQueryVariables, options?: C): AsyncIterable<WorkstreamsByUserQuery> {
+      return requester<WorkstreamsByUserQuery, WorkstreamsByUserQueryVariables>(WorkstreamsByUserDocument, variables, options) as AsyncIterable<WorkstreamsByUserQuery>;
     },
-    WorkstreamByID(variables?: WorkstreamByIDQueryVariables, options?: C): Promise<WorkstreamByIDQuery> {
-      return requester<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>(WorkstreamByIDDocument, variables, options) as Promise<WorkstreamByIDQuery>;
+    WorkstreamByID(variables?: WorkstreamByIDQueryVariables, options?: C): AsyncIterable<WorkstreamByIDQuery> {
+      return requester<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>(WorkstreamByIDDocument, variables, options) as AsyncIterable<WorkstreamByIDQuery>;
     }
   };
 }
