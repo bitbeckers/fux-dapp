@@ -85,7 +85,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
           </Stat>
           <Stat p={"1em"}>
             <StatLabel>vFUX earned</StatLabel>
-            <StatNumber fontFamily="mono" fontSize="xl" fontWeight="100" bg="#301A3A" pl={3} bg="#301A3A" pl={"5"} w="8em">{`
+            <StatNumber fontFamily="mono" fontSize="xl" fontWeight="100" p={3} bg="#301A3A" w="8em">{`
               ${vFuxBalance ? vFuxBalance : "0"}`}</StatNumber>
             <NextLink href="/history" passHref>
               <StatHelpText color="#BF7AF0">
