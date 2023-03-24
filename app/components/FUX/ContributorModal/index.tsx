@@ -30,7 +30,7 @@ import {
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { useFieldArray, useForm } from "react-hook-form";
-import { BsFillPersonPlusFill } from "react-icons/bs";
+import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
 type FormData = {
@@ -60,7 +60,7 @@ const ContributorModal: React.FC<{
     },
   });
 
-  const { fields, append } = useFieldArray<FormData>({
+  const { fields, append, remove } = useFieldArray<FormData>({
     control,
     name: "newContributors",
   });
@@ -153,7 +153,22 @@ const ContributorModal: React.FC<{
                   />
                 </Tooltip>
               </InputRightElement>
-            ) : undefined}
+            ) : (
+              <InputRightElement>
+                <Tooltip
+                  hasArrow
+                  label="Remove Contributor"
+                  aria-label="Remove Contributor"
+                >
+                  <IconButton
+                    aria-label="remove contributor"
+                    background={"red.500"}
+                    onClick={() => remove(index)}
+                    icon={<Icon as={BsFillPersonXFill} />}
+                  />
+                </Tooltip>
+              </InputRightElement>
+            )}
           </InputGroup>
         ))}
         <ButtonGroup justifyContent="space-between" w="100%" marginTop={"1em"}>
