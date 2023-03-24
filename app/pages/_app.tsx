@@ -1,8 +1,9 @@
 import * as GraphClient from "../.graphclient";
 import Header from "../components/Header";
 import { theme } from "../theme";
+import Fonts from "../fonts";
 import { chains, wagmiClient } from "../utils/wagmi";
-import { ChakraProvider, Flex, Spacer } from "@chakra-ui/react";
+import { ChakraProvider, Flex, Spacer, VStack } from "@chakra-ui/react";
 import { graphExchange } from "@graphprotocol/client-urql";
 import { darkTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -19,6 +20,7 @@ const client = createClient({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
+      <Fonts />
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider
           chains={chains}
@@ -33,7 +35,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           <GraphProvider value={client}>
             <Flex direction="column" align="center" minH="100vh" w="100%">
               <Header />
-              <Component {...pageProps} />
+              <VStack pb={50} w="100%">
+                <Component {...pageProps} />
+              </VStack>
               <Spacer />
             </Flex>
           </GraphProvider>

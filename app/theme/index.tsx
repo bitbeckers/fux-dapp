@@ -10,7 +10,7 @@ export const theme = extendTheme({
   fonts: {
     heading: `'Stolzl', sans-serif`,
     body: `'Stolzl', sans-serif`,
-    mono: `'BDR Mono', monotype`,
+    mono: `'bdr-mono', monospace`,
   },
   styles: {
     global: {
@@ -18,18 +18,20 @@ export const theme = extendTheme({
         color: "white",
         bg: "#1D131D",
         fontWeight: "300",
+        fontFamily: `'stolzl', monospace`,
+      },
+      mono: {
+        color: "white",
+        bg: "#1D131D",
+        fontWeight: "300",
+        fontFamily: `'bdr-mono', monospace`,
       },
     },
   },
   components: {
     Stat: {
       defaultProps: {
-        fontFamily: `"BDR Mono", monotype`,
-      },
-    },
-    Text: {
-      defaultProps: {
-        fontFamily: `"BDR Mono", monotype`,
+        fontFamily: `"bdr-mono", monospace`,
       },
     },
     Button: {
