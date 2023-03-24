@@ -70,7 +70,6 @@ const ValueReviewForm: React.FC<{
 
   const {
     handleSubmit,
-    register,
     reset,
     watch,
     control,
@@ -127,12 +126,8 @@ const ValueReviewForm: React.FC<{
     write?.();
   };
 
-  console.log("Workstream: ", workstream);
-
   const contributors = _workstream.contributors;
   const coordinator = _workstream.coordinator?.id;
-
-  console.log("Contributors: ", contributors);
 
   const reviewForm =
     contributors && contributors?.length > 0 ? (

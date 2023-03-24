@@ -36,18 +36,6 @@ import { useRouter } from "next/router";
 import { useQuery } from "urql";
 import { useAccount } from "wagmi";
 
-type Evaluation = {
-  creator: {
-    id: string;
-  };
-  contributors: [
-    {
-      id: string;
-    }
-  ];
-  ratings: BigNumberish[];
-};
-
 const Workstream: NextPage = () => {
   const router = useRouter();
   const { address: user } = useAccount();
