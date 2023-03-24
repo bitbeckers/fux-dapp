@@ -1,6 +1,7 @@
 import { UserDocument } from "../../../.graphclient";
 import User from "../User";
 import {
+  Flex,
   HStack,
   Link,
   Stat,
@@ -67,34 +68,32 @@ const FuxOverview: React.FC<{}> = ({}) => {
       pb={"2em"}
     >
       {!address || fetching ? undefined : (
-        <>
+        <Flex flexWrap="wrap" direction={['column', null, "row"]}>
           <User address={address} displayAvatar={true} />
-          <StatGroup textAlign="left">
-            <Stat p={"1em"}>
-              <StatLabel>FUX available</StatLabel>
-              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`${
-                fuxBalance ? fuxBalance : "..."
-              } / 100 FUX`}</StatNumber>
-              {fuxBalance ? (
-                <></>
-              ) : (
-                <StatHelpText color="#BF7AF0">
-                  <Link onClick={() => write?.()}>Claim FUX</Link>
-                </StatHelpText>
-              )}
-            </Stat>
-            <Stat p={"1em"}>
-              <StatLabel>vFUX earned</StatLabel>
-              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
-                ${vFuxBalance ? vFuxBalance : "0"}`}</StatNumber>
-              <NextLink href="/history" passHref>
-                <StatHelpText color="#BF7AF0">
-                  <Link>View history</Link>
-                </StatHelpText>
-              </NextLink>
-            </Stat>
-          </StatGroup>
-        </>
+          <Stat p={"1em"}>
+            <StatLabel>FUX available</StatLabel>
+            <StatNumber fontFamily="mono" fontSize="xl" fontWeight="100" bg="#301A3A" p={3} w="auto">{`${
+              fuxBalance ? fuxBalance : "..."
+            } / 100 FUX`}</StatNumber>
+            {fuxBalance ? (
+              <></>
+            ) : (
+              <StatHelpText color="#BF7AF0">
+                <Link onClick={() => write?.()}>Claim FUX</Link>
+              </StatHelpText>
+            )}
+          </Stat>
+          <Stat p={"1em"}>
+            <StatLabel>vFUX earned</StatLabel>
+            <StatNumber fontFamily="mono" fontSize="xl" fontWeight="100" bg="#301A3A" pl={3} bg="#301A3A" pl={"5"} w="8em">{`
+              ${vFuxBalance ? vFuxBalance : "0"}`}</StatNumber>
+            <NextLink href="/history" passHref>
+              <StatHelpText color="#BF7AF0">
+                <Link>View history</Link>
+              </StatHelpText>
+            </NextLink>
+          </Stat>
+        </Flex>
       )}
     </HStack>
   );

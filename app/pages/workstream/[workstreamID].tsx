@@ -8,6 +8,7 @@ import { Contributor } from "../../components/FUX/Contributor";
 import { ContributorOverview } from "../../components/FUX/ContributorOverview";
 import { useConstants } from "../../utils/constants";
 import {
+  Box,
   VStack,
   Text,
   Heading,
@@ -15,6 +16,7 @@ import {
   ButtonGroup,
   Button,
   Link,
+  Flex,
   Stat,
   StatLabel,
   StatNumber,
@@ -107,78 +109,79 @@ const Workstream: NextPage = () => {
 
   return _workstream ? (
     <>
-      <VStack w={"100%"}>
-        <VStack w={"70%"} maxW={"700px"}>
-          <HStack paddingTop={"2em"} paddingBottom={"2em"}>
-            <Heading size={"md"}>{`Workstream: ${
-              _workstream?.name || "No name found"
-            }`}</Heading>
-          </HStack>
-          <HStack>
-            <ButtonGroup>
+      <VStack mx="auto" maxW={"1200px"} w="100%">
+        <Flex direction="column" py={12}>
+          <Text size="xs">Workstream</Text>
+          <Heading size={["md", null, "lg"]}>{`${
+            _workstream?.name || "No name found"
+          }`}</Heading>
+          <Text>
+            Deadline: {
+                _workstream.deadline
+                  ? DateTime.fromSeconds(
+                      +_workstream.deadline
+                    ).toLocaleString()
+                  : ""
+              }
+            </Text>
+            { _workstream.funding > 0 && (
+              <Text>Funding: {
+                _workstream.funding
+                  ? Number(
+                      ethers.utils.formatEther(_workstream.funding)
+                    ).toPrecision(2)
+                  : ""
+              } {nativeToken}
+              </Text>
+            )}
+        </Flex>
+
+        <Flex direction={['column', null, 'column']}>
+          <Flex direction={['column', null, 'row']} align={['center', null, 'center']} flexWrap="wrap">
+            <Stat w="160px">
+              <StatLabel>Committed</StatLabel>
+              <StatNumber bg="#301A3A" p={3} fontFamily="mono">{`
+                ${fuxGiven ? fuxGiven : "0"} FUX`}</StatNumber>
+            </Stat>
+            <Box w="160px">
               <CommitFuxModal
                 workstreamID={BigNumber.from(_workstream.id)}
                 fuxGiven={fuxGiven}
                 fuxAvailable={fuxAvailable}
               />
+            </Box>
+          </Flex>
+          <Flex direction={['column', null, 'row']} align={['center', null, 'end']} flexWrap="wrap">
+            <NextLink
+              href={{
+                pathname: "/evaluate/[workstreamID]",
+                query: { workstreamID },
+              }}
+              passHref
+            >
+              <Button p={3} mt={[3, null, 0]} w="120px">
+                <Link>EVALUATE</Link>
+              </Button>
+            </NextLink>
+            {_workstream.coordinator?.id.toLowerCase() ===
+            user?.toLowerCase() ? (
               <NextLink
-                href={{
-                  pathname: "/evaluate/[workstreamID]",
-                  query: { workstreamID },
-                }}
-                passHref
-              >
-                <Button p={"1em"}>
-                  <Link>EVALUATE</Link>
-                </Button>
-              </NextLink>
-              {_workstream.coordinator?.id.toLowerCase() ===
-              user?.toLowerCase() ? (
-                <NextLink
-                href={{
-                  pathname: "/finalize/[workstreamID]",
-                  query: { workstreamID },
-                }}
-                passHref
-              >
-                <Button p={"1em"}>
-                  <Link>FINALIZE</Link>
-                </Button>
-              </NextLink>
-              ) : undefined}
-            </ButtonGroup>
-          </HStack>
-          <HStack>
-            <Stat p={"1em"}>
-              <StatLabel>Commitment</StatLabel>
-              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
-                ${fuxGiven ? fuxGiven : "0"} FUX`}</StatNumber>
-            </Stat>
-            <Stat p={"1em"}>
-              <StatLabel>Deadline</StatLabel>
-              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
-                ${
-                  _workstream.deadline
-                    ? DateTime.fromSeconds(
-                        +_workstream.deadline
-                      ).toLocaleString()
-                    : ""
-                }`}</StatNumber>
-            </Stat>
-            <Stat p={"1em"}>
-              <StatLabel>Funding</StatLabel>
-              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
-                ${
-                  _workstream.funding
-                    ? Number(
-                        ethers.utils.formatEther(_workstream.funding)
-                      ).toPrecision(2)
-                    : ""
-                } ${nativeToken}`}</StatNumber>
-            </Stat>
-          </HStack>
+              href={{
+                pathname: "/finalize/[workstreamID]",
+                query: { workstreamID },
+              }}
+              passHref
+            >
+              <Button p={3} mt={[3, null, 0]} w="120px">
+                <Link>FINALIZE</Link>
+              </Button>
+            </NextLink>
+            ) : undefined}
+          </Flex>
+        </Flex>
+        <Box p={[6, null, 12]}>
           <ContributorOverview workstream={_workstream as Partial<Workstream>} />
-        </VStack>
+        </Box>
       </VStack>
     </>
   ) : (

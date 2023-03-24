@@ -1,4 +1,4 @@
-query WorkstreamsByUser($contributor: String = "") {
+query WorkstreamsByUser($contributor: String = "") @live {
   workstreamContributors(where: { contributor: $contributor }) {
     workstream {
       status
@@ -28,7 +28,7 @@ query WorkstreamsByUser($contributor: String = "") {
   }
 }
 
-query WorkstreamByID($id: ID = "") {
+query WorkstreamByID($id: ID = "") @live {
   workstream(id: $id) {
     contributors {
       commitment

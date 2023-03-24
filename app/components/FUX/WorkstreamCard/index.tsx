@@ -4,6 +4,8 @@ import {
   WorkstreamContributor,
 } from "../../../.graphclient";
 import { ContributorOverview } from "../ContributorOverview";
+import { useConstants } from "../../../utils/constants";
+import { BigNumber, ethers } from "ethers";
 import User from "../User";
 import {
   AccordionButton,
@@ -28,6 +30,7 @@ const WorkstreamCard: React.FC<{
   workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
   const _workstream = workstream.workstream;
+  const { nativeToken } = useConstants();
 
   const evaluationRow = (
     sortedContributors: string[],
@@ -99,25 +102,30 @@ const WorkstreamCard: React.FC<{
   };
 
   return _workstream ? (
-    <AccordionItem>
+    <AccordionItem py={6}>
       <AccordionButton>
         <Heading size="md" flex="1" textAlign="left">
-          {_workstream?.name?.toUpperCase()}
+          {_workstream?.name?.toString()}
         </Heading>
         <Text>{_workstream.status}</Text>
         <AccordionIcon />
       </AccordionButton>
       <AccordionPanel pb={4}>
-        <Flex direction="column" alignItems={"flex-start"} pb={2}>
+        {/* <Flex direction="column" alignItems={"flex-start"} pb={2}>
           <Heading size="md">Coordinator:</Heading>
           <User
             address={_workstream.coordinator?.id as `0x${string}`}
             direction="horizontal"
             displayAvatar={true}
           />
-        </Flex>
-        <Flex direction="column" alignItems={"flex-start"} pb={2}>
-          <Heading size="md">Contributors:</Heading>
+        </Flex> */}
+        <Flex direction="column" alignItems={"flex-start"} py={3}>
+        <Text>Deadline: {_workstream.deadline.toString()}</Text>
+          { _workstream.funding > 0 && (
+          <Text>Funding: {`${
+            ethers.utils.formatEther(_workstream.funding).toString() || 0
+          } ${nativeToken}`}</Text>
+          )}
           <ContributorOverview workstream={_workstream} />
         </Flex>
 
