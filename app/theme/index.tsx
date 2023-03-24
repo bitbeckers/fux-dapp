@@ -17,12 +17,17 @@ export const theme = extendTheme({
       body: {
         color: "white",
         bg: "#1D131D",
-        fontWeight: "400",
+        fontWeight: "300",
       },
     },
   },
   components: {
     Stat: {
+      defaultProps: {
+        fontFamily: `"BDR Mono", monotype`,
+      },
+    },
+    Text: {
       defaultProps: {
         fontFamily: `"BDR Mono", monotype`,
       },
