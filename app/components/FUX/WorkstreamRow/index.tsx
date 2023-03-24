@@ -54,7 +54,7 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={4}
       >
-        <Text font="mono" pr={"1em"}>{`${
+        <Text fontFamily="mono" pr={"1em"}>{`${
           ethers.utils.formatEther(workstream.funding).toString() || 0
         } ${nativeToken}`}</Text>
       </GridItem>
