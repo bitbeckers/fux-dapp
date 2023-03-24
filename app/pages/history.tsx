@@ -40,7 +40,7 @@ const History: NextPage = () => {
       <WorkstreamModal onCloseAction={reexecuteQuery} />
       <Divider />
 
-      <Heading>Workstream History</Heading>
+      <Heading py={12}>Workstream History</Heading>
 
       {fetching ? (
         <Spinner
@@ -53,7 +53,7 @@ const History: NextPage = () => {
       ) : (
         <>
           {workstreams && workstreams.length > 0 ? (
-            <Accordion w={"80%"} maxW={"769px"} allowToggle={true}>
+            <Accordion w={"100%"} maxW={"800px"} allowToggle={true}>
               {workstreams.map((workstream, index) => (
                 <WorkstreamCard workstream={workstream} key={index} />
               ))}

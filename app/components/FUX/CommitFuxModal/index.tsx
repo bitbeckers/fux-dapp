@@ -121,7 +121,7 @@ const CommitFuxModal: React.FC<{
         </Button>
         <Spacer />
         <Button isLoading={isSubmitting} type="submit">
-          Give FUX
+          Update FUX
         </Button>
       </ButtonGroup>
     </form>
@@ -135,7 +135,7 @@ const CommitFuxModal: React.FC<{
     ></IconButton>
   ) : (
     <Button disabled={fuxChanged} onClick={onOpen} aria-label="Give FUX">
-      COMMIT
+      Update FUX
     </Button>
   );
 
@@ -147,7 +147,7 @@ const CommitFuxModal: React.FC<{
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />
         <ModalContent bg="#221527">
-          <ModalHeader>Give FUX</ModalHeader>
+          <ModalHeader>Update FUX Given</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>
         </ModalContent>

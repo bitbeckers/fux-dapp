@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <GraphProvider value={client}>
             <Flex direction="column" align="center" minH="100vh" w="100%">
               <Header />
-              <VStack pb={50} w="100%">
+              <VStack pb={75} w="100%">
                 <Component {...pageProps} />
               </VStack>
               <Spacer />

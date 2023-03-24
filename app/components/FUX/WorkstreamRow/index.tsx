@@ -62,7 +62,7 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={4}
       >
-        <Text variant="mono" pr={"1em"}>{`${
+        <Text fontFamily="mono" pr={"1em"}>{`${
           ethers.utils.formatEther(workstream.funding).toString() || 0
         } ${nativeToken}`}</Text>
       </GridItem>
@@ -73,7 +73,7 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={2}
       >
-        <Text variant="mono" pr={"1em"}>{`${commitment} %`}</Text>
+        <Text fontFamily="mono" pr={"1em"}>{`${commitment} %`}</Text>
       </GridItem>
       {fuxAvailable ? (
         <GridItem display={"flex"} alignItems={"center"} colSpan={1}>

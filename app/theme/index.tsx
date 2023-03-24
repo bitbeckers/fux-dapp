@@ -1,4 +1,4 @@
-import { extendTheme, ThemeConfig } from "@chakra-ui/react";
+import { extendTheme, defineStyleConfig, ThemeConfig } from "@chakra-ui/react";
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -8,9 +8,12 @@ const config: ThemeConfig = {
 export const theme = extendTheme({
   config,
   fonts: {
-    heading: `'Stolzl', sans-serif`,
-    body: `'Stolzl', sans-serif`,
+    heading: `'stolzl', sans-serif`,
+    body: `'stolzl', sans-serif`,
     mono: `'bdr-mono', monospace`,
+  },
+  colors: {
+    primary: "#8E4EC6",
   },
   styles: {
     global: {
@@ -20,9 +23,9 @@ export const theme = extendTheme({
         fontWeight: "300",
         fontFamily: `'stolzl', monospace`,
       },
+      a: { color: '#8E4EC6', },
       mono: {
         color: "white",
-        bg: "#1D131D",
         fontWeight: "300",
         fontFamily: `'bdr-mono', monospace`,
       },
@@ -31,7 +34,12 @@ export const theme = extendTheme({
   components: {
     Stat: {
       defaultProps: {
-        fontFamily: `"bdr-mono", monospace`,
+        fontFamily: "mono",
+      },
+    },
+    Link: {
+      baseStyle: {
+        colorScheme: "primary",
       },
     },
     Button: {
