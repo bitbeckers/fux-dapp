@@ -96,7 +96,7 @@ const CommitFuxModal: React.FC<{
           name={`fux`}
           control={control}
           rules={{ required: true }}
-          render={({ field: { ...restField } }) => (
+          render={({ field: { ref, ...restField } }) => (
             <NumberInput
               {...restField}
               defaultValue={fuxGiven.toString()}
@@ -107,6 +107,7 @@ const CommitFuxModal: React.FC<{
             >
               <NumberInputField
                 {...register("fux")}
+                ref={ref}
                 name={restField.name}
                 borderRadius={0}
               />
