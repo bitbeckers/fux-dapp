@@ -1,7 +1,6 @@
 import { WorkstreamContributor } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
-import { Contributor } from "../Contributor";
 import User from "../User";
 import {
   Box,
@@ -29,6 +28,7 @@ import {
 } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
+import { Fragment } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
@@ -109,7 +109,7 @@ const ContributorModal: React.FC<{
           </GridItem>
           {contributors !== undefined
             ? contributors.map((cont) => (
-                <>
+                <Fragment key={cont.id}>
                   <GridItem colSpan={5}>
                     <User
                       address={cont.contributor.id as `0x${string}`}
@@ -122,7 +122,7 @@ const ContributorModal: React.FC<{
                       <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
                     </Stat>
                   </GridItem>
-                </>
+                </Fragment>
               ))
             : undefined}
         </Grid>

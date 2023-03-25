@@ -93,9 +93,7 @@ const Workstream: NextPage = () => {
     fuxGiven = BigNumber.from("0");
   }
 
-  const contributors = _workstream?.contributors;
-
-  return _workstream ? (
+  return workstreamID && _workstream ? (
     <>
       <VStack mx="auto" maxW={"1200px"} w="100%">
         <Flex direction="column" py={12}>
@@ -124,7 +122,7 @@ const Workstream: NextPage = () => {
             )}
         </Flex>
 
-        <Flex direction={['column', null, 'column']}>
+        <Flex direction={['column', null, 'column']} gap={"1em"}>
           <Flex direction={['column', null, 'row']} align={['center', null, 'center']} flexWrap="wrap">
             <Stat w="160px">
               <StatLabel>Committed</StatLabel>
@@ -139,7 +137,7 @@ const Workstream: NextPage = () => {
               />
             </Box>
           </Flex>
-          <Flex direction={['column', null, 'row']} align={['center', null, 'end']} flexWrap="wrap">
+          <Flex direction={['column', null, 'row']} align={['center', null, 'end']} flexWrap="wrap" gap={"1em"}>
             <NextLink
               href={{
                 pathname: "/evaluate/[workstreamID]",

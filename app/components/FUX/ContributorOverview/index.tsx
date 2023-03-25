@@ -1,7 +1,17 @@
 import { Workstream } from "../../../.graphclient";
+import ContributorModal from "../ContributorModal";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
-import { Flex, Stat, StatNumber, Grid, GridItem, Text, Tooltip } from "@chakra-ui/react";
+import {
+  Flex,
+  Stat,
+  StatNumber,
+  Grid,
+  GridItem,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
+import { BigNumber } from "ethers";
 
 export const ContributorOverview: React.FC<{
   workstream: Partial<Workstream>;
@@ -26,7 +36,7 @@ export const ContributorOverview: React.FC<{
       {contributors.map((cont) => (
         <>
           <GridItem colSpan={6}>
-            <Flex align={'center'}>
+            <Flex align={"center"}>
               <User
                 address={cont.contributor.id as `0x${string}`}
                 direction="horizontal"
@@ -41,17 +51,29 @@ export const ContributorOverview: React.FC<{
             </Flex>
           </GridItem>
           <GridItem colSpan={3}>
-              <Stat size={['sm', null, 'sm']} pt={4} textAlign="right" fontFamily="mono">
-                <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
-              </Stat>
+            <Stat
+              size={["sm", null, "sm"]}
+              pt={4}
+              textAlign="right"
+              fontFamily="mono"
+            >
+              <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
+            </Stat>
           </GridItem>
           <GridItem colSpan={3} pt={4} textAlign="right">
-            <Stat size={['sm', null, 'sm']} fontFamily="mono">
+            <Stat size={["sm", null, "sm"]} fontFamily="mono">
               <StatNumber>--%</StatNumber>
             </Stat>
           </GridItem>
         </>
       ))}
+      <GridItem>
+        <ContributorModal
+          workstreamID={BigNumber.from(workstream.id)}
+          workstreamName={workstream.name || ""}
+          contributors={workstream.contributors ?? []}
+        />
+      </GridItem>
     </Grid>
   );
 };

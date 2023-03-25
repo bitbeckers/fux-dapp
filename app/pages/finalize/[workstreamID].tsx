@@ -16,6 +16,7 @@ import { ethers } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useQuery } from "urql";
 
 const Resolve: NextPage = () => {
@@ -33,6 +34,15 @@ const Resolve: NextPage = () => {
 
   const { data, fetching, error } = result;
   const _workstream = data?.workstream;
+
+  useEffect(() => {
+    window.onpopstate = () => {
+      router.push({
+        pathname: "/workstream/[workstreamID]",
+        query: { workstreamID },
+      });
+    };
+  });
 
   return _workstream ? (
     <>
