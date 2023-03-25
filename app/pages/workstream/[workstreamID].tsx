@@ -124,7 +124,7 @@ const Workstream: NextPage = () => {
             )}
         </Flex>
 
-        <Flex direction={['column', null, 'column']}>
+        <Flex direction={['column', null, 'column']} gap={"1em"}>
           <Flex direction={['column', null, 'row']} align={['center', null, 'center']} flexWrap="wrap">
             <Stat w="160px">
               <StatLabel>Committed</StatLabel>

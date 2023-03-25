@@ -27,7 +27,7 @@ const Start: NextPage = () => {
       toast.error(e);
     },
     onSuccess(tx) {
-      toast.success("Minted FUX", `FUX minted to ${address}`);
+      toast.success("Minting FUX", `Sending FUX to ${address}`);
       console.log(tx);
     },
   });

@@ -35,11 +35,6 @@ const User: React.FC<{
   const toast = useToast();
   const _size = size ? size : "md";
 
-  console.log("Address: ", address);
-  console.log("Name: ", name);
-  console.log("Name loading: ", nameLoading);
-  console.log("Name error: ", nameError);
-
   useEffect(() => {
     if (!avatarLoading && !avatarError && _avatar) {
       setAvatar(_avatar);

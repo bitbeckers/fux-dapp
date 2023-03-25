@@ -30,8 +30,6 @@ const WorkstreamRow: React.FC<{
     (cont) => cont.contributor.id.toLowerCase() === user?.toLowerCase()
   );
 
-  console.log("CONTRIBUTOR: ", contributor);
-
   const commitment = contributor?.commitment ?? 0;
 
   return (
