@@ -1,5 +1,5 @@
 import ConnectWallet from "../ConnectWallet";
-import { Box, Flex, Heading, Link, Spacer, Text, ButtonGroup } from "@chakra-ui/react";
+import { Box, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 const Header: React.FC<{}> = () => {
@@ -14,26 +14,39 @@ const Header: React.FC<{}> = () => {
       bg="#221527"
       flexWrap="wrap"
     >
-      <Box w={['50%', null, '25%']} order={'0'}>
+      <Box w={["50%", null, "25%"]} order={"0"}>
         <NextLink href="/" passHref>
           <Link>
-            <Heading fontSize="4xl" fontWeight="900" fontFamily="">FUX</Heading>
+            <Heading fontSize="4xl" fontWeight="900" fontFamily="">
+              FUX
+            </Heading>
           </Link>
         </NextLink>
       </Box>
-      <Flex order={[2, null, 1]} my={[6, null, 0]} direction={'row'} align={'center'} justify={['start', null, 'center']} w={['100%', null, '50%']}>
+      <Flex
+        order={[2, null, 1]}
+        my={[6, null, 0]}
+        direction={"row"}
+        align={"center"}
+        justify={["start", null, "center"]}
+        w={["100%", null, "50%"]}
+      >
         <NextLink href="/workstreams" passHref>
           <Link mr={6}>
-            <Text fontSize="lg" color="primary">WORKSTREAMS</Text>
+            <Text fontSize="lg" color="primary">
+              WORKSTREAMS
+            </Text>
           </Link>
         </NextLink>
         <NextLink href="/history" passHref>
           <Link>
-            <Text fontSize="lg" color="primary">HISTORY</Text>
+            <Text fontSize="lg" color="primary">
+              HISTORY
+            </Text>
           </Link>
         </NextLink>
       </Flex>
-      <Box w={['50%', null, '25%']} order={[1, null, 2]} ml="auto">
+      <Box w={["50%", null, "25%"]} order={[1, null, 2]} ml="auto">
         {/* <ClaimRewards /> */}
         <ConnectWallet />
       </Box>

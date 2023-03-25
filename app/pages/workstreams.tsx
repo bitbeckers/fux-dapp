@@ -80,13 +80,13 @@ const Workstreams: NextPage = () => {
             templateColumns="repeat(16, 1fr)"
           >
             {data?.workstreamContributors
-              ? data?.workstreamContributors.map(({ workstream }, index) =>
+              ? data?.workstreamContributors.map(({ workstream }) =>
                   workstream.status === "Closed" ? undefined : (
                     <WorkstreamRow
                       workstream={workstream as Partial<Workstream>}
                       fuxAvailable={balance?.amount}
                       showInactive={false}
-                      key={index}
+                      key={workstream.id}
                     />
                   )
                 )
