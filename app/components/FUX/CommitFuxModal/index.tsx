@@ -20,6 +20,7 @@ import {
   NumberInputStepper,
   Spacer,
   Tooltip,
+  Flex,
 } from "@chakra-ui/react";
 import { BigNumber, BigNumberish } from "ethers";
 import { Controller, useForm } from "react-hook-form";
@@ -76,14 +77,10 @@ const CommitFuxModal: React.FC<{
     },
   });
 
-  console.log("New FUX: ", newFux);
-
   const fuxChanged = newFux ? _fuxGiven.eq(BigNumber.from(newFux)) : false;
-
-  console.log("FUX Changed: ", fuxChanged);
   const maxValue = _fuxGiven.add(fuxAvailable).toNumber();
 
-  const onSubmit = (e: FormData) => {
+  const onSubmit = (_: FormData) => {
     if (fuxChanged) {
       write?.();
     }
@@ -149,11 +146,13 @@ const CommitFuxModal: React.FC<{
         {component}
       </Tooltip>
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay bg="#1D131D" />
-        <ModalContent bg="#221527">
-          <ModalHeader>Update FUX Given</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>{input}</ModalBody>
+        <ModalOverlay bg="base.800" />
+        <ModalContent bg="eggplant.800">
+          <Flex direction={"column"} p={"1em"}>
+            <ModalHeader>Update FUX Given</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>{input}</ModalBody>
+          </Flex>
         </ModalContent>
       </Modal>
     </>

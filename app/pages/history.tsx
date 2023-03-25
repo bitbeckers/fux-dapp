@@ -12,6 +12,7 @@ import {
   Heading,
   Spacer,
   Spinner,
+  Box,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useQuery } from "urql";
@@ -32,15 +33,15 @@ const History: NextPage = () => {
   const workstreams =
     data?.workstreamContributors as Partial<WorkstreamContributor>[];
 
-  console.log("History workstreams: ", workstreams);
-
   return (
-    <Flex direction={'column'} mx="auto" maxW="1200px" p={[6, null, 12]}>
+    <Flex direction={"column"} gap={"1em"} w={"100%"}>
       <FuxOverview />
-      <WorkstreamModal onCloseAction={reexecuteQuery} />
-      <Divider />
 
-      <Heading py={12}>Workstream History</Heading>
+      <Heading py={12} margin={"auto"} textAlign={"center"}>
+        Workstream History <WorkstreamModal onCloseAction={reexecuteQuery} />
+      </Heading>
+
+      <Divider />
 
       {fetching ? (
         <Spinner
@@ -49,11 +50,12 @@ const History: NextPage = () => {
           emptyColor="gray.200"
           color="white.500"
           size="xl"
+          margin={"auto"}
         />
       ) : (
-        <>
+        <Box margin={"auto"} p={"1em"}>
           {workstreams && workstreams.length > 0 ? (
-            <Accordion w={"100%"} maxW={"800px"} allowToggle={true}>
+            <Accordion minW={[160, null, 768]} allowToggle={true}>
               {workstreams.map((workstream, index) => (
                 <WorkstreamCard workstream={workstream} key={index} />
               ))}
@@ -63,9 +65,8 @@ const History: NextPage = () => {
               No closed workstreams. Start committing!
             </Heading>
           )}
-        </>
+        </Box>
       )}
-      <Spacer />
     </Flex>
   );
 };

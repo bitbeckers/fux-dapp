@@ -8,10 +8,10 @@ const Header: React.FC<{}> = () => {
       direction={"row"}
       as="nav"
       w="100%"
-      p={6}
+      p={"2em"}
       justify="space-between"
       align="center"
-      bg="#221527"
+      bg="plum.900"
       flexWrap="wrap"
     >
       <Box w={["50%", null, "25%"]} order={"0"}>
@@ -28,19 +28,19 @@ const Header: React.FC<{}> = () => {
         my={[6, null, 0]}
         direction={"row"}
         align={"center"}
-        justify={["start", null, "center"]}
+        justify={"center"}
         w={["100%", null, "50%"]}
       >
         <NextLink href="/workstreams" passHref>
           <Link mr={6}>
-            <Text fontSize="lg" color="primary">
+            <Text fontSize="lg" color="primary.600">
               WORKSTREAMS
             </Text>
           </Link>
         </NextLink>
         <NextLink href="/history" passHref>
           <Link>
-            <Text fontSize="lg" color="primary">
+            <Text fontSize="lg" color="primary.600">
               HISTORY
             </Text>
           </Link>

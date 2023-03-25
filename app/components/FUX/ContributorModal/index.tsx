@@ -25,6 +25,8 @@ import {
   GridItem,
   Stat,
   StatNumber,
+  Divider,
+  Flex,
 } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
@@ -98,39 +100,37 @@ const ContributorModal: React.FC<{
   };
 
   const input = (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid gap={2} templateColumns="repeat(7, 1fr)">
-          <GridItem colSpan={5}>
-            <Text>Contributor</Text>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <Text>Committed</Text>
-          </GridItem>
-          {contributors !== undefined
-            ? contributors.map((cont) => (
-                <Fragment key={cont.id}>
-                  <GridItem colSpan={5}>
-                    <User
-                      address={cont.contributor.id as `0x${string}`}
-                      direction="horizontal"
-                      displayAvatar={true}
-                    />
-                  </GridItem>
-                  <GridItem colSpan={2}>
-                    <Stat>
-                      <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
-                    </Stat>
-                  </GridItem>
-                </Fragment>
-              ))
-            : undefined}
-        </Grid>
+    <Flex direction={"column"} gap={"1em"}>
+      <Grid gap={2} templateColumns="repeat(7, 1fr)">
+        <GridItem colSpan={5}>
+          <Text>Contributor</Text>
+        </GridItem>
+        <GridItem colSpan={2}>
+          <Text>Committed</Text>
+        </GridItem>
+        {contributors !== undefined
+          ? contributors.map((cont) => (
+              <Fragment key={cont.id}>
+                <GridItem colSpan={5}>
+                  <User
+                    address={cont.contributor.id as `0x${string}`}
+                    direction="horizontal"
+                    displayAvatar={true}
+                  />
+                </GridItem>
+                <GridItem colSpan={2}>
+                  <Stat>
+                    <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
+                  </Stat>
+                </GridItem>
+              </Fragment>
+            ))
+          : undefined}
+      </Grid>
 
-        <Box mt={6}>
-          <hr />
-        </Box>
-        <Text mt={6}>Invite Contributors</Text>
+      <Divider />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Text>Invite Contributors</Text>
 
         {fields.map((field, index) => (
           <InputGroup key={field.id} marginTop={"1em"}>
@@ -181,7 +181,7 @@ const ContributorModal: React.FC<{
           </Button>
         </ButtonGroup>
       </form>
-    </>
+    </Flex>
   );
 
   return (
@@ -199,8 +199,8 @@ const ContributorModal: React.FC<{
       </Tooltip>
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay bg="#1D131D" />
-        <ModalContent bg="#221527">
+        <ModalOverlay bg="plum.900" />
+        <ModalContent bg="plum.700" p={"1em"}>
           <ModalHeader>{workstreamName}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>

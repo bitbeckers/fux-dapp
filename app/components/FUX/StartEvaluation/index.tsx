@@ -89,7 +89,7 @@ const StartEvaluation: React.FC<{
           isDisabled={
             !_workstream.id &&
             !user?.toLowerCase() &&
-            user?.toLowerCase() !== _workstream.coordinator?.id.toLowerCase()
+            user?.toLowerCase() !== coordinator?.toLowerCase()
           }
           isLoading={isLoading}
           type="submit"

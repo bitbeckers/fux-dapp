@@ -32,6 +32,7 @@ import {
   HStack,
   VStack,
   FormHelperText,
+  Flex,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { DateTime } from "luxon";
@@ -159,8 +160,8 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
             minLength: { value: 4, message: "Minimum length should be 4" },
           })}
         />
-        <HStack align={"flex-start"}>
-          <VStack justify={"flex-start"}>
+        <Flex gap={"1em"} wrap={"wrap"}>
+          <Flex direction={"column"} justify={"flex-start"} gap={"1"}>
             <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
               Deadline
               <Tooltip label="Just an estimated time of delivery as reference for contributors. It has no other effect, such as triggering evaluations.">
@@ -182,109 +183,102 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                 },
               })}
             />
-          </VStack>
+          </Flex>
 
-          <VStack>
+          <Flex direction={"column"} maxW={"250px"} gap={1}>
+            <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
+              How many FUX do you give?
+              <Tooltip label="Stake some FUX if you'll also be contributing">
+                <Box ml={2}>
+                  <RiInformationLine />
+                </Box>
+              </Tooltip>
+            </FormHelperText>
             <Controller
               name={`fuxGiven`}
               control={control}
               rules={{ required: true }}
               key={`fuxGiven`}
               render={({ field: { ref, ...restField } }) => (
-                <>
-                  <FormHelperText
-                    textColor={"white"}
-                    w={"100%"}
-                    display={"flex"}
+                <InputGroup>
+                  <NumberInput
+                    precision={0}
+                    step={1}
+                    min={0}
+                    max={fuxBalance}
+                    {...restField}
                   >
-                    How many FUX do you give?
-                    <Tooltip label="Stake some FUX if you'll also be contributing">
-                      <Box ml={2}>
-                        <RiInformationLine />
-                      </Box>
-                    </Tooltip>
-                  </FormHelperText>
-                  <InputGroup>
-                    <NumberInput
-                      precision={0}
-                      step={1}
-                      min={0}
-                      max={fuxBalance}
-                      {...restField}
-                    >
-                      <NumberInputField
-                        ref={ref}
-                        name={restField.name}
-                        borderRightRadius={0}
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-                      <Text>FUX</Text>
-                    </InputRightAddon>
-                  </InputGroup>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    {`${fuxBalance} FUX to give`}
-                  </FormHelperText>
-                </>
+                    <NumberInputField
+                      ref={ref}
+                      name={restField.name}
+                      borderRightRadius={0}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <InputRightAddon
+                    bg={"plum.500"}
+                    fontWeight={"bold"}
+                    w={"75px"}
+                  >
+                    <Text>FUX</Text>
+                  </InputRightAddon>
+                </InputGroup>
               )}
             />
+            <FormHelperText textColor={"primary.400"} w={"100%"}>
+              {`${fuxBalance} FUX to give`}
+            </FormHelperText>
+          </Flex>
 
+          <Flex direction={"column"} maxW={"250px"} gap={1}>
+            <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
+              Fund workstream
+              <Tooltip label="Funding will auto-split to contributors based on evaluation">
+                <Box ml={2}>
+                  <RiInformationLine />
+                </Box>
+              </Tooltip>
+            </FormHelperText>
             <Controller
               name={`funding`}
               control={control}
               rules={{ required: false }}
               key={`funding`}
               render={({ field: { ref, ...restField } }) => (
-                <>
-                  <FormHelperText
-                    textColor={"white"}
-                    w={"100%"}
-                    display={"flex"}
+                <InputGroup>
+                  <NumberInput precision={2} step={0.05} min={0} {...restField}>
+                    <NumberInputField
+                      ref={ref}
+                      name={restField.name}
+                      borderRightRadius={0}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <InputRightAddon
+                    bg={"plum.500"}
+                    fontWeight={"bold"}
+                    w={"75px"}
                   >
-                    Fund workstream
-                    <Tooltip label="Funding will auto-split to contributors based on evaluation">
-                      <Box ml={2}>
-                        <RiInformationLine />
-                      </Box>
-                    </Tooltip>
-                  </FormHelperText>
-                  <InputGroup>
-                    <NumberInput
-                      precision={2}
-                      step={0.05}
-                      min={0}
-                      {...restField}
-                    >
-                      <NumberInputField
-                        ref={ref}
-                        name={restField.name}
-                        borderRightRadius={0}
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-                      <Text>{`${nativeToken}`}</Text>
-                    </InputRightAddon>
-                  </InputGroup>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    {!balanceLoading
-                      ? `${parseFloat(balance?.formatted!).toFixed(2)} ${
-                          balance?.symbol
-                        } to fund`
-                      : "Loading"}
-                  </FormHelperText>
-                </>
+                    <Text>{`${nativeToken}`}</Text>
+                  </InputRightAddon>
+                </InputGroup>
               )}
             />
-          </VStack>
-        </HStack>
+            <FormHelperText textColor={"primary.400"} w={"100%"}>
+              {!balanceLoading
+                ? `${parseFloat(balance?.formatted!).toFixed(2)} ${
+                    balance?.symbol
+                  } to fund`
+                : "Loading"}
+            </FormHelperText>
+          </Flex>
+        </Flex>
       </FormControl>
       <ButtonGroup marginTop={"1em"} justifyContent="space-around" w="100%">
         <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
@@ -300,13 +294,18 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
 
   return (
     <>
-      <Button onClick={onOpen} leftIcon={<AddIcon />}>
+      <Button
+        onClick={onOpen}
+        leftIcon={<AddIcon />}
+        maxW={"320px"}
+        margin={"auto"}
+      >
         Add Workstream
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay bg="#1D131D" />
-        <ModalContent bg="#221527">
+        <ModalOverlay bg="plum.900" />
+        <ModalContent bg="plum.700" p={"1em"}>
           <ModalHeader>Add Workstream</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>

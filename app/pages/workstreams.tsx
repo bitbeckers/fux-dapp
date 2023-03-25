@@ -6,7 +6,7 @@ import {
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
-import { VStack, Divider, Grid, GridItem, Spinner } from "@chakra-ui/react";
+import { Divider, Grid, GridItem, Spinner, Flex } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import React from "react";
 import { useQuery } from "urql";
@@ -26,7 +26,7 @@ const Workstreams: NextPage = () => {
 
   console.log("WorkstreamsByUser: ", data);
 
-  const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
+  const [fuxBalanceResponse] = useQuery({
     query: TokenBalanceDocument,
     variables: {
       address: user?.toLowerCase() || "",
@@ -34,67 +34,56 @@ const Workstreams: NextPage = () => {
     },
   });
 
-  const {
-    data: fuxAvailableData,
-    fetching: fetchingBalance,
-    error: fuxBalance,
-  } = fuxBalanceResponse;
+  const { data: fuxAvailableData, fetching: fetchingBalance } =
+    fuxBalanceResponse;
 
   const balance = fuxAvailableData?.tokenBalances.find((balance) => balance);
 
   return (
-    <VStack spacing={8} w={"100%"}>
+    <Flex direction={"column"} gap={"1em"} w={"100%"}>
       <FuxOverview />
       <WorkstreamModal onCloseAction={reexecuteQuery} />
       <Divider />
-      {fetching ? (
+      {fetching && fetchingBalance ? (
         <Spinner
           thickness="4px"
           speed="0.65s"
           emptyColor="gray.200"
           color="white.500"
           size="xl"
+          margin={"auto"}
         />
       ) : (
-        <>
-          <Grid
-            maxW={"800px"}
-            w="100%"
-            mx={"auto"}
-            gap={2}
-            templateColumns="repeat(16, 1fr)"
-            textTransform={"uppercase"}
-            letterSpacing={"0.1em"}
-            fontSize="sm"
-          >
-            <GridItem colSpan={7}>Title</GridItem>
-            <GridItem colSpan={4}>Funding</GridItem>
-            <GridItem colSpan={2}>FUX</GridItem>
-            <GridItem colSpan={3}>Actions</GridItem>
-          </Grid>
-          <Grid
-            maxW={"800px"}
-            mx="auto"
-            w="100%"
-            gap={2}
-            templateColumns="repeat(16, 1fr)"
-          >
-            {data?.workstreamContributors
-              ? data?.workstreamContributors.map(({ workstream }) =>
-                  workstream.status === "Closed" ? undefined : (
-                    <WorkstreamRow
-                      workstream={workstream as Partial<Workstream>}
-                      fuxAvailable={balance?.amount}
-                      showInactive={false}
-                      key={workstream.id}
-                    />
-                  )
+        <Grid
+          gap={2}
+          templateColumns="repeat(16, 1fr)"
+          textTransform={"uppercase"}
+          letterSpacing={"0.1em"}
+          fontSize="sm"
+          p={"1em"}
+          maxW={"960px"}
+          margin={"auto"}
+        >
+          <GridItem colSpan={7}>Title</GridItem>
+          <GridItem colSpan={4}>Funding</GridItem>
+          <GridItem colSpan={2}>FUX</GridItem>
+          <GridItem colSpan={3}>Actions</GridItem>
+
+          {data?.workstreamContributors
+            ? data?.workstreamContributors.map(({ workstream }) =>
+                workstream.status === "Closed" ? undefined : (
+                  <WorkstreamRow
+                    workstream={workstream as Partial<Workstream>}
+                    fuxAvailable={balance?.amount}
+                    showInactive={false}
+                    key={workstream.id}
+                  />
                 )
-              : undefined}
-          </Grid>
-        </>
+              )
+            : undefined}
+        </Grid>
       )}
-    </VStack>
+    </Flex>
   );
 };
 

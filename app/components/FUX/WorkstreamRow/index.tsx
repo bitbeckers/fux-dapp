@@ -37,7 +37,7 @@ const WorkstreamRow: React.FC<{
       <GridItem
         display={"flex"}
         alignItems={"center"}
-        bg="#301A3A"
+        bg="plum.700"
         colSpan={7}
         pl={5}
       >
@@ -57,7 +57,7 @@ const WorkstreamRow: React.FC<{
         display={"flex"}
         alignItems={"center"}
         justifyContent={"flex-end"}
-        bg="#301A3A"
+        bg="plum.700"
         colSpan={4}
       >
         <Text fontFamily="mono" pr={"1em"}>{`${
@@ -68,7 +68,7 @@ const WorkstreamRow: React.FC<{
         display={"flex"}
         alignItems={"center"}
         justifyContent={"flex-end"}
-        bg="#301A3A"
+        bg="plum.700"
         colSpan={2}
       >
         <Text fontFamily="mono" pr={"1em"}>{`${commitment} %`}</Text>

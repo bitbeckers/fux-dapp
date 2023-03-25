@@ -13,7 +13,30 @@ export const theme = extendTheme({
     mono: `'bdr-mono', monospace`,
   },
   colors: {
-    primary: "#8E4EC6",
+    primary: {
+      "50": "#f9f6fc",
+      "100": "#e8dbf4",
+      "200": "#d4bcea",
+      "300": "#bc97dd",
+      "400": "#af81d6",
+      "500": "#9c63cd",
+      "600": "#894bbf",
+      "700": "#6e3d9a",
+      "800": "#5d3382",
+      "900": "#43255e",
+    },
+    plum: {
+      50: "#fde9ff",
+      100: "#eec3f0",
+      200: "#df9de1",
+      300: "#d476d5",
+      400: "#c851c4",
+      500: "#aa37ae",
+      600: "#7f2a89",
+      700: "#561d62",
+      800: "#310f3c",
+      900: "#110318",
+    },
   },
   styles: {
     global: {
@@ -23,7 +46,6 @@ export const theme = extendTheme({
         fontWeight: "300",
         fontFamily: `'stolzl', monospace`,
       },
-      a: { color: '#8E4EC6', },
       mono: {
         color: "white",
         fontWeight: "300",
@@ -44,7 +66,6 @@ export const theme = extendTheme({
     },
     Button: {
       defaultProps: {
-        colorScheme: "primary",
         variant: "solid",
         fontWeight: "400",
         fontFamily: "texturina",
@@ -70,6 +91,9 @@ export const theme = extendTheme({
       },
     },
     Text: {
+      defaultProps: {
+        colorScheme: "white",
+      },
       variants: {
         mono: () => ({
           fontFamily: `"BDR Mono", monotype`,

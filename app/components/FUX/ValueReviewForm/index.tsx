@@ -131,110 +131,118 @@ const ValueReviewForm: React.FC<{
 
   const reviewForm =
     contributors && contributors?.length > 0 ? (
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <>
         <Center>
           <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
             Distribute 100 points to rate value contribution
           </Text>
         </Center>
-        <FormControl>
-          <Grid gap={2} templateColumns="repeat(12, 1fr)">
-            <GridItem colSpan={5}>
-              <Text>User</Text>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <Text>Committed</Text>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <Text>vFUX</Text>
-            </GridItem>
-            <GridItem colSpan={1}>
-              <Text>Coordinator</Text>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <Text>Rating</Text>
-            </GridItem>
-            {contributors.map((contributor, index) => {
-              const address = contributor.contributor.id as `0x${string}`;
-              return address.toLowerCase() ===
-                user.toLowerCase() ? undefined : (
-                <Fragment key={index}>
-                  <GridItem colSpan={5}>
-                    <User
-                      address={address as `0x${string}`}
-                      direction="horizontal"
-                      displayAvatar={true}
-                    />
-                  </GridItem>
-                  <GridItem colSpan={2}>
-                    <Stat>
-                      <StatNumber>{`${
-                        contributor.commitment || 0
-                      }%`}</StatNumber>
-                    </Stat>
-                  </GridItem>
-                  <GridItem colSpan={2}>
-                    <Stat>
-                      <StatNumber>--%</StatNumber>
-                    </Stat>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    {coordinator?.toLowerCase() === address.toLowerCase() ? (
-                      <StarIcon mr={"1em"} />
-                    ) : undefined}
-                  </GridItem>
-                  <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
-                    <Controller
-                      name={`ratings.${address}`}
-                      control={control}
-                      rules={{ required: true }}
-                      key={`ratings.${address}`}
-                      render={({ field: { ref, ...restField } }) => (
-                        <NumberInput min={0} max={100} step={1} {...restField}>
-                          <NumberInputField
-                            ref={ref}
-                            name={restField.name}
-                            borderRadius={0}
-                            placeholder={
-                              formData[address.toLowerCase()]?.toString() ?? "0"
-                            }
-                          />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                      )}
-                    />
-                  </GridItem>
-                </Fragment>
-              );
-            })}
-          </Grid>
-        </FormControl>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormControl>
+            <Grid gap={2} templateColumns="repeat(12, 1fr)">
+              <GridItem colSpan={5}>
+                <Text>User</Text>
+              </GridItem>
+              <GridItem colSpan={2}>
+                <Text>Committed</Text>
+              </GridItem>
+              <GridItem colSpan={2}>
+                <Text>vFUX</Text>
+              </GridItem>
+              <GridItem colSpan={1}>
+                <Text>Coordinator</Text>
+              </GridItem>
+              <GridItem colSpan={2}>
+                <Text>Rating</Text>
+              </GridItem>
+              {contributors.map((contributor, index) => {
+                const address = contributor.contributor.id as `0x${string}`;
+                return address.toLowerCase() ===
+                  user.toLowerCase() ? undefined : (
+                  <Fragment key={index}>
+                    <GridItem colSpan={5}>
+                      <User
+                        address={address as `0x${string}`}
+                        direction="horizontal"
+                        displayAvatar={true}
+                      />
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                      <Stat>
+                        <StatNumber>{`${
+                          contributor.commitment || 0
+                        }%`}</StatNumber>
+                      </Stat>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                      <Stat>
+                        <StatNumber>--%</StatNumber>
+                      </Stat>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                      {coordinator?.toLowerCase() === address.toLowerCase() ? (
+                        <StarIcon mr={"1em"} />
+                      ) : undefined}
+                    </GridItem>
+                    <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
+                      <Controller
+                        name={`ratings.${address}`}
+                        control={control}
+                        rules={{ required: true }}
+                        key={`ratings.${address}`}
+                        render={({ field: { ref, ...restField } }) => (
+                          <NumberInput
+                            min={0}
+                            max={100}
+                            step={1}
+                            {...restField}
+                          >
+                            <NumberInputField
+                              ref={ref}
+                              name={restField.name}
+                              borderRadius={0}
+                              placeholder={
+                                formData[address.toLowerCase()]?.toString() ??
+                                "0"
+                              }
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                      />
+                    </GridItem>
+                  </Fragment>
+                );
+              })}
+            </Grid>
+          </FormControl>
 
-        <VStack w={"100%"} pt={4}>
-          <ButtonGroup>
-            <Button
-              isLoading={isSubmitting}
-              type="reset"
-              onClick={() => reset()}
-            >
-              Reset
-            </Button>
-            <Spacer />
-            <Button
-              isDisabled={total != 100}
-              isLoading={isSubmitting}
-              type="submit"
-            >
-              {total && total != 100
-                ? `${100 - total} / 100`
-                : "Submit evaluation"}
-            </Button>
-          </ButtonGroup>
-        </VStack>
-      </form>
+          <VStack w={"100%"} pt={4}>
+            <ButtonGroup>
+              <Button
+                isLoading={isSubmitting}
+                type="reset"
+                onClick={() => reset()}
+              >
+                Reset
+              </Button>
+              <Spacer />
+              <Button
+                isDisabled={total != 100}
+                isLoading={isSubmitting}
+                type="submit"
+              >
+                {total && total != 100
+                  ? `${100 - total} / 100`
+                  : "Submit evaluation"}
+              </Button>
+            </ButtonGroup>
+          </VStack>
+        </form>
+      </>
     ) : (
       <Text>No contributors found</Text>
     );
