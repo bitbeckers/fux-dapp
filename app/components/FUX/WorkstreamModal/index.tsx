@@ -89,7 +89,9 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
     ],
     overrides: {
-      value: ethers.utils.parseEther(formState.funding.toString()),
+      value: ethers.utils.parseEther(
+        formState.funding ? formState.funding.toString() : "0"
+      ),
     },
   });
 
@@ -211,7 +213,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                       {...restField}
                     >
                       <NumberInputField
-                        {...register("fuxGiven")}
+                        ref={ref}
                         name={restField.name}
                         borderRightRadius={0}
                       />
@@ -236,7 +238,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
               control={control}
               rules={{ required: false }}
               key={`funding`}
-              render={({ field: { onChange, ...restField } }) => (
+              render={({ field: { ref, ...restField } }) => (
                 <>
                   <FormHelperText
                     textColor={"white"}
@@ -255,13 +257,10 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                       precision={2}
                       step={0.05}
                       min={0}
-                      onChange={(_, numberValue) =>
-                        setValue("funding", numberValue)
-                      }
                       {...restField}
                     >
                       <NumberInputField
-                        {...register("funding")}
+                        ref={ref}
                         name={restField.name}
                         borderRightRadius={0}
                       />
