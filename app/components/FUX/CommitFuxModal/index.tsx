@@ -76,11 +76,15 @@ const CommitFuxModal: React.FC<{
     },
   });
 
-  const fuxChanged = _fuxGiven.eq(newFux);
+  console.log("New FUX: ", newFux);
+
+  const fuxChanged = newFux ? _fuxGiven.eq(BigNumber.from(newFux)) : false;
+
+  console.log("FUX Changed: ", fuxChanged);
   const maxValue = _fuxGiven.add(fuxAvailable).toNumber();
 
   const onSubmit = (e: FormData) => {
-    if (!BigNumber.from(e.fux).eq(_fuxGiven)) {
+    if (fuxChanged) {
       write?.();
     }
   };
@@ -120,7 +124,7 @@ const CommitFuxModal: React.FC<{
           Reset
         </Button>
         <Spacer />
-        <Button isLoading={isSubmitting} type="submit">
+        <Button isDisabled={fuxChanged} isLoading={isSubmitting} type="submit">
           Update FUX
         </Button>
       </ButtonGroup>
@@ -134,7 +138,7 @@ const CommitFuxModal: React.FC<{
       icon={<AddIcon />}
     ></IconButton>
   ) : (
-    <Button disabled={fuxChanged} onClick={onOpen} aria-label="Give FUX">
+    <Button onClick={onOpen} aria-label="Give FUX">
       Update FUX
     </Button>
   );

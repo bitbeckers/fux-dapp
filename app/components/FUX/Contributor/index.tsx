@@ -1,7 +1,3 @@
-import {
-  User as GraphUser,
-  WorkstreamContributor,
-} from "../../../.graphclient";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
 import {
