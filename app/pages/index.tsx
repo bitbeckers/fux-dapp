@@ -48,7 +48,7 @@ const Home: NextPage = () => {
     </Flex>
   );
 
-  const connectWalllet = (
+  const connectWallet = (
     <Flex direction={"column"} gap={2}>
       <Text fontWeight="500">Let&apos;s get connected.</Text>
       <ConnectWallet />
@@ -80,7 +80,7 @@ const Home: NextPage = () => {
             claimLink
           )
         ) : (
-          connectWalllet
+          connectWallet
         )}
       </Flex>
       <Box minW={"50%"} pl={[0, null, 12]} pt={[12, null, 0]}>
