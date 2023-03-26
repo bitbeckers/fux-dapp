@@ -32,6 +32,7 @@ const Start: NextPage = () => {
     },
   });
 
+
   const [result] = useQuery({
     query: UserDocument,
     variables: {
