@@ -27,8 +27,6 @@ type Ratings = {
 const parseEvaluations = (workstream: Workstream) => {
   let data: Ratings = {};
   const currentEvaluations = groupBy(workstream?.evaluations, "contributor.id");
-  console.log("CURRENT GROUPED: ", currentEvaluations);
-
   data = mapValues(currentEvaluations, (ratings) => meanBy(ratings, "rating"));
   console.log("AVERAGES: ", data);
 
@@ -38,9 +36,23 @@ const parseEvaluations = (workstream: Workstream) => {
 const calculateRelative = (data: Ratings) => {
   const total = _.sum(Object.values(data));
 
-  console.log("TOTAL: ", total);
+  const relative = mapValues(
+    data,
+    (value) => _.divide(Number(value), Number(total)) * 100
+  );
 
-  return mapValues(data, (value) => _.divide(Number(value), Number(total)));
+  console.log("RELATIVE: ", relative);
+
+  let sum = 0;
+  Object.entries(relative).forEach(([key, value], i) => {
+    if ((i = Object.keys(relative).length - 1)) {
+      relative[key] = 100 - sum;
+    }
+    relative[key] = Math.round(value);
+    sum = sum + relative[i];
+  });
+
+  return relative;
 };
 
 const FinalizeForm: React.FC<{
@@ -60,8 +72,8 @@ const FinalizeForm: React.FC<{
     functionName: "finalizeWorkstream",
     args: [
       workstream.id,
-      Object.keys(averages) as `0x${string}`[],
-      Object.values(averages),
+      Object.keys(relative) as `0x${string}`[],
+      Object.values(relative),
     ],
   });
 
@@ -79,9 +91,9 @@ const FinalizeForm: React.FC<{
     },
   });
 
-  const _contributors = Object.keys(averages);
-  const _ratings = Object.values(averages).map((rating) => +rating.toString());
-  const total = _ratings.length > 0 ? _ratings.reduce((a, b) => a + b, 0) : 0;
+  const _contributors = Object.keys(relative);
+  const _ratings = Object.values(relative);
+  const total = _.sum(Object.values(relative));
 
   const onSubmit = () => {
     if (total != 100) {
@@ -106,8 +118,6 @@ const FinalizeForm: React.FC<{
   const contributors = _workstream.contributors;
   const coordinator = _workstream.coordinator?.id;
   const funding = ethers.utils.formatEther(_workstream.funding);
-
-  console.log("Contributors: ", contributors);
 
   const finalizeForm =
     contributors && contributors?.length > 0 ? (
@@ -147,7 +157,7 @@ const FinalizeForm: React.FC<{
                 <GridItem colSpan={2}>
                   <Stat>
                     <StatNumber>
-                      {averages[address]?.toString() ?? "0"}
+                      {relative[address]?.toString() ?? "0"}
                     </StatNumber>
                   </Stat>
                 </GridItem>
@@ -166,7 +176,7 @@ const FinalizeForm: React.FC<{
                   {relative[address]
                     ? `${_.multiply(
                         Number(funding),
-                        relative[address]
+                        relative[address] / 100
                       )} ${nativeToken}`
                     : `0 ${nativeToken}`}
                 </GridItem>
