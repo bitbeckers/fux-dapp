@@ -68,10 +68,7 @@ const CommitFuxModal: React.FC<{
       error(e);
     },
     onSuccess() {
-      success(
-        "FUX Given",
-        `Committed ${variables?.args![1]} FUX to workstream`
-      );
+      success("FUX Given", `Committed ${newFux} FUX to workstream`);
     },
     onMutate() {
       onClose();

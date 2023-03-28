@@ -1,23 +1,66 @@
 import * as GraphClient from "../.graphclient";
 import Header from "../components/Header";
-import { theme } from "../theme";
 import Fonts from "../fonts";
-import { chains, wagmiClient } from "../utils/wagmi";
+import { theme } from "../theme";
+import "./index.css";
 import { ChakraProvider, Flex, Spacer, VStack } from "@chakra-ui/react";
 import { graphExchange } from "@graphprotocol/client-urql";
-import { darkTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  connectorsForWallets,
+  darkTheme,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
+import {
+  injectedWallet,
+  rainbowWallet,
+  walletConnectWallet,
+  metaMaskWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import type { AppProps } from "next/app";
-import { createClient, Provider as GraphProvider } from "urql";
-import { WagmiConfig } from "wagmi";
-import './index.css';
+import {
+  createClient as createGraphClient,
+  Provider as GraphProvider,
+} from "urql";
+import { createClient, configureChains, goerli, WagmiConfig } from "wagmi";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import { publicProvider } from "wagmi/providers/public";
+import { useEffect } from "react";
 
-const client = createClient({
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+
+export const { chains, provider } = configureChains(
+  [goerli],
+  [alchemyProvider({ apiKey: ALCHEMY_API_KEY! }), publicProvider()]
+);
+
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [metaMaskWallet({ chains }), walletConnectWallet({ chains })],
+  },
+  {
+    groupName: "Others",
+    wallets: [injectedWallet({ chains }), rainbowWallet({ chains })],
+  },
+]);
+
+export const wagmiClient = createClient({
+  autoConnect: false,
+  connectors,
+  provider,
+});
+
+const client = createGraphClient({
   url: "http://localhost:4000/graphql",
   exchanges: [graphExchange(GraphClient)],
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    wagmiClient.autoConnect();
+  }, [])
+
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
