@@ -1,6 +1,7 @@
 import { UserDocument } from "../../../.graphclient";
 import User from "../User";
 import {
+  Box,
   Flex,
   HStack,
   Link,
@@ -68,31 +69,35 @@ const FuxOverview: React.FC<{}> = ({}) => {
       pb={"2em"}
     >
       {!address || fetching ? undefined : (
-        <Flex flexWrap="wrap" direction={['column', null, "row"]}>
-          <User address={address} displayAvatar={true} />
-          <Stat p={"1em"}>
-            <StatLabel>FUX available</StatLabel>
-            <StatNumber fontFamily="mono" fontSize="xl" fontWeight="100" bg="#301A3A" p={3} w="auto">{`${
-              fuxBalance ? fuxBalance : "..."
-            } / 100 FUX`}</StatNumber>
-            {fuxBalance ? (
-              <></>
-            ) : (
-              <StatHelpText color="#BF7AF0">
-                <Link onClick={() => write?.()}>Claim FUX</Link>
-              </StatHelpText>
-            )}
-          </Stat>
-          <Stat p={"1em"}>
-            <StatLabel>vFUX earned</StatLabel>
-            <StatNumber fontFamily="mono" fontSize="xl" fontWeight="100" p={3} bg="#301A3A" w="8em">{`
-              ${vFuxBalance ? vFuxBalance : "0"}`}</StatNumber>
-            <NextLink href="/history" passHref>
-              <StatHelpText color="#BF7AF0">
-                <Link>View history</Link>
-              </StatHelpText>
-            </NextLink>
-          </Stat>
+        <Flex flexWrap="wrap" direction={['column', null, "row"]} w="100%" alignItems="center" justifyContent="center">
+          <Flex maxW="1200px" mx="auto" flexWrap="wrap" direction={['column', null, "row"]}>
+            <Box w="100%">
+              <User address={address} displayAvatar={true} />
+            </Box>
+            <Stat py={"1em"}>
+              <StatLabel>FUX Available</StatLabel>
+              <StatNumber fontFamily="mono" fontSize="lg" fontWeight="100" bg="#301A3A" p={3} my={2} w="10em">{`${
+                fuxBalance ? fuxBalance : "..."
+              } / 100 FUX`}</StatNumber>
+              {fuxBalance ? (
+                <></>
+              ) : (
+                <StatHelpText color="#BF7AF0">
+                  <Link onClick={() => write?.()}>Claim FUX</Link>
+                </StatHelpText>
+              )}
+            </Stat>
+            <Stat py={"1em"}>
+              <StatLabel>vFUX Earned</StatLabel>
+              <StatNumber fontFamily="mono" fontSize="lg" fontWeight="100" p={3} my={2} bg="#301A3A" w="10em">{`
+                ${vFuxBalance ? vFuxBalance : "0"}`}</StatNumber>
+              <NextLink href="/history" passHref>
+                <StatHelpText color="#BF7AF0">
+                  <Link>View history</Link>
+                </StatHelpText>
+              </NextLink>
+            </Stat>
+          </Flex>
         </Flex>
       )}
     </HStack>
