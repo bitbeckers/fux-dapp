@@ -54,11 +54,13 @@ const CommitFuxModal: React.FC<{
 
   const newFux = watch("fux");
 
+  console.log("NEW FUX: ", newFux);
+
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
     functionName: "commitToWorkstream",
-    args: [workstreamID, newFux],
+    args: [workstreamID, newFux ? newFux : 0],
   });
   const { data, write, variables } = useContractWrite({
     ...config,
@@ -76,15 +78,10 @@ const CommitFuxModal: React.FC<{
     },
   });
 
-  console.log("New FUX: ", newFux);
-
-  const fuxChanged = newFux ? _fuxGiven.eq(BigNumber.from(newFux)) : false;
-
-  console.log("FUX Changed: ", fuxChanged);
   const maxValue = _fuxGiven.add(fuxAvailable).toNumber();
 
   const onSubmit = (e: FormData) => {
-    if (fuxChanged) {
+    if (!_fuxGiven.eq(BigNumber.from(e.fux))) {
       write?.();
     }
   };
@@ -96,12 +93,22 @@ const CommitFuxModal: React.FC<{
           name={`fux`}
           control={control}
           rules={{ required: true }}
-          render={({ field: { ref, ...restField } }) => (
+          render={({ field: { ref, onChange, ...restField } }) => (
             <NumberInput
               step={1}
               min={0}
               max={maxValue}
               keepWithinRange={true}
+              inputMode="numeric"
+              precision={0}
+              pattern="[0-9]"
+              onChange={(valueAsString) => {
+                valueAsString === ""
+                  ? onChange(0)
+                  : onChange(
+                      Math.round(Number(valueAsString.replace(/\D/g, "")))
+                    );
+              }}
               {...restField}
             >
               <NumberInputField
@@ -124,7 +131,11 @@ const CommitFuxModal: React.FC<{
           Reset
         </Button>
         <Spacer />
-        <Button isDisabled={fuxChanged} isLoading={isSubmitting} type="submit">
+        <Button
+          isDisabled={_fuxGiven.eq(BigNumber.from(newFux))}
+          isLoading={isSubmitting}
+          type="submit"
+        >
           Update FUX
         </Button>
       </ButtonGroup>
