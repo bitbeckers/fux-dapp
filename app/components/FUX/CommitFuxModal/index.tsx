@@ -48,7 +48,7 @@ const CommitFuxModal: React.FC<{
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      fux: _fuxGiven.toNumber(),
+      fux: _fuxGiven ? _fuxGiven.toNumber() : 0,
     },
   });
 
