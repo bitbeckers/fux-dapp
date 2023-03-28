@@ -8,6 +8,7 @@ import { graphExchange } from "@graphprotocol/client-urql";
 import {
   connectorsForWallets,
   darkTheme,
+  getDefaultWallets,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -22,10 +23,10 @@ import {
   createClient as createGraphClient,
   Provider as GraphProvider,
 } from "urql";
-import { createClient, configureChains, goerli, WagmiConfig } from "wagmi";
+import { createClient, configureChains, WagmiConfig } from "wagmi";
+import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import { useEffect } from "react";
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
@@ -37,30 +38,27 @@ export const { chains, provider } = configureChains(
 const connectors = connectorsForWallets([
   {
     groupName: "Recommended",
-    wallets: [metaMaskWallet({ chains }), walletConnectWallet({ chains })],
-  },
-  {
-    groupName: "Others",
-    wallets: [injectedWallet({ chains }), rainbowWallet({ chains })],
+    wallets: [
+      metaMaskWallet({ chains }),
+      walletConnectWallet({ chains }),
+      injectedWallet({ chains }),
+      rainbowWallet({ chains }),
+    ],
   },
 ]);
 
 export const wagmiClient = createClient({
-  autoConnect: false,
+  autoConnect: true,
   connectors,
   provider,
 });
 
-const client = createGraphClient({
+const graphClient = createGraphClient({
   url: "http://localhost:4000/graphql",
   exchanges: [graphExchange(GraphClient)],
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
-  useEffect(() => {
-    wagmiClient.autoConnect();
-  }, [])
-
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
@@ -75,7 +73,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             overlayBlur: "small",
           })}
         >
-          <GraphProvider value={client}>
+          <GraphProvider value={graphClient}>
             <Flex direction="column" align="center" minH="100vh" w="100%">
               <Header />
               <VStack pb={75} w="100%">
