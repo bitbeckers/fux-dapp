@@ -47,7 +47,7 @@ const Resolve: NextPage = () => {
     <>
       <VStack w={"100%"}>
         <ValueHeader name={_workstream?.name ? _workstream.name : undefined} />
-        <VStack w={"70%"} maxW={"700px"}>
+        <VStack w={"100%"} maxW={"800px"}>
           <HStack paddingTop={"2em"} paddingBottom={"2em"}>
             <Stat p={"1em"}>
               <StatLabel>Coordinator</StatLabel>
