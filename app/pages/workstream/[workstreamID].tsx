@@ -124,12 +124,12 @@ const Workstream: NextPage = () => {
 
         <Flex direction={['column', null, 'column']} gap={"1em"}>
           <Flex direction={['column', null, 'row']} align={['center', null, 'center']} flexWrap="wrap">
-            <Stat w="160px">
-              <StatLabel>Committed</StatLabel>
-              <StatNumber bg="#301A3A" p={3} fontFamily="mono">{`
+            <Stat w="160px" mr={4}>
+              <StatLabel>FUX Committed</StatLabel>
+              <StatNumber bg="#301A3A" p={2} mt={2} fontFamily="mono" fontSize="md" fontWeight="100">{`
                 ${fuxGiven ? fuxGiven : "0"} FUX`}</StatNumber>
             </Stat>
-            <Box w="160px">
+            <Box w="160px" mt={8}>
               <CommitFuxModal
                 workstreamID={BigNumber.from(_workstream.id)}
                 fuxGiven={fuxGiven}
@@ -145,7 +145,7 @@ const Workstream: NextPage = () => {
               }}
               passHref
             >
-              <Button p={3} mt={[3, null, 0]} w="120px">
+              <Button p={2} mt={[3, null, 0]} w="160px">
                 <Link>EVALUATE</Link>
               </Button>
             </NextLink>
@@ -158,10 +158,11 @@ const Workstream: NextPage = () => {
               }}
               passHref
             >
-              <Button p={3} mt={[3, null, 0]} w="120px">
+              <Button p={2} mt={[3, null, 0]} w="160px">
                 <Link>FINALIZE</Link>
               </Button>
             </NextLink>
+
             ) : undefined}
           </Flex>
         </Flex>
