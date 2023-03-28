@@ -6,6 +6,7 @@ import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamCard from "../components/FUX/WorkstreamCard";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import {
+  Box,
   Flex,
   Divider,
   Accordion,
@@ -35,8 +36,11 @@ const History: NextPage = () => {
   console.log("History workstreams: ", workstreams);
 
   return (
-    <Flex direction={'column'} mx="auto" maxW="1200px" p={[6, null, 12]}>
+    <Box>
+    <Flex w="100vw">
       <FuxOverview />
+    </Flex>
+    <Flex direction={'column'} mx="auto" maxW="800px" p={[6, null, 12]}>
       <WorkstreamModal onCloseAction={reexecuteQuery} />
       <Divider />
 
@@ -53,7 +57,7 @@ const History: NextPage = () => {
       ) : (
         <>
           {workstreams && workstreams.length > 0 ? (
-            <Accordion w={"100%"} maxW={"800px"} allowToggle={true}>
+            <Accordion w={"100%"} allowToggle={true}>
               {workstreams.map((workstream, index) => (
                 <WorkstreamCard workstream={workstream} key={index} />
               ))}
@@ -67,6 +71,7 @@ const History: NextPage = () => {
       )}
       <Spacer />
     </Flex>
+    </Box>
   );
 };
 
