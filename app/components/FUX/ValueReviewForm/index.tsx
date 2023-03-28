@@ -139,32 +139,32 @@ const ValueReviewForm: React.FC<{
         </Center>
         <FormControl>
           <Grid gap={2} templateColumns="repeat(12, 1fr)">
-            <GridItem colSpan={5}>
+            <GridItem colSpan={8}>
               <Text>User</Text>
             </GridItem>
             <GridItem colSpan={2}>
               <Text>Committed</Text>
             </GridItem>
-            <GridItem colSpan={2}>
+            {/* <GridItem colSpan={2}>
               <Text>vFUX</Text>
-            </GridItem>
-            <GridItem colSpan={1}>
-              <Text>Coordinator</Text>
-            </GridItem>
+            </GridItem> */}
             <GridItem colSpan={2}>
-              <Text>Rating</Text>
+              <Text>vFUX Rating</Text>
             </GridItem>
             {contributors.map((contributor, index) => {
               const address = contributor.contributor.id as `0x${string}`;
               return address.toLowerCase() ===
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
-                  <GridItem colSpan={5}>
+                  <GridItem colSpan={8}>
                     <User
                       address={address as `0x${string}`}
                       direction="horizontal"
                       displayAvatar={true}
                     />
+                    {coordinator?.toLowerCase() === address.toLowerCase() ? (
+                      <StarIcon ml={"1em"} />
+                    ) : undefined}
                   </GridItem>
                   <GridItem colSpan={2}>
                     <Stat>
@@ -173,16 +173,11 @@ const ValueReviewForm: React.FC<{
                       }%`}</StatNumber>
                     </Stat>
                   </GridItem>
-                  <GridItem colSpan={2}>
+                  {/* <GridItem colSpan={2}>
                     <Stat>
                       <StatNumber>--%</StatNumber>
                     </Stat>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    {coordinator?.toLowerCase() === address.toLowerCase() ? (
-                      <StarIcon mr={"1em"} />
-                    ) : undefined}
-                  </GridItem>
+                  </GridItem> */}
                   <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
                     <Controller
                       name={`ratings.${address}`}

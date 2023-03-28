@@ -23,19 +23,21 @@ export const ContributorOverview: React.FC<{
   }
 
   return (
-    <Grid gap={6} templateColumns="repeat(12, 1fr)" w="100%" py={6}>
-      <GridItem colSpan={6}>
-        <Text>Contributor</Text>
+    <Grid gap={6} templateColumns="repeat(12, 1fr)" w="100%" minW={[null, null, '480px']} py={6}>
+      <GridItem colSpan={9} display="flex" flexDirection="row" alignItems="center">
+        <Text pr={6}>Contributor</Text>
+        <ContributorModal
+          workstreamID={BigNumber.from(workstream.id)}
+          workstreamName={workstream.name || ""}
+          contributors={workstream.contributors ?? []}
+        />
       </GridItem>
       <GridItem colSpan={3} textAlign="right">
         <Text>FUX</Text>
       </GridItem>
-      <GridItem colSpan={3} textAlign="right">
-        <Text>vFUX</Text>
-      </GridItem>
       {contributors.map((cont) => (
         <>
-          <GridItem colSpan={6}>
+          <GridItem colSpan={9}>
             <Flex align={"center"}>
               <User
                 address={cont.contributor.id as `0x${string}`}
@@ -60,20 +62,14 @@ export const ContributorOverview: React.FC<{
               <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
             </Stat>
           </GridItem>
+          {/* maybe show if evaulation open/finalized ?
           <GridItem colSpan={3} pt={4} textAlign="right">
             <Stat size={["sm", null, "sm"]} fontFamily="mono">
               <StatNumber>--%</StatNumber>
             </Stat>
-          </GridItem>
+          </GridItem> */}
         </>
       ))}
-      <GridItem>
-        <ContributorModal
-          workstreamID={BigNumber.from(workstream.id)}
-          workstreamName={workstream.name || ""}
-          contributors={workstream.contributors ?? []}
-        />
-      </GridItem>
     </Grid>
   );
 };
