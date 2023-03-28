@@ -86,6 +86,9 @@ const CommitFuxModal: React.FC<{
     }
   };
 
+  //regex string pattern to determine interger between 0 and maxValue
+  const regex = new RegExp(`^\\d{0,${maxValue.toString().length}}$`);
+
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl mb={"1em"}>
@@ -101,7 +104,6 @@ const CommitFuxModal: React.FC<{
               keepWithinRange={true}
               inputMode="numeric"
               precision={0}
-              pattern="[0-9]"
               onChange={(valueAsString) => {
                 valueAsString === ""
                   ? onChange(0)
