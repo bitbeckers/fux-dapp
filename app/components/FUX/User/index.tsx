@@ -16,20 +16,18 @@ const User: React.FC<{
   displayAvatar?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
 }> = ({ address, direction, displayAvatar, size }) => {
-  const {
-    data: name,
-    isError: nameError,
-    isLoading: nameLoading,
-  } = useEnsName({
+  const { data: ensName } = useEnsName({
     address,
     chainId: 1,
   });
+
   const {
     data: _avatar,
     isError: avatarError,
     isLoading: avatarLoading,
   } = useEnsAvatar({
     address,
+    chainId: 1,
   });
   const [avatar, setAvatar] = useState<string>();
   const toast = useToast();
@@ -56,7 +54,7 @@ const User: React.FC<{
       <VStack>
         {displayAvatar ? <Avatar name={address} src={avatar} /> : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
-          <Text mr={2}>{name ? name : `${address.slice(0, 6)}...`}</Text>{" "}
+          <Text mr={2}>{ensName ? ensName : `${address.slice(0, 6)}...`}</Text>{" "}
           <CopyIcon />
         </Button>
       </VStack>
@@ -69,7 +67,7 @@ const User: React.FC<{
         {displayAvatar ? <Avatar name={address} src={avatar} /> : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
           <Text mr={2} size={size}>
-            {name ? name : `${address.slice(0, 6)}...`}
+            {ensName ? ensName : `${address.slice(0, 6)}...`}
           </Text>{" "}
           <CopyIcon />
         </Button>

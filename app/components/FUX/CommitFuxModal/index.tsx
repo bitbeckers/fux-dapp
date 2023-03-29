@@ -68,10 +68,7 @@ const CommitFuxModal: React.FC<{
       error(e);
     },
     onSuccess() {
-      success(
-        "FUX Given",
-        `Committed ${variables?.args![1]} FUX to workstream`
-      );
+      success("FUX Given", `Committed ${newFux} FUX to workstream`);
     },
     onMutate() {
       onClose();
@@ -85,9 +82,6 @@ const CommitFuxModal: React.FC<{
       write?.();
     }
   };
-
-  //regex string pattern to determine interger between 0 and maxValue
-  const regex = new RegExp(`^\\d{0,${maxValue.toString().length}}$`);
 
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>

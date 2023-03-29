@@ -24,8 +24,6 @@ const Workstreams: NextPage = () => {
 
   const { data, fetching, error } = result;
 
-  console.log("WorkstreamsByUser: ", data);
-
   const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
     query: TokenBalanceDocument,
     variables: {

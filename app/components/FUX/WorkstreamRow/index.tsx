@@ -16,8 +16,6 @@ const WorkstreamRow: React.FC<{
   const { address: user } = useAccount();
   const { nativeToken } = useConstants();
 
-  console.log("workstream: ", workstream);
-
   if (!workstream) {
     return null;
   }
