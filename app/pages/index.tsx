@@ -13,7 +13,7 @@ import {
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useQuery } from "urql";
-import { useAccount } from "wagmi";
+import { useAccount, useEnsName } from "wagmi";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
@@ -23,6 +23,13 @@ const Home: NextPage = () => {
       address: address?.toLowerCase() || "",
     },
   });
+
+  const { data: ensName } = useEnsName({
+    address,
+    chainId: 1,
+  });
+
+  console.log(ensName);
 
   const { data, fetching, error } = result;
 
