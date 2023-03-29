@@ -27,6 +27,7 @@ const User: React.FC<{
     isLoading: avatarLoading,
   } = useEnsAvatar({
     address,
+    chainId: 1,
   });
   const [avatar, setAvatar] = useState<string>();
   const toast = useToast();
