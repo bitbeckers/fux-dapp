@@ -16,17 +16,22 @@ const User: React.FC<{
   displayAvatar?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
 }> = ({ address, direction, displayAvatar, size }) => {
-  console.log("ADDRESS: ", address);
   const {
     data: name,
     isError: nameError,
     isLoading: nameLoading,
   } = useEnsName({
-    address: address.toLowerCase() as `0x${string}`,
-    chainId: 1,
+    address: address,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onSettled: (data, error) => {
+      console.log(data, error);
+    },
+    onError: (err) => {
+      console.log(err);
+    },
   });
-
-  console.log("NAME: ", name, nameError, nameLoading);
 
   const {
     data: _avatar,

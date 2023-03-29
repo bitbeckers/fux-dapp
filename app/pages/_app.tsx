@@ -23,7 +23,7 @@ import {
   createClient as createGraphClient,
   Provider as GraphProvider,
 } from "urql";
-import { createClient, configureChains, WagmiConfig } from "wagmi";
+import { createClient, configureChains, WagmiConfig, mainnet } from "wagmi";
 import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
@@ -31,7 +31,7 @@ import { publicProvider } from "wagmi/providers/public";
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
 export const { chains, provider } = configureChains(
-  [goerli],
+  [goerli, mainnet],
   [alchemyProvider({ apiKey: ALCHEMY_API_KEY! }), publicProvider()]
 );
 
