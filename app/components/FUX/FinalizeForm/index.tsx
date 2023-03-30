@@ -14,6 +14,7 @@ import {
   Text,
   Stat,
   StatNumber,
+  Flex,
 } from "@chakra-ui/react";
 import { BigNumberish, ethers } from "ethers";
 import _, { groupBy, mapValues, meanBy } from "lodash";
@@ -25,12 +26,11 @@ type Ratings = {
 };
 
 const parseEvaluations = (workstream: Workstream) => {
-  let data: Ratings = {};
   const currentEvaluations = groupBy(workstream?.evaluations, "contributor.id");
-  data = mapValues(currentEvaluations, (ratings) => meanBy(ratings, "rating"));
-  console.log("AVERAGES: ", data);
 
-  return data;
+  return mapValues(currentEvaluations, (evaluation) =>
+    meanBy(evaluation, (e) => Number(e.rating))
+  ) as Ratings;
 };
 
 const calculateRelative = (data: Ratings) => {
@@ -40,8 +40,6 @@ const calculateRelative = (data: Ratings) => {
     data,
     (value) => _.divide(Number(value), Number(total)) * 100
   );
-
-  console.log("RELATIVE: ", relative);
 
   let sum = 0;
   Object.entries(relative).forEach(([key, value], i) => {
@@ -109,11 +107,8 @@ const FinalizeForm: React.FC<{
       return;
     }
 
-    console.log("WRITING");
     write?.();
   };
-
-  console.log("Workstream: ", workstream);
 
   const contributors = _workstream.contributors;
   const coordinator = _workstream.coordinator?.id;
@@ -122,34 +117,36 @@ const FinalizeForm: React.FC<{
   const finalizeForm =
     contributors && contributors?.length > 0 ? (
       <>
-        <Grid gap={2} templateColumns="repeat(12, 1fr)">
-          <GridItem colSpan={5}>
+        <Grid gap={2} templateColumns="repeat(16, 1fr)">
+          <GridItem colSpan={8}>
             <Text>Contributor</Text>
           </GridItem>
-          <GridItem colSpan={2}>
+          <GridItem colSpan={3}>
             <Text>Committed</Text>
           </GridItem>
           <GridItem colSpan={2}>
             <Text>vFUX</Text>
           </GridItem>
-          <GridItem colSpan={1}>
-            <Text>Coordinator</Text>
-          </GridItem>
-          <GridItem colSpan={2}>
+          <GridItem colSpan={3}>
             <Text>Funds</Text>
           </GridItem>
           {contributors.map((contributor, index) => {
             const address = contributor.contributor.id as `0x${string}`;
             return (
               <Fragment key={index}>
-                <GridItem colSpan={5}>
-                  <User
-                    address={address as `0x${string}`}
-                    direction="horizontal"
-                    displayAvatar={true}
-                  />
+                <GridItem colSpan={8}>
+                  <Flex align={"center"}>
+                    <User
+                      address={address as `0x${string}`}
+                      direction="horizontal"
+                      displayAvatar={true}
+                    />
+                    {coordinator?.toLowerCase() === address.toLowerCase() ? (
+                      <StarIcon ml={"1em"} />
+                    ) : undefined}
+                  </Flex>
                 </GridItem>
-                <GridItem colSpan={2}>
+                <GridItem colSpan={3}>
                   <Stat>
                     <StatNumber>{`${contributor.commitment || 0}%`}</StatNumber>
                   </Stat>
@@ -161,15 +158,10 @@ const FinalizeForm: React.FC<{
                     </StatNumber>
                   </Stat>
                 </GridItem>
-                <GridItem colSpan={1}>
-                  {coordinator?.toLowerCase() === address.toLowerCase() ? (
-                    <StarIcon mr={"1em"} />
-                  ) : undefined}
-                </GridItem>
                 <GridItem
                   bg="#301A3A"
                   display={"inline-grid"}
-                  colSpan={2}
+                  colSpan={3}
                   justifyContent="end"
                   alignContent="center"
                 >
@@ -177,7 +169,7 @@ const FinalizeForm: React.FC<{
                     ? `${_.multiply(
                         Number(funding),
                         relative[address] / 100
-                      )} ${nativeToken}`
+                      ).toFixed(4)} ${nativeToken}`
                     : `0 ${nativeToken}`}
                 </GridItem>
               </Fragment>
