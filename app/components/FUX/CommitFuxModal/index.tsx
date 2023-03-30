@@ -54,15 +54,17 @@ const CommitFuxModal: React.FC<{
 
   const newFux = watch("fux");
 
-  console.log("NEW FUX: ", newFux);
-
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
     functionName: "commitToWorkstream",
-    args: [workstreamID, newFux ? newFux : 0],
+    args: [workstreamID, newFux],
+    onError(error) {
+      console.log('Error', error)
+    },
   });
-  const { data, write, variables } = useContractWrite({
+  
+  const { data, write } = useContractWrite({
     ...config,
     onError(e) {
       error(e);

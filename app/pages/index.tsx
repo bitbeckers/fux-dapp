@@ -23,14 +23,6 @@ const Home: NextPage = () => {
       address: address?.toLowerCase() || "",
     },
   });
-
-  const { data: ensName } = useEnsName({
-    address,
-    chainId: 1,
-  });
-
-  console.log(ensName);
-
   const { data, fetching, error } = result;
 
   const claimLink = (
