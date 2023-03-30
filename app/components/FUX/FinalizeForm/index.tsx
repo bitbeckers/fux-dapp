@@ -25,15 +25,11 @@ type Ratings = {
 };
 
 const parseEvaluations = (workstream: Workstream) => {
-  let data: Ratings = {};
   const currentEvaluations = groupBy(workstream?.evaluations, "contributor.id");
 
-  console.log(currentEvaluations);
-  data = mapValues(currentEvaluations, (evaluation) =>
+  return mapValues(currentEvaluations, (evaluation) =>
     meanBy(evaluation, (e) => Number(e.rating))
-  );
-
-  return data;
+  ) as Ratings;
 };
 
 const calculateRelative = (data: Ratings) => {
