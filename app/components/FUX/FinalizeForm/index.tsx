@@ -27,8 +27,11 @@ type Ratings = {
 const parseEvaluations = (workstream: Workstream) => {
   let data: Ratings = {};
   const currentEvaluations = groupBy(workstream?.evaluations, "contributor.id");
-  data = mapValues(currentEvaluations, (ratings) => meanBy(ratings, "rating"));
-  console.log("AVERAGES: ", data);
+
+  console.log(currentEvaluations);
+  data = mapValues(currentEvaluations, (evaluation) =>
+    meanBy(evaluation, (e) => Number(e.rating))
+  );
 
   return data;
 };
@@ -40,8 +43,6 @@ const calculateRelative = (data: Ratings) => {
     data,
     (value) => _.divide(Number(value), Number(total)) * 100
   );
-
-  console.log("RELATIVE: ", relative);
 
   let sum = 0;
   Object.entries(relative).forEach(([key, value], i) => {
@@ -109,11 +110,8 @@ const FinalizeForm: React.FC<{
       return;
     }
 
-    console.log("WRITING");
     write?.();
   };
-
-  console.log("Workstream: ", workstream);
 
   const contributors = _workstream.contributors;
   const coordinator = _workstream.coordinator?.id;
@@ -177,7 +175,7 @@ const FinalizeForm: React.FC<{
                     ? `${_.multiply(
                         Number(funding),
                         relative[address] / 100
-                      )} ${nativeToken}`
+                      ).toFixed(4)} ${nativeToken}`
                     : `0 ${nativeToken}`}
                 </GridItem>
               </Fragment>
