@@ -157,7 +157,7 @@ const CommitFuxModal: React.FC<{
       icon={<AddIcon />}
     ></IconButton>
   ) : (
-    <Button onClick={onOpen} aria-label="Give FUX">
+    <Button onClick={onOpen} aria-label="Give FUX" w={"100%"}>
       Give FUX
     </Button>
   );
