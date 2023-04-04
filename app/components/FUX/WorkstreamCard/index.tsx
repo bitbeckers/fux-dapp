@@ -24,7 +24,21 @@ import {
 } from "@chakra-ui/react";
 import { BigNumber, ethers } from "ethers";
 import { groupBy, map, uniqBy } from "lodash";
+import { DateTime } from "luxon";
 import React from "react";
+
+const calculateTimeToDeadline = (timestamp?: number) => {
+  if (!timestamp || isNaN(timestamp)) {
+    return undefined;
+  }
+
+  const now = DateTime.now();
+  const deadline = DateTime.fromSeconds(Number(timestamp));
+
+  return deadline
+    .diff(now, ["months", "days", "hours", "minutes"])
+    .toFormat("d 'days ' h 'hours ' mm 'minutes'");
+};
 
 const WorkstreamCard: React.FC<{
   workstream: Partial<WorkstreamContributor>;
@@ -114,7 +128,12 @@ const WorkstreamCard: React.FC<{
           />
         </Flex> */}
         <Flex direction="column" alignItems={"flex-start"} py={3}>
-          <Text>Deadline: {_workstream.deadline.toString()}</Text>
+          <Text>
+            Deadline:{" "}
+            {DateTime.fromSeconds(
+              Number(_workstream.deadline)
+            ).toLocaleString()}
+          </Text>
           {_workstream.funding > 0 && (
             <Text>
               Funding:{" "}
