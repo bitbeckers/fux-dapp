@@ -20,6 +20,9 @@ import {
   NumberInputStepper,
   Spacer,
   Tooltip,
+  StatGroup,
+  Stat,
+  StatNumber,
 } from "@chakra-ui/react";
 import { BigNumber, BigNumberish } from "ethers";
 import { Controller, useForm } from "react-hook-form";
@@ -60,10 +63,10 @@ const CommitFuxModal: React.FC<{
     functionName: "commitToWorkstream",
     args: [workstreamID, newFux],
     onError(error) {
-      console.log('Error', error)
+      console.log("Error", error);
     },
   });
-  
+
   const { data, write } = useContractWrite({
     ...config,
     onError(e) {
@@ -87,7 +90,7 @@ const CommitFuxModal: React.FC<{
 
   const input = (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl mb={"1em"}>
+      <FormControl>
         <Controller
           name={`fux`}
           control={control}
@@ -123,7 +126,14 @@ const CommitFuxModal: React.FC<{
           )}
         />
       </FormControl>
-
+      <StatGroup>
+        <Stat>
+          <StatNumber fontFamily="mono" fontSize="md" fontWeight="100">{`${
+            maxValue - newFux || 0
+          } / ${maxValue} FUX available`}</StatNumber>
+        </Stat>
+      </StatGroup>
+      <Spacer p={"0.5em"} />
       <ButtonGroup justifyContent="space-around" w="100%">
         <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
           Reset
@@ -134,7 +144,7 @@ const CommitFuxModal: React.FC<{
           isLoading={isSubmitting}
           type="submit"
         >
-          Update FUX
+          Give FUX
         </Button>
       </ButtonGroup>
     </form>
@@ -148,19 +158,23 @@ const CommitFuxModal: React.FC<{
     ></IconButton>
   ) : (
     <Button onClick={onOpen} aria-label="Give FUX">
-      Update FUX
+      Give FUX
     </Button>
   );
 
   return (
     <>
-      <Tooltip hasArrow label="Update FUX Given" aria-label="Update FUX Given">
+      <Tooltip
+        hasArrow
+        label="How many FUX do you give?"
+        aria-label="Set FUX Given"
+      >
         {component}
       </Tooltip>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="#1D131D" />
         <ModalContent bg="#221527">
-          <ModalHeader>Update FUX Given</ModalHeader>
+          <ModalHeader>How many FUX do you give?</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{input}</ModalBody>
         </ModalContent>
