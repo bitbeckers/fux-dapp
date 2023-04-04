@@ -4,7 +4,6 @@ import {
   WorkstreamByIDDocument,
 } from "../../.graphclient";
 import CommitFuxModal from "../../components/FUX/CommitFuxModal";
-import { Contributor } from "../../components/FUX/Contributor";
 import { ContributorOverview } from "../../components/FUX/ContributorOverview";
 import { useConstants } from "../../utils/constants";
 import {
@@ -12,24 +11,15 @@ import {
   VStack,
   Text,
   Heading,
-  HStack,
-  ButtonGroup,
   Button,
   Link,
   Flex,
   Stat,
   StatLabel,
   StatNumber,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  TableContainer,
   Spinner,
 } from "@chakra-ui/react";
-import { BigNumber, BigNumberish, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import _ from "lodash";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";

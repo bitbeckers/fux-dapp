@@ -33,9 +33,9 @@ type FormData = {
 };
 
 const CommitFuxModal: React.FC<{
-  workstreamID: BigNumber;
-  fuxGiven: BigNumberish;
-  fuxAvailable: BigNumberish;
+  workstreamID?: BigNumber;
+  fuxGiven?: BigNumberish;
+  fuxAvailable?: BigNumberish;
   tiny?: boolean;
 }> = ({ workstreamID, fuxGiven, fuxAvailable, tiny }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -61,7 +61,7 @@ const CommitFuxModal: React.FC<{
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
     functionName: "commitToWorkstream",
-    args: [workstreamID, newFux],
+    args: [workstreamID || 0, newFux],
     onError(error) {
       console.log("Error", error);
     },
@@ -80,7 +80,7 @@ const CommitFuxModal: React.FC<{
     },
   });
 
-  const maxValue = _fuxGiven.add(fuxAvailable).toNumber();
+  const maxValue = _fuxGiven.add(fuxAvailable || 0).toNumber();
 
   const onSubmit = (e: FormData) => {
     if (!_fuxGiven.eq(BigNumber.from(e.fux))) {
@@ -116,7 +116,7 @@ const CommitFuxModal: React.FC<{
                 ref={ref}
                 name={restField.name}
                 borderRadius={0}
-                placeholder={fuxGiven.toString()}
+                placeholder={fuxGiven?.toString() || "0"}
               />
               <NumberInputStepper>
                 <NumberIncrementStepper />

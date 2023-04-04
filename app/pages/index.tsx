@@ -13,7 +13,7 @@ import {
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useQuery } from "urql";
-import { useAccount, useEnsName } from "wagmi";
+import { useAccount } from "wagmi";
 
 const Home: NextPage = () => {
   const { address } = useAccount();

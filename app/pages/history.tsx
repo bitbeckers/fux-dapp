@@ -4,11 +4,9 @@ import {
 } from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamCard from "../components/FUX/WorkstreamCard";
-import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import {
   Box,
   Flex,
-  Divider,
   Accordion,
   Heading,
   Spacer,

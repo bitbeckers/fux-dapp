@@ -16,8 +16,6 @@ import {
   useBoolean,
   Button,
   IconButton,
-  Heading,
-  Center,
 } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 import type { NextPage } from "next";

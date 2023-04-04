@@ -14,24 +14,9 @@ import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useQuery } from "urql";
-import { useAccount } from "wagmi";
-
-const calculateTimeToDeadline = (timestamp?: number) => {
-  if (!timestamp || isNaN(timestamp)) {
-    return undefined;
-  }
-
-  const now = DateTime.now();
-  const deadline = DateTime.fromSeconds(Number(timestamp));
-
-  return deadline
-    .diff(now, ["months", "days", "hours", "minutes"])
-    .toFormat("d 'days ' h 'hours ' mm 'minutes'");
-};
 
 const Resolve: NextPage = () => {
   const router = useRouter();
-  const { address: user } = useAccount();
   const { workstreamID } = router.query;
 
   const [result, reexecuteQuery] = useQuery({
