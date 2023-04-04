@@ -29,17 +29,21 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  HStack,
-  VStack,
   FormHelperText,
   Flex,
   Stat,
   StatGroup,
   StatNumber,
+  Icon,
+  IconButton,
+  InputRightElement,
+  Divider,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
+import { isAddress } from "ethers/lib/utils";
 import { DateTime } from "luxon";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
 import { RiInformationLine } from "react-icons/ri";
 import { useQuery } from "urql";
 import {
@@ -55,6 +59,7 @@ type FormData = {
   duration: string;
   funding: number;
   fuxGiven: number;
+  contributors: { address: string }[];
 };
 
 const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
@@ -68,7 +73,6 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     watch,
     register,
     reset,
-    setValue,
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
@@ -77,7 +81,13 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
       duration: DateTime.now().plus({ day: 1 }).toISODate(),
       funding: 0,
       fuxGiven: 0,
+      contributors: [{ address: "" }],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray<FormData>({
+    control,
+    name: "contributors",
   });
 
   const formState = watch();
@@ -88,7 +98,12 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     functionName: "mintWorkstream",
     args: [
       formState.name,
-      [address],
+      [
+        ...formState.contributors
+          .map((entry) => entry.address)
+          .filter((address) => isAddress(address)),
+        address,
+      ],
       formState.fuxGiven,
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
     ],
@@ -164,12 +179,13 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
         <Input
           id="name"
           mb={"1em"}
-          placeholder="name"
+          placeholder="Name"
           {...register("name", {
             required: "This is required",
             minLength: { value: 4, message: "Minimum length should be 4" },
           })}
         />
+
         <Flex align={"flex-start"} gap={"1em"}>
           <Flex justify={"space-between"} direction={"column"}>
             <FormHelperText
@@ -324,6 +340,60 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
             </Flex>
           </Flex>
         </Flex>
+
+        <Divider my={"0.5em"} />
+
+        <Text>Invite Contributors</Text>
+
+        {fields.map((field, index) => (
+          <InputGroup key={field.id} marginTop={"1em"}>
+            <Input
+              id="contributors"
+              defaultValue={`${field.address}`}
+              isInvalid={!isAddress(formState.contributors[index].address)}
+              {...register(`contributors.${index}.address`)}
+            />
+            {index == fields.length - 1 ? (
+              <InputRightElement>
+                <Tooltip
+                  hasArrow
+                  label="Add Another Contributor"
+                  aria-label="Add Another Contributor"
+                >
+                  <IconButton
+                    aria-label="Add another contributor"
+                    onClick={() => {
+                      if (!isAddress(formState.contributors[index].address)) {
+                        errorToast({
+                          name: "Invalid address",
+                          message: `${formState.contributors[index].address} is not valid`,
+                        });
+                        return;
+                      }
+                      append({ address: "" });
+                    }}
+                    icon={<Icon as={BsFillPersonPlusFill} />}
+                  />
+                </Tooltip>
+              </InputRightElement>
+            ) : (
+              <InputRightElement>
+                <Tooltip
+                  hasArrow
+                  label="Remove Contributor"
+                  aria-label="Remove Contributor"
+                >
+                  <IconButton
+                    aria-label="remove contributor"
+                    background={"red.500"}
+                    onClick={() => remove(index)}
+                    icon={<Icon as={BsFillPersonXFill} />}
+                  />
+                </Tooltip>
+              </InputRightElement>
+            )}
+          </InputGroup>
+        ))}
       </FormControl>
       <ButtonGroup marginTop={"1em"} justifyContent="space-around" w="100%">
         <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
