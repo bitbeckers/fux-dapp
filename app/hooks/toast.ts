@@ -27,8 +27,9 @@ export const useCustomToasts = () => {
       status: "error",
       duration: 5000,
       isClosable: true,
+      description: e.message,
     });
-    throw new Error(e.message);
+    console.error(e);
   };
   return { success, warning, error };
 };
