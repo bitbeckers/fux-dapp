@@ -99,7 +99,6 @@ const Workstreams: NextPage = () => {
   return (
     <VStack spacing={8} w={"100%"}>
       <FuxOverview />
-      <WorkstreamModal onCloseAction={reexecuteQuery} />
       <Divider />
       {fetching ? (
         <Spinner
@@ -210,6 +209,7 @@ const Workstreams: NextPage = () => {
           </Grid>
         </>
       )}
+      <WorkstreamModal onCloseAction={reexecuteQuery} />
     </VStack>
   );
 };
