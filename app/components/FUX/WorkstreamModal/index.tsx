@@ -32,6 +32,10 @@ import {
   HStack,
   VStack,
   FormHelperText,
+  Flex,
+  Stat,
+  StatGroup,
+  StatNumber,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { DateTime } from "luxon";
@@ -127,6 +131,13 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     (balance) => balance.token.name === "FUX"
   )?.amount;
 
+  const amountToSpend = () => {
+    let formatted = balance?.formatted ?? 0;
+    let margin = Number(formatted) - formState.funding;
+
+    return margin.toFixed(2);
+  };
+
   const onSubmit = () => {
     write?.();
     onClose();
@@ -159,9 +170,14 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
             minLength: { value: 4, message: "Minimum length should be 4" },
           })}
         />
-        <HStack align={"flex-start"}>
-          <VStack justify={"flex-start"}>
-            <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
+        <Flex align={"flex-start"} gap={"1em"}>
+          <Flex justify={"space-between"} direction={"column"}>
+            <FormHelperText
+              textColor={"white"}
+              w={"100%"}
+              display={"flex"}
+              mb={"1em"}
+            >
               Deadline
               <Tooltip label="Just an estimated time of delivery as reference for contributors. It has no other effect, such as triggering evaluations.">
                 <Box ml={2}>
@@ -182,9 +198,9 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                 },
               })}
             />
-          </VStack>
+          </Flex>
 
-          <VStack>
+          <Flex justify={"space-between"} direction={"column"}>
             <Controller
               name={`fuxGiven`}
               control={control}
@@ -226,65 +242,88 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                       <Text>FUX</Text>
                     </InputRightAddon>
                   </InputGroup>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    {`${fuxBalance} FUX to give`}
-                  </FormHelperText>
+                  <StatGroup>
+                    <Stat>
+                      <StatNumber
+                        fontFamily="mono"
+                        fontSize="xs"
+                        fontWeight="100"
+                        color={"#8e4ec6"}
+                      >
+                        {" "}
+                        {`${
+                          formState.fuxGiven
+                            ? fuxBalance - formState.fuxGiven
+                            : fuxBalance
+                        } FUX to give`}
+                      </StatNumber>
+                    </Stat>
+                  </StatGroup>
                 </>
               )}
             />
-
-            <Controller
-              name={`funding`}
-              control={control}
-              rules={{ required: false }}
-              key={`funding`}
-              render={({ field: { ref, ...restField } }) => (
-                <>
-                  <FormHelperText
-                    textColor={"white"}
-                    w={"100%"}
-                    display={"flex"}
-                  >
-                    Fund workstream
-                    <Tooltip label="Funding will auto-split to contributors based on evaluation">
-                      <Box ml={2}>
-                        <RiInformationLine />
-                      </Box>
-                    </Tooltip>
-                  </FormHelperText>
-                  <InputGroup>
-                    <NumberInput
-                      precision={2}
-                      step={0.05}
-                      min={0}
-                      {...restField}
+            <Flex justify={"space-between"} direction={"column"}>
+              <Controller
+                name={`funding`}
+                control={control}
+                rules={{ required: false }}
+                key={`funding`}
+                render={({ field: { ref, ...restField } }) => (
+                  <>
+                    <FormHelperText
+                      textColor={"white"}
+                      w={"100%"}
+                      display={"flex"}
                     >
-                      <NumberInputField
-                        ref={ref}
-                        name={restField.name}
-                        borderRightRadius={0}
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-                      <Text>{`${nativeToken}`}</Text>
-                    </InputRightAddon>
-                  </InputGroup>
-                  <FormHelperText textColor={"white"} w={"100%"}>
-                    {!balanceLoading
-                      ? `${parseFloat(balance?.formatted!).toFixed(2)} ${
-                          balance?.symbol
-                        } to fund`
-                      : "Loading"}
-                  </FormHelperText>
-                </>
-              )}
-            />
-          </VStack>
-        </HStack>
+                      Fund workstream
+                      <Tooltip label="Funding will auto-split to contributors based on evaluation">
+                        <Box ml={2}>
+                          <RiInformationLine />
+                        </Box>
+                      </Tooltip>
+                    </FormHelperText>
+                    <InputGroup>
+                      <NumberInput
+                        precision={2}
+                        step={0.05}
+                        min={0}
+                        max={Number(balance?.formatted)}
+                        {...restField}
+                      >
+                        <NumberInputField
+                          ref={ref}
+                          name={restField.name}
+                          borderRightRadius={0}
+                        />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                      <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
+                        <Text>{`${nativeToken}`}</Text>
+                      </InputRightAddon>
+                    </InputGroup>
+                    <StatGroup>
+                      <Stat>
+                        <StatNumber
+                          fontFamily="mono"
+                          fontSize="xs"
+                          fontWeight="100"
+                          color={"#8e4ec6"}
+                        >
+                          {!balanceLoading
+                            ? `${amountToSpend()} ${balance?.symbol} to fund`
+                            : "Loading"}
+                        </StatNumber>
+                      </Stat>
+                    </StatGroup>
+                  </>
+                )}
+              />
+            </Flex>
+          </Flex>
+        </Flex>
       </FormControl>
       <ButtonGroup marginTop={"1em"} justifyContent="space-around" w="100%">
         <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
