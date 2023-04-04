@@ -1,4 +1,4 @@
-import { Workstream, WorkstreamContributor } from "../../../.graphclient";
+import { Workstream } from "../../../.graphclient";
 import { useConstants } from "../../../utils/constants";
 import CommitFuxModal from "../CommitFuxModal";
 import ContributorModal from "../ContributorModal";
