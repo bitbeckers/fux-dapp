@@ -23,18 +23,7 @@ import { DateTime } from "luxon";
 import React, { Fragment } from "react";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
-const calculateTimeToDeadline = (timestamp?: number) => {
-  if (!timestamp || isNaN(timestamp)) {
-    return undefined;
-  }
 
-  const now = DateTime.now();
-  const deadline = DateTime.fromSeconds(Number(timestamp));
-
-  return deadline
-    .diff(now, ["months", "days", "hours", "minutes"])
-    .toFormat("d 'days ' h 'hours ' mm 'minutes'");
-};
 
 const StartEvaluation: React.FC<{
   workstream: Partial<WorkstreamContributor>;
