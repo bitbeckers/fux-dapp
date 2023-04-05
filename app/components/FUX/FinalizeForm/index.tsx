@@ -179,7 +179,7 @@ const FinalizeForm: React.FC<{
                   {relative[address]
                     ? `${_.multiply(
                         Number(funding),
-                        relative[address] / 100
+                        Number(relative[address]) / 100
                       ).toFixed(4)} ${nativeToken}`
                     : `0 ${nativeToken}`}
                 </GridItem>
