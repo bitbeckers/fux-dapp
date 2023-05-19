@@ -1,8 +1,9 @@
-import { Workstream, WorkstreamContributor } from "../../../.graphclient";
+import { Workstream } from "../../../.graphclient";
 import { useConstants } from "../../../utils/constants";
 import CommitFuxModal from "../CommitFuxModal";
 import ContributorModal from "../ContributorModal";
-import { Button, GridItem, Text } from "@chakra-ui/react";
+import { StarIcon } from "@chakra-ui/icons";
+import { Button, Flex, GridItem, Text } from "@chakra-ui/react";
 import { BigNumber, ethers } from "ethers";
 import NextLink from "next/link";
 import React from "react";
@@ -30,6 +31,8 @@ const WorkstreamRow: React.FC<{
 
   const commitment = contributor?.commitment ?? 0;
 
+  const coordinator = workstream?.coordinator?.id;
+
   return (
     <>
       <GridItem
@@ -45,9 +48,14 @@ const WorkstreamRow: React.FC<{
           }}
         >
           <Button variant={"link"}>
-            <Text mr={2} noOfLines={1}>
-              {workstream.name}
-            </Text>
+            <Flex direction="row">
+              <Text mr={2} noOfLines={1}>
+                {workstream.name}
+              </Text>
+              {coordinator?.toLowerCase() === user?.toLowerCase() ? (
+                <StarIcon />
+              ) : undefined}
+            </Flex>
           </Button>
         </NextLink>
       </GridItem>

@@ -1,46 +1,14 @@
 import { Workstream, WorkstreamContributor } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
-import {
-  contractAddresses,
-  contractABI,
-  useConstants,
-} from "../../../utils/constants";
-import User from "../User";
-import { StarIcon } from "@chakra-ui/icons";
-import {
-  Button,
-  Grid,
-  GridItem,
-  Text,
-  Stat,
-  StatNumber,
-  HStack,
-  StatLabel,
-} from "@chakra-ui/react";
-import { BigNumberish, ethers } from "ethers";
-import _, { groupBy, mapValues, meanBy } from "lodash";
-import { DateTime } from "luxon";
-import React, { Fragment } from "react";
+import { contractAddresses, contractABI } from "../../../utils/constants";
+import { Button, Text } from "@chakra-ui/react";
+import React from "react";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
-
-const calculateTimeToDeadline = (timestamp?: number) => {
-  if (!timestamp || isNaN(timestamp)) {
-    return undefined;
-  }
-
-  const now = DateTime.now();
-  const deadline = DateTime.fromSeconds(Number(timestamp));
-
-  return deadline
-    .diff(now, ["months", "days", "hours", "minutes"])
-    .toFormat("d 'days ' h 'hours ' mm 'minutes'");
-};
 
 const StartEvaluation: React.FC<{
   workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
   const toast = useCustomToasts();
-  const { nativeToken } = useConstants();
   const { address: user } = useAccount();
 
   const _workstream = workstream as Workstream;
@@ -73,10 +41,6 @@ const StartEvaluation: React.FC<{
   console.log("Workstream: ", workstream);
 
   const contributors = _workstream.contributors;
-  const coordinator = _workstream.coordinator?.id;
-  const funding = ethers.utils.formatEther(_workstream.funding);
-
-  console.log("Contributors: ", contributors);
 
   const startEvaluation =
     contributors && contributors?.length > 0 ? (

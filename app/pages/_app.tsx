@@ -8,7 +8,6 @@ import { graphExchange } from "@graphprotocol/client-urql";
 import {
   connectorsForWallets,
   darkTheme,
-  getDefaultWallets,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";

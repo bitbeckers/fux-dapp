@@ -3,9 +3,8 @@ import {
   User as GraphUser,
   WorkstreamContributor,
 } from "../../../.graphclient";
-import { ContributorOverview } from "../ContributorOverview";
 import { useConstants } from "../../../utils/constants";
-import { BigNumber, ethers } from "ethers";
+import { ContributorOverview } from "../ContributorOverview";
 import User from "../User";
 import {
   AccordionButton,
@@ -23,7 +22,9 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { ethers } from "ethers";
 import { groupBy, map, uniqBy } from "lodash";
+import { DateTime } from "luxon";
 import React from "react";
 
 const WorkstreamCard: React.FC<{
@@ -61,17 +62,11 @@ const WorkstreamCard: React.FC<{
   };
 
   const evaluationOverview = (evaluations: Evaluation[]) => {
-    console.log("Evalutaions: ", evaluations);
-
     const sortedContributors = uniqBy(evaluations, "contributor.id").map(
       (sorted) => sorted.contributor.id
     );
 
-    console.log("Sorted: ", sortedContributors);
-
     const groupedEvaluations = groupBy(evaluations, "creator.id");
-
-    console.log("Grouped: ", groupedEvaluations);
 
     const headers = (
       <Thead>
@@ -111,20 +106,20 @@ const WorkstreamCard: React.FC<{
         <AccordionIcon />
       </AccordionButton>
       <AccordionPanel pb={4}>
-        {/* <Flex direction="column" alignItems={"flex-start"} pb={2}>
-          <Heading size="md">Coordinator:</Heading>
-          <User
-            address={_workstream.coordinator?.id as `0x${string}`}
-            direction="horizontal"
-            displayAvatar={true}
-          />
-        </Flex> */}
         <Flex direction="column" alignItems={"flex-start"} py={3}>
-        <Text>Deadline: {_workstream.deadline.toString()}</Text>
-          { _workstream.funding > 0 && (
-          <Text>Funding: {`${
-            ethers.utils.formatEther(_workstream.funding).toString() || 0
-          } ${nativeToken}`}</Text>
+          <Text>
+            Deadline:{" "}
+            {DateTime.fromSeconds(
+              Number(_workstream.deadline)
+            ).toLocaleString()}
+          </Text>
+          {_workstream.funding > 0 && (
+            <Text>
+              Funding:{" "}
+              {`${
+                ethers.utils.formatEther(_workstream.funding).toString() || 0
+              } ${nativeToken}`}
+            </Text>
           )}
           <ContributorOverview workstream={_workstream} />
         </Flex>

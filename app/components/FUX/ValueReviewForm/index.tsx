@@ -145,9 +145,6 @@ const ValueReviewForm: React.FC<{
             <GridItem colSpan={2}>
               <Text>Committed</Text>
             </GridItem>
-            {/* <GridItem colSpan={2}>
-              <Text>vFUX</Text>
-            </GridItem> */}
             <GridItem colSpan={2}>
               <Text>vFUX Rating</Text>
             </GridItem>
@@ -157,14 +154,16 @@ const ValueReviewForm: React.FC<{
                 user.toLowerCase() ? undefined : (
                 <Fragment key={index}>
                   <GridItem colSpan={8}>
-                    <User
-                      address={address as `0x${string}`}
-                      direction="horizontal"
-                      displayAvatar={true}
-                    />
-                    {coordinator?.toLowerCase() === address.toLowerCase() ? (
-                      <StarIcon ml={"1em"} />
-                    ) : undefined}
+                    <Flex direction={"row"} alignItems={"center"} gap={"2"}>
+                      <User
+                        address={address as `0x${string}`}
+                        direction="horizontal"
+                        displayAvatar={true}
+                      />
+                      {coordinator?.toLowerCase() === address.toLowerCase() ? (
+                        <StarIcon />
+                      ) : undefined}
+                    </Flex>
                   </GridItem>
                   <GridItem colSpan={2}>
                     <Stat>
@@ -173,11 +172,6 @@ const ValueReviewForm: React.FC<{
                       }%`}</StatNumber>
                     </Stat>
                   </GridItem>
-                  {/* <GridItem colSpan={2}>
-                    <Stat>
-                      <StatNumber>--%</StatNumber>
-                    </Stat>
-                  </GridItem> */}
                   <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
                     <Controller
                       name={`ratings.${address}`}
