@@ -13,7 +13,7 @@ import {
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useQuery } from "urql";
-import { useAccount, useEnsName } from "wagmi";
+import { useAccount } from "wagmi";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
@@ -27,10 +27,10 @@ const Home: NextPage = () => {
 
   const claimLink = (
     <Flex direction={"column"} gap={2}>
-      <Text fontWeight="500">Claim FUX to get started.</Text>
+      <Text fontWeight="500">Get started.</Text>
       <NextLink href="/start" passHref>
         <Button p={"1em"} maxW={"xs"}>
-          <Link>Claim FUX</Link>
+          <Link>Enter</Link>
         </Button>
       </NextLink>
     </Flex>

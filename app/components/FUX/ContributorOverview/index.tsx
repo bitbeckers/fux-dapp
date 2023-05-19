@@ -23,14 +23,27 @@ export const ContributorOverview: React.FC<{
   }
 
   return (
-    <Grid gap={6} templateColumns="repeat(12, 1fr)" w="100%" minW={[null, null, '480px']} py={6}>
-      <GridItem colSpan={9} display="flex" flexDirection="row" alignItems="center">
+    <Grid
+      gap={6}
+      templateColumns="repeat(12, 1fr)"
+      w="100%"
+      minW={[null, null, "480px"]}
+      py={6}
+    >
+      <GridItem
+        colSpan={9}
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+      >
         <Text pr={6}>Contributor</Text>
-        <ContributorModal
-          workstreamID={BigNumber.from(workstream.id)}
-          workstreamName={workstream.name || ""}
-          contributors={workstream.contributors ?? []}
-        />
+        {workstream.status === "Closed" ? undefined : (
+          <ContributorModal
+            workstreamID={BigNumber.from(workstream.id)}
+            workstreamName={workstream.name || ""}
+            contributors={workstream.contributors ?? []}
+          />
+        )}
       </GridItem>
       <GridItem colSpan={3} textAlign="right">
         <Text>FUX</Text>

@@ -1,20 +1,31 @@
 import ConnectWallet from "../ConnectWallet";
-import { Box, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import WorkstreamModal from "../FUX/WorkstreamModal";
+import {
+  Box,
+  Flex,
+  Heading,
+  Link,
+  Spacer,
+  Text,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import NextLink from "next/link";
 
 const Header: React.FC<{}> = () => {
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
   return (
     <Flex
-      direction={"row"}
+      direction={{ base: "column", md: "row" }}
+      w={"100%"}
       as="nav"
-      w="100%"
-      p={6}
+      p={{ base: 3, lg: 6 }}
       justify="space-between"
       align="center"
       bg="#221527"
       flexWrap="wrap"
+      gap={"1em"}
     >
-      <Box w={["50%", null, "25%"]} order={"0"}>
+      <Flex gap={"1em"} direction={["column", "row"]}>
         <NextLink href="/" passHref>
           <Link>
             <Heading fontSize="4xl" fontWeight="900" fontFamily="">
@@ -22,17 +33,13 @@ const Header: React.FC<{}> = () => {
             </Heading>
           </Link>
         </NextLink>
-      </Box>
-      <Flex
-        order={[2, null, 1]}
-        my={[6, null, 0]}
-        direction={"row"}
-        align={"center"}
-        justify={["start", null, "center"]}
-        w={["100%", null, "50%"]}
-      >
+        {isSmallScreen ? undefined : (
+          <WorkstreamModal onCloseAction={() => {}} />
+        )}
+      </Flex>
+      <Flex gap={"2em"} order={{ base: 0, sm: 1, md: 0 }} margin={"auto"}>
         <NextLink href="/workstreams" passHref>
-          <Link mr={6}>
+          <Link>
             <Text fontSize="lg" color="primary">
               WORKSTREAMS
             </Text>
@@ -46,10 +53,7 @@ const Header: React.FC<{}> = () => {
           </Link>
         </NextLink>
       </Flex>
-      <Box w={["50%", null, "25%"]} order={[1, null, 2]} ml="auto">
-        {/* <ClaimRewards /> */}
-        <ConnectWallet />
-      </Box>
+      <ConnectWallet />
     </Flex>
   );
 };
