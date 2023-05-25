@@ -78,6 +78,7 @@ export interface FUXInterface extends utils.Interface {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "claimRewards()": FunctionFragment;
+    "closeWorkstream(uint256,address[])": FunctionFragment;
     "commitToWorkstream(uint256,uint256)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
     "finalizeWorkstream(uint256,address[],uint256[])": FunctionFragment;
@@ -122,6 +123,7 @@ export interface FUXInterface extends utils.Interface {
       | "balanceOf"
       | "balanceOfBatch"
       | "claimRewards"
+      | "closeWorkstream"
       | "commitToWorkstream"
       | "exists"
       | "finalizeWorkstream"
@@ -190,6 +192,10 @@ export interface FUXInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "claimRewards",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "closeWorkstream",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>[]]
   ): string;
   encodeFunctionData(
     functionFragment: "commitToWorkstream",
@@ -384,6 +390,10 @@ export interface FUXInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "closeWorkstream",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "commitToWorkstream",
     data: BytesLike
   ): Result;
@@ -495,6 +505,7 @@ export interface FUXInterface extends utils.Interface {
     "URI(string,uint256)": EventFragment;
     "Upgraded(address)": EventFragment;
     "VFuxClaimed(address,uint256)": EventFragment;
+    "WorkstreamCancelled(uint256)": EventFragment;
     "WorkstreamClosed(uint256)": EventFragment;
     "WorkstreamMinted(uint256,uint256,uint256,string)": EventFragment;
   };
@@ -518,6 +529,7 @@ export interface FUXInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "VFuxClaimed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WorkstreamCancelled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WorkstreamClosed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WorkstreamMinted"): EventFragment;
 }
@@ -731,6 +743,17 @@ export type VFuxClaimedEvent = TypedEvent<
 
 export type VFuxClaimedEventFilter = TypedEventFilter<VFuxClaimedEvent>;
 
+export interface WorkstreamCancelledEventObject {
+  workstreamID: BigNumber;
+}
+export type WorkstreamCancelledEvent = TypedEvent<
+  [BigNumber],
+  WorkstreamCancelledEventObject
+>;
+
+export type WorkstreamCancelledEventFilter =
+  TypedEventFilter<WorkstreamCancelledEvent>;
+
 export interface WorkstreamClosedEventObject {
   workstreamID: BigNumber;
 }
@@ -812,6 +835,12 @@ export interface FUX extends BaseContract {
     ): Promise<[BigNumber[]]>;
 
     claimRewards(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    closeWorkstream(
+      workstreamID: PromiseOrValue<BigNumberish>,
+      _contributors: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1035,6 +1064,12 @@ export interface FUX extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  closeWorkstream(
+    workstreamID: PromiseOrValue<BigNumberish>,
+    _contributors: PromiseOrValue<string>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   commitToWorkstream(
     workstreamID: PromiseOrValue<BigNumberish>,
     fuxGiven: PromiseOrValue<BigNumberish>,
@@ -1248,6 +1283,12 @@ export interface FUX extends BaseContract {
     ): Promise<BigNumber[]>;
 
     claimRewards(overrides?: CallOverrides): Promise<void>;
+
+    closeWorkstream(
+      workstreamID: PromiseOrValue<BigNumberish>,
+      _contributors: PromiseOrValue<string>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     commitToWorkstream(
       workstreamID: PromiseOrValue<BigNumberish>,
@@ -1596,6 +1637,11 @@ export interface FUX extends BaseContract {
     ): VFuxClaimedEventFilter;
     VFuxClaimed(user?: null, workstreamID?: null): VFuxClaimedEventFilter;
 
+    "WorkstreamCancelled(uint256)"(
+      workstreamID?: null
+    ): WorkstreamCancelledEventFilter;
+    WorkstreamCancelled(workstreamID?: null): WorkstreamCancelledEventFilter;
+
     "WorkstreamClosed(uint256)"(
       workstreamID?: null
     ): WorkstreamClosedEventFilter;
@@ -1645,6 +1691,12 @@ export interface FUX extends BaseContract {
     ): Promise<BigNumber>;
 
     claimRewards(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    closeWorkstream(
+      workstreamID: PromiseOrValue<BigNumberish>,
+      _contributors: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1864,6 +1916,12 @@ export interface FUX extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     claimRewards(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    closeWorkstream(
+      workstreamID: PromiseOrValue<BigNumberish>,
+      _contributors: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

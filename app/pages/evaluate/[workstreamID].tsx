@@ -1,4 +1,8 @@
-import { WorkstreamByIDDocument } from "../../.graphclient";
+import {
+  WorkstreamByIDDocument,
+  WorkstreamByIDQuery,
+} from "../../.graphclient";
+import { StartEvaluation } from "../../components/FUX/StartEvaluation";
 import User from "../../components/FUX/User";
 import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
@@ -28,6 +32,24 @@ const Resolve: NextPage = () => {
 
   const { data, fetching, error } = result;
   const _workstream = data?.workstream;
+
+  console.log(data);
+  const getForm = (data: WorkstreamByIDQuery | undefined) => {
+    if (!data?.workstream) return <Text>Workstream not found</Text>;
+
+    if (!data?.workstream?.status)
+      return <Text>Workstream status not found</Text>;
+
+    if (data?.workstream?.status && data.workstream.status === "Started")
+      return <StartEvaluation workstream={data.workstream} />;
+    if (data?.workstream?.status && data.workstream.status === "Evaluation")
+      return <ValueReviewForm workstream={data.workstream} />;
+    if (data?.workstream?.status && data.workstream.status === "Closed")
+      return <Text>Workstream is resolved</Text>;
+  };
+
+  const form = getForm(data);
+
   return _workstream ? (
     <>
       <VStack w={"100%"}>
@@ -57,7 +79,7 @@ const Resolve: NextPage = () => {
                 }`}</StatNumber>
             </Stat>
           </HStack>
-          <ValueReviewForm workstream={_workstream} />
+          {form}
         </VStack>
       </VStack>
     </>

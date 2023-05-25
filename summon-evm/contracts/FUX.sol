@@ -10,8 +10,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverU
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-import "hardhat/console.sol";
-
 error NotAllowed();
 error NonTransferableFux();
 error NotContributor();
@@ -59,6 +57,8 @@ contract FUX is
 
     event EvaluationSubmitted(uint256 workstreamID, address creator, address[] contributors, uint256[] ratings);
     event WorkstreamClosed(uint256 workstreamID);
+
+    event WorkstreamCancelled(uint256 workstreamID);
 
     event RewardsReserved(address user, uint256 amount);
     event RewardsClaimed(address user, uint256 amount);
@@ -122,9 +122,12 @@ contract FUX is
         availableRewards = balances[user];
     }
 
-    function uri(
-        uint256 tokenId
-    ) public view override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable) returns (string memory) {
+    function uri(uint256 tokenId)
+        public
+        view
+        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
+        returns (string memory)
+    {
         return super.uri(tokenId);
     }
 
@@ -174,7 +177,7 @@ contract FUX is
         // Add contributors
         uint256 contributorsLength = _contributors.length;
 
-        for (uint256 i = 0; i < contributorsLength; ) {
+        for (uint256 i = 0; i < contributorsLength;) {
             address contributor = _contributors[i];
 
             contributors[contributor][counter] = true;
@@ -193,14 +196,13 @@ contract FUX is
         emit WorkstreamMinted(counter, msg.value, deadline, "");
     }
 
-    function addContributors(
-        uint256 workstreamID,
-        address[] calldata _contributors
-    ) public isActiveWorkstream(workstreamID) {
-        Workstream storage workstream = workstreams[workstreamID];
-        if (workstream.creator != msg.sender) revert NotApprovedOrOwner();
+    function addContributors(uint256 workstreamID, address[] calldata _contributors)
+        public
+        isActiveWorkstream(workstreamID)
+    {
+        if (workstreams[workstreamID].creator != msg.sender) revert NotApprovedOrOwner();
         uint256 contributorsLength = _contributors.length;
-        for (uint256 i = 0; i < contributorsLength; ) {
+        for (uint256 i = 0; i < contributorsLength;) {
             contributors[_contributors[i]][workstreamID] = true;
             unchecked {
                 ++i;
@@ -231,17 +233,17 @@ contract FUX is
     function submitEvaluation(uint256 workstreamID, address[] memory _contributors, uint256[] memory ratings) public {
         if (!contributors[msg.sender][workstreamID]) revert NotContributor();
         if (commitments[msg.sender][workstreamID] == 0) revert NotAllowed();
-        if (_contributors.length == 0 || _contributors.length != ratings.length)
+        if (_contributors.length == 0 || _contributors.length != ratings.length) {
             revert InvalidInput("Array size mismatch");
+        }
 
         _submitEvaluations(workstreamID, _contributors, ratings);
     }
 
-    function finalizeWorkstream(
-        uint256 workstreamID,
-        address[] memory _contributors,
-        uint256[] memory vFuxGiven
-    ) public onlyCoordinator(workstreamID) {
+    function finalizeWorkstream(uint256 workstreamID, address[] memory _contributors, uint256[] memory vFuxGiven)
+        public
+        onlyCoordinator(workstreamID)
+    {
         Workstream storage workstream = workstreams[workstreamID];
         if (commitments[msg.sender][workstreamID] == 0) revert NotEnoughFux();
         if (workstream.state != WorkstreamState.Evaluation) revert NotAllowed();
@@ -254,7 +256,7 @@ contract FUX is
         workstream.exists = false;
 
         _returnFux(_contributors, workstreamID);
-        _payVFux(_contributors, vFuxGiven, workstreamID);
+        _payVFux(_contributors, vFuxGiven);
 
         if (funds > 0) {
             workstream.funds = 0;
@@ -266,16 +268,43 @@ contract FUX is
         emit WorkstreamClosed(workstreamID);
     }
 
-    function _submitEvaluations(
-        uint256 workstreamID,
-        address[] memory _contributors,
-        uint256[] memory ratings
-    ) internal {
+    function closeWorkstream(uint256 workstreamID, address[] memory _contributors)
+        public
+        onlyCoordinator(workstreamID)
+    {
+        Workstream storage workstream = workstreams[workstreamID];
+        if (commitments[msg.sender][workstreamID] == 0) revert NotEnoughFux();
+        if (workstream.state == WorkstreamState.Closed) revert NotAllowed();
+
+        uint256 funds = workstream.funds;
+        uint256 coordinatorCommitment = commitments[msg.sender][workstreamID];
+
+        commitments[msg.sender][workstreamID] = 0;
+        workstream.state = WorkstreamState.Closed;
+        workstream.exists = false;
+        workstream.funds = 0;
+
+        _returnFux(_contributors, workstreamID);
+
+        if (balanceOf(msg.sender, VFUX_TOKEN_ID) > 0) {
+            _burn(msg.sender, VFUX_TOKEN_ID, 100);
+        }
+
+        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, coordinatorCommitment, "");
+        payable(msg.sender).transfer(funds);
+
+        emit WorkstreamClosed(workstreamID);
+    }
+
+    function _submitEvaluations(uint256 workstreamID, address[] memory _contributors, uint256[] memory ratings)
+        internal
+    {
         if (_getTotal(ratings) != 100) revert InvalidInput("ratings != 100");
         _noSelfFuxing(_contributors);
 
-        if (_contributors.length == 0 || _contributors.length != ratings.length)
+        if (_contributors.length == 0 || _contributors.length != ratings.length) {
             revert InvalidInput("contributors, ratings");
+        }
 
         evaluations[msg.sender][workstreamID] = Evaluation(_contributors, ratings);
 
@@ -284,7 +313,7 @@ contract FUX is
 
     function _noSelfFuxing(address[] memory _contributors) internal view {
         uint256 size = _contributors.length;
-        for (uint256 i = 0; i < size; ) {
+        for (uint256 i = 0; i < size;) {
             if (_contributors[i] == msg.sender) revert NotAllowed();
             unchecked {
                 ++i;
@@ -292,11 +321,11 @@ contract FUX is
         }
     }
 
-    function _payVFux(address[] memory _contributors, uint256[] memory vFuxGiven, uint256 workstreamID) internal {
+    function _payVFux(address[] memory _contributors, uint256[] memory vFuxGiven) internal {
         if (_getTotal(vFuxGiven) != 100) revert NotAllowed();
         uint256 size = vFuxGiven.length;
 
-        for (uint256 i = 0; i < size; ) {
+        for (uint256 i = 0; i < size;) {
             _safeTransferFrom(msg.sender, _contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
             unchecked {
                 ++i;
@@ -306,7 +335,7 @@ contract FUX is
 
     function _returnFux(address[] memory _contributors, uint256 workstreamID) internal {
         uint256 size = _contributors.length;
-        for (uint256 i = 0; i < size; ) {
+        for (uint256 i = 0; i < size;) {
             address contributor = _contributors[i];
             uint256 commitment = commitments[contributor][workstreamID];
             commitments[contributor][workstreamID] = 0;
@@ -321,7 +350,7 @@ contract FUX is
     function _reserveFunds(address[] memory _contributors, uint256[] memory vFuxGiven, uint256 balance) internal {
         uint256 size = vFuxGiven.length;
         uint256 total = 0;
-        for (uint256 i = 0; i < size; ) {
+        for (uint256 i = 0; i < size;) {
             uint256 portion = (vFuxGiven[i] * balance) / 100;
             total += portion;
             balances[_contributors[i]] += portion;
@@ -346,7 +375,7 @@ contract FUX is
 
     function _getTotal(uint256[] memory values) internal pure returns (uint256 total) {
         uint256 len = values.length;
-        for (uint256 i = 0; i < len; ) {
+        for (uint256 i = 0; i < len;) {
             total += values[i];
             unchecked {
                 ++i;
@@ -354,13 +383,11 @@ contract FUX is
         }
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) public pure override {
+    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data)
+        public
+        pure
+        override
+    {
         revert NotAllowed();
     }
 
@@ -389,19 +416,20 @@ contract FUX is
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 
-    function onERC1155Received(
-        address _operator,
-        address _from,
-        uint256 _id,
-        uint256 _value,
-        bytes calldata _data
-    ) external pure returns (bytes4) {
+    function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
+        external
+        pure
+        returns (bytes4)
+    {
         return ERC1155_ACCEPTED;
     }
 
@@ -431,6 +459,7 @@ contract FUX is
         if (temp == WorkstreamState.Started) return "Started";
         if (temp == WorkstreamState.Evaluation) return "Evaluation";
         if (temp == WorkstreamState.Closed) return "Closed";
+
         return "";
     }
 }
