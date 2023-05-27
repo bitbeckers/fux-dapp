@@ -85,15 +85,11 @@ export const ContributorOverview: React.FC<{
               textAlign="right"
               fontFamily="mono"
             >
-              <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
+              <StatNumber>{`${cont.contributor.balances?.find(
+    (balance) => balance.token.name === "vFUX"
+  )?.amount || 0}%`}</StatNumber>
             </Stat>
           </GridItem>
-          {/* maybe show if evaulation open/finalized ?
-          <GridItem colSpan={3} pt={4} textAlign="right">
-            <Stat size={["sm", null, "sm"]} fontFamily="mono">
-              <StatNumber>--%</StatNumber>
-            </Stat>
-          </GridItem> */}
         </>
       ))}
     </Grid>
