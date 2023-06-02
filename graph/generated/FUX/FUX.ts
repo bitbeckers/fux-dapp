@@ -464,6 +464,24 @@ export class VFuxClaimed__Params {
   }
 }
 
+export class WorkstreamCancelled extends ethereum.Event {
+  get params(): WorkstreamCancelled__Params {
+    return new WorkstreamCancelled__Params(this);
+  }
+}
+
+export class WorkstreamCancelled__Params {
+  _event: WorkstreamCancelled;
+
+  constructor(event: WorkstreamCancelled) {
+    this._event = event;
+  }
+
+  get workstreamID(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
 export class WorkstreamClosed extends ethereum.Event {
   get params(): WorkstreamClosed__Params {
     return new WorkstreamClosed__Params(this);
@@ -1209,6 +1227,40 @@ export class ClaimRewardsCall__Outputs {
   _call: ClaimRewardsCall;
 
   constructor(call: ClaimRewardsCall) {
+    this._call = call;
+  }
+}
+
+export class CloseWorkstreamCall extends ethereum.Call {
+  get inputs(): CloseWorkstreamCall__Inputs {
+    return new CloseWorkstreamCall__Inputs(this);
+  }
+
+  get outputs(): CloseWorkstreamCall__Outputs {
+    return new CloseWorkstreamCall__Outputs(this);
+  }
+}
+
+export class CloseWorkstreamCall__Inputs {
+  _call: CloseWorkstreamCall;
+
+  constructor(call: CloseWorkstreamCall) {
+    this._call = call;
+  }
+
+  get workstreamID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _contributors(): Array<Address> {
+    return this._call.inputValues[1].value.toAddressArray();
+  }
+}
+
+export class CloseWorkstreamCall__Outputs {
+  _call: CloseWorkstreamCall;
+
+  constructor(call: CloseWorkstreamCall) {
     this._call = call;
   }
 }
