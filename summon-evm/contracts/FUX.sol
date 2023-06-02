@@ -270,9 +270,7 @@ contract FUX is
         _returnFux(_contributors, workstreamID);
 
         // Pay vFUX rewards to all contributors
-        _payVFux(_contributors, vFuxGiven, workstreamID);
-
-        // Reserve funds for both native and ERC20 tokens
+        _payVFux(_contributors, vFuxGiven);
 
         // Close the workstream
         workstream.state = WorkstreamState.Closed;
@@ -395,21 +393,27 @@ contract FUX is
         for (uint256 i = 0; i < size;) {
             address contributor = _contributors[i];
             uint256 commitment = commitments[_userWorkstreamIndex(contributor, workstreamID)];
-            commitments[_userWorkstreamIndex(contributor, workstreamID)] = 0;
 
-            _safeTransferFrom(address(this), contributor, FUX_TOKEN_ID, commitment, "");
+            if (commitment > 0) {
+                commitments[_userWorkstreamIndex(contributor, workstreamID)] = 0;
+
+                _safeTransferFrom(address(this), contributor, FUX_TOKEN_ID, commitment, "");
+            }
+
             unchecked {
                 ++i;
             }
         }
     }
 
-    function _payVFux(address[] memory _contributors, uint256[] memory vFuxGiven, uint256 workstreamID) internal {
+    function _payVFux(address[] memory _contributors, uint256[] memory vFuxGiven) internal {
         if (_getTotal(vFuxGiven) != 100) revert NotAllowed();
         uint256 size = vFuxGiven.length;
 
         for (uint256 i = 0; i < size;) {
-            _safeTransferFrom(msg.sender, _contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
+            if (vFuxGiven[i] > 0) {
+                _safeTransferFrom(msg.sender, _contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
+            }
             unchecked {
                 ++i;
             }
@@ -430,7 +434,7 @@ contract FUX is
         }
     }
 
-    function _noSelfFuxing(address[] memory _contributors) private view {
+    function _noSelfFuxing(address[] memory _contributors) internal view {
         uint256 size = _contributors.length;
         for (uint256 i = 0; i < size;) {
             if (_contributors[i] == msg.sender) revert NotAllowed();
@@ -440,8 +444,8 @@ contract FUX is
         }
     }
 
-    function _userWorkstreamIndex(address user, uint256 workstreamID) internal view returns (uint256) {
-        userWorkstreamIndex[user][workstreamID];
+    function _userWorkstreamIndex(address user, uint256 workstreamID) internal view returns (uint256 index) {
+        index = userWorkstreamIndex[user][workstreamID];
     }
 
     /**
