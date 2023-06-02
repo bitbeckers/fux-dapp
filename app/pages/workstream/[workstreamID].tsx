@@ -27,6 +27,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "urql";
 import { useAccount } from "wagmi";
+import { CloseButton } from "../../components/FUX/CloseButton";
 
 const Workstream: NextPage = () => {
   const router = useRouter();
@@ -63,6 +64,9 @@ const Workstream: NextPage = () => {
     );
   }
   const _workstream = data?.workstream;
+  const contributors = _workstream?.contributors;
+  const contributorAddresses = contributors?.map((contributor) => {return contributor.contributor.id}) ?? []
+
   const contributor = _workstream?.contributors?.find(
     (cont) => cont.contributor.id.toLowerCase() === user?.toLowerCase()
   );
@@ -141,6 +145,7 @@ const Workstream: NextPage = () => {
             </NextLink>
             {_workstream.coordinator?.id.toLowerCase() ===
             user?.toLowerCase() ? (
+             <>
               <NextLink
               href={{
                 pathname: "/finalize/[workstreamID]",
@@ -152,12 +157,18 @@ const Workstream: NextPage = () => {
                 <Link>FINALIZE</Link>
               </Button>
             </NextLink>
+            
+           <CloseButton workstreamId={_workstream.id} contributors={contributorAddresses} disabled={false}/>
+             </> 
+             
+            
+              
 
             ) : undefined}
           </Flex>
         </Flex>
         <Box p={[6, null, 12]}>
-          <ContributorOverview workstream={_workstream as Partial<Workstream>} />
+          <ContributorOverview workstream={_workstream as Partial<Workstream>}  />
         </Box>
       </VStack>
     </>
