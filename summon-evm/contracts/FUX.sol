@@ -84,6 +84,7 @@ contract FUX is
     event RewardsClaimed(address user, uint256 amount, address token);
 
     event StateUpdate(uint256 workstreamID, WorkstreamState state);
+    event UpdatedWorkstreamURI(uint256 workstreamID, string uri);
 
     struct Workstream {
         string name;
@@ -446,6 +447,10 @@ contract FUX is
     /**
      * CONFIGURATION FUNCTIONS
      */
+
+    function updateURI(uint256 workstreamID, string calldata newuri) public onlyRole(URI_SETTER_ROLE) {
+        emit UpdatedWorkstreamURI(workstreamID, newuri);
+    }
 
     function setURI(uint256 tokenID, string memory newuri) public onlyRole(URI_SETTER_ROLE) {
         _setURI(tokenID, newuri);
