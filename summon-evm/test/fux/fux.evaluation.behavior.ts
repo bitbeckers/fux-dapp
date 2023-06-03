@@ -1,81 +1,110 @@
 import { expect } from "chai";
-import { BigNumber, ethers } from "ethers";
 import { DateTime } from "luxon";
 
 import { setupTest } from "../setup";
+import { getDefaultValues } from "../utils";
 
 export function shouldBehaveLikeFuxEvaluation(): void {
-  it("only allows workstream coordinator to claim vFUX for evaluation and only when committed", async function () {
-    const { fux, owner, user } = await setupTest();
-    const contractWithUser = fux.connect(user);
+  describe("Evaluation", function () {
+    const { name, deadline, coordinatorCommitment, rewardTokens, rewardAmounts, metadataURI } = getDefaultValues();
 
-    await contractWithUser.mintFux();
+    it("only allows workstream coordinator to set the workstream to Evaluation so that no contributors can be added", async function () {
+      const { fux, deployer, owner, user } = await setupTest();
 
-    await contractWithUser.mintWorkstream(
-      "Test",
-      [user.address, owner.address],
-      10,
-      DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
-    );
+      const contractWithUser = fux.connect(user);
+      const contractWithDeployer = fux.connect(deployer);
 
-    await fux.connect(owner).mintFux();
+      const id = 1;
+      await contractWithUser.mintFux();
 
-    await expect(fux.connect(owner).mintVFux(1)).to.be.revertedWithCustomError(fux, "NotCoordinator");
+      await expect(
+        contractWithUser.updateContributors(id, [user.address, owner.address], true),
+      ).to.be.revertedWithCustomError(fux, "InvalidInput");
 
-    await contractWithUser.commitToWorkstream(1, 50);
+      await expect(
+        contractWithUser.mintWorkstream(
+          name,
+          [user.address, deployer.address, user.address],
+          coordinatorCommitment,
+          deadline,
+          rewardTokens,
+          rewardAmounts,
+          metadataURI,
+        ),
+      )
+        .to.emit(fux, "WorkstreamMinted")
+        .withArgs(id, deadline, rewardTokens, rewardAmounts, 0, metadataURI);
 
-    await expect(contractWithUser.mintVFux(1)).to.emit(fux, "VFuxClaimed").withArgs(user.address, 1);
-    expect(await contractWithUser.readWorkstreamState(1)).to.be.eq("Evaluation");
-    await expect(contractWithUser.mintVFux(1)).to.be.revertedWithCustomError(fux, "NotAllowed");
-  });
+      // Ensure that only the coordinator can set the workstream to Evaluation
+      await expect(contractWithDeployer.updateContributors(id, [owner.address], true)).to.be.revertedWithCustomError(
+        fux,
+        "NotCoordinator",
+      );
 
-  it("allows workstream contributor to submit evaluations", async function () {
-    const { fux, deployer, owner, user } = await setupTest();
-    const contractWithUser = fux.connect(user);
+      await expect(contractWithUser.updateContributors(id, [owner.address], true))
+        .to.emit(fux, "ContributorsUpdated")
+        .withArgs(id, [owner.address], true),
+        // Set the workstream to Evaluation
+        await expect(contractWithUser.setWorkstreamToEvaluation(id)).to.emit(fux, "StateUpdated").withArgs(id, 1);
 
-    await contractWithUser.mintFux();
+      // Ensure that no contributors can be added after the workstream is set to Evaluation
+      await expect(contractWithUser.updateContributors(id, [user.address], true)).to.be.revertedWithCustomError(
+        fux,
+        "NotAllowed",
+      );
+      await expect(contractWithDeployer.updateContributors(id, [user.address], true)).to.be.revertedWithCustomError(
+        fux,
+        "NotCoordinator",
+      );
+    });
 
-    await contractWithUser.mintWorkstream(
-      "Test",
-      [user.address, owner.address],
-      10,
-      DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
-    );
+    it("allows workstream contributor to submit evaluations", async function () {
+      const { fux, deployer, owner, user } = await setupTest();
 
-    await fux.connect(owner).mintFux();
+      const contractWithUser = fux.connect(user);
+      const contractWithDeployer = fux.connect(deployer);
+      const contractWithOwner = fux.connect(owner);
 
-    expect(await contractWithUser.balanceOf(user.address, 1)).to.be.eq(0);
+      const id = 1;
 
-    await expect(contractWithUser.submitEvaluation(1, [owner.address], [100])).to.not.be.reverted;
+      await contractWithUser.mintFux();
+      await contractWithDeployer.mintFux();
+      await contractWithOwner.mintFux();
 
-    await fux.connect(owner).commitToWorkstream(1, 42);
+      // Ensure that only the coordinator can set the workstream to Evaluation
+      await expect(
+        contractWithUser.updateContributors(id, [user.address, owner.address], true),
+      ).to.be.revertedWithCustomError(fux, "InvalidInput");
 
-    await expect(fux.connect(deployer).submitEvaluation(1, [owner.address], [100])).to.be.revertedWithCustomError(
-      fux,
-      "NotContributor",
-    );
+      await expect(
+        contractWithUser.mintWorkstream(
+          name,
+          [user.address, deployer.address, owner.address],
+          coordinatorCommitment,
+          deadline,
+          rewardTokens,
+          rewardAmounts,
+          metadataURI,
+        ),
+      )
+        .to.emit(fux, "WorkstreamMinted")
+        .withArgs(id, deadline, rewardTokens, rewardAmounts, 0, metadataURI);
 
-    await expect(contractWithUser.submitEvaluation(1, [owner.address], [100]))
-      .to.emit(fux, "EvaluationSubmitted")
-      .withArgs(1, user.address, [owner.address], [100]);
+      await contractWithDeployer.commitToWorkstream(1, 11);
+      await contractWithOwner.commitToWorkstream(1, 22);
 
-    await expect(contractWithUser.submitEvaluation(1, [user.address], [100])).to.be.revertedWithCustomError(
-      fux,
-      "NotAllowed",
-    );
+      // Remove owner from contributors
+      await expect(contractWithUser.updateContributors(id, [owner.address], false))
+        .to.emit(fux, "ContributorsUpdated")
+        .withArgs(id, [owner.address], false);
 
-    await expect(contractWithUser.submitEvaluation(1, [owner.address], [99])).to.be.revertedWithCustomError(
-      fux,
-      "InvalidInput",
-    );
+      // Set the workstream to Evaluation
+      await expect(contractWithUser.setWorkstreamToEvaluation(id)).to.emit(fux, "StateUpdated").withArgs(id, 1);
 
-    await expect(contractWithUser.submitEvaluation(1, [owner.address], [100]))
-      .to.emit(fux, "EvaluationSubmitted")
-      .withArgs(1, user.address, [owner.address], [100]);
-
-    const evaluation = await contractWithUser.getEvaluation(user.address, 1);
-
-    expect(evaluation.contributors).to.be.eql([owner.address]);
-    expect(evaluation.ratings).to.be.eql([BigNumber.from("100")]);
+      // Ensure that non-contributors cannot submit evaluations
+      await expect(contractWithDeployer.submitEvaluation(id, [user.address], [100])).to.not.be.reverted;
+      await expect(contractWithUser.submitEvaluation(id, [deployer.address], [100])).to.not.be.reverted;
+      await expect(contractWithOwner.submitEvaluation(id, [user.address], [100])).to.be.reverted;
+    });
   });
 }

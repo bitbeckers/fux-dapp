@@ -133,6 +133,13 @@ contract FUX is
     event FuxGiven(address user, uint256 workstreamID, uint256 amount);
 
     /**
+     * @dev Emitted when the user withdraws their FUX from a workstream.
+     * @param workstreamID The ID of the workstream from which the user withdrew their FUX.
+     * @param amount The amount of FUX withdrawn.
+     */
+    event FuxWithdrawn(address user, uint256 workstreamID, uint256 amount);
+
+    /**
      * @dev This event is emitted when a new workstream is minted
      * @param workstreamID The ID of the newly minted workstream
      * @param deadline The deadline for contributors to submit their evaluations
@@ -141,7 +148,12 @@ contract FUX is
      * @param metadataUri A URI pointing to metadata about the workstream
      */
     event WorkstreamMinted(
-        uint256 workstreamID, uint256 deadline, address[] rewardsToken, uint256[] rewards, string metadataUri
+        uint256 workstreamID,
+        uint256 deadline,
+        address[] rewardsToken,
+        uint256[] rewards,
+        uint256 value,
+        string metadataUri
     );
 
     /**
@@ -149,7 +161,7 @@ contract FUX is
      * @param workstreamID The ID of the workstream to which contributors were added
      * @param contributors An array of addresses of the contributors who were added
      */
-    event ContributorsAdded(uint256 workstreamID, address[] contributors);
+    event ContributorsUpdated(uint256 workstreamID, address[] contributors, bool add);
 
     /**
      * @dev This event is emitted when an evaluation is submitted for a workstream
@@ -182,7 +194,7 @@ contract FUX is
      * @param state The new state of the workstream
      * @notice The workstream can be in one of three states: Started, Evaluation, or Closed
      */
-    event StateUpdate(uint256 workstreamID, WorkstreamState state);
+    event StateUpdated(uint256 workstreamID, WorkstreamState state);
 
     /**
      * @dev This event is emitted when the URI of a workstream is updated
@@ -190,6 +202,14 @@ contract FUX is
      * @param uri The new URI of the workstream
      */
     event UpdatedWorkstreamURI(uint256 workstreamID, string uri);
+
+    /**
+     * @dev This event is emitted when a user wants to contest the proceedings of a workstream
+     * @param workstreamID The ID of the workstream being contested
+     * @param user The address of the user contesting the workstream
+     * @param uri The URI pointing to the contestation
+     */
+    event WorkstreamContested(uint256 workstreamID, address user, string uri);
 
     /**
      * @dev This struct defines the properties of a workstream
@@ -228,9 +248,19 @@ contract FUX is
     mapping(address => bool) internal isFuxer;
 
     /**
-     * @dev This mapping keeps track of the workstreams
+     * @dev This mapping keeps track of the workstreams based on uint256 IDs
      */
     mapping(uint256 => Workstream) internal workstreams;
+
+    /**
+     * @dev This mapping track the contributors of a workstream
+     */
+    mapping(uint256 => mapping(address => bool)) internal workstreamContributors;
+
+    /**
+     * @dev This mapping keeps track of the FUX committed by a user per workstream
+     */
+    mapping(address => mapping(uint256 => uint256)) internal userWorkstreamFux;
 
     /**
      * @dev This mapping keeps track of the index of a user's workstream
@@ -238,19 +268,9 @@ contract FUX is
     mapping(address => mapping(uint256 => uint256)) internal userWorkstreamIndex;
 
     /**
-     * @dev This mapping keeps track of the commitments made to a workstream by a user
-     */
-    mapping(uint256 => address) internal commitments;
-
-    /**
      * @dev This mapping keeps track of the evaluations submitted for a workstream
      */
-    mapping(uint256 => Evaluation) internal evaluations;
-
-    /**
-     * @dev This mapping keeps track of the contributors to a workstream
-     */
-    mapping(uint256 => bool) internal contributors;
+    mapping(address => mapping(uint256 => Evaluation)) internal evaluations;
 
     /**
      * @dev This mapping keeps track of the tokens used to reward contributors to a workstream
@@ -258,14 +278,9 @@ contract FUX is
     mapping(uint256 => address[]) internal workstreamTokens;
 
     /**
-     * @dev This mapping keeps track of the balances of a user's tokens available for withdrawal
-     */
-    mapping(address => mapping(address => uint256)) internal userBalances;
-
-    /**
      * @dev This mapping keeps track of the balances of a workstream's tokens
      */
-    mapping(uint256 => mapping(address => uint256)) internal workstreamBalances;
+    mapping(uint256 => mapping(address => uint256)) internal workstreamTokenBalances;
 
     /**
      * @dev This mapping keeps track of the URIs of the workstreams
@@ -306,7 +321,7 @@ contract FUX is
      * @return fuxGiven The amount of FUX tokens committed by the user to the workstream
      */
     function getCommitment(address user, uint256 workstreamID) external view returns (uint256 fuxGiven) {
-        fuxGiven = commitments[_userWorkstreamIndex(user, workstreamID)];
+        fuxGiven = userWorkstreamFux[user][workstreamID];
     }
 
     /**
@@ -316,7 +331,7 @@ contract FUX is
      * @return evaluation The Evaluation struct containing the user's evaluation
      */
     function getEvaluation(address user, uint256 workstreamID) external view returns (Evaluation memory evaluation) {
-        evaluation = evaluations[_userWorkstreamIndex(user, workstreamID)];
+        evaluation = evaluations[user][workstreamID];
     }
 
     /**
@@ -326,16 +341,6 @@ contract FUX is
      */
     function getWorkstream(uint256 workstreamID) external view returns (Workstream memory workstream) {
         workstream = workstreams[workstreamID];
-    }
-
-    /**
-     * @dev This function returns the available rewards for a user in a given token
-     * @param user The address of the user
-     * @param token The address of the token
-     * @return availableRewards The amount of rewards available to the user in the given token
-     */
-    function getUserRewards(address user, address token) external view returns (uint256 availableRewards) {
-        availableRewards = userBalances[user][token];
     }
 
     /**
@@ -349,7 +354,7 @@ contract FUX is
         view
         returns (uint256 availableRewards)
     {
-        availableRewards = workstreamBalances[workstreamID][token];
+        availableRewards = workstreamTokenBalances[workstreamID][token];
     }
 
     /**
@@ -422,33 +427,32 @@ contract FUX is
         uint256 workstreamID = _createWorkstream(name, deadline, rewardsTokens, rewards);
 
         // Add contributors
-        _addContributors(workstreamID, _contributors);
+        _updateContributors(workstreamID, _contributors, true);
 
         // Commit coordinator to workstream
         commitToWorkstream(workstreamID, coordinatorCommitment);
 
         setWorkstreamURI(workstreamID, metadataUri);
 
-        emit ContributorsAdded(workstreamID, _contributors);
-        emit WorkstreamMinted(workstreamID, deadline, rewardsTokens, rewards, metadataUri);
+        emit WorkstreamMinted(workstreamID, deadline, rewardsTokens, rewards, msg.value, metadataUri);
     }
 
     /**
-     * @dev Adds contributors to a workstream
+     * @dev Updates the contributor mapping
      * @param workstreamID The ID of the workstream
      * @param _contributors An array of addresses to add as contributors to the workstream
+     * @param add A boolean indicating whether to add or remove the contributors
      * @notice This function can only be called by the coordinator of the workstream
-     * @dev Emits a ContributorsAdded event upon successful addition of contributors to the workstream
+     * @dev Emits a ContributorsUpdated event upon successful addition of contributors to the workstream
      * @dev Throws a NotAllowed error if the workstream is not in the Started state
      */
-    function addContributors(uint256 workstreamID, address[] calldata _contributors)
+    function updateContributors(uint256 workstreamID, address[] calldata _contributors, bool add)
         external
         onlyCoordinator(workstreamID)
     {
         if (workstreams[workstreamID].state != WorkstreamState.Started) revert NotAllowed();
 
-        _addContributors(workstreamID, _contributors);
-        emit ContributorsAdded(workstreamID, _contributors);
+        _updateContributors(workstreamID, _contributors, add);
     }
 
     /**
@@ -461,13 +465,15 @@ contract FUX is
      * @dev Throws an InvalidInput error if the current commitment equals the new commitment
      */
     function commitToWorkstream(uint256 workstreamID, uint256 fuxGiven) public isActiveWorkstream(workstreamID) {
-        if (!contributors[_userWorkstreamIndex(msg.sender, workstreamID)]) revert NotContributor();
+        if (!workstreamContributors[workstreamID][msg.sender]) {
+            revert NotContributor();
+        }
 
-        uint256 currentFux = commitments[_userWorkstreamIndex(msg.sender, workstreamID)];
+        uint256 currentFux = userWorkstreamFux[msg.sender][workstreamID];
 
         if (currentFux == fuxGiven) revert InvalidInput("Current equals update");
 
-        commitments[_userWorkstreamIndex(msg.sender, workstreamID)] = fuxGiven;
+        userWorkstreamFux[msg.sender][workstreamID] = fuxGiven;
 
         if (currentFux < fuxGiven) {
             _safeTransferFrom(msg.sender, address(this), FUX_TOKEN_ID, fuxGiven - currentFux, "");
@@ -477,6 +483,32 @@ contract FUX is
         }
 
         emit FuxGiven(msg.sender, workstreamID, fuxGiven);
+    }
+
+    /**
+     * @dev Allows FUXxers to withdraw their FUX from a workstream at any time
+     * @param workstreamID the ID of the workstream to withdraw from
+     */
+    function withdrawFromWorkstream(uint256 workstreamID) public {
+        uint256 fuxGiven = userWorkstreamFux[msg.sender][workstreamID];
+        if (fuxGiven == 0) revert InvalidInput("No FUX to withdraw");
+        userWorkstreamFux[msg.sender][workstreamID] = 0;
+        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, fuxGiven, "");
+        emit FuxWithdrawn(msg.sender, workstreamID, fuxGiven);
+    }
+
+    /**
+     * @dev Allows the coordinator of a workstream to set the workstream to the Evaluation state.
+     * @param workstreamID The ID of the workstream to set to the Evaluation state.
+     * @notice This function can only be called by the coordinator of the workstream.
+     * @notice The workstream must be in the Started state to be set to the Evaluation state.
+     * @notice Emits a StateUpdated event with the new state of the workstream.
+     */
+    function setWorkstreamToEvaluation(uint256 workstreamID) public onlyCoordinator(workstreamID) {
+        if (workstreams[workstreamID].state != WorkstreamState.Started) revert NotAllowed();
+
+        workstreams[workstreamID].state = WorkstreamState.Evaluation;
+        emit StateUpdated(workstreamID, WorkstreamState.Evaluation);
     }
 
     /**
@@ -491,8 +523,10 @@ contract FUX is
      * @dev Throws an InvalidInput error if the length of the _contributors array does not match the length of the ratings array, or if the sum of the ratings is not equal to 100
      */
     function submitEvaluation(uint256 workstreamID, address[] memory _contributors, uint256[] memory ratings) public {
-        if (!contributors[_userWorkstreamIndex(msg.sender, workstreamID)]) revert NotContributor();
-        if (commitments[_userWorkstreamIndex(msg.sender, workstreamID)] == 0) revert NotAllowed();
+        if (!workstreamContributors[workstreamID][msg.sender]) {
+            revert NotContributor();
+        }
+        if (userWorkstreamFux[msg.sender][workstreamID] == 0) revert NotAllowed();
         if (_contributors.length == 0 || _contributors.length != ratings.length) {
             revert InvalidInput("Array size mismatch");
         }
@@ -500,7 +534,7 @@ contract FUX is
 
         _noSelfFuxing(_contributors);
 
-        evaluations[_userWorkstreamIndex(msg.sender, workstreamID)] = Evaluation(_contributors, ratings);
+        evaluations[msg.sender][workstreamID] = Evaluation(_contributors, ratings);
 
         emit EvaluationSubmitted(workstreamID, msg.sender, _contributors, ratings);
     }
@@ -527,20 +561,19 @@ contract FUX is
 
             for (uint256 i = 0; i < len; i++) {
                 address token = workstreamTokens[workstreamID][i];
-                uint256 funds = workstreamBalances[workstreamID][token];
+                uint256 funds = workstreamTokenBalances[workstreamID][token];
 
-                workstreamBalances[workstreamID][token] = 0;
-                _reserveFunds(_contributors, vFuxGiven, token, funds, workstreamID);
+                workstreamTokenBalances[workstreamID][token] = 0;
+                _payoutFunds(_contributors, vFuxGiven, token, funds, workstreamID);
             }
         }
 
         // Transfer the coordinator's commitment back to them
-        uint256 coordinatorCommitment = commitments[_userWorkstreamIndex(msg.sender, workstreamID)];
-        commitments[_userWorkstreamIndex(msg.sender, workstreamID)] = 0;
-        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, coordinatorCommitment, "");
+        uint256 coordinatorCommitment = userWorkstreamFux[msg.sender][workstreamID];
+        userWorkstreamFux[msg.sender][workstreamID] = 0;
 
         // Return FUX tokens to all contributors
-        _returnFux(_contributors, workstreamID);
+        _returnFux(workstreamID, _contributors);
 
         // Pay vFUX rewards to all contributors
         _payVFux(_contributors, vFuxGiven);
@@ -549,27 +582,62 @@ contract FUX is
         workstream.state = WorkstreamState.Closed;
         workstream.exists = false;
 
+        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, coordinatorCommitment, "");
+
         emit WorkstreamClosed(workstreamID, _contributors, vFuxGiven);
     }
 
     /**
-     * @dev Allows a user to claim their rewards for a given token
-     * @param token The address of the token to claim rewards for
-     * @notice This function can only be called by the user who earned the rewards
-     * @dev Emits a RewardsClaimed event upon successful claiming of rewards
+     * Allows the coordinator to close a workstream without paying VFUX and with returning funds to themselves
+     * @param workstreamID The ID of the workstream
+     * @param _contributors An array of addresses representing the contributors to the workstream
+     * @notice This function can only be called by the coordinator of the workstream
      */
-    function claimRewards(address token) external {
-        if (token == address(0)) {
-            uint256 owed = userBalances[token][msg.sender];
-            userBalances[token][msg.sender] = 0;
+    function closeWorkstream(uint256 workstreamID, address[] memory _contributors)
+        public
+        onlyCoordinator(workstreamID)
+    {
+        Workstream storage workstream = workstreams[workstreamID];
+        if (!workstream.exists && workstream.state == WorkstreamState.Closed) revert NotAllowed();
 
-            payable(msg.sender).transfer(owed);
-            emit RewardsClaimed(msg.sender, owed, token);
-        } else {
-            IERC20(token).transfer(msg.sender, userBalances[token][msg.sender]);
-            userBalances[token][msg.sender] = 0;
-            emit RewardsClaimed(msg.sender, userBalances[token][msg.sender], token);
+        address[] memory _targets = new address[](1);
+        _targets[0] = msg.sender;
+        // Calculate the total amount of funds in the workstream by mapping over all the reward tokens
+        if (workstreamTokens[workstreamID].length > 0) {
+            uint256 len = workstreamTokens[workstreamID].length;
+
+            for (uint256 i = 0; i < len; i++) {
+                address token = workstreamTokens[workstreamID][i];
+                uint256 funds = workstreamTokenBalances[workstreamID][token];
+
+                workstreamTokenBalances[workstreamID][token] = 0;
+                _payoutFunds(_targets, new uint256[](0), token, funds, workstreamID);
+            }
         }
+
+        // Return FUX tokens to all contributors
+        _returnFux(workstreamID, _contributors);
+
+        // Close the workstream
+        workstream.state = WorkstreamState.Closed;
+        workstream.exists = false;
+
+        // Transfer the coordinator's commitment back to them
+        uint256 coordinatorCommitment = userWorkstreamFux[msg.sender][workstreamID];
+        userWorkstreamFux[msg.sender][workstreamID] = 0;
+
+        _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, coordinatorCommitment, "");
+
+        emit WorkstreamClosed(workstreamID, _contributors, new uint256[](0));
+    }
+
+    /**
+     * @dev Posts a contest event for a workstream
+     * @param workstreamID The ID of the workstream
+     * @param _uri The URI of the contestation
+     */
+    function postContestation(uint256 workstreamID, string calldata _uri) public {
+        emit WorkstreamContested(workstreamID, msg.sender, _uri);
     }
 
     /**
@@ -581,15 +649,12 @@ contract FUX is
      * @param workstreamID The ID of the workstream
      * @param _contributors An array of addresses to add as contributors
      */
-    function _addContributors(uint256 workstreamID, address[] calldata _contributors) private {
-        uint256 contributorsLength = _contributors.length;
-
-        for (uint256 i = 0; i < contributorsLength;) {
-            contributors[_userWorkstreamIndex(_contributors[i], workstreamID)] = true;
-            unchecked {
-                ++i;
-            }
+    function _updateContributors(uint256 workstreamID, address[] memory _contributors, bool add) private {
+        uint256 len = _contributors.length;
+        for (uint256 i = 0; i < len; i++) {
+            workstreamContributors[workstreamID][_contributors[i]] = add;
         }
+        emit ContributorsUpdated(workstreamID, _contributors, add);
     }
 
     /**
@@ -623,12 +688,13 @@ contract FUX is
                 uint256 reward = rewards[i];
 
                 workstreamTokens[counter].push(token);
-                workstreamBalances[counter][token] = reward;
+                workstreamTokenBalances[counter][token] = reward;
             }
         }
 
         if (msg.value > 0) {
-            workstreamBalances[counter][address(0)] = msg.value;
+            workstreamTokens[counter].push(address(0));
+            workstreamTokenBalances[counter][address(0)] = msg.value;
         }
 
         workstreams[counter] = _workstream;
@@ -637,14 +703,15 @@ contract FUX is
     }
 
     /**
-     * @dev Reserves funds for a workstream
+     * @dev Pays out funds for a workstream
      * @param _contributors An array of addresses representing the contributors to the workstream
      * @param _vFux An array of values representing the percentage of funds to allocate to each contributor
      * @param _rewardToken The address of the reward token for the workstream
      * @param _totalFunds The total amount of funds to reserve
      * @param _workstreamID The ID of the workstream
+     * @dev this can become very expensive if there are a lot of contributors or tokens
      */
-    function _reserveFunds(
+    function _payoutFunds(
         address[] memory _contributors,
         uint256[] memory _vFux,
         address _rewardToken,
@@ -690,17 +757,16 @@ contract FUX is
 
     /**
      * @dev Returns FUX tokens to contributors
-     * @param _contributors An array of addresses representing the contributors to the workstream
      * @param workstreamID The ID of the workstream
      */
-    function _returnFux(address[] memory _contributors, uint256 workstreamID) private {
-        uint256 size = _contributors.length;
+    function _returnFux(uint256 workstreamID, address[] memory contributors) private {
+        uint256 size = contributors.length;
         for (uint256 i = 0; i < size;) {
-            address contributor = _contributors[i];
-            uint256 commitment = commitments[_userWorkstreamIndex(contributor, workstreamID)];
+            address contributor = contributors[i];
+            uint256 commitment = userWorkstreamFux[contributor][workstreamID];
 
             if (commitment > 0) {
-                commitments[_userWorkstreamIndex(contributor, workstreamID)] = 0;
+                userWorkstreamFux[contributor][workstreamID] = 0;
 
                 _safeTransferFrom(address(this), contributor, FUX_TOKEN_ID, commitment, "");
             }
@@ -716,13 +782,13 @@ contract FUX is
      * @param _contributors An array of addresses representing the contributors to the workstream
      * @param vFuxGiven An array of values representing the percentage of vFUX tokens to allocate to each contributor
      */
-    function _payVFux(address[] memory _contributors, uint256[] memory vFuxGiven) internal {
+    function _payVFux(address[] memory _contributors, uint256[] memory vFuxGiven) private {
         if (_getTotal(vFuxGiven) != 100) revert NotAllowed();
         uint256 size = vFuxGiven.length;
 
         for (uint256 i = 0; i < size;) {
             if (vFuxGiven[i] > 0) {
-                _safeTransferFrom(msg.sender, _contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
+                _mint(_contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
             }
             unchecked {
                 ++i;
@@ -857,6 +923,11 @@ contract FUX is
      * @param workstreamID The ID of the workstream
      */
     modifier onlyCoordinator(uint256 workstreamID) {
+        Workstream storage workstream = workstreams[workstreamID];
+
+        if (workstream.state == WorkstreamState.Closed || !workstream.exists) {
+            revert InvalidInput("Workstream does not exist");
+        }
         if (workstreams[workstreamID].creator != msg.sender) revert NotCoordinator();
         _;
     }
