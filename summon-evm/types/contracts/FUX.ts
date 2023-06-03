@@ -120,6 +120,7 @@ export interface FUXInterface extends utils.Interface {
       | "balanceOf"
       | "balanceOfBatch"
       | "claimRewards"
+      | "closeWorkstream"
       | "commitToWorkstream"
       | "exists"
       | "finalizeWorkstream"
@@ -387,6 +388,10 @@ export interface FUXInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "claimRewards",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "closeWorkstream",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
