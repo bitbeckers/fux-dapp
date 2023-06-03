@@ -438,6 +438,25 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint256",
+        name: "workstreamID",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "uri",
+        type: "string",
+      },
+    ],
+    name: "UpdatedWorkstreamURI",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "implementation",
@@ -649,6 +668,24 @@ const _abi = [
       },
     ],
     name: "claimRewards",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "workstreamID",
+        type: "uint256",
+      },
+      {
+        internalType: "address[]",
+        name: "_contributors",
+        type: "address[]",
+      },
+    ],
+    name: "closeWorkstream",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

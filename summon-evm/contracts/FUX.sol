@@ -12,8 +12,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverU
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-import "hardhat/console.sol";
-
 error NotAllowed();
 error NonTransferableFux();
 error NotContributor();
@@ -161,6 +159,12 @@ contract FUX is
         override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
         returns (string memory)
     {
+    function uri(uint256 tokenId)
+        public
+        view
+        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
+        returns (string memory)
+    {
         return super.uri(tokenId);
     }
 
@@ -241,6 +245,10 @@ contract FUX is
         emit EvaluationSubmitted(workstreamID, msg.sender, _contributors, ratings);
     }
 
+    function finalizeWorkstream(uint256 workstreamID, address[] memory _contributors, uint256[] memory vFuxGiven)
+        public
+        onlyCoordinator(workstreamID)
+    {
     function finalizeWorkstream(uint256 workstreamID, address[] memory _contributors, uint256[] memory vFuxGiven)
         public
         onlyCoordinator(workstreamID)
@@ -391,6 +399,7 @@ contract FUX is
     function _returnFux(address[] memory _contributors, uint256 workstreamID) private {
         uint256 size = _contributors.length;
         for (uint256 i = 0; i < size;) {
+        for (uint256 i = 0; i < size;) {
             address contributor = _contributors[i];
             uint256 commitment = commitments[_userWorkstreamIndex(contributor, workstreamID)];
 
@@ -502,9 +511,20 @@ contract FUX is
         override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable)
         returns (bool)
     {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 
+    function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
+        external
+        pure
+        returns (bytes4)
+    {
     function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
         external
         pure
@@ -539,6 +559,7 @@ contract FUX is
         if (temp == WorkstreamState.Started) return "Started";
         if (temp == WorkstreamState.Evaluation) return "Evaluation";
         if (temp == WorkstreamState.Closed) return "Closed";
+
         return "";
     }
 }

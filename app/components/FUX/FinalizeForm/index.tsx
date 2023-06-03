@@ -5,6 +5,7 @@ import {
   contractABI,
   useConstants,
 } from "../../../utils/constants";
+import { CloseButton } from "../CloseButton";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
 import {
@@ -15,11 +16,12 @@ import {
   Stat,
   StatNumber,
   Flex,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { BigNumberish, ethers } from "ethers";
 import _, { groupBy, mapValues, meanBy } from "lodash";
 import React, { Fragment } from "react";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 type Ratings = {
   [address: string]: BigNumberish;
@@ -69,6 +71,7 @@ const FinalizeForm: React.FC<{
 }> = ({ workstream }) => {
   const toast = useCustomToasts();
   const { nativeToken } = useConstants();
+  const { address } = useAccount();
 
   const _workstream = workstream as Workstream;
 
@@ -115,6 +118,16 @@ const FinalizeForm: React.FC<{
         `Contributor <> Evaluation mismatch`,
         `Did you evaluate everybody?`
       );
+      return;
+    }
+
+    if (_contributors.length === 0) {
+      toast.warning(`Contributor is empty`, `Are contributors committed?`);
+      return;
+    }
+
+    if (_ratings.length === 0) {
+      toast.warning(`Evaluation is empty`, `Are contributors evaluated?`);
       return;
     }
 
@@ -188,14 +201,22 @@ const FinalizeForm: React.FC<{
           })}
         </Grid>
 
-        <Button
-          isDisabled={total != 100}
-          isLoading={isLoading}
-          type="submit"
-          onClick={onSubmit}
-        >
-          Finalize workstream
-        </Button>
+        <ButtonGroup>
+          {" "}
+          <Button
+            isDisabled={total != 100}
+            isLoading={isLoading}
+            type="submit"
+            onClick={onSubmit}
+          >
+            Finalize workstream
+          </Button>
+          <CloseButton
+            workstreamId={workstream.id || ""}
+            contributors={contributors.map((c) => c.contributor.id)}
+            disabled={coordinator?.toLowerCase() !== address?.toLowerCase()}
+          />
+        </ButtonGroup>
       </>
     ) : (
       <Text>No contributors found</Text>
