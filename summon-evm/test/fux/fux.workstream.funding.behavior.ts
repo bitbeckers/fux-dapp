@@ -3,63 +3,82 @@ import { ethers } from "hardhat";
 import { DateTime } from "luxon";
 
 import { setupTest } from "../setup";
+import { getDefaultValues } from "../utils";
 
 export function shouldBehaveLikeFuxWorkstreamFunding(): void {
-  it("allows creator to fund a workstream with native token", async function () {
-    const { fux, deployer, owner, user } = await setupTest();
-    const contractWithUser = fux.connect(user);
+  describe("Workstream Funding", () => {
+    const { name, deadline, coordinatorCommitment, rewardTokens, rewardAmounts, metadataURI } = getDefaultValues();
 
-    expect(await ethers.provider.getBalance(fux.address)).to.be.eql(ethers.utils.parseEther("0"));
+    it("allows creator to fund a workstream with native token", async function () {
+      const { fux, deployer, owner, user } = await setupTest();
 
-    const deadline = DateTime.now().plus({ days: 7 }).toSeconds().toFixed();
-    const funding = ethers.utils.parseEther("10");
+      const contractWithUser = fux.connect(user);
 
-    await contractWithUser.mintFux();
-    await expect(
-      contractWithUser.mintWorkstream("Test", [user.address, deployer.address, owner.address], 10, deadline, {
-        value: funding,
-      }),
-    )
-      .to.emit(fux, "WorkstreamMinted")
-      .withArgs(1, funding, deadline, "");
+      expect(await ethers.provider.getBalance(fux.address)).to.be.eql(ethers.utils.parseEther("0"));
 
-    const workstream = await fux.getWorkstream(1);
+      const funding = ethers.utils.parseEther("10");
 
-    expect(workstream.funds).to.be.eql(ethers.utils.parseEther("10"));
-    expect(await ethers.provider.getBalance(fux.address)).to.be.eql(ethers.utils.parseEther("10"));
-  });
+      await contractWithUser.mintFux();
+      const contributors = [user.address, deployer.address, owner.address];
+      await expect(
+        contractWithUser.mintWorkstream(
+          name,
+          contributors,
+          coordinatorCommitment,
+          deadline,
+          rewardTokens,
+          rewardAmounts,
+          metadataURI,
+          {
+            value: funding,
+          },
+        ),
+      )
+        .to.emit(fux, "WorkstreamMinted")
+        .withArgs(1, deadline, rewardTokens, rewardAmounts, funding, metadataURI);
 
-  it("allows creator to allocate contributor funds", async function () {
-    const { fux, deployer, owner, user } = await setupTest();
-    const contractWithUser = fux.connect(user);
-    const contractWithDeployer = fux.connect(deployer);
-    const contractWithOwner = fux.connect(owner);
+      expect(await fux.getWorkstreamRewards(1, ethers.constants.AddressZero)).to.be.eql(ethers.utils.parseEther("10"));
+      expect(await ethers.provider.getBalance(fux.address)).to.be.eql(ethers.utils.parseEther("10"));
+    });
 
-    expect(await ethers.provider.getBalance(fux.address)).to.be.eql(ethers.utils.parseEther("0"));
-    await contractWithUser.mintFux();
+    it("allows creator to allocate contributor funds", async function () {
+      const { fux, deployer, owner, user } = await setupTest();
+      const contractWithUser = fux.connect(user);
+      const contractWithDeployer = fux.connect(deployer);
+      const contractWithOwner = fux.connect(owner);
 
-    await contractWithUser.mintWorkstream(
-      "Test",
-      [user.address, deployer.address, owner.address],
-      10,
-      DateTime.now().plus({ days: 7 }).toSeconds().toFixed(),
-      {
-        value: ethers.utils.parseEther("10"),
-      },
-    );
+      expect(await ethers.provider.getBalance(fux.address)).to.be.eql(ethers.utils.parseEther("0"));
+      await contractWithUser.mintFux();
+      await contractWithDeployer.mintFux();
+      await contractWithOwner.mintFux();
 
-    await contractWithUser.commitToWorkstream(1, 1);
-    await contractWithUser.mintVFux(1);
+      const contributors = [user.address, deployer.address, owner.address];
 
-    await contractWithDeployer.mintFux();
-    await contractWithDeployer.commitToWorkstream(1, 50);
+      await contractWithUser.mintWorkstream(
+        name,
+        contributors,
+        coordinatorCommitment,
+        deadline,
+        rewardTokens,
+        rewardAmounts,
+        metadataURI,
+        {
+          value: ethers.utils.parseEther("10"),
+        },
+      );
 
-    await contractWithOwner.mintFux();
-    await contractWithOwner.commitToWorkstream(1, 50);
+      await contractWithUser.commitToWorkstream(1, 1);
+      await contractWithDeployer.commitToWorkstream(1, 50);
+      await contractWithOwner.commitToWorkstream(1, 50);
 
-    await contractWithUser.finalizeWorkstream(1, [deployer.address, owner.address], [60, 40]);
+      expect(await fux.getWorkstreamRewards(1, ethers.constants.AddressZero)).to.be.eql(ethers.utils.parseEther("10"));
 
-    expect(await fux.getRewards(deployer.address)).to.be.eql(ethers.utils.parseEther("6"));
-    expect(await fux.getRewards(owner.address)).to.be.eql(ethers.utils.parseEther("4"));
+      await expect(() =>
+        contractWithUser.finalizeWorkstream(1, [deployer.address, owner.address], [60, 40]),
+      ).to.changeEtherBalances(
+        [deployer.address, owner.address],
+        [ethers.utils.parseEther("6"), ethers.utils.parseEther("4")],
+      );
+    });
   });
 }
