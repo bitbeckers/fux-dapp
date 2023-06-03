@@ -31,7 +31,7 @@ export const ContributorOverview: React.FC<{
       py={6}
     >
       <GridItem
-        colSpan={9}
+        colSpan={6}
         display="flex"
         flexDirection="row"
         alignItems="center"
@@ -48,9 +48,12 @@ export const ContributorOverview: React.FC<{
       <GridItem colSpan={3} textAlign="right">
         <Text>FUX</Text>
       </GridItem>
+      <GridItem colSpan={3} textAlign="right">
+        <Text>vFUX</Text>
+      </GridItem>
       {contributors.map((cont) => (
         <>
-          <GridItem colSpan={9}>
+          <GridItem colSpan={6}>
             <Flex align={"center"}>
               <User
                 address={cont.contributor.id as `0x${string}`}
@@ -75,12 +78,18 @@ export const ContributorOverview: React.FC<{
               <StatNumber>{`${cont.commitment || 0}%`}</StatNumber>
             </Stat>
           </GridItem>
-          {/* maybe show if evaulation open/finalized ?
-          <GridItem colSpan={3} pt={4} textAlign="right">
-            <Stat size={["sm", null, "sm"]} fontFamily="mono">
-              <StatNumber>--%</StatNumber>
+          <GridItem colSpan={3}>
+            <Stat
+              size={["sm", null, "sm"]}
+              pt={4}
+              textAlign="right"
+              fontFamily="mono"
+            >
+              <StatNumber>{`${cont.contributor.balances?.find(
+    (balance) => balance.token.name === "vFUX"
+  )?.amount || 0}%`}</StatNumber>
             </Stat>
-          </GridItem> */}
+          </GridItem>
         </>
       ))}
     </Grid>
