@@ -3,9 +3,9 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155SupplyUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverUpgradeable.sol";
 
@@ -97,10 +97,10 @@ enum WorkstreamState {
  * This contract implements the FUX token and the VFUX token, which are ERC-1155 tokens used to reward contributors to workstreams.
  */
 contract FUX is
+    ReentrancyGuard,
     Initializable,
     ERC1155Upgradeable,
     AccessControlUpgradeable,
-    ERC1155SupplyUpgradeable,
     ERC1155URIStorageUpgradeable,
     ERC1155ReceiverUpgradeable,
     UUPSUpgradeable
@@ -300,7 +300,6 @@ contract FUX is
     function initialize() public initializer {
         __ERC1155_init("");
         __AccessControl_init();
-        __ERC1155Supply_init();
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -422,7 +421,7 @@ contract FUX is
         address[] calldata rewardsTokens,
         uint256[] calldata rewards,
         string memory metadataUri
-    ) public payable {
+    ) public payable nonReentrant {
         // Create workstream
         uint256 workstreamID = _createWorkstream(name, deadline, rewardsTokens, rewards);
 
@@ -551,6 +550,7 @@ contract FUX is
     function finalizeWorkstream(uint256 workstreamID, address[] memory _contributors, uint256[] memory vFuxGiven)
         public
         onlyCoordinator(workstreamID)
+        nonReentrant
     {
         Workstream storage workstream = workstreams[workstreamID];
         if (!workstream.exists && workstream.state == WorkstreamState.Closed) revert NotAllowed();
@@ -596,9 +596,14 @@ contract FUX is
     function closeWorkstream(uint256 workstreamID, address[] memory _contributors)
         public
         onlyCoordinator(workstreamID)
+        nonReentrant
     {
         Workstream storage workstream = workstreams[workstreamID];
         if (!workstream.exists && workstream.state == WorkstreamState.Closed) revert NotAllowed();
+
+        // Transfer the coordinator's commitment back to them
+        uint256 coordinatorCommitment = userWorkstreamFux[msg.sender][workstreamID];
+        userWorkstreamFux[msg.sender][workstreamID] = 0;
 
         address[] memory _targets = new address[](1);
         _targets[0] = msg.sender;
@@ -621,10 +626,6 @@ contract FUX is
         // Close the workstream
         workstream.state = WorkstreamState.Closed;
         workstream.exists = false;
-
-        // Transfer the coordinator's commitment back to them
-        uint256 coordinatorCommitment = userWorkstreamFux[msg.sender][workstreamID];
-        userWorkstreamFux[msg.sender][workstreamID] = 0;
 
         _safeTransferFrom(address(this), msg.sender, FUX_TOKEN_ID, coordinatorCommitment, "");
 
@@ -951,7 +952,7 @@ contract FUX is
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) internal override(ERC1155Upgradeable, ERC1155SupplyUpgradeable) {
+    ) internal override(ERC1155Upgradeable) {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
