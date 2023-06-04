@@ -75,7 +75,6 @@ export interface FUXInterface extends utils.Interface {
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "closeWorkstream(uint256,address[])": FunctionFragment;
     "commitToWorkstream(uint256,uint256)": FunctionFragment;
-    "exists(uint256)": FunctionFragment;
     "finalizeWorkstream(uint256,address[],uint256[])": FunctionFragment;
     "getCommitment(address,uint256)": FunctionFragment;
     "getEvaluation(address,uint256)": FunctionFragment;
@@ -103,7 +102,6 @@ export interface FUXInterface extends utils.Interface {
     "setWorkstreamURI(uint256,string)": FunctionFragment;
     "submitEvaluation(uint256,address[],uint256[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "totalSupply(uint256)": FunctionFragment;
     "updateContributors(uint256,address[],bool)": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
@@ -122,7 +120,6 @@ export interface FUXInterface extends utils.Interface {
       | "balanceOfBatch"
       | "closeWorkstream"
       | "commitToWorkstream"
-      | "exists"
       | "finalizeWorkstream"
       | "getCommitment"
       | "getEvaluation"
@@ -150,7 +147,6 @@ export interface FUXInterface extends utils.Interface {
       | "setWorkstreamURI"
       | "submitEvaluation"
       | "supportsInterface"
-      | "totalSupply"
       | "updateContributors"
       | "upgradeTo"
       | "upgradeToAndCall"
@@ -193,10 +189,6 @@ export interface FUXInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "commitToWorkstream",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "exists",
-    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "finalizeWorkstream",
@@ -344,10 +336,6 @@ export interface FUXInterface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
-    functionFragment: "totalSupply",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "updateContributors",
     values: [
       PromiseOrValue<BigNumberish>,
@@ -405,7 +393,6 @@ export interface FUXInterface extends utils.Interface {
     functionFragment: "commitToWorkstream",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "finalizeWorkstream",
     data: BytesLike
@@ -497,10 +484,6 @@ export interface FUXInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "totalSupply",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "updateContributors",
     data: BytesLike
   ): Result;
@@ -525,7 +508,6 @@ export interface FUXInterface extends utils.Interface {
     "FuxGiven(address,uint256,uint256)": EventFragment;
     "FuxWithdrawn(address,uint256,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
-    "RewardsClaimed(address,uint256,address)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
@@ -549,7 +531,6 @@ export interface FUXInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "FuxGiven"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxWithdrawn"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardsClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
@@ -661,18 +642,6 @@ export interface InitializedEventObject {
 export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
 
 export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
-
-export interface RewardsClaimedEventObject {
-  user: string;
-  amount: BigNumber;
-  token: string;
-}
-export type RewardsClaimedEvent = TypedEvent<
-  [string, BigNumber, string],
-  RewardsClaimedEventObject
->;
-
-export type RewardsClaimedEventFilter = TypedEventFilter<RewardsClaimedEvent>;
 
 export interface RoleAdminChangedEventObject {
   role: string;
@@ -880,11 +849,6 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    exists(
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
     finalizeWorkstream(
       workstreamID: PromiseOrValue<BigNumberish>,
       _contributors: PromiseOrValue<string>[],
@@ -1057,11 +1021,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    totalSupply(
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     updateContributors(
       workstreamID: PromiseOrValue<BigNumberish>,
       _contributors: PromiseOrValue<string>[],
@@ -1124,11 +1083,6 @@ export interface FUX extends BaseContract {
     fuxGiven: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
-
-  exists(
-    id: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   finalizeWorkstream(
     workstreamID: PromiseOrValue<BigNumberish>,
@@ -1298,11 +1252,6 @@ export interface FUX extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  totalSupply(
-    id: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   updateContributors(
     workstreamID: PromiseOrValue<BigNumberish>,
     _contributors: PromiseOrValue<string>[],
@@ -1365,11 +1314,6 @@ export interface FUX extends BaseContract {
       fuxGiven: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    exists(
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     finalizeWorkstream(
       workstreamID: PromiseOrValue<BigNumberish>,
@@ -1535,11 +1479,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    totalSupply(
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     updateContributors(
       workstreamID: PromiseOrValue<BigNumberish>,
       _contributors: PromiseOrValue<string>[],
@@ -1648,17 +1587,6 @@ export interface FUX extends BaseContract {
 
     "Initialized(uint8)"(version?: null): InitializedEventFilter;
     Initialized(version?: null): InitializedEventFilter;
-
-    "RewardsClaimed(address,uint256,address)"(
-      user?: null,
-      amount?: null,
-      token?: null
-    ): RewardsClaimedEventFilter;
-    RewardsClaimed(
-      user?: null,
-      amount?: null,
-      token?: null
-    ): RewardsClaimedEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
       role?: PromiseOrValue<BytesLike> | null,
@@ -1824,11 +1752,6 @@ export interface FUX extends BaseContract {
       workstreamID: PromiseOrValue<BigNumberish>,
       fuxGiven: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    exists(
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     finalizeWorkstream(
@@ -1999,11 +1922,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    totalSupply(
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     updateContributors(
       workstreamID: PromiseOrValue<BigNumberish>,
       _contributors: PromiseOrValue<string>[],
@@ -2068,11 +1986,6 @@ export interface FUX extends BaseContract {
       workstreamID: PromiseOrValue<BigNumberish>,
       fuxGiven: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    exists(
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     finalizeWorkstream(
@@ -2240,11 +2153,6 @@ export interface FUX extends BaseContract {
 
     supportsInterface(
       interfaceId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    totalSupply(
-      id: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

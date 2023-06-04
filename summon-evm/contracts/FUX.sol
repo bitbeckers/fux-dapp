@@ -181,14 +181,6 @@ contract FUX is
     event WorkstreamClosed(uint256 workstreamID, address[] contributors, uint256[] vFux);
 
     /**
-     * @dev This event is emitted when a user claims their rewards
-     * @param user The address of the user claiming their rewards
-     * @param amount The amount of rewards claimed
-     * @param token The address of the token claimed
-     */
-    event RewardsClaimed(address user, uint256 amount, address token);
-
-    /**
      * @dev This event is emitted when the state of a workstream is updated
      * @param workstreamID The ID of the workstream whose state was updated
      * @param state The new state of the workstream
