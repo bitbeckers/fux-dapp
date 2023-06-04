@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
@@ -11,7 +11,7 @@ dataSources:
       startBlock: 8537432
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - User
@@ -22,24 +22,45 @@ dataSources:
         - name: FUX
           file: ./abis/contracts/FUX.sol/FUX.json
       eventHandlers:
-        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
-          handler: handleTransfer
-        - event: ContributorsAdded(uint256,address[])
-          handler: handleContributorsAdded
-        - event: WorkstreamClosed(uint256)
-          handler: handleWorkstreamClosed
+        - event: ContributorsUpdated(uint256,address[],bool)
+          handler: handleContributorsUpdated
         - event: EvaluationSubmitted(uint256,address,address[],uint256[])
           handler: handleEvaluationSubmitted
         - event: FuxClaimed(address)
           handler: handleFuxClaimed
         - event: FuxGiven(address,uint256,uint256)
           handler: handleFuxGiven
-        - event: RewardsReserved(address,uint256)
-          handler: handleRewardsReserved
-        - event: RewardsClaimed(address,uint256)
-          handler: handleRewardsClaimed
-        - event: VFuxClaimed(address,uint256)
-          handler: handleVFuxClaimed
-        - event: WorkstreamMinted(uint256,uint256,uint256,string)
+        - event: FuxWithdrawn(address,uint256,uint256)
+          handler: handleFuxWithdrawn
+        - event: StateUpdated(uint256,uint8)
+          handler: handleStateUpdated
+        - event: UpdatedWorkstreamURI(uint256,string)
+          handler: handleUpdatedWorkstreamURI
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+        - event: WorkstreamClosed(uint256,address[],uint256[])
+          handler: handleWorkstreamClosed
+        - event: WorkstreamContested(uint256,address,string)
+          handler: handleWorkstreamContested
+        - event: WorkstreamMinted(uint256,uint256,address[],uint256[],uint256,string)
           handler: handleWorkstreamMinted
-      file: ./src/mapping.ts
+      file: ./src/fux.ts
+templates:
+  - kind: ethereum
+    name: ERC20
+    network: goerli
+    source:
+      abi: ERC20
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - ERC20Token
+      abis:
+        - name: ERC20
+          file: ./abis/erc20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleERC20Transfer
+      file: ./src/erc20.ts
