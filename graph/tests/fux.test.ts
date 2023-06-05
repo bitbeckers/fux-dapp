@@ -5,6 +5,7 @@ import {
   Token,
   UserBalance,
   WorkstreamBalance,
+  Evaluation,
 } from "../generated/schema";
 import {
   handleContributorsUpdates,
@@ -229,25 +230,54 @@ describe("FUX Workstreams", () => {
   });
 
   test("should create evaluations and users when an EvaluationSubmitted event is detected", () => {
-    let workstreamID = BigInt.fromI32(1);
-
+    // Set up test data
+    const workstreamID = BigInt.fromI32(1);
     setUpWorkstream(workstreamID);
+    const creator = defaultAddress();
+    const contributors = getAddressList();
+    const ratings = [BigInt.fromI32(1), BigInt.fromI32(2), BigInt.fromI32(3)];
 
+    // Check that there is one user and no evaluations
     assert.entityCount("User", 1);
     assert.entityCount("Evaluation", 0);
 
-    let contributors = getAddressList();
-    let submitEvaluations = newEvaluationSubmittedEvent(
+    // Submit evaluations for the contributors
+    const submitEvaluations = newEvaluationSubmittedEvent(
       workstreamID,
-      defaultAddress(),
+      creator,
       contributors,
-      [BigInt.fromI32(1), BigInt.fromI32(2), BigInt.fromI32(3)]
+      ratings
     );
-
     handleEvaluationSubmitted(submitEvaluations);
 
+    // Check that new users and evaluations were created
     assert.entityCount("User", 5);
     assert.entityCount("Evaluation", 3);
+
+    // Submit more evaluations for the same workstream
+    const newContributors = [
+      Address.fromString("0x1111111111111111111111111111111111111111"),
+      Address.fromString("0x2222222222222222222222222222222222222222"),
+      Address.fromString("0x3333333333333333333333333333333333333333"),
+      Address.fromString("0x4444444444444444444444444444444444444444"),
+    ];
+    const newRatings = [
+      BigInt.fromI32(4),
+      BigInt.fromI32(5),
+      BigInt.fromI32(1),
+      BigInt.fromI32(2),
+    ];
+    const newSubmitEvaluations = newEvaluationSubmittedEvent(
+      workstreamID,
+      creator,
+      newContributors,
+      newRatings
+    );
+    handleEvaluationSubmitted(newSubmitEvaluations);
+
+    // Check that new users and evaluations were created
+    assert.entityCount("User", 9);
+    assert.entityCount("Evaluation", 7);
   });
 
   test("should registed the deposit and withdrawal of tokens via TransferSingle events", () => {
