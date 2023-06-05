@@ -19,6 +19,8 @@ dataSources:
         - Token
         - TokenBalance
       abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
         - name: FUX
           file: ./abis/contracts/FUX.sol/FUX.json
       eventHandlers:

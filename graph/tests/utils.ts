@@ -55,6 +55,10 @@ export function setUpMockERC20ContractCall(erc20Contract: Address): void {
   createMockedFunction(erc20Contract, "symbol", "symbol():(string)").returns([
     ethereum.Value.fromString("MOCK"),
   ]);
+
+  createMockedFunction(erc20Contract, "decimals", "decimals():(uint8)").returns(
+    [ethereum.Value.fromI32(18)]
+  );
 }
 
 export function setUpMockWorkstreamContractCall(

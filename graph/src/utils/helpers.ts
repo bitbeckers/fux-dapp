@@ -10,7 +10,7 @@ import {
   RewardDistribution,
 } from "../../generated/schema";
 import { ERC20 } from "../../generated/templates/ERC20/ERC20";
-import { FUX_ADDRESS, FUX_TOKEN, VFUX_TOKEN } from "./constants";
+import { FUX_ADDRESS, FUX_TOKEN, VFUX_TOKEN, ZERO_ADDRESS } from "./constants";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export function getOrCreateUser(address: string): User {
@@ -44,16 +44,28 @@ export function getOrCreateWorkstream(workstreamID: BigInt): Workstream {
 export function getOrCreateERC20Token(address: string): Token {
   let id = address;
   let token = Token.load(id);
-  let erc20 = ERC20.bind(Address.fromString(address));
 
   if (token != null) {
     return token;
   }
 
   token = new Token(id);
+
+  if (Address.fromString(address).equals(ZERO_ADDRESS)) {
+    token.symbol = "native";
+    token.name = "native";
+    token.decimals = BigInt.fromI32(18);
+
+    token.save();
+
+    return token;
+  }
+
+  let erc20 = ERC20.bind(Address.fromString(address));
+
   token.symbol = erc20.symbol();
   token.name = erc20.name();
-  token.decimals = erc20.decimals();
+  token.decimals = BigInt.fromI32(erc20.decimals());
 
   token.save();
 
