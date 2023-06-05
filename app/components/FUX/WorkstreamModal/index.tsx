@@ -1,4 +1,4 @@
-import { UserByAddressDocument } from "../../../.graphclient";
+import { useGraphClient } from "../../../hooks/graphSdk";
 import { useCustomToasts } from "../../../hooks/toast";
 import {
   contractABI,
@@ -39,13 +39,13 @@ import {
   InputRightElement,
   Divider,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { DateTime } from "luxon";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
 import { RiInformationLine } from "react-icons/ri";
-import { useQuery } from "urql";
 import {
   useAccount,
   useBalance,
@@ -63,11 +63,12 @@ type FormData = {
   metadataUri: string;
 };
 
-const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
+const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   onCloseAction,
 }) => {
   const { address } = useAccount();
   const { error: errorToast, success: successToast } = useCustomToasts();
+  const { sdk } = useGraphClient();
 
   const {
     handleSubmit,
@@ -153,14 +154,10 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { nativeToken } = useConstants();
 
-  const [result] = useQuery({
-    query: UserByAddressDocument,
-    variables: {
-      address: address?.toLowerCase() || "",
-    },
+  const { isLoading, data } = useQuery({
+    queryKey: ["userByAddress", address],
+    queryFn: () => sdk.UserByAddress({ address }),
   });
-
-  const { data, fetching, error } = result;
 
   const fuxBalance = data?.user?.balances?.find(
     (balance) => balance.token.name === "FUX"
@@ -176,7 +173,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   const onSubmit = () => {
     write?.();
     onClose();
-    onCloseAction();
+    onCloseAction?.();
   };
 
   const input = (

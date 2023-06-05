@@ -1,19 +1,21 @@
 import { UserByAddressDocument } from "../.graphclient";
 import ConnectWallet from "../components/ConnectWallet";
 import FuxOverview from "../components/FUX/FuxOverview";
+import { useGraphClient } from "../hooks/graphSdk";
 import { useCustomToasts } from "../hooks/toast";
 import { contractAddresses, contractABI } from "../utils/constants";
 import { VStack, Button, Text, Center } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useQuery } from "urql";
 import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
 
 const Start: NextPage = () => {
   const router = useRouter();
   const { address } = useAccount();
   const toast = useCustomToasts();
+  const { sdk } = useGraphClient();
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
@@ -32,14 +34,11 @@ const Start: NextPage = () => {
     },
   });
 
-  const [result] = useQuery({
-    query: UserByAddressDocument,
-    variables: {
-      address: address?.toLowerCase() || "",
-    },
+  const { isLoading, data } = useQuery({
+    queryKey: ["userByAddress", address?.toLowerCase() || ""],
+    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() || "" }),
+    refetchInterval: 5000,
   });
-
-  const { data, fetching, error } = result;
 
   useEffect(() => {
     if (data?.user?.fuxer) {

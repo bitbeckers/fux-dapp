@@ -1,7 +1,6 @@
 import { Workstream, WorkstreamContributor } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
-import { Contributor } from "../Contributor";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
 import {

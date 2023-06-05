@@ -1,13 +1,9 @@
-import {
-  WorkstreamByIDDocument,
-  WorkstreamByIDQuery,
-  WorkstreamByIDQueryVariables,
-  WorkstreamFragmentFragment,
-} from "../../.graphclient";
+
 import { StartEvaluation } from "../../components/FUX/StartEvaluation";
 import User from "../../components/FUX/User";
 import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
+import { useGraphClient } from "../../hooks/graphSdk";
 import {
   VStack,
   Text,
@@ -16,26 +12,26 @@ import {
   StatLabel,
   StatNumber,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useQuery } from "urql";
 
-const Resolve: NextPage = () => {
+const Evaluate: NextPage = () => {
   const router = useRouter();
   const { workstreamID } = router.query;
+  const { sdk } = useGraphClient();
 
-  const [queryResult, reexecuteQuery] = useQuery<
-    WorkstreamByIDQuery,
-    WorkstreamByIDQueryVariables
-  >({
-    query: WorkstreamByIDDocument,
-    variables: {
-      id: (workstreamID as string) || "",
-    },
+  const {
+    isLoading,
+    data: workstreams,
+    error,
+  } = useQuery({
+    queryKey: ["workstream", workstreamID],
+    queryFn: () => sdk.WorkstreamByID({ id: workstreamID as string }),
+    refetchInterval: 5000,
   });
 
-  const { data: workstreams, fetching, error } = queryResult;
   const _workstream = workstreams?.workstreamContributors.find(
     ({ workstream }) => workstream?.id === workstreamID
   )?.workstream;
@@ -94,4 +90,4 @@ const Resolve: NextPage = () => {
   );
 };
 
-export default Resolve;
+export default Evaluate;

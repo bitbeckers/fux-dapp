@@ -6,6 +6,7 @@ import {
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
+import { useGraphClient } from "../hooks/graphSdk";
 import { contractAddresses } from "../utils/constants";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
@@ -18,10 +19,10 @@ import {
   Button,
   IconButton,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import type { NextPage } from "next";
 import React from "react";
-import { useQuery } from "urql";
 import { useAccount } from "wagmi";
 
 const Workstreams: NextPage = () => {
@@ -29,30 +30,22 @@ const Workstreams: NextPage = () => {
   const [sortFux, setSortFux] = useBoolean();
   const [sortTitle, setSortTitle] = useBoolean();
   const [sortFunding, setSortFunding] = useBoolean();
+  const { sdk } = useGraphClient();
 
-  const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamsByContributorDocument,
-    variables: {
-      address: user?.toLowerCase() || "",
-    },
+  const { data: workstreamsByUser, isLoading } = useQuery({
+    queryKey: ["workstreamsByUser", user?.toLowerCase()],
+    queryFn: () =>
+      sdk.WorkstreamsByContributor({ address: user?.toLowerCase() }),
+    refetchInterval: 5000,
   });
 
-  const { data: workstreamsByUser, fetching, error } = result;
-
-  const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
-    query: BalancesByUserDocument,
-    variables: {
-      address: user?.toLowerCase() || "",
-    },
+  const { data: balancesByUser, isLoading: balancesLoading } = useQuery({
+    queryKey: ["balancesByUser", user?.toLowerCase()],
+    queryFn: () => sdk.BalancesByUser({ address: user?.toLowerCase() }),
+    refetchInterval: 5000,
   });
 
-  const {
-    data: fuxAvailableData,
-    fetching: fetchingBalance,
-    error: fuxBalance,
-  } = fuxBalanceResponse;
-
-  const balance = fuxAvailableData?.userBalances.find(
+  const balance = balancesByUser?.userBalances.find(
     ({ token }) =>
       token.id.toLowerCase() ===
       contractAddresses.fuxContractAddress.toLowerCase()
@@ -102,7 +95,7 @@ const Workstreams: NextPage = () => {
     <VStack spacing={8} w={"100%"}>
       <FuxOverview />
       <Divider />
-      {fetching ? (
+      {isLoading ? (
         <Spinner
           thickness="4px"
           speed="0.65s"
@@ -211,7 +204,7 @@ const Workstreams: NextPage = () => {
           </Grid>
         </>
       )}
-      <WorkstreamModal onCloseAction={reexecuteQuery} />
+      <WorkstreamModal />
     </VStack>
   );
 };
