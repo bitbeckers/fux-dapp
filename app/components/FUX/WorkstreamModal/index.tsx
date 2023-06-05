@@ -403,7 +403,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
                                     });
                                     return;
                                   }
-                                  addFunding({ address: "", amount: 0 });
+                                  addFunding({ address: "" });
                                 }}
                                 icon={<Icon as={BsCashStack} />}
                               />
