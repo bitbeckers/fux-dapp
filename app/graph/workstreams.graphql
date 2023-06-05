@@ -2,13 +2,13 @@
 #import "./TokenFragment.graphql"
 
 query WorkstreamsByContributor($address: ID = "") {
-  workstreamContributors(where: { contributor_: { id: "$address" } }) {
+  workstreamContributors(where: { contributor_: { id: $address } }) {
     ...WorkstreamFragment
   }
 }
 
 query WorkstreamByID($id: ID = "") {
-  workstreamContributors(where: { workstream_: { id: "$id" } }) {
+  workstreamContributors(where: { workstream_: { id: $id } }) {
     ...WorkstreamFragment
   }
 }

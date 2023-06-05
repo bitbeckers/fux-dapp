@@ -51,6 +51,7 @@ const Workstreams: NextPage = () => {
       contractAddresses.fuxContractAddress.toLowerCase()
   )?.amount;
 
+  console.log(workstreamsByUser);
   const sortedData = workstreamsByUser?.workstreamContributors.sort((a, b) => {
     if (sortFux) {
       let fuxGivenA = a.workstream.contributors?.find(

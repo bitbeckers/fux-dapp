@@ -38,21 +38,22 @@ import {
   IconButton,
   InputRightElement,
   Divider,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { DateTime } from "luxon";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
-import { RiInformationLine } from "react-icons/ri";
 import {
-  useAccount,
-  useBalance,
-  useNetwork,
-  usePrepareContractWrite,
-  useContractWrite,
-} from "wagmi";
+  BsCashStack,
+  BsFillPersonPlusFill,
+  BsFillPersonXFill,
+  BsBackspaceFill,
+} from "react-icons/bs";
+import { RiInformationLine } from "react-icons/ri";
+import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
 
 type FormData = {
   name: string;
@@ -83,7 +84,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
       duration: DateTime.now().plus({ day: 1 }).toISODate(),
       coordinatorCommitment: 0,
       contributors: [{ address: "" }],
-      funding: [{ address: ethers.constants.AddressZero, amount: 0 }],
+      funding: [{ address: "", amount: 0 }],
       metadataUri: "",
     },
   });
@@ -107,6 +108,20 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   });
 
   const formState = watch();
+  console.log(formState);
+
+  const getNativeTokenAmount = () => {
+    if (!formState.funding || formState.funding.length === 0)
+      return BigNumber.from(0);
+
+    let nativeToken = formState.funding?.filter(
+      (token) => token.address === ethers.constants.AddressZero
+    );
+
+    if (!nativeToken || nativeToken.length === 0) return BigNumber.from(0);
+
+    return ethers.utils.parseEther(nativeToken[0].amount.toString());
+  };
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
@@ -117,21 +132,17 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
       [
         ...formState.contributors
           .map((entry) => entry.address)
-          .filter((address) => isAddress(address)),
+          .filter((address) => isAddress(address) && address != ethers.constants.AddressZero),
         address,
       ],
       formState.coordinatorCommitment,
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
-      formState.funding.map((token) => token.address),
-      formState.funding.map((token) => token.amount),
+      [...formState.funding.map((token) => token.address)],
+      [...formState.funding.map((token) => BigNumber.from(token.amount))],
       formState.metadataUri,
     ],
     overrides: {
-      value: BigNumber.from(
-        formState.funding.find(
-          (token) => token.address === ethers.constants.AddressZero
-        )?.amount
-      ),
+      value: getNativeTokenAmount(),
     },
   });
 
@@ -146,29 +157,21 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     },
   });
 
-  const { chain } = useNetwork();
-  const { data: balance, isLoading: balanceLoading } = useBalance({
-    address,
-    chainId: chain?.id,
-  });
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { nativeToken } = useConstants();
 
   const { isLoading, data } = useQuery({
     queryKey: ["userByAddress", address],
-    queryFn: () => sdk.UserByAddress({ address }),
+    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() }),
+    enabled: !!address,
+    refetchInterval: 5000,
   });
 
   const fuxBalance = data?.user?.balances?.find(
     (balance) => balance.token.name === "FUX"
   )?.amount;
 
-  // const amountToSpend = () => {
-  //   let formatted = balance?.formatted ?? 0;
-  //   let margin = Number(formatted) - formState.funding;
-
-  //   return margin.toFixed(2);
-  // };
+  console.log(data);
+  console.log(address);
 
   const onSubmit = () => {
     write?.();
@@ -312,101 +315,111 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
             </Tooltip>
           </FormHelperText>
 
-          {funding.map((token, index) => (
-            <InputGroup key={token.id} marginTop={"1em"}>
-              <Input
-                id="fundingToken"
-                defaultValue={`${token.address}`}
-                isInvalid={!isAddress(formState.funding[index].address)}
-                {...register(`funding.${index}.address`)}
-              />
+          {funding.map((field, index) => (
+            <InputGroup key={field.id} marginTop={"1em"}>
+              <Grid
+                templateAreas={`"address address address"
+                                "name symbol amount"
+                              `}
+                gap={2}
+              >
+                <GridItem area={"address"}>
+                  <Input
+                    id="funding.address"
+                    defaultValue={`${field.address}`}
+                    isInvalid={!isAddress(formState.funding[index].address)}
+                    {...register(`funding.${index}.address`)}
+                  />
+                </GridItem>
 
-              <Controller
-                name={`funding`}
-                control={control}
-                rules={{ required: false }}
-                key={`funding.${index}.address`}
-                render={({ field: { ref, onChange, value, ...restField } }) => (
-                  <>
-                    <InputGroup>
-                      <NumberInput
-                        onChange={(valueString) =>
-                          onChange(ethers.utils.parseEther(valueString))
-                        }
-                        value={`${formState.funding[
-                          index
-                        ]?.amount?.toString()} ${nativeToken}`}
-                        precision={2}
-                        step={0.05}
-                        min={0}
-                        max={Number(balance?.formatted)}
-                        {...restField}
-                      >
-                        <NumberInputField
-                          ref={ref}
-                          name={restField.name}
-                          borderRightRadius={0}
-                        />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    </InputGroup>
-                    <StatGroup>
-                      <Stat>
-                        <StatNumber
-                          fontFamily="mono"
-                          fontSize="xs"
-                          fontWeight="100"
-                          color={"#8e4ec6"}
+                <GridItem area={"name"}>
+                  <Text>NAME</Text>
+                </GridItem>
+
+                <GridItem area={"symbol"}>
+                  <Text>SYMBOL</Text>
+                </GridItem>
+
+                <GridItem area={"amount"}>
+                  <Controller
+                    name={`funding.${index}.amount`}
+                    control={control}
+                    rules={{ required: false }}
+                    key={`funding[${index}]amount`}
+                    render={({
+                      field: { ref, value, onChange, ...restField },
+                    }) => (
+                      <Flex direction={"row"}>
+                        <NumberInput
+                          precision={2}
+                          step={0.05}
+                          min={0}
+                          onChange={(valueString) => {
+                            onChange(
+                              valueString
+                                ? ethers.utils.parseEther(valueString)
+                                : "0"
+                            );
+                          }}
+                          value={ethers.utils.formatEther(value)}
+                          {...restField}
                         >
-                          {!balanceLoading ? `XXX to fund` : "Loading"}
-                        </StatNumber>
-                      </Stat>
-                    </StatGroup>
-                  </>
-                )}
-              />
-              {index == funding.length - 1 ? (
-                <InputRightElement>
-                  <Tooltip
-                    hasArrow
-                    label="Add another token"
-                    aria-label="Add another token"
-                  >
-                    <IconButton
-                      aria-label="Add another token"
-                      onClick={() => {
-                        if (!isAddress(formState.contributors[index].address)) {
-                          errorToast({
-                            name: "Invalid address",
-                            message: `${formState.contributors[index].address} is not valid`,
-                          });
-                          return;
-                        }
-                        addFunding({ address: "" });
-                      }}
-                      icon={<Icon as={BsFillPersonPlusFill} />}
-                    />
-                  </Tooltip>
-                </InputRightElement>
-              ) : (
-                <InputRightElement>
-                  <Tooltip
-                    hasArrow
-                    label="Remove funding"
-                    aria-label="Remove funding"
-                  >
-                    <IconButton
-                      aria-label="remove funding"
-                      background={"red.500"}
-                      onClick={() => removeFunding(index)}
-                      icon={<Icon as={BsFillPersonXFill} />}
-                    />
-                  </Tooltip>
-                </InputRightElement>
-              )}
+                          <NumberInputField
+                            ref={ref}
+                            name={restField.name}
+                            borderRightRadius={0}
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                        {index == funding.length - 1 ? (
+                          <>
+                            <Tooltip
+                              hasArrow
+                              label="Add another token"
+                              aria-label="Add another token"
+                            >
+                              <IconButton
+                                aria-label="Add another token"
+                                onClick={() => {
+                                  if (
+                                    !isAddress(formState.funding[index].address)
+                                  ) {
+                                    errorToast({
+                                      name: "Invalid address",
+                                      message: `${formState.funding[index].address} is not valid`,
+                                    });
+                                    return;
+                                  }
+                                  addFunding({ address: "", amount: 0 });
+                                }}
+                                icon={<Icon as={BsCashStack} />}
+                              />
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <>
+                            <Tooltip
+                              hasArrow
+                              label="Remove funding"
+                              aria-label="Remove funding"
+                            >
+                              <IconButton
+                                aria-label="remove funding"
+                                background={"red.500"}
+                                onClick={() => removeFunding(index)}
+                                icon={<Icon as={BsBackspaceFill} />}
+                              />
+                            </Tooltip>
+                          </>
+                        )}
+                      </Flex>
+                    )}
+                  />
+                </GridItem>
+              </Grid>
             </InputGroup>
           ))}
           <Divider my={"0.5em"} />

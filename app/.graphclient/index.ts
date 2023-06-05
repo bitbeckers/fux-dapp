@@ -2222,14 +2222,14 @@ export const UserByAddressDocument = gql`
     ${UserFragmentFragmentDoc}` as unknown as DocumentNode<UserByAddressQuery, UserByAddressQueryVariables>;
 export const WorkstreamsByContributorDocument = gql`
     query WorkstreamsByContributor($address: ID = "") {
-  workstreamContributors(where: {contributor_: {id: "$address"}}) {
+  workstreamContributors(where: {contributor_: {id: $address}}) {
     ...WorkstreamFragment
   }
 }
     ${WorkstreamFragmentFragmentDoc}` as unknown as DocumentNode<WorkstreamsByContributorQuery, WorkstreamsByContributorQueryVariables>;
 export const WorkstreamByIDDocument = gql`
     query WorkstreamByID($id: ID = "") {
-  workstreamContributors(where: {workstream_: {id: "$id"}}) {
+  workstreamContributors(where: {workstream_: {id: $id}}) {
     ...WorkstreamFragment
   }
 }
