@@ -47,6 +47,7 @@ import {
   newWorkstreamContestedEvent,
   newStateUpdatedEvent,
   newUpdatedWorkstreamURIEvent,
+  setUpMockERC20ContractCall,
 } from "./utils";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
@@ -102,6 +103,7 @@ describe("FUX Workstreams", () => {
 
     log.info("Workstream address: {}", [event.address.toHexString()]);
 
+    setUpMockERC20ContractCall(getDefaultRewardToken());
     setUpMockWorkstreamContractCall(event.address, workstreamID);
 
     log.info("Workstream address: {}", [event.address.toHexString()]);

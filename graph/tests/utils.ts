@@ -41,9 +41,20 @@ export function setUpWorkstream(workstreamID: BigInt): void {
     "test.fux.gg" //uri
   );
 
+  setUpMockERC20ContractCall(getDefaultRewardToken());
   setUpMockWorkstreamContractCall(event.address, workstreamID);
 
   handleWorkstreamMinted(event);
+}
+
+export function setUpMockERC20ContractCall(erc20Contract: Address): void {
+  createMockedFunction(erc20Contract, "name", "name():(string)").returns([
+    ethereum.Value.fromString("MOCK"),
+  ]);
+
+  createMockedFunction(erc20Contract, "symbol", "symbol():(string)").returns([
+    ethereum.Value.fromString("MOCK"),
+  ]);
 }
 
 export function setUpMockWorkstreamContractCall(

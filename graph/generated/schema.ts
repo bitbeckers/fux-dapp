@@ -596,6 +596,23 @@ export class Token extends Entity {
     }
   }
 
+  get decimals(): BigInt | null {
+    let value = this.get("decimals");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set decimals(value: BigInt | null) {
+    if (!value) {
+      this.unset("decimals");
+    } else {
+      this.set("decimals", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
   get name(): string | null {
     let value = this.get("name");
     if (!value || value.kind == ValueKind.NULL) {

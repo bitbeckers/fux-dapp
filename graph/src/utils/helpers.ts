@@ -9,6 +9,8 @@ import {
   WorkstreamContributor,
   RewardDistribution,
 } from "../../generated/schema";
+import { ERC20 } from "../../generated/templates/ERC20/ERC20";
+import { FUX_ADDRESS, FUX_TOKEN, VFUX_TOKEN } from "./constants";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export function getOrCreateUser(address: string): User {
@@ -42,12 +44,16 @@ export function getOrCreateWorkstream(workstreamID: BigInt): Workstream {
 export function getOrCreateERC20Token(address: string): Token {
   let id = address;
   let token = Token.load(id);
+  let erc20 = ERC20.bind(Address.fromString(address));
 
   if (token != null) {
     return token;
   }
 
   token = new Token(id);
+  token.symbol = erc20.symbol();
+  token.name = erc20.name();
+
   token.save();
 
   return token;
@@ -64,6 +70,16 @@ export function getOrCreate1155Token(address: string, tokenID: BigInt): Token {
   token = new Token(id);
 
   token.tokenID = tokenID;
+
+  if (tokenID === FUX_TOKEN && address === FUX_ADDRESS.toHexString()) {
+    token.symbol = "FUX";
+    token.name = "FUX";
+  }
+
+  if (tokenID === VFUX_TOKEN && address === FUX_ADDRESS.toHexString()) {
+    token.symbol = "vFUX";
+    token.name = "vFUX";
+  }
   token.save();
 
   return token;
