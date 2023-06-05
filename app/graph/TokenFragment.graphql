@@ -1,0 +1,7 @@
+fragment TokenFragment on Token {
+  id
+  decimals
+  name
+  symbol
+  tokenID
+}

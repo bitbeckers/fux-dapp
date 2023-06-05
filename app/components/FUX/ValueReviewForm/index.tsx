@@ -1,7 +1,8 @@
 import { Workstream, WorkstreamContributor } from "../../../.graphclient";
+import { useBlockTx } from "../../../hooks/blockTx";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
-import { Contributor } from "../Contributor";
+import { CloseButton } from "../CloseButton";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
 import {
@@ -60,6 +61,7 @@ const ValueReviewForm: React.FC<{
 }> = ({ workstream }) => {
   const { address: user } = useAccount();
   const toast = useCustomToasts();
+  const { checkChain } = useBlockTx();
 
   const _workstream = workstream as Workstream;
 
@@ -93,7 +95,7 @@ const ValueReviewForm: React.FC<{
     args: [workstream.id, _contributors, _ratings],
   });
 
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+  const { write } = useContractWrite({
     ...config,
     onError(e) {
       toast.error(e);
@@ -122,111 +124,120 @@ const ValueReviewForm: React.FC<{
       return;
     }
 
-    console.log("WRITING");
-    write?.();
+    if (checkChain()) {
+      write?.();
+    }
   };
 
   const contributors = _workstream.contributors;
   const coordinator = _workstream.coordinator?.id;
 
-  const reviewForm =
-    contributors && contributors?.length > 0 ? (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Center>
-          <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
-            Distribute 100 points to rate value contribution
-          </Text>
-        </Center>
-        <FormControl>
-          <Grid gap={2} templateColumns="repeat(12, 1fr)">
-            <GridItem colSpan={8}>
-              <Text>User</Text>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <Text>Committed</Text>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <Text>vFUX Rating</Text>
-            </GridItem>
-            {contributors.map((contributor, index) => {
-              const address = contributor.contributor.id as `0x${string}`;
-              return address.toLowerCase() ===
-                user.toLowerCase() ? undefined : (
-                <Fragment key={index}>
-                  <GridItem colSpan={8}>
-                    <Flex direction={"row"} alignItems={"center"} gap={"2"}>
-                      <User
-                        address={address as `0x${string}`}
-                        direction="horizontal"
-                        displayAvatar={true}
-                      />
-                      {coordinator?.toLowerCase() === address.toLowerCase() ? (
-                        <StarIcon />
-                      ) : undefined}
-                    </Flex>
-                  </GridItem>
-                  <GridItem colSpan={2}>
-                    <Stat>
-                      <StatNumber>{`${
-                        contributor.commitment || 0
-                      }%`}</StatNumber>
-                    </Stat>
-                  </GridItem>
-                  <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
-                    <Controller
-                      name={`ratings.${address}`}
-                      control={control}
-                      rules={{ required: true }}
-                      key={`ratings.${address}`}
-                      render={({ field: { ref, ...restField } }) => (
-                        <NumberInput min={0} max={100} step={1} {...restField}>
-                          <NumberInputField
-                            ref={ref}
-                            name={restField.name}
-                            borderRadius={0}
-                            placeholder={
-                              formData[address.toLowerCase()]?.toString() ?? "0"
-                            }
-                          />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                      )}
-                    />
-                  </GridItem>
-                </Fragment>
-              );
-            })}
-          </Grid>
-        </FormControl>
-
-        <VStack w={"100%"} pt={4}>
-          <ButtonGroup>
-            <Button
-              isLoading={isSubmitting}
-              type="reset"
-              onClick={() => reset()}
-            >
-              Reset
-            </Button>
-            <Spacer />
-            <Button
-              isDisabled={total != 100}
-              isLoading={isSubmitting}
-              type="submit"
-            >
-              {total && total != 100
-                ? `${100 - total} / 100`
-                : "Submit evaluation"}
-            </Button>
-          </ButtonGroup>
-        </VStack>
-      </form>
-    ) : (
-      <Text>No contributors found</Text>
+  const filterContributors = (contributors: WorkstreamContributor[]) => {
+    return contributors.filter(
+      (contributor) =>
+        contributor.contributor.id.toLowerCase() !== user.toLowerCase()
     );
+  };
+
+  const filtered = filterContributors(contributors || []);
+
+  if (filtered.length === 0) {
+    return (
+      <Flex direction={"column"} gap={2}>
+        <Text>No contributors found</Text>
+        <CloseButton workstreamId={_workstream.id} disabled={false} />
+      </Flex>
+    );
+  }
+
+  const reviewForm = (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Center>
+        <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
+          Distribute 100 points to rate value contribution
+        </Text>
+      </Center>
+      <FormControl>
+        <Grid gap={2} templateColumns="repeat(12, 1fr)">
+          <GridItem colSpan={8}>
+            <Text>User</Text>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <Text>Committed</Text>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <Text>vFUX Rating</Text>
+          </GridItem>
+          {filtered.map((contributor, index) => {
+            const address = contributor.contributor.id as `0x${string}`;
+            return (
+              <Fragment key={index}>
+                <GridItem colSpan={8}>
+                  <Flex direction={"row"} alignItems={"center"} gap={"2"}>
+                    <User
+                      address={address as `0x${string}`}
+                      direction="horizontal"
+                      displayAvatar={true}
+                    />
+                    {coordinator?.toLowerCase() === address.toLowerCase() ? (
+                      <StarIcon />
+                    ) : undefined}
+                  </Flex>
+                </GridItem>
+                <GridItem colSpan={2}>
+                  <Stat>
+                    <StatNumber>{`${contributor.commitment || 0}%`}</StatNumber>
+                  </Stat>
+                </GridItem>
+                <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
+                  <Controller
+                    name={`ratings.${address}`}
+                    control={control}
+                    rules={{ required: true }}
+                    key={`ratings.${address}`}
+                    render={({ field: { ref, ...restField } }) => (
+                      <NumberInput min={0} max={100} step={1} {...restField}>
+                        <NumberInputField
+                          ref={ref}
+                          name={restField.name}
+                          borderRadius={0}
+                          placeholder={
+                            formData[address.toLowerCase()]?.toString() ?? "0"
+                          }
+                        />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    )}
+                  />
+                </GridItem>
+              </Fragment>
+            );
+          })}
+        </Grid>
+      </FormControl>
+
+      <VStack w={"100%"} pt={4}>
+        <ButtonGroup>
+          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
+            Reset
+          </Button>
+          <Spacer />
+          <Button
+            isDisabled={total != 100}
+            isLoading={isSubmitting}
+            type="submit"
+          >
+            {total && total != 100
+              ? `${100 - total} / 100`
+              : "Submit evaluation"}
+          </Button>
+        </ButtonGroup>
+      </VStack>
+    </form>
+  );
 
   return reviewForm;
 };

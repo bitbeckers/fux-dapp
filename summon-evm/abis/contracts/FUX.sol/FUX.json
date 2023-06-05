@@ -22,27 +22,12 @@
   },
   {
     "inputs": [],
-    "name": "NotApprovedOrOwner",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NotContributor",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "NotCoordinator",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotEnoughFunds",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotEnoughFux",
     "type": "error"
   },
   {
@@ -113,7 +98,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "id",
+        "name": "workstreamID",
         "type": "uint256"
       },
       {
@@ -121,9 +106,15 @@
         "internalType": "address[]",
         "name": "contributors",
         "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "add",
+        "type": "bool"
       }
     ],
-    "name": "ContributorsAdded",
+    "name": "ContributorsUpdated",
     "type": "event"
   },
   {
@@ -182,7 +173,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "workstreamId",
+        "name": "workstreamID",
         "type": "uint256"
       },
       {
@@ -200,50 +191,37 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "FuxWithdrawn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint8",
         "name": "version",
         "type": "uint8"
       }
     ],
     "name": "Initialized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "RewardsClaimed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "RewardsReserved",
     "type": "event"
   },
   {
@@ -337,7 +315,7 @@
         "type": "uint8"
       }
     ],
-    "name": "StateUpdate",
+    "name": "StateUpdated",
     "type": "event"
   },
   {
@@ -437,6 +415,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "uri",
+        "type": "string"
+      }
+    ],
+    "name": "UpdatedWorkstreamURI",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -451,41 +448,21 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "workstreamID",
-        "type": "uint256"
-      }
-    ],
-    "name": "VFuxClaimed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
+        "internalType": "address[]",
+        "name": "contributors",
+        "type": "address[]"
+      },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "workstreamID",
-        "type": "uint256"
-      }
-    ],
-    "name": "WorkstreamCancelled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "workstreamID",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "vFux",
+        "type": "uint256[]"
       }
     ],
     "name": "WorkstreamClosed",
@@ -497,19 +474,56 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "id",
+        "name": "workstreamID",
         "type": "uint256"
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "uri",
+        "type": "string"
+      }
+    ],
+    "name": "WorkstreamContested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
-        "name": "funds",
+        "name": "workstreamID",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
         "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "rewardsToken",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "rewards",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
         "type": "uint256"
       },
       {
@@ -590,24 +604,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "workstreamID",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_contributors",
-        "type": "address[]"
-      }
-    ],
-    "name": "addContributors",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "account",
         "type": "address"
@@ -654,13 +650,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "claimRewards",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -694,25 +683,6 @@
     "name": "commitToWorkstream",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "exists",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -801,25 +771,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getRewards",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "availableRewards",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -864,11 +815,6 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "funds",
-            "type": "uint256"
-          },
-          {
             "internalType": "enum WorkstreamState",
             "name": "state",
             "type": "uint8"
@@ -882,6 +828,30 @@
         "internalType": "struct FUX.Workstream",
         "name": "workstream",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getWorkstreamRewards",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "availableRewards",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -970,19 +940,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "workstreamID",
-        "type": "uint256"
-      }
-    ],
-    "name": "mintVFux",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "string",
         "name": "name",
         "type": "string"
@@ -1001,6 +958,21 @@
         "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "rewardsTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "rewards",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "string",
+        "name": "metadataUri",
+        "type": "string"
       }
     ],
     "name": "mintWorkstream",
@@ -1012,27 +984,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_operator",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "_ids",
+        "name": "",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_values",
+        "name": "",
         "type": "uint256[]"
       },
       {
         "internalType": "bytes",
-        "name": "_data",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -1051,27 +1023,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_operator",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_id",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_value",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "bytes",
-        "name": "_data",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -1084,6 +1056,24 @@
       }
     ],
     "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_uri",
+        "type": "string"
+      }
+    ],
+    "name": "postContestation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1158,27 +1148,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "from",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "to",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "ids",
+        "name": "",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "amounts",
+        "name": "",
         "type": "uint256[]"
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -1191,27 +1181,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "from",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "to",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -1241,12 +1231,48 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "tokenID",
+        "type": "uint256"
+      },
+      {
         "internalType": "string",
         "name": "newuri",
         "type": "string"
       }
     ],
     "name": "setURI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      }
+    ],
+    "name": "setWorkstreamToEvaluation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "newuri",
+        "type": "string"
+      }
+    ],
+    "name": "setWorkstreamURI",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1297,19 +1323,23 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "workstreamID",
         "type": "uint256"
-      }
-    ],
-    "name": "totalSupply",
-    "outputs": [
+      },
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "address[]",
+        "name": "_contributors",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "add",
+        "type": "bool"
       }
     ],
-    "stateMutability": "view",
+    "name": "updateContributors",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1360,6 +1390,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "workstreamID",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawFromWorkstream",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

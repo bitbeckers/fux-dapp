@@ -2,9 +2,11 @@ import {
   Evaluation,
   User as GraphUser,
   WorkstreamContributor,
+  WorkstreamFragmentFragment,
 } from "../../../.graphclient";
 import { useConstants } from "../../../utils/constants";
 import { ContributorOverview } from "../ContributorOverview";
+import TokenBalance from "../TokenBalance";
 import User from "../User";
 import {
   AccordionButton,
@@ -108,22 +110,28 @@ const WorkstreamCard: React.FC<{
       </AccordionButton>
       <AccordionPanel pb={4}>
         <Flex direction="column" alignItems={"flex-start"} py={3}>
-          <Link href={'/workstream/' + _workstream?.id}>
-           View Workstream
-          </Link>
+          <Link href={"/workstream/" + _workstream?.id}>View Workstream</Link>
           <Text>
             Deadline:{" "}
             {DateTime.fromSeconds(
               Number(_workstream.deadline)
             ).toLocaleString()}
           </Text>
-          {_workstream.funding > 0 && (
-            <Text>
-              Funding:{" "}
-              {`${
-                ethers.utils.formatEther(_workstream.funding).toString() || 0
-              } ${nativeToken}`}
-            </Text>
+          {_workstream?.funding && (
+            <Flex
+              direction={["column", null, "row"]}
+              align={["center", null, "center"]}
+              flexWrap="wrap"
+            >
+              <Text>Workstream funds available</Text>
+              {_workstream.funding?.map((funding) => (
+                <TokenBalance
+                  key={funding.token.id}
+                  token={funding.token}
+                  amount={funding.amount}
+                />
+              ))}
+            </Flex>
           )}
           <ContributorOverview workstream={_workstream} />
         </Flex>

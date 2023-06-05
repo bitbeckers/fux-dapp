@@ -6,7 +6,6 @@ import {
   Value,
   ValueKind,
   store,
-  Address,
   Bytes,
   BigInt,
   BigDecimal
@@ -16,8 +15,6 @@ export class User extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
-
-    this.set("fuxer", Value.fromBoolean(false));
   }
 
   save(): void {
@@ -26,11 +23,14 @@ export class User extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save User entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
+        `Entities of type User must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
       store.set("User", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): User | null {
+    return changetype<User | null>(store.get_in_block("User", id));
   }
 
   static load(id: string): User | null {
@@ -39,7 +39,11 @@ export class User extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -48,62 +52,39 @@ export class User extends Entity {
 
   get fuxer(): boolean {
     let value = this.get("fuxer");
-    return value!.toBoolean();
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
   }
 
   set fuxer(value: boolean) {
     this.set("fuxer", Value.fromBoolean(value));
   }
 
-  get balances(): Array<string> | null {
-    let value = this.get("balances");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
+  get balances(): UserBalanceLoader {
+    return new UserBalanceLoader(
+      "User",
+      this.get("id")!.toString(),
+      "balances"
+    );
   }
 
-  set balances(value: Array<string> | null) {
-    if (!value) {
-      this.unset("balances");
-    } else {
-      this.set("balances", Value.fromStringArray(<Array<string>>value));
-    }
+  get workstreams(): WorkstreamContributorLoader {
+    return new WorkstreamContributorLoader(
+      "User",
+      this.get("id")!.toString(),
+      "workstreams"
+    );
   }
 
-  get workstreams(): Array<string> | null {
-    let value = this.get("workstreams");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
-  }
-
-  set workstreams(value: Array<string> | null) {
-    if (!value) {
-      this.unset("workstreams");
-    } else {
-      this.set("workstreams", Value.fromStringArray(<Array<string>>value));
-    }
-  }
-
-  get rewards(): BigInt | null {
-    let value = this.get("rewards");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set rewards(value: BigInt | null) {
-    if (!value) {
-      this.unset("rewards");
-    } else {
-      this.set("rewards", Value.fromBigInt(<BigInt>value));
-    }
+  get evaluations(): EvaluationLoader {
+    return new EvaluationLoader(
+      "User",
+      this.get("id")!.toString(),
+      "evaluations"
+    );
   }
 }
 
@@ -119,11 +100,14 @@ export class Workstream extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save Workstream entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
+        `Entities of type Workstream must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
       store.set("Workstream", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Workstream | null {
+    return changetype<Workstream | null>(store.get_in_block("Workstream", id));
   }
 
   static load(id: string): Workstream | null {
@@ -132,7 +116,11 @@ export class Workstream extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -173,57 +161,6 @@ export class Workstream extends Entity {
     }
   }
 
-  get contributors(): Array<string> | null {
-    let value = this.get("contributors");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
-  }
-
-  set contributors(value: Array<string> | null) {
-    if (!value) {
-      this.unset("contributors");
-    } else {
-      this.set("contributors", Value.fromStringArray(<Array<string>>value));
-    }
-  }
-
-  get evaluations(): Array<string> | null {
-    let value = this.get("evaluations");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
-  }
-
-  set evaluations(value: Array<string> | null) {
-    if (!value) {
-      this.unset("evaluations");
-    } else {
-      this.set("evaluations", Value.fromStringArray(<Array<string>>value));
-    }
-  }
-
-  get funding(): BigInt | null {
-    let value = this.get("funding");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set funding(value: BigInt | null) {
-    if (!value) {
-      this.unset("funding");
-    } else {
-      this.set("funding", Value.fromBigInt(<BigInt>value));
-    }
-  }
-
   get deadline(): BigInt | null {
     let value = this.get("deadline");
     if (!value || value.kind == ValueKind.NULL) {
@@ -238,6 +175,72 @@ export class Workstream extends Entity {
       this.unset("deadline");
     } else {
       this.set("deadline", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get contributors(): WorkstreamContributorLoader {
+    return new WorkstreamContributorLoader(
+      "Workstream",
+      this.get("id")!.toString(),
+      "contributors"
+    );
+  }
+
+  get evaluations(): EvaluationLoader {
+    return new EvaluationLoader(
+      "Workstream",
+      this.get("id")!.toString(),
+      "evaluations"
+    );
+  }
+
+  get funding(): WorkstreamBalanceLoader {
+    return new WorkstreamBalanceLoader(
+      "Workstream",
+      this.get("id")!.toString(),
+      "funding"
+    );
+  }
+
+  get contestings(): WorkstreamContestationLoader {
+    return new WorkstreamContestationLoader(
+      "Workstream",
+      this.get("id")!.toString(),
+      "contestings"
+    );
+  }
+
+  get rewardDistribution(): string | null {
+    let value = this.get("rewardDistribution");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set rewardDistribution(value: string | null) {
+    if (!value) {
+      this.unset("rewardDistribution");
+    } else {
+      this.set("rewardDistribution", Value.fromString(<string>value));
+    }
+  }
+
+  get uri(): string | null {
+    let value = this.get("uri");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set uri(value: string | null) {
+    if (!value) {
+      this.unset("uri");
+    } else {
+      this.set("uri", Value.fromString(<string>value));
     }
   }
 
@@ -259,15 +262,93 @@ export class Workstream extends Entity {
   }
 }
 
+export class RewardDistribution extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save RewardDistribution entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type RewardDistribution must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("RewardDistribution", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): RewardDistribution | null {
+    return changetype<RewardDistribution | null>(
+      store.get_in_block("RewardDistribution", id)
+    );
+  }
+
+  static load(id: string): RewardDistribution | null {
+    return changetype<RewardDistribution | null>(
+      store.get("RewardDistribution", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get workstream(): string {
+    let value = this.get("workstream");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set workstream(value: string) {
+    this.set("workstream", Value.fromString(value));
+  }
+
+  get contributors(): Array<string> {
+    let value = this.get("contributors");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set contributors(value: Array<string>) {
+    this.set("contributors", Value.fromStringArray(value));
+  }
+
+  get shares(): Array<BigInt> {
+    let value = this.get("shares");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set shares(value: Array<BigInt>) {
+    this.set("shares", Value.fromBigIntArray(value));
+  }
+}
+
 export class Evaluation extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
-
-    this.set("creator", Value.fromString(""));
-    this.set("workstream", Value.fromString(""));
-    this.set("contributor", Value.fromString(""));
-    this.set("rating", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -276,11 +357,14 @@ export class Evaluation extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save Evaluation entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
+        `Entities of type Evaluation must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
       store.set("Evaluation", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Evaluation | null {
+    return changetype<Evaluation | null>(store.get_in_block("Evaluation", id));
   }
 
   static load(id: string): Evaluation | null {
@@ -289,7 +373,11 @@ export class Evaluation extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -298,7 +386,11 @@ export class Evaluation extends Entity {
 
   get creator(): string {
     let value = this.get("creator");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set creator(value: string) {
@@ -307,7 +399,11 @@ export class Evaluation extends Entity {
 
   get workstream(): string {
     let value = this.get("workstream");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set workstream(value: string) {
@@ -316,7 +412,11 @@ export class Evaluation extends Entity {
 
   get contributor(): string {
     let value = this.get("contributor");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set contributor(value: string) {
@@ -325,7 +425,11 @@ export class Evaluation extends Entity {
 
   get rating(): BigInt {
     let value = this.get("rating");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set rating(value: BigInt) {
@@ -337,9 +441,6 @@ export class WorkstreamContributor extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
-
-    this.set("workstream", Value.fromString(""));
-    this.set("contributor", Value.fromString(""));
   }
 
   save(): void {
@@ -351,11 +452,16 @@ export class WorkstreamContributor extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save WorkstreamContributor entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
+        `Entities of type WorkstreamContributor must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
       store.set("WorkstreamContributor", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): WorkstreamContributor | null {
+    return changetype<WorkstreamContributor | null>(
+      store.get_in_block("WorkstreamContributor", id)
+    );
   }
 
   static load(id: string): WorkstreamContributor | null {
@@ -366,7 +472,11 @@ export class WorkstreamContributor extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -375,7 +485,11 @@ export class WorkstreamContributor extends Entity {
 
   get workstream(): string {
     let value = this.get("workstream");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set workstream(value: string) {
@@ -384,7 +498,11 @@ export class WorkstreamContributor extends Entity {
 
   get contributor(): string {
     let value = this.get("contributor");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set contributor(value: string) {
@@ -407,6 +525,19 @@ export class WorkstreamContributor extends Entity {
       this.set("commitment", Value.fromBigInt(<BigInt>value));
     }
   }
+
+  get active(): boolean {
+    let value = this.get("active");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set active(value: boolean) {
+    this.set("active", Value.fromBoolean(value));
+  }
 }
 
 export class Token extends Entity {
@@ -421,11 +552,14 @@ export class Token extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save Token entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
+        `Entities of type Token must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
       store.set("Token", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Token | null {
+    return changetype<Token | null>(store.get_in_block("Token", id));
   }
 
   static load(id: string): Token | null {
@@ -434,11 +568,49 @@ export class Token extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get tokenID(): BigInt | null {
+    let value = this.get("tokenID");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set tokenID(value: BigInt | null) {
+    if (!value) {
+      this.unset("tokenID");
+    } else {
+      this.set("tokenID", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get decimals(): BigInt | null {
+    let value = this.get("decimals");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set decimals(value: BigInt | null) {
+    if (!value) {
+      this.unset("decimals");
+    } else {
+      this.set("decimals", Value.fromBigInt(<BigInt>value));
+    }
   }
 
   get name(): string | null {
@@ -475,54 +647,58 @@ export class Token extends Entity {
     }
   }
 
-  get tokenBalances(): Array<string> | null {
-    let value = this.get("tokenBalances");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
+  get userBalances(): UserBalanceLoader {
+    return new UserBalanceLoader(
+      "Token",
+      this.get("id")!.toString(),
+      "userBalances"
+    );
   }
 
-  set tokenBalances(value: Array<string> | null) {
-    if (!value) {
-      this.unset("tokenBalances");
-    } else {
-      this.set("tokenBalances", Value.fromStringArray(<Array<string>>value));
-    }
+  get workstreamBalance(): WorkstreamBalanceLoader {
+    return new WorkstreamBalanceLoader(
+      "Token",
+      this.get("id")!.toString(),
+      "workstreamBalance"
+    );
   }
 }
 
-export class TokenBalance extends Entity {
+export class UserBalance extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
-
-    this.set("user", Value.fromString(""));
-    this.set("token", Value.fromString(""));
-    this.set("amount", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save TokenBalance entity without an ID");
+    assert(id != null, "Cannot save UserBalance entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save TokenBalance entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
+        `Entities of type UserBalance must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("TokenBalance", id.toString(), this);
+      store.set("UserBalance", id.toString(), this);
     }
   }
 
-  static load(id: string): TokenBalance | null {
-    return changetype<TokenBalance | null>(store.get("TokenBalance", id));
+  static loadInBlock(id: string): UserBalance | null {
+    return changetype<UserBalance | null>(
+      store.get_in_block("UserBalance", id)
+    );
+  }
+
+  static load(id: string): UserBalance | null {
+    return changetype<UserBalance | null>(store.get("UserBalance", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -531,7 +707,11 @@ export class TokenBalance extends Entity {
 
   get user(): string {
     let value = this.get("user");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set user(value: string) {
@@ -540,7 +720,11 @@ export class TokenBalance extends Entity {
 
   get token(): string {
     let value = this.get("token");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set token(value: string) {
@@ -549,10 +733,273 @@ export class TokenBalance extends Entity {
 
   get amount(): BigInt {
     let value = this.get("amount");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set amount(value: BigInt) {
     this.set("amount", Value.fromBigInt(value));
+  }
+}
+
+export class WorkstreamBalance extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save WorkstreamBalance entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type WorkstreamBalance must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("WorkstreamBalance", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): WorkstreamBalance | null {
+    return changetype<WorkstreamBalance | null>(
+      store.get_in_block("WorkstreamBalance", id)
+    );
+  }
+
+  static load(id: string): WorkstreamBalance | null {
+    return changetype<WorkstreamBalance | null>(
+      store.get("WorkstreamBalance", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get workstream(): string {
+    let value = this.get("workstream");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set workstream(value: string) {
+    this.set("workstream", Value.fromString(value));
+  }
+
+  get token(): string {
+    let value = this.get("token");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+}
+
+export class WorkstreamContestation extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save WorkstreamContestation entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type WorkstreamContestation must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("WorkstreamContestation", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): WorkstreamContestation | null {
+    return changetype<WorkstreamContestation | null>(
+      store.get_in_block("WorkstreamContestation", id)
+    );
+  }
+
+  static load(id: string): WorkstreamContestation | null {
+    return changetype<WorkstreamContestation | null>(
+      store.get("WorkstreamContestation", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
+  get workstream(): string {
+    let value = this.get("workstream");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set workstream(value: string) {
+    this.set("workstream", Value.fromString(value));
+  }
+
+  get uri(): string {
+    let value = this.get("uri");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set uri(value: string) {
+    this.set("uri", Value.fromString(value));
+  }
+}
+
+export class UserBalanceLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): UserBalance[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<UserBalance[]>(value);
+  }
+}
+
+export class WorkstreamContributorLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): WorkstreamContributor[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<WorkstreamContributor[]>(value);
+  }
+}
+
+export class EvaluationLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Evaluation[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Evaluation[]>(value);
+  }
+}
+
+export class WorkstreamBalanceLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): WorkstreamBalance[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<WorkstreamBalance[]>(value);
+  }
+}
+
+export class WorkstreamContestationLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): WorkstreamContestation[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<WorkstreamContestation[]>(value);
   }
 }

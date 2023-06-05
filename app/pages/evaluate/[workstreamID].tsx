@@ -1,11 +1,9 @@
-import {
-  WorkstreamByIDDocument,
-  WorkstreamByIDQuery,
-} from "../../.graphclient";
+
 import { StartEvaluation } from "../../components/FUX/StartEvaluation";
 import User from "../../components/FUX/User";
 import ValueHeader from "../../components/FUX/ValueHeader";
 import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
+import { useGraphClient } from "../../hooks/graphSdk";
 import {
   VStack,
   Text,
@@ -14,41 +12,45 @@ import {
   StatLabel,
   StatNumber,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useQuery } from "urql";
 
-const Resolve: NextPage = () => {
+const Evaluate: NextPage = () => {
   const router = useRouter();
   const { workstreamID } = router.query;
+  const { sdk } = useGraphClient();
 
-  const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamByIDDocument,
-    variables: {
-      id: (workstreamID as string) || "",
-    },
+  const {
+    isLoading,
+    data: workstreams,
+    error,
+  } = useQuery({
+    queryKey: ["workstream", workstreamID],
+    queryFn: () => sdk.WorkstreamByID({ id: workstreamID as string }),
+    refetchInterval: 5000,
   });
 
-  const { data, fetching, error } = result;
-  const _workstream = data?.workstream;
+  const _workstream = workstreams?.workstreamContributors.find(
+    ({ workstream }) => workstream?.id === workstreamID
+  )?.workstream;
 
-  console.log(data);
-  const getForm = (data: WorkstreamByIDQuery | undefined) => {
-    if (!data?.workstream) return <Text>Workstream not found</Text>;
+  console.log(_workstream);
+  const getForm = (ws: Partial<typeof _workstream>) => {
+    if (!ws?.status) return <Text>Workstream not found</Text>;
 
-    if (!data?.workstream?.status)
-      return <Text>Workstream status not found</Text>;
+    if (!ws?.status) return <Text>Workstream status not found</Text>;
 
-    if (data?.workstream?.status && data.workstream.status === "Started")
-      return <StartEvaluation workstream={data.workstream} />;
-    if (data?.workstream?.status && data.workstream.status === "Evaluation")
-      return <ValueReviewForm workstream={data.workstream} />;
-    if (data?.workstream?.status && data.workstream.status === "Closed")
+    if (ws?.status && ws.status === "Started")
+      return <StartEvaluation workstream={ws} />;
+    if (ws?.status && ws.status === "Evaluation")
+      return <ValueReviewForm workstream={ws} />;
+    if (ws?.status && ws.status === "Closed")
       return <Text>Workstream is resolved</Text>;
   };
 
-  const form = getForm(data);
+  const form = getForm(_workstream);
 
   return _workstream ? (
     <>
@@ -88,4 +90,4 @@ const Resolve: NextPage = () => {
   );
 };
 
-export default Resolve;
+export default Evaluate;

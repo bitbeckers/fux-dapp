@@ -1,5 +1,6 @@
-import { UserDocument } from "../.graphclient";
+import { UserByAddressDocument } from "../.graphclient";
 import ConnectWallet from "../components/ConnectWallet";
+import { useGraphClient } from "../hooks/graphSdk";
 import {
   Box,
   Button,
@@ -10,20 +11,20 @@ import {
   Spinner,
   Spacer,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import NextLink from "next/link";
-import { useQuery } from "urql";
 import { useAccount } from "wagmi";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
-  const [result] = useQuery({
-    query: UserDocument,
-    variables: {
-      address: address?.toLowerCase() || "",
-    },
+  const { sdk } = useGraphClient();
+
+  const { isLoading, data, error } = useQuery({
+    queryKey: ["user", address?.toLowerCase()],
+    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() }),
+    refetchInterval: 5000,
   });
-  const { data, fetching, error } = result;
 
   const claimLink = (
     <Flex direction={"column"} gap={2}>
@@ -70,7 +71,7 @@ const Home: NextPage = () => {
           value created, as evaluated by your peers.
         </Text>
         <Spacer />
-        {fetching ? (
+        {isLoading ? (
           <Spinner size="md" />
         ) : address ? (
           data?.user?.fuxer ? (

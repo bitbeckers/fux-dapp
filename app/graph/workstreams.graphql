@@ -1,57 +1,58 @@
-query WorkstreamsByUser($contributor: String = "") @live {
-  workstreamContributors(where: { contributor: $contributor }) {
-    workstream {
-      status
-      name
-      contributors {
-        commitment
-        contributor {
-          id
-        }
-      }
-      coordinator {
-        id
-      }
-      deadline
-      funding
-      id
-      evaluations {
-        contributor {
-          id
-        }
-        creator {
-          id
-        }
-        rating
-      }
-    }
+#import "./EvaluationFragment.graphql"
+#import "./TokenFragment.graphql"
+
+query WorkstreamsByContributor($address: ID = "") {
+  workstreamContributors(where: { contributor_: { id: $address } }) {
+    ...WorkstreamFragment
   }
 }
 
-query WorkstreamByID($id: ID = "") @live {
-  workstream(id: $id) {
-    contributors {
-      commitment
-      contributor {
-        id
-      }
-    }
-    deadline
-    funding
-    name
-    status
+query WorkstreamByID($id: ID = "") {
+  workstreamContributors(where: { workstream_: { id: $id } }) {
+    ...WorkstreamFragment
+  }
+}
+
+fragment RewardDistributionFragment on RewardDistribution {
+  contributors {
     id
+  }
+  shares
+  id
+}
+
+fragment ContributorFragment on WorkstreamContributor {
+  commitment
+  active
+  contributor {
+    id
+  }
+}
+
+fragment WorkstreamFragment on WorkstreamContributor {
+  workstream {
+    id
+    name
     coordinator {
       id
     }
-    evaluations {
-      creator {
-        id
-      }
-      contributor {
-        id
-      }
-      rating
+    contributors {
+      ...ContributorFragment
     }
+    deadline
+    evaluations {
+      ...EvaluationFragment
+    }
+    funding {
+      amount
+      token {
+        ...TokenFragment
+      }
+    }
+    rewardDistribution {
+      ...RewardDistributionFragment
+    }
+    status
+    uri
   }
 }

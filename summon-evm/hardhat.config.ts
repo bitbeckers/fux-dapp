@@ -82,6 +82,9 @@ const config: HardhatUserConfig = {
         mnemonic,
       },
       chainId: chainIds.hardhat,
+      forking: {
+        url: nodeUrl("goerli"),
+      }
     },
     mainnet: getChainConfig("mainnet"),
     goerli: getChainConfig("goerli"),
@@ -106,7 +109,7 @@ const config: HardhatUserConfig = {
       // https://hardhat.org/hardhat-network/#solidity-optimizer-support
       optimizer: {
         enabled: true,
-        runs: 800,
+        runs: 10000,
       },
     },
   },

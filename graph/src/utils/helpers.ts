@@ -1,22 +1,27 @@
+import { WorkstreamClosed } from "../../generated/FUX/FUX";
 import {
   Token,
-  TokenBalance,
+  UserBalance,
+  WorkstreamBalance,
+  WorkstreamContestation,
   User,
   Workstream,
   WorkstreamContributor,
+  RewardDistribution,
 } from "../../generated/schema";
-import { FUX_TOKEN, VFUX_TOKEN } from "./constants";
-import { BigInt } from "@graphprotocol/graph-ts";
+import { ERC20 } from "../../generated/templates/ERC20/ERC20";
+import { FUX_ADDRESS, FUX_TOKEN, VFUX_TOKEN, ZERO_ADDRESS } from "./constants";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export function getOrCreateUser(address: string): User {
-  let id = address;
-  let user = User.load(id);
+  let user = User.load(address);
 
   if (user != null) {
     return user;
   }
 
-  user = new User(id);
+  user = new User(address);
+  user.fuxer = false;
   user.save();
 
   return user;
@@ -36,8 +41,8 @@ export function getOrCreateWorkstream(workstreamID: BigInt): Workstream {
   return workstream;
 }
 
-export function getOrCreateToken(tokenID: BigInt): Token {
-  let id = tokenID.toString();
+export function getOrCreateERC20Token(address: string): Token {
+  let id = address;
   let token = Token.load(id);
 
   if (token != null) {
@@ -46,33 +51,82 @@ export function getOrCreateToken(tokenID: BigInt): Token {
 
   token = new Token(id);
 
-  if (tokenID == FUX_TOKEN) {
-    token.name = "FUX";
-    token.symbol = "FUX";
+  if (Address.fromString(address).equals(ZERO_ADDRESS)) {
+    token.symbol = "native";
+    token.name = "native";
+    token.decimals = BigInt.fromI32(18);
+
+    token.save();
+
+    return token;
   }
 
-  if (tokenID == VFUX_TOKEN) {
-    token.name = "vFUX";
-    token.symbol = "VFUX";
-  }
+  let erc20 = ERC20.bind(Address.fromString(address));
+
+  token.symbol = erc20.symbol();
+  token.name = erc20.name();
+  token.decimals = BigInt.fromI32(erc20.decimals());
 
   token.save();
 
   return token;
 }
 
-export function getOrCreateTokenBalance(
-  user: User,
+export function getOrCreate1155Token(address: string, tokenID: BigInt): Token {
+  let id = address;
+  let token = Token.load(id);
+
+  if (token != null) {
+    return token;
+  }
+
+  token = new Token(id);
+
+  token.tokenID = tokenID;
+
+  if (tokenID.equals(FUX_TOKEN)) {
+    token.symbol = "FUX";
+    token.name = "FUX";
+  }
+
+  if (tokenID.equals(VFUX_TOKEN)) {
+    token.symbol = "vFUX";
+    token.name = "vFUX";
+  }
+  token.save();
+
+  return token;
+}
+
+export function getOrCreateWorkstreamBalance(
+  workstream: Workstream,
   token: Token
-): TokenBalance {
-  let id = user.id.concat(token.id);
-  let balance = TokenBalance.load(id);
+): WorkstreamBalance {
+  let id = workstream.id.concat(token.id);
+  let balance = WorkstreamBalance.load(id);
 
   if (balance != null) {
     return balance;
   }
 
-  balance = new TokenBalance(id);
+  balance = new WorkstreamBalance(id);
+  balance.workstream = workstream.id;
+  balance.token = token.id;
+  balance.amount = BigInt.fromI32(0);
+  balance.save();
+
+  return balance;
+}
+
+export function getOrCreateUserBalance(user: User, token: Token): UserBalance {
+  let id = user.id.concat(token.id);
+  let balance = UserBalance.load(id);
+
+  if (balance != null) {
+    return balance;
+  }
+
+  balance = new UserBalance(id);
   balance.user = user.id;
   balance.token = token.id;
   balance.amount = BigInt.fromI32(0);
@@ -95,6 +149,64 @@ export function getOrCreateWorkstreamContributor(
   workstreamContributor = new WorkstreamContributor(id);
   workstreamContributor.contributor = user.id;
   workstreamContributor.workstream = workstream.id;
+  workstreamContributor.active = true;
   workstreamContributor.save();
   return workstreamContributor;
+}
+
+export function getOrCreateWorkstreamContestation(
+  user: User,
+  workstream: Workstream
+): WorkstreamContestation {
+  let id = user.id.concat(workstream.id);
+  let workstreamContestation = WorkstreamContestation.load(id);
+
+  if (workstreamContestation) {
+    return workstreamContestation;
+  }
+
+  workstreamContestation = new WorkstreamContestation(id);
+  workstreamContestation.user = user.id;
+  workstreamContestation.workstream = workstream.id;
+  workstreamContestation.uri = "";
+  workstreamContestation.save();
+  return workstreamContestation;
+}
+
+export function getStateFromInt(state: BigInt): string | null {
+  if (state.equals(BigInt.fromI32(0))) {
+    return "Started";
+  }
+
+  if (state.equals(BigInt.fromI32(1))) {
+    return "Evaluation";
+  }
+
+  if (state.equals(BigInt.fromI32(2))) {
+    return "Closed";
+  }
+
+  return null;
+}
+
+export function getOrCreateRewardDistribution(
+  event: WorkstreamClosed
+): RewardDistribution {
+  let id = event.params.workstreamID.toString();
+  let dist = RewardDistribution.load(id);
+
+  if (dist != null) {
+    return dist;
+  }
+
+  dist = new RewardDistribution(id);
+  dist.workstream = event.params.workstreamID.toString();
+  dist.shares = event.params.vFux;
+  dist.contributors = event.params.contributors.map<string>((a: Address) =>
+    a.toHexString()
+  );
+
+  dist.save();
+
+  return dist;
 }

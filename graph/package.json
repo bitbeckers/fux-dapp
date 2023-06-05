@@ -14,10 +14,12 @@
     "remove:local": "graph remove --node http://localhost:8020/ bitbeckers/fux-goerli",
     "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 bitbeckers/fux-goerli",
     "predeploy:local": "yarn create:local",
-    "precreate:local": "yarn start:local"
+    "precreate:local": "yarn start:local",
+    "test": "graph test"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.22.4",
-    "@graphprotocol/graph-ts": "^0.22.1"
+    "@graphprotocol/graph-cli": "^0.51",
+    "@graphprotocol/graph-ts": "^0.31",
+    "matchstick-as": "^0.5.2"
   }
 }
