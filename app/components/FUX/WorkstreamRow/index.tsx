@@ -3,7 +3,7 @@ import { useConstants } from "../../../utils/constants";
 import CommitFuxModal from "../CommitFuxModal";
 import ContributorModal from "../ContributorModal";
 import { StarIcon } from "@chakra-ui/icons";
-import { Button, Flex, GridItem, Text } from "@chakra-ui/react";
+import { Button, Flex, GridItem, Icon, Text } from "@chakra-ui/react";
 import { BigNumber, ethers } from "ethers";
 import NextLink from "next/link";
 import React from "react";
@@ -66,9 +66,11 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={4}
       >
-        <Text fontFamily="mono" pr={"1em"}>{`${
-          ethers.utils.formatEther(workstream.funding).toString() || 0
-        } ${nativeToken}`}</Text>
+        {workstream?.funding && workstream.funding.length > 0 ? (
+          <Text fontFamily="mono" pr={"1em"}>
+            🍑
+          </Text>
+        ) : undefined}
       </GridItem>
       <GridItem
         display={"flex"}

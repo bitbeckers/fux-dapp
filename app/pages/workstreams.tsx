@@ -1,11 +1,12 @@
 import {
-  TokenBalanceDocument,
+  BalancesByUserDocument,
   Workstream,
-  WorkstreamsByUserDocument,
+  WorkstreamsByContributorDocument,
 } from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
 import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
+import { contractAddresses } from "../utils/constants";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
   VStack,
@@ -30,19 +31,18 @@ const Workstreams: NextPage = () => {
   const [sortFunding, setSortFunding] = useBoolean();
 
   const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamsByUserDocument,
+    query: WorkstreamsByContributorDocument,
     variables: {
-      contributor: user?.toLowerCase() || "",
+      address: user?.toLowerCase() || "",
     },
   });
 
   const { data: workstreamsByUser, fetching, error } = result;
 
   const [fuxBalanceResponse, reexecuteBalanceQuery] = useQuery({
-    query: TokenBalanceDocument,
+    query: BalancesByUserDocument,
     variables: {
       address: user?.toLowerCase() || "",
-      symbol: "FUX",
     },
   });
 
@@ -52,7 +52,11 @@ const Workstreams: NextPage = () => {
     error: fuxBalance,
   } = fuxBalanceResponse;
 
-  const balance = fuxAvailableData?.tokenBalances.find((balance) => balance);
+  const balance = fuxAvailableData?.userBalances.find(
+    ({ token }) =>
+      token.id.toLowerCase() ===
+      contractAddresses.fuxContractAddress.toLowerCase()
+  )?.amount;
 
   const sortedData = workstreamsByUser?.workstreamContributors.sort((a, b) => {
     if (sortFux) {

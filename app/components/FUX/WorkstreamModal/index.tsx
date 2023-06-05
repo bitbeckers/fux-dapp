@@ -1,4 +1,4 @@
-import { UserDocument } from "../../../.graphclient";
+import { UserByAddressDocument } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
 import {
   contractABI,
@@ -39,7 +39,7 @@ import {
   InputRightElement,
   Divider,
 } from "@chakra-ui/react";
-import { ethers } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { DateTime } from "luxon";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -57,9 +57,10 @@ import {
 type FormData = {
   name: string;
   duration: string;
-  funding: number;
-  fuxGiven: number;
+  coordinatorCommitment: number;
   contributors: { address: string }[];
+  funding: { address: string; amount: BigNumberish; symbol?: string }[];
+  metadataUri: string;
 };
 
 const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
@@ -79,15 +80,29 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     defaultValues: {
       name: "",
       duration: DateTime.now().plus({ day: 1 }).toISODate(),
-      funding: 0,
-      fuxGiven: 0,
+      coordinatorCommitment: 0,
       contributors: [{ address: "" }],
+      funding: [{ address: ethers.constants.AddressZero, amount: 0 }],
+      metadataUri: "",
     },
   });
 
-  const { fields, append, remove } = useFieldArray<FormData>({
+  const {
+    fields: contributors,
+    append: addContributor,
+    remove: removeContributor,
+  } = useFieldArray<FormData>({
     control,
     name: "contributors",
+  });
+
+  const {
+    fields: funding,
+    append: addFunding,
+    remove: removeFunding,
+  } = useFieldArray<FormData>({
+    control,
+    name: "funding",
   });
 
   const formState = watch();
@@ -104,12 +119,17 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
           .filter((address) => isAddress(address)),
         address,
       ],
-      formState.fuxGiven,
+      formState.coordinatorCommitment,
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
+      formState.funding.map((token) => token.address),
+      formState.funding.map((token) => token.amount),
+      formState.metadataUri,
     ],
     overrides: {
-      value: ethers.utils.parseEther(
-        formState.funding ? formState.funding.toString() : "0"
+      value: BigNumber.from(
+        formState.funding.find(
+          (token) => token.address === ethers.constants.AddressZero
+        )?.amount
       ),
     },
   });
@@ -134,7 +154,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
   const { nativeToken } = useConstants();
 
   const [result] = useQuery({
-    query: UserDocument,
+    query: UserByAddressDocument,
     variables: {
       address: address?.toLowerCase() || "",
     },
@@ -146,12 +166,12 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     (balance) => balance.token.name === "FUX"
   )?.amount;
 
-  const amountToSpend = () => {
-    let formatted = balance?.formatted ?? 0;
-    let margin = Number(formatted) - formState.funding;
+  // const amountToSpend = () => {
+  //   let formatted = balance?.formatted ?? 0;
+  //   let margin = Number(formatted) - formState.funding;
 
-    return margin.toFixed(2);
-  };
+  //   return margin.toFixed(2);
+  // };
 
   const onSubmit = () => {
     write?.();
@@ -218,10 +238,10 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
 
           <Flex justify={"space-between"} direction={"column"}>
             <Controller
-              name={`fuxGiven`}
+              name={`coordinatorCommitment`}
               control={control}
               rules={{ required: true }}
-              key={`fuxGiven`}
+              key={`coordinatorCommitment`}
               render={({ field: { ref, ...restField } }) => (
                 <>
                   <FormHelperText
@@ -268,8 +288,8 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                       >
                         {" "}
                         {`${
-                          formState.fuxGiven
-                            ? fuxBalance - formState.fuxGiven
+                          formState.coordinatorCommitment
+                            ? fuxBalance - formState.coordinatorCommitment
                             : fuxBalance
                         } FUX to give`}
                       </StatNumber>
@@ -278,28 +298,47 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                 </>
               )}
             />
-            <Flex justify={"space-between"} direction={"column"}>
+          </Flex>
+        </Flex>
+
+        <Divider my={"0.5em"} />
+
+        <Text>Add funding </Text>
+
+        <>
+          <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
+            Fund workstream
+            <Tooltip label="Funding will auto-split to contributors based on evaluation">
+              <Box ml={2}>
+                <RiInformationLine />
+              </Box>
+            </Tooltip>
+          </FormHelperText>
+
+          {funding.map((token, index) => (
+            <InputGroup key={token.id} marginTop={"1em"}>
+              <Input
+                id="fundingToken"
+                defaultValue={`${token.address}`}
+                isInvalid={!isAddress(formState.funding[index].address)}
+                {...register(`funding.${index}.address`)}
+              />
+
               <Controller
                 name={`funding`}
                 control={control}
                 rules={{ required: false }}
-                key={`funding`}
-                render={({ field: { ref, ...restField } }) => (
+                key={`funding.${index}.address`}
+                render={({ field: { ref, onChange, value, ...restField } }) => (
                   <>
-                    <FormHelperText
-                      textColor={"white"}
-                      w={"100%"}
-                      display={"flex"}
-                    >
-                      Fund workstream
-                      <Tooltip label="Funding will auto-split to contributors based on evaluation">
-                        <Box ml={2}>
-                          <RiInformationLine />
-                        </Box>
-                      </Tooltip>
-                    </FormHelperText>
                     <InputGroup>
                       <NumberInput
+                        onChange={(valueString) =>
+                          onChange(ethers.utils.parseEther(valueString))
+                        }
+                        value={`${formState.funding[
+                          index
+                        ]?.amount?.toString()} ${nativeToken}`}
                         precision={2}
                         step={0.05}
                         min={0}
@@ -316,9 +355,6 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                           <NumberDecrementStepper />
                         </NumberInputStepper>
                       </NumberInput>
-                      <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-                        <Text>{`${nativeToken}`}</Text>
-                      </InputRightAddon>
                     </InputGroup>
                     <StatGroup>
                       <Stat>
@@ -328,24 +364,60 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                           fontWeight="100"
                           color={"#8e4ec6"}
                         >
-                          {!balanceLoading
-                            ? `${amountToSpend()} ${balance?.symbol} to fund`
-                            : "Loading"}
+                          {!balanceLoading ? `XXX to fund` : "Loading"}
                         </StatNumber>
                       </Stat>
                     </StatGroup>
                   </>
                 )}
               />
-            </Flex>
-          </Flex>
-        </Flex>
-
-        <Divider my={"0.5em"} />
+              {index == funding.length - 1 ? (
+                <InputRightElement>
+                  <Tooltip
+                    hasArrow
+                    label="Add another token"
+                    aria-label="Add another token"
+                  >
+                    <IconButton
+                      aria-label="Add another token"
+                      onClick={() => {
+                        if (!isAddress(formState.contributors[index].address)) {
+                          errorToast({
+                            name: "Invalid address",
+                            message: `${formState.contributors[index].address} is not valid`,
+                          });
+                          return;
+                        }
+                        addFunding({ address: "" });
+                      }}
+                      icon={<Icon as={BsFillPersonPlusFill} />}
+                    />
+                  </Tooltip>
+                </InputRightElement>
+              ) : (
+                <InputRightElement>
+                  <Tooltip
+                    hasArrow
+                    label="Remove funding"
+                    aria-label="Remove funding"
+                  >
+                    <IconButton
+                      aria-label="remove funding"
+                      background={"red.500"}
+                      onClick={() => removeFunding(index)}
+                      icon={<Icon as={BsFillPersonXFill} />}
+                    />
+                  </Tooltip>
+                </InputRightElement>
+              )}
+            </InputGroup>
+          ))}
+          <Divider my={"0.5em"} />
+        </>
 
         <Text>Invite Contributors</Text>
 
-        {fields.map((field, index) => (
+        {contributors.map((field, index) => (
           <InputGroup key={field.id} marginTop={"1em"}>
             <Input
               id="contributors"
@@ -353,7 +425,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
               isInvalid={!isAddress(formState.contributors[index].address)}
               {...register(`contributors.${index}.address`)}
             />
-            {index == fields.length - 1 ? (
+            {index == contributors.length - 1 ? (
               <InputRightElement>
                 <Tooltip
                   hasArrow
@@ -370,7 +442,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                         });
                         return;
                       }
-                      append({ address: "" });
+                      addContributor({ address: "" });
                     }}
                     icon={<Icon as={BsFillPersonPlusFill} />}
                   />
@@ -386,7 +458,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                   <IconButton
                     aria-label="remove contributor"
                     background={"red.500"}
-                    onClick={() => remove(index)}
+                    onClick={() => removeContributor(index)}
                     icon={<Icon as={BsFillPersonXFill} />}
                   />
                 </Tooltip>

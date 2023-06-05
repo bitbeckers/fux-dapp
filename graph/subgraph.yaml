@@ -1,4 +1,4 @@
-specVersion: 0.0.4
+specVersion: 0.0.5
 schema:
   file: ./schema.graphql
 dataSources:
@@ -6,9 +6,9 @@ dataSources:
     name: FUX
     network: goerli
     source:
-      address: "0xefAD3488CD35fc70Fa7B7f6C9e336a8AbbaD8c25"
+      address: "0x942d23Fd9d6a510D05f43e3C10d0B3d552Cf964b"
       abi: FUX
-      startBlock: 8537432
+      startBlock: 9126009
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -23,7 +23,7 @@ dataSources:
           file: ./abis/contracts/FUX.sol/FUX.json
       eventHandlers:
         - event: ContributorsUpdated(uint256,address[],bool)
-          handler: handleContributorsUpdated
+          handler: handleContributorsUpdates
         - event: EvaluationSubmitted(uint256,address,address[],uint256[])
           handler: handleEvaluationSubmitted
         - event: FuxClaimed(address)
@@ -35,7 +35,7 @@ dataSources:
         - event: StateUpdated(uint256,uint8)
           handler: handleStateUpdated
         - event: UpdatedWorkstreamURI(uint256,string)
-          handler: handleUpdatedWorkstreamURI
+          handler: handleUpdatedWorkstreamUri
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
         - event: WorkstreamClosed(uint256,address[],uint256[])
@@ -59,7 +59,7 @@ templates:
         - ERC20Token
       abis:
         - name: ERC20
-          file: ./abis/erc20.json
+          file: ./abis/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleERC20Transfer

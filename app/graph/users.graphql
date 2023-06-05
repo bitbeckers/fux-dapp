@@ -1,13 +1,32 @@
-query User($address: ID = "") {
+#import "./TokenFragment.graphql"
+
+query UserByAddress($address: ID = "") {
   user(id: $address) {
-    fuxer
-    id
-    rewards
-    balances {
-      amount
-      token {
-        name
-      }
-    }
+    ...UserFragment
+  }
+}
+
+fragment WorkstreamContributorFragment on WorkstreamContributor {
+  id
+  commitment
+  active
+}
+
+fragment UserBalanceFragment on UserBalance {
+  amount
+  id
+  token {
+    ...TokenFragment
+  }
+}
+
+fragment UserFragment on User {
+  balances {
+    ...UserBalanceFragment
+  }
+  fuxer
+  id
+  workstreams(where: { contributor_: { id: $address } }) {
+    ...WorkstreamContributorFragment
   }
 }

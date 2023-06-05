@@ -1,8 +1,27 @@
-query UserWorkstreamEvaluations($creator: String = "", $workstreamID: ID = "") {
-  evaluations(where: {creator: $creator, workstream_: {id: $workstreamID}}) {
-    contributor {
+#import "./EvaluationFragment.graphql"
+
+query EvaluationsByWorkstreamID($workstreamID: ID = "") {
+  evaluations {
+    ...EvaluationOverview
+  }
+}
+
+fragment EvaluationOverview on Evaluation {
+  id
+  rating
+  creator {
+    evaluations(where: { workstream_: { id: $workstreamID } }) {
+      ...EvaluationFragment
+    }
+    id
+    workstreams(where: { workstream_: { id: $workstreamID } }) {
       id
     }
-    rating
+  }
+  contributor {
+    evaluations(where: { workstream_: { id: $workstreamID } }) {
+      ...EvaluationFragment
+    }
+    id
   }
 }

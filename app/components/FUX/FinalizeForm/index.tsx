@@ -136,7 +136,6 @@ const FinalizeForm: React.FC<{
 
   const contributors = _workstream.contributors;
   const coordinator = _workstream.coordinator?.id;
-  const funding = ethers.utils.formatEther(_workstream.funding);
 
   const finalizeForm =
     contributors && contributors?.length > 0 ? (
@@ -189,12 +188,7 @@ const FinalizeForm: React.FC<{
                   justifyContent="end"
                   alignContent="center"
                 >
-                  {relative[address]
-                    ? `${_.multiply(
-                        Number(funding),
-                        Number(relative[address]) / 100
-                      ).toFixed(4)} ${nativeToken}`
-                    : `0 ${nativeToken}`}
+                  <Text>Token Values</Text>
                 </GridItem>
               </Fragment>
             );

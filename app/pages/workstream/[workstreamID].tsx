@@ -1,11 +1,19 @@
 import {
-  TokenBalanceDocument,
+  BalancesByUserDocument,
   Workstream,
   WorkstreamByIDDocument,
+  BalancesByUserQuery,
+  WorkstreamByIDQuery,
+  WorkstreamByIDQueryVariables,
+  BalancesByUserQueryVariables,
+  BalancesByWorkstreamDocument,
+  BalancesByWorkstreamQuery,
+  BalancesByWorkstreamQueryVariables,
+  
 } from "../../.graphclient";
 import CommitFuxModal from "../../components/FUX/CommitFuxModal";
 import { ContributorOverview } from "../../components/FUX/ContributorOverview";
-import { useConstants } from "../../utils/constants";
+import { contractAddresses, useConstants } from "../../utils/constants";
 import {
   Box,
   VStack,
@@ -28,31 +36,28 @@ import { useRouter } from "next/router";
 import { useQuery } from "urql";
 import { useAccount } from "wagmi";
 import { CloseButton } from "../../components/FUX/CloseButton";
+import TokenBalance from "../../components/FUX/TokenBalance";
 
 const Workstream: NextPage = () => {
   const router = useRouter();
   const { address: user } = useAccount();
-  const { nativeToken } = useConstants();
   const { workstreamID } = router.query;
 
-  const [result] = useQuery({
+  const [workstream] = useQuery<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>({
     query: WorkstreamByIDDocument,
     variables: {
       id: workstreamID as string,
     },
   });
 
-  const [fuxBalanceResponse] = useQuery({
-    query: TokenBalanceDocument,
+  const [userBalances] = useQuery<BalancesByUserQuery, BalancesByUserQueryVariables>({
+    query: BalancesByUserDocument,
     variables: {
-      address: user?.toLowerCase() || "",
-      symbol: "FUX",
+      address: user?.toLowerCase(),
     },
   });
 
-  const { data, fetching } = result;
-
-  if (fetching) {
+  if (workstream.fetching) {
     return (
       <Spinner
         thickness="4px"
@@ -63,7 +68,9 @@ const Workstream: NextPage = () => {
       />
     );
   }
-  const _workstream = data?.workstream;
+
+
+  const _workstream = workstream.data?.workstreamContributors?.[0]?.workstream;
   const contributors = _workstream?.contributors;
   const contributorAddresses = contributors?.map((contributor) => {return contributor.contributor.id}) ?? []
 
@@ -77,11 +84,8 @@ const Workstream: NextPage = () => {
     fuxGiven = BigNumber.from("0");
   }
 
-  const { data: fuxAvailableData } = fuxBalanceResponse;
 
-  const fuxAvailable = fuxAvailableData?.tokenBalances.find(
-    (balance) => balance
-  )?.amount;
+  const fuxAvailable = userBalances.data?.userBalances.find((balance) => balance.token.id.toLowerCase() === contractAddresses.fuxContractAddress.toLowerCase())?.amount
 
   if (!fuxAvailable) {
     fuxGiven = BigNumber.from("0");
@@ -104,18 +108,13 @@ const Workstream: NextPage = () => {
                   : ""
               }
             </Text>
-            { _workstream.funding > 0 && (
-              <Text>Funding: {
-                _workstream.funding
-                  ? Number(
-                      ethers.utils.formatEther(_workstream.funding)
-                    ).toPrecision(2)
-                  : ""
-              } {nativeToken}
-              </Text>
-            )}
         </Flex>
 
+        <Flex direction={['column', null, 'row']} align={['center', null, 'center']} flexWrap="wrap">
+          <Text>Workstream funds available</Text>
+          {_workstream.funding?.map(funding => <TokenBalance key={funding.token.id} token={funding.token} amount={funding.amount} />)}
+        </Flex>
+        
         <Flex direction={['column', null, 'column']} gap={"1em"}>
           <Flex direction={['column', null, 'row']} align={['center', null, 'center']} flexWrap="wrap">
             <Stat w="160px" mr={4}>
@@ -125,7 +124,7 @@ const Workstream: NextPage = () => {
             </Stat>
             <Box w="160px" mt={8}>
               <CommitFuxModal
-                workstreamID={BigNumber.from(_workstream.id)}
+                workstreamID={BigNumber.from(workstreamID)}
                 fuxGiven={fuxGiven}
                 fuxAvailable={fuxAvailable}
               />
@@ -158,12 +157,8 @@ const Workstream: NextPage = () => {
               </Button>
             </NextLink>
             
-           <CloseButton workstreamId={_workstream.id} contributors={contributorAddresses} disabled={false}/>
+           <CloseButton workstreamId={workstreamID as string} contributors={contributorAddresses} disabled={false}/>
              </> 
-             
-            
-              
-
             ) : undefined}
           </Flex>
         </Flex>

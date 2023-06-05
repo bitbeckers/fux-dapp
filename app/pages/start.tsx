@@ -1,4 +1,4 @@
-import { UserDocument } from "../.graphclient";
+import { UserByAddressDocument } from "../.graphclient";
 import ConnectWallet from "../components/ConnectWallet";
 import FuxOverview from "../components/FUX/FuxOverview";
 import { useCustomToasts } from "../hooks/toast";
@@ -32,9 +32,8 @@ const Start: NextPage = () => {
     },
   });
 
-
   const [result] = useQuery({
-    query: UserDocument,
+    query: UserByAddressDocument,
     variables: {
       address: address?.toLowerCase() || "",
     },

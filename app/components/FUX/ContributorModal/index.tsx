@@ -70,12 +70,13 @@ const ContributorModal: React.FC<{
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
-    functionName: "addContributors",
+    functionName: "updateContributors",
     args: [
       workstreamID,
       newContributors
         .map((entry) => entry.address)
         .filter((address) => isAddress(address)),
+      true,
     ],
   });
 

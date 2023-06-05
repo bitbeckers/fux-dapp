@@ -1,6 +1,8 @@
 import {
   WorkstreamByIDDocument,
   WorkstreamByIDQuery,
+  WorkstreamByIDQueryVariables,
+  WorkstreamFragmentFragment,
 } from "../../.graphclient";
 import { StartEvaluation } from "../../components/FUX/StartEvaluation";
 import User from "../../components/FUX/User";
@@ -23,32 +25,36 @@ const Resolve: NextPage = () => {
   const router = useRouter();
   const { workstreamID } = router.query;
 
-  const [result, reexecuteQuery] = useQuery({
+  const [queryResult, reexecuteQuery] = useQuery<
+    WorkstreamByIDQuery,
+    WorkstreamByIDQueryVariables
+  >({
     query: WorkstreamByIDDocument,
     variables: {
       id: (workstreamID as string) || "",
     },
   });
 
-  const { data, fetching, error } = result;
-  const _workstream = data?.workstream;
+  const { data: workstreams, fetching, error } = queryResult;
+  const _workstream = workstreams?.workstreamContributors.find(
+    ({ workstream }) => workstream?.id === workstreamID
+  )?.workstream;
 
-  console.log(data);
-  const getForm = (data: WorkstreamByIDQuery | undefined) => {
-    if (!data?.workstream) return <Text>Workstream not found</Text>;
+  console.log(_workstream);
+  const getForm = (ws: Partial<typeof _workstream>) => {
+    if (!ws?.status) return <Text>Workstream not found</Text>;
 
-    if (!data?.workstream?.status)
-      return <Text>Workstream status not found</Text>;
+    if (!ws?.status) return <Text>Workstream status not found</Text>;
 
-    if (data?.workstream?.status && data.workstream.status === "Started")
-      return <StartEvaluation workstream={data.workstream} />;
-    if (data?.workstream?.status && data.workstream.status === "Evaluation")
-      return <ValueReviewForm workstream={data.workstream} />;
-    if (data?.workstream?.status && data.workstream.status === "Closed")
+    if (ws?.status && ws.status === "Started")
+      return <StartEvaluation workstream={ws} />;
+    if (ws?.status && ws.status === "Evaluation")
+      return <ValueReviewForm workstream={ws} />;
+    if (ws?.status && ws.status === "Closed")
       return <Text>Workstream is resolved</Text>;
   };
 
-  const form = getForm(data);
+  const form = getForm(_workstream);
 
   return _workstream ? (
     <>
