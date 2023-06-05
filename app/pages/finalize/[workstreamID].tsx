@@ -5,7 +5,9 @@ import {
 } from "../../.graphclient";
 import { FinalizeForm } from "../../components/FUX/FinalizeForm";
 import { StartEvaluation } from "../../components/FUX/StartEvaluation";
+import TokenBalance from "../../components/FUX/TokenBalance";
 import User from "../../components/FUX/User";
+import { useGraphClient } from "../../hooks/graphSdk";
 import { useConstants } from "../../utils/constants";
 import {
   VStack,
@@ -17,30 +19,29 @@ import {
   Heading,
   Flex,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { ethers } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useQuery } from "urql";
-import TokenBalance from "../../components/FUX/TokenBalance";
 
 const Finalize: NextPage = () => {
   const router = useRouter();
   const { nativeToken } = useConstants();
+  const { sdk } = useGraphClient();
 
   const { workstreamID } = router.query;
 
-  const [queryResult, reexecuteQuery] = useQuery<
-    WorkstreamByIDQuery,
-    WorkstreamByIDQueryVariables
-  >({
-    query: WorkstreamByIDDocument,
-    variables: {
-      id: (workstreamID as string) || "",
-    },
+  const {
+    isLoading,
+    data: workstreams,
+    error,
+  } = useQuery({
+    queryKey: ["workstream", workstreamID],
+    queryFn: () => sdk.WorkstreamByID({ id: workstreamID as string }),
+    refetchInterval: 5000,
   });
 
-  const { data: workstreams, fetching, error } = queryResult;
   const _workstream = workstreams?.workstreamContributors.find(
     ({ workstream }) => workstream?.id === workstreamID
   )?.workstream;
@@ -55,9 +56,7 @@ const Finalize: NextPage = () => {
           align="center"
           pb={"2em"}
         >
-          <Heading>{`Finalize ${
-            _workstream.name ?? _workstream.name
-          }`}</Heading>
+          <Heading>{`Finalize ${_workstream?.name}`}</Heading>
           <Text w={"50%"} textAlign="center">
             Review and close workstream. Contributors will get their FUX back in
             addition to vFUX and any applicable funds.

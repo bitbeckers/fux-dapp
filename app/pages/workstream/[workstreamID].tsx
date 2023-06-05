@@ -33,31 +33,31 @@ import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { useQuery } from "urql";
+import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { CloseButton } from "../../components/FUX/CloseButton";
 import TokenBalance from "../../components/FUX/TokenBalance";
+import { useGraphClient } from "../../hooks/graphSdk";
 
 const Workstream: NextPage = () => {
   const router = useRouter();
   const { address: user } = useAccount();
   const { workstreamID } = router.query;
+  const { sdk } = useGraphClient();
 
-  const [workstream] = useQuery<WorkstreamByIDQuery, WorkstreamByIDQueryVariables>({
-    query: WorkstreamByIDDocument,
-    variables: {
-      id: workstreamID as string,
-    },
+  const {isLoading: workstreamLoading, data: workstream, error: workstreamError} = useQuery({
+    queryKey: ["workstream", workstreamID],
+    queryFn: () => sdk.WorkstreamByID({ id: workstreamID as string }),
+    refetchInterval: 5000,
   });
 
-  const [userBalances] = useQuery<BalancesByUserQuery, BalancesByUserQueryVariables>({
-    query: BalancesByUserDocument,
-    variables: {
-      address: user?.toLowerCase(),
-    },
+  const {isLoading: userBalancesLoading, data: userBalances, error: userBalancesError} = useQuery({
+    queryKey: ["userBalances", user?.toLowerCase()],
+    queryFn: () => sdk.BalancesByUser({ address: user?.toLowerCase() }),
+    refetchInterval: 5000,
   });
 
-  if (workstream.fetching) {
+  if (workstreamLoading) {
     return (
       <Spinner
         thickness="4px"
@@ -70,7 +70,7 @@ const Workstream: NextPage = () => {
   }
 
 
-  const _workstream = workstream.data?.workstreamContributors?.[0]?.workstream;
+  const _workstream = workstream?.workstreamContributors?.[0]?.workstream;
   const contributors = _workstream?.contributors;
   const contributorAddresses = contributors?.map((contributor) => {return contributor.contributor.id}) ?? []
 
@@ -85,7 +85,7 @@ const Workstream: NextPage = () => {
   }
 
 
-  const fuxAvailable = userBalances.data?.userBalances.find((balance) => balance.token.id.toLowerCase() === contractAddresses.fuxContractAddress.toLowerCase())?.amount
+  const fuxAvailable = userBalances?.userBalances.find((balance) => balance.token.id.toLowerCase() === contractAddresses.fuxContractAddress.toLowerCase())?.amount
 
   if (!fuxAvailable) {
     fuxGiven = BigNumber.from("0");

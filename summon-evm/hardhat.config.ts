@@ -82,6 +82,9 @@ const config: HardhatUserConfig = {
         mnemonic,
       },
       chainId: chainIds.hardhat,
+      forking: {
+        url: nodeUrl("goerli"),
+      }
     },
     mainnet: getChainConfig("mainnet"),
     goerli: getChainConfig("goerli"),

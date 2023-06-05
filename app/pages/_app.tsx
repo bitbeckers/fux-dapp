@@ -1,10 +1,8 @@
-import * as GraphClient from "../.graphclient";
 import Header from "../components/Header";
 import Fonts from "../fonts";
 import { theme } from "../theme";
 import "./index.css";
 import { ChakraProvider, Flex, Spacer, VStack } from "@chakra-ui/react";
-import { graphExchange } from "@graphprotocol/client-urql";
 import {
   connectorsForWallets,
   darkTheme,
@@ -17,11 +15,8 @@ import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
-import {
-  createClient as createGraphClient,
-  Provider as GraphProvider,
-} from "urql";
 import { createClient, configureChains, WagmiConfig, mainnet } from "wagmi";
 import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -52,27 +47,24 @@ export const wagmiClient = createClient({
   provider,
 });
 
-const graphClient = createGraphClient({
-  url: "http://localhost:4000/graphql",
-  exchanges: [graphExchange(GraphClient)],
-});
+const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider
-          chains={chains}
-          theme={darkTheme({
-            accentColor: "#8E4EC6",
-            accentColorForeground: "white",
-            borderRadius: "none",
-            fontStack: "system",
-            overlayBlur: "small",
-          })}
-        >
-          <GraphProvider value={graphClient}>
+      <QueryClientProvider client={queryClient}>
+        <WagmiConfig client={wagmiClient}>
+          <RainbowKitProvider
+            chains={chains}
+            theme={darkTheme({
+              accentColor: "#8E4EC6",
+              accentColorForeground: "white",
+              borderRadius: "none",
+              fontStack: "system",
+              overlayBlur: "small",
+            })}
+          >
             <Flex direction="column" align="center" minH="100vh" w="100%">
               <Header />
               <VStack pb={75} w="100%" minW="100vw">
@@ -80,9 +72,9 @@ function MyApp({ Component, pageProps }: AppProps) {
               </VStack>
               <Spacer />
             </Flex>
-          </GraphProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </QueryClientProvider>
     </ChakraProvider>
   );
 }
