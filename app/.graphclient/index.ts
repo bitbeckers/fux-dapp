@@ -627,6 +627,7 @@ export type Subscription_metaArgs = {
 export type Token = {
   id: Scalars['ID'];
   tokenID?: Maybe<Scalars['BigInt']>;
+  decimals?: Maybe<Scalars['BigInt']>;
   name?: Maybe<Scalars['String']>;
   symbol?: Maybe<Scalars['String']>;
   userBalances?: Maybe<Array<UserBalance>>;
@@ -668,6 +669,14 @@ export type Token_filter = {
   tokenID_lte?: InputMaybe<Scalars['BigInt']>;
   tokenID_in?: InputMaybe<Array<Scalars['BigInt']>>;
   tokenID_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  decimals?: InputMaybe<Scalars['BigInt']>;
+  decimals_not?: InputMaybe<Scalars['BigInt']>;
+  decimals_gt?: InputMaybe<Scalars['BigInt']>;
+  decimals_lt?: InputMaybe<Scalars['BigInt']>;
+  decimals_gte?: InputMaybe<Scalars['BigInt']>;
+  decimals_lte?: InputMaybe<Scalars['BigInt']>;
+  decimals_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  decimals_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   name?: InputMaybe<Scalars['String']>;
   name_not?: InputMaybe<Scalars['String']>;
   name_gt?: InputMaybe<Scalars['String']>;
@@ -719,6 +728,7 @@ export type Token_filter = {
 export type Token_orderBy =
   | 'id'
   | 'tokenID'
+  | 'decimals'
   | 'name'
   | 'symbol'
   | 'userBalances'
@@ -839,6 +849,7 @@ export type UserBalance_orderBy =
   | 'token'
   | 'token__id'
   | 'token__tokenID'
+  | 'token__decimals'
   | 'token__name'
   | 'token__symbol'
   | 'amount';
@@ -1005,6 +1016,7 @@ export type WorkstreamBalance_orderBy =
   | 'token'
   | 'token__id'
   | 'token__tokenID'
+  | 'token__decimals'
   | 'token__name'
   | 'token__symbol'
   | 'amount';
@@ -1620,6 +1632,7 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
 export type TokenResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   tokenID?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  decimals?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   symbol?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   userBalances?: Resolver<Maybe<Array<ResolversTypes['UserBalance']>>, ParentType, ContextType, RequireFields<TokenuserBalancesArgs, 'skip' | 'first'>>;
@@ -1891,7 +1904,7 @@ export type EvaluationFragmentFragment = (
   & { contributor: Pick<User, 'id'>, creator: Pick<User, 'id'> }
 );
 
-export type TokenFragmentFragment = Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'>;
+export type TokenFragmentFragment = Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'>;
 
 export type BalancesByUserQueryVariables = Exact<{
   address?: InputMaybe<Scalars['ID']>;
@@ -1900,7 +1913,7 @@ export type BalancesByUserQueryVariables = Exact<{
 
 export type BalancesByUserQuery = { userBalances: Array<(
     Pick<UserBalance, 'amount'>
-    & { token: Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'> }
+    & { token: Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'> }
   )> };
 
 export type BalancesByWorkstreamQueryVariables = Exact<{
@@ -1910,7 +1923,7 @@ export type BalancesByWorkstreamQueryVariables = Exact<{
 
 export type BalancesByWorkstreamQuery = { workstreams: Array<{ funding?: Maybe<Array<(
       Pick<WorkstreamBalance, 'amount'>
-      & { token: Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'> }
+      & { token: Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'> }
     )>> }> };
 
 export type EvaluationsByWorkstreamIDQueryVariables = Exact<{
@@ -1961,7 +1974,7 @@ export type UserByAddressQuery = { user?: Maybe<(
     Pick<User, 'fuxer' | 'id'>
     & { balances?: Maybe<Array<(
       Pick<UserBalance, 'amount' | 'id'>
-      & { token: Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'> }
+      & { token: Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'> }
     )>>, workstreams?: Maybe<Array<Pick<WorkstreamContributor, 'id' | 'commitment' | 'active'>>> }
   )> };
 
@@ -1969,14 +1982,14 @@ export type WorkstreamContributorFragmentFragment = Pick<WorkstreamContributor, 
 
 export type UserBalanceFragmentFragment = (
   Pick<UserBalance, 'amount' | 'id'>
-  & { token: Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'> }
+  & { token: Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'> }
 );
 
 export type UserFragmentFragment = (
   Pick<User, 'fuxer' | 'id'>
   & { balances?: Maybe<Array<(
     Pick<UserBalance, 'amount' | 'id'>
-    & { token: Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'> }
+    & { token: Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'> }
   )>>, workstreams?: Maybe<Array<Pick<WorkstreamContributor, 'id' | 'commitment' | 'active'>>> }
 );
 
@@ -1995,7 +2008,7 @@ export type WorkstreamsByContributorQuery = { workstreamContributors: Array<{ wo
         & { contributor: Pick<User, 'id'>, creator: Pick<User, 'id'> }
       )>>, funding?: Maybe<Array<(
         Pick<WorkstreamBalance, 'amount'>
-        & { token: Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'> }
+        & { token: Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'> }
       )>>, rewardDistribution?: Maybe<(
         Pick<RewardDistribution, 'shares' | 'id'>
         & { contributors: Array<Pick<User, 'id'>> }
@@ -2017,7 +2030,7 @@ export type WorkstreamByIDQuery = { workstreamContributors: Array<{ workstream: 
         & { contributor: Pick<User, 'id'>, creator: Pick<User, 'id'> }
       )>>, funding?: Maybe<Array<(
         Pick<WorkstreamBalance, 'amount'>
-        & { token: Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'> }
+        & { token: Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'> }
       )>>, rewardDistribution?: Maybe<(
         Pick<RewardDistribution, 'shares' | 'id'>
         & { contributors: Array<Pick<User, 'id'>> }
@@ -2044,7 +2057,7 @@ export type WorkstreamFragmentFragment = { workstream: (
       & { contributor: Pick<User, 'id'>, creator: Pick<User, 'id'> }
     )>>, funding?: Maybe<Array<(
       Pick<WorkstreamBalance, 'amount'>
-      & { token: Pick<Token, 'id' | 'name' | 'symbol' | 'tokenID'> }
+      & { token: Pick<Token, 'id' | 'decimals' | 'name' | 'symbol' | 'tokenID'> }
     )>>, rewardDistribution?: Maybe<(
       Pick<RewardDistribution, 'shares' | 'id'>
       & { contributors: Array<Pick<User, 'id'>> }
@@ -2086,6 +2099,7 @@ export const EvaluationOverviewFragmentDoc = gql`
 export const TokenFragmentFragmentDoc = gql`
     fragment TokenFragment on Token {
   id
+  decimals
   name
   symbol
   tokenID

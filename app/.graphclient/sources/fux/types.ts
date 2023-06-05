@@ -605,6 +605,7 @@ export type Subscription_metaArgs = {
 export type Token = {
   id: Scalars['ID'];
   tokenID?: Maybe<Scalars['BigInt']>;
+  decimals?: Maybe<Scalars['BigInt']>;
   name?: Maybe<Scalars['String']>;
   symbol?: Maybe<Scalars['String']>;
   userBalances?: Maybe<Array<UserBalance>>;
@@ -646,6 +647,14 @@ export type Token_filter = {
   tokenID_lte?: InputMaybe<Scalars['BigInt']>;
   tokenID_in?: InputMaybe<Array<Scalars['BigInt']>>;
   tokenID_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  decimals?: InputMaybe<Scalars['BigInt']>;
+  decimals_not?: InputMaybe<Scalars['BigInt']>;
+  decimals_gt?: InputMaybe<Scalars['BigInt']>;
+  decimals_lt?: InputMaybe<Scalars['BigInt']>;
+  decimals_gte?: InputMaybe<Scalars['BigInt']>;
+  decimals_lte?: InputMaybe<Scalars['BigInt']>;
+  decimals_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  decimals_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   name?: InputMaybe<Scalars['String']>;
   name_not?: InputMaybe<Scalars['String']>;
   name_gt?: InputMaybe<Scalars['String']>;
@@ -697,6 +706,7 @@ export type Token_filter = {
 export type Token_orderBy =
   | 'id'
   | 'tokenID'
+  | 'decimals'
   | 'name'
   | 'symbol'
   | 'userBalances'
@@ -817,6 +827,7 @@ export type UserBalance_orderBy =
   | 'token'
   | 'token__id'
   | 'token__tokenID'
+  | 'token__decimals'
   | 'token__name'
   | 'token__symbol'
   | 'amount';
@@ -983,6 +994,7 @@ export type WorkstreamBalance_orderBy =
   | 'token'
   | 'token__id'
   | 'token__tokenID'
+  | 'token__decimals'
   | 'token__name'
   | 'token__symbol'
   | 'amount';
