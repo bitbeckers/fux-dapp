@@ -1,6 +1,7 @@
 import { UserByAddressDocument } from "../.graphclient";
 import ConnectWallet from "../components/ConnectWallet";
 import FuxOverview from "../components/FUX/FuxOverview";
+import { useBlockTx } from "../hooks/blockTx";
 import { useGraphClient } from "../hooks/graphSdk";
 import { useCustomToasts } from "../hooks/toast";
 import { contractAddresses, contractABI } from "../utils/constants";
@@ -16,6 +17,7 @@ const Start: NextPage = () => {
   const { address } = useAccount();
   const toast = useCustomToasts();
   const { sdk } = useGraphClient();
+  const { checkChain } = useBlockTx();
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
@@ -46,6 +48,12 @@ const Start: NextPage = () => {
     }
   }, [data, router]);
 
+  const handleClaim = () => {
+    if (checkChain()) {
+      write?.();
+    }
+  };
+
   return (
     <VStack spacing={8} w={"100%"}>
       <FuxOverview />
@@ -53,7 +61,7 @@ const Start: NextPage = () => {
         <Center w="80%" justifyContent="center">
           <VStack>
             <Text fontSize="4xl">Claim your FUX to get started</Text>
-            <Button onClick={() => write?.()}>Claim 100 FUX</Button>
+            <Button onClick={handleClaim}>Claim 100 FUX</Button>
           </VStack>
         </Center>
       ) : (

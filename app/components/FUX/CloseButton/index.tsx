@@ -1,3 +1,4 @@
+import { useBlockTx } from "../../../hooks/blockTx";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
 import { Button } from "@chakra-ui/react";
@@ -19,6 +20,7 @@ const CloseButton: React.FC<CloseButtonType> = ({
   text = "CLOSE",
 }) => {
   const toast = useCustomToasts();
+  const { checkChain } = useBlockTx();
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
@@ -27,7 +29,7 @@ const CloseButton: React.FC<CloseButtonType> = ({
     args: [workstreamId, contributors],
   });
 
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+  const { write } = useContractWrite({
     ...config,
     onError(e) {
       toast.error(e);
@@ -42,7 +44,9 @@ const CloseButton: React.FC<CloseButtonType> = ({
   });
 
   const onSubmit = () => {
-    write?.();
+    if (checkChain()) {
+      write?.();
+    }
   };
 
   // Chakra component for a button that handles the onClick event as write

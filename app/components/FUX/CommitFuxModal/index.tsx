@@ -1,3 +1,4 @@
+import { useBlockTx } from "../../../hooks/blockTx";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
 import { AddIcon } from "@chakra-ui/icons";
@@ -41,6 +42,7 @@ const CommitFuxModal: React.FC<{
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { error, success } = useCustomToasts();
   const _fuxGiven = BigNumber.from(fuxGiven);
+  const { checkChain } = useBlockTx();
 
   const {
     control,
@@ -83,7 +85,7 @@ const CommitFuxModal: React.FC<{
   const maxValue = _fuxGiven.add(fuxAvailable || 0).toNumber();
 
   const onSubmit = (e: FormData) => {
-    if (!_fuxGiven.eq(BigNumber.from(e.fux))) {
+    if (!_fuxGiven.eq(BigNumber.from(e.fux)) && checkChain()) {
       write?.();
     }
   };

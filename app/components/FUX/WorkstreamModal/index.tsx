@@ -1,3 +1,4 @@
+import { useBlockTx } from "../../../hooks/blockTx";
 import { useGraphClient } from "../../../hooks/graphSdk";
 import { useCustomToasts } from "../../../hooks/toast";
 import {
@@ -70,6 +71,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   const { address } = useAccount();
   const { error: errorToast, success: successToast } = useCustomToasts();
   const { sdk } = useGraphClient();
+  const { checkChain } = useBlockTx();
 
   const {
     handleSubmit,
@@ -84,7 +86,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
       duration: DateTime.now().plus({ day: 1 }).toISODate(),
       coordinatorCommitment: 0,
       contributors: [{ address: "" }],
-      funding: [{ address: "", amount: 0 }],
+      funding: [{ address: ethers.constants.AddressZero, amount: 0 }],
       metadataUri: "",
     },
   });
@@ -120,7 +122,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
 
     if (!nativeToken || nativeToken.length === 0) return BigNumber.from(0);
 
-    return ethers.utils.parseEther(nativeToken[0].amount.toString());
+    return BigNumber.from(nativeToken[0].amount.toString());
   };
 
   const { config } = usePrepareContractWrite({
@@ -132,7 +134,10 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
       [
         ...formState.contributors
           .map((entry) => entry.address)
-          .filter((address) => isAddress(address) && address != ethers.constants.AddressZero),
+          .filter(
+            (address) =>
+              isAddress(address) && address != ethers.constants.AddressZero
+          ),
         address,
       ],
       formState.coordinatorCommitment,
@@ -145,6 +150,8 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
       value: getNativeTokenAmount(),
     },
   });
+
+  console.log(getNativeTokenAmount().toString());
 
   const { data: tx, write } = useContractWrite({
     ...config,
@@ -174,9 +181,12 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   console.log(address);
 
   const onSubmit = () => {
-    write?.();
-    onClose();
-    onCloseAction?.();
+    console.log("submitting");
+    if (checkChain()) {
+      write?.();
+      onClose();
+      onCloseAction?.();
+    }
   };
 
   const input = (
