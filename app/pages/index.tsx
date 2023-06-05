@@ -1,4 +1,4 @@
-import { UserDocument } from "../.graphclient";
+import { UserByAddressDocument } from "../.graphclient";
 import ConnectWallet from "../components/ConnectWallet";
 import {
   Box,
@@ -18,7 +18,7 @@ import { useAccount } from "wagmi";
 const Home: NextPage = () => {
   const { address } = useAccount();
   const [result] = useQuery({
-    query: UserDocument,
+    query: UserByAddressDocument,
     variables: {
       address: address?.toLowerCase() || "",
     },

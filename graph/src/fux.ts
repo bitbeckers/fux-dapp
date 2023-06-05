@@ -70,7 +70,7 @@ export function handleFuxClaimed(event: FuxClaimed): void {
   user.save();
 }
 
-export const handleFuxGiven = (event: FuxGiven): void => {
+export function handleFuxGiven(event: FuxGiven): void {
   let contributor = getOrCreateUser(event.params.user.toHexString());
   let workstream = getOrCreateWorkstream(event.params.workstreamID);
   let workstreamContributor = getOrCreateWorkstreamContributor(
@@ -80,7 +80,7 @@ export const handleFuxGiven = (event: FuxGiven): void => {
 
   workstreamContributor.commitment = event.params.amount;
   workstreamContributor.save();
-};
+}
 
 export function handleFuxWithdrawn(event: FuxWithdrawn): void {
   let contributor = getOrCreateUser(event.params.user.toHexString());

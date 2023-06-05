@@ -1,6 +1,6 @@
 import {
   WorkstreamContributor,
-  WorkstreamsByUserDocument,
+  WorkstreamsByContributorDocument,
 } from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamCard from "../components/FUX/WorkstreamCard";
@@ -20,9 +20,9 @@ const History: NextPage = () => {
   const { address: user } = useAccount();
 
   const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamsByUserDocument,
+    query: WorkstreamsByContributorDocument,
     variables: {
-      contributor: user?.toLowerCase() || "",
+      address: user?.toLowerCase() || "",
     },
   });
 

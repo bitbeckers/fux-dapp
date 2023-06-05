@@ -1,4 +1,4 @@
-import { UserDocument } from "../../../.graphclient";
+import { UserByAddressDocument } from "../../../.graphclient";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
 import User from "../User";
@@ -46,7 +46,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
   });
 
   const [result, reexecuteQuery] = useQuery({
-    query: UserDocument,
+    query: UserByAddressDocument,
     variables: {
       address: address?.toLowerCase() || "",
     },

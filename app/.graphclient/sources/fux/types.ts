@@ -130,17 +130,15 @@ export type Evaluation_orderBy =
   | 'creator'
   | 'creator__id'
   | 'creator__fuxer'
-  | 'creator__rewards'
   | 'workstream'
   | 'workstream__id'
   | 'workstream__name'
-  | 'workstream__funding'
   | 'workstream__deadline'
+  | 'workstream__uri'
   | 'workstream__status'
   | 'contributor'
   | 'contributor__id'
   | 'contributor__fuxer'
-  | 'contributor__rewards'
   | 'rating';
 
 /** Defines the order direction, either ascending or descending */
@@ -153,14 +151,20 @@ export type Query = {
   users: Array<User>;
   workstream?: Maybe<Workstream>;
   workstreams: Array<Workstream>;
+  rewardDistribution?: Maybe<RewardDistribution>;
+  rewardDistributions: Array<RewardDistribution>;
   evaluation?: Maybe<Evaluation>;
   evaluations: Array<Evaluation>;
   workstreamContributor?: Maybe<WorkstreamContributor>;
   workstreamContributors: Array<WorkstreamContributor>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
-  tokenBalance?: Maybe<TokenBalance>;
-  tokenBalances: Array<TokenBalance>;
+  userBalance?: Maybe<UserBalance>;
+  userBalances: Array<UserBalance>;
+  workstreamBalance?: Maybe<WorkstreamBalance>;
+  workstreamBalances: Array<WorkstreamBalance>;
+  workstreamContestation?: Maybe<WorkstreamContestation>;
+  workstreamContestations: Array<WorkstreamContestation>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -197,6 +201,24 @@ export type QueryworkstreamsArgs = {
   orderBy?: InputMaybe<Workstream_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Workstream_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryrewardDistributionArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryrewardDistributionsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RewardDistribution_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RewardDistribution_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -256,19 +278,55 @@ export type QuerytokensArgs = {
 };
 
 
-export type QuerytokenBalanceArgs = {
+export type QueryuserBalanceArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
-export type QuerytokenBalancesArgs = {
+export type QueryuserBalancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TokenBalance_orderBy>;
+  orderBy?: InputMaybe<UserBalance_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TokenBalance_filter>;
+  where?: InputMaybe<UserBalance_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryworkstreamBalanceArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryworkstreamBalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamBalance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamBalance_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryworkstreamContestationArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryworkstreamContestationsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContestation_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContestation_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -278,19 +336,101 @@ export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
 
+export type RewardDistribution = {
+  id: Scalars['ID'];
+  workstream: Workstream;
+  contributors: Array<User>;
+  shares: Array<Scalars['BigInt']>;
+};
+
+
+export type RewardDistributioncontributorsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<User_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<User_filter>;
+};
+
+export type RewardDistribution_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  workstream?: InputMaybe<Scalars['String']>;
+  workstream_not?: InputMaybe<Scalars['String']>;
+  workstream_gt?: InputMaybe<Scalars['String']>;
+  workstream_lt?: InputMaybe<Scalars['String']>;
+  workstream_gte?: InputMaybe<Scalars['String']>;
+  workstream_lte?: InputMaybe<Scalars['String']>;
+  workstream_in?: InputMaybe<Array<Scalars['String']>>;
+  workstream_not_in?: InputMaybe<Array<Scalars['String']>>;
+  workstream_contains?: InputMaybe<Scalars['String']>;
+  workstream_contains_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_contains?: InputMaybe<Scalars['String']>;
+  workstream_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  workstream_starts_with?: InputMaybe<Scalars['String']>;
+  workstream_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_starts_with?: InputMaybe<Scalars['String']>;
+  workstream_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_ends_with?: InputMaybe<Scalars['String']>;
+  workstream_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_ends_with?: InputMaybe<Scalars['String']>;
+  workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_?: InputMaybe<Workstream_filter>;
+  contributors?: InputMaybe<Array<Scalars['String']>>;
+  contributors_not?: InputMaybe<Array<Scalars['String']>>;
+  contributors_contains?: InputMaybe<Array<Scalars['String']>>;
+  contributors_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  contributors_not_contains?: InputMaybe<Array<Scalars['String']>>;
+  contributors_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  contributors_?: InputMaybe<User_filter>;
+  shares?: InputMaybe<Array<Scalars['BigInt']>>;
+  shares_not?: InputMaybe<Array<Scalars['BigInt']>>;
+  shares_contains?: InputMaybe<Array<Scalars['BigInt']>>;
+  shares_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
+  shares_not_contains?: InputMaybe<Array<Scalars['BigInt']>>;
+  shares_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RewardDistribution_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<RewardDistribution_filter>>>;
+};
+
+export type RewardDistribution_orderBy =
+  | 'id'
+  | 'workstream'
+  | 'workstream__id'
+  | 'workstream__name'
+  | 'workstream__deadline'
+  | 'workstream__uri'
+  | 'workstream__status'
+  | 'contributors'
+  | 'shares';
+
 export type Subscription = {
   user?: Maybe<User>;
   users: Array<User>;
   workstream?: Maybe<Workstream>;
   workstreams: Array<Workstream>;
+  rewardDistribution?: Maybe<RewardDistribution>;
+  rewardDistributions: Array<RewardDistribution>;
   evaluation?: Maybe<Evaluation>;
   evaluations: Array<Evaluation>;
   workstreamContributor?: Maybe<WorkstreamContributor>;
   workstreamContributors: Array<WorkstreamContributor>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
-  tokenBalance?: Maybe<TokenBalance>;
-  tokenBalances: Array<TokenBalance>;
+  userBalance?: Maybe<UserBalance>;
+  userBalances: Array<UserBalance>;
+  workstreamBalance?: Maybe<WorkstreamBalance>;
+  workstreamBalances: Array<WorkstreamBalance>;
+  workstreamContestation?: Maybe<WorkstreamContestation>;
+  workstreamContestations: Array<WorkstreamContestation>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -327,6 +467,24 @@ export type SubscriptionworkstreamsArgs = {
   orderBy?: InputMaybe<Workstream_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Workstream_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionrewardDistributionArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionrewardDistributionsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RewardDistribution_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RewardDistribution_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -386,19 +544,55 @@ export type SubscriptiontokensArgs = {
 };
 
 
-export type SubscriptiontokenBalanceArgs = {
+export type SubscriptionuserBalanceArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
-export type SubscriptiontokenBalancesArgs = {
+export type SubscriptionuserBalancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TokenBalance_orderBy>;
+  orderBy?: InputMaybe<UserBalance_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TokenBalance_filter>;
+  where?: InputMaybe<UserBalance_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionworkstreamBalanceArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionworkstreamBalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamBalance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamBalance_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionworkstreamContestationArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionworkstreamContestationsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContestation_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContestation_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -410,28 +604,147 @@ export type Subscription_metaArgs = {
 
 export type Token = {
   id: Scalars['ID'];
+  tokenID?: Maybe<Scalars['BigInt']>;
   name?: Maybe<Scalars['String']>;
   symbol?: Maybe<Scalars['String']>;
-  tokenBalances?: Maybe<Array<TokenBalance>>;
+  userBalances?: Maybe<Array<UserBalance>>;
+  workstreamBalance?: Maybe<Array<WorkstreamBalance>>;
 };
 
 
-export type TokentokenBalancesArgs = {
+export type TokenuserBalancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TokenBalance_orderBy>;
+  orderBy?: InputMaybe<UserBalance_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TokenBalance_filter>;
+  where?: InputMaybe<UserBalance_filter>;
 };
 
-export type TokenBalance = {
+
+export type TokenworkstreamBalanceArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamBalance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamBalance_filter>;
+};
+
+export type Token_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  tokenID?: InputMaybe<Scalars['BigInt']>;
+  tokenID_not?: InputMaybe<Scalars['BigInt']>;
+  tokenID_gt?: InputMaybe<Scalars['BigInt']>;
+  tokenID_lt?: InputMaybe<Scalars['BigInt']>;
+  tokenID_gte?: InputMaybe<Scalars['BigInt']>;
+  tokenID_lte?: InputMaybe<Scalars['BigInt']>;
+  tokenID_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  tokenID_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  name?: InputMaybe<Scalars['String']>;
+  name_not?: InputMaybe<Scalars['String']>;
+  name_gt?: InputMaybe<Scalars['String']>;
+  name_lt?: InputMaybe<Scalars['String']>;
+  name_gte?: InputMaybe<Scalars['String']>;
+  name_lte?: InputMaybe<Scalars['String']>;
+  name_in?: InputMaybe<Array<Scalars['String']>>;
+  name_not_in?: InputMaybe<Array<Scalars['String']>>;
+  name_contains?: InputMaybe<Scalars['String']>;
+  name_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_not_contains?: InputMaybe<Scalars['String']>;
+  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_starts_with?: InputMaybe<Scalars['String']>;
+  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  name_not_starts_with?: InputMaybe<Scalars['String']>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  name_ends_with?: InputMaybe<Scalars['String']>;
+  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  symbol?: InputMaybe<Scalars['String']>;
+  symbol_not?: InputMaybe<Scalars['String']>;
+  symbol_gt?: InputMaybe<Scalars['String']>;
+  symbol_lt?: InputMaybe<Scalars['String']>;
+  symbol_gte?: InputMaybe<Scalars['String']>;
+  symbol_lte?: InputMaybe<Scalars['String']>;
+  symbol_in?: InputMaybe<Array<Scalars['String']>>;
+  symbol_not_in?: InputMaybe<Array<Scalars['String']>>;
+  symbol_contains?: InputMaybe<Scalars['String']>;
+  symbol_contains_nocase?: InputMaybe<Scalars['String']>;
+  symbol_not_contains?: InputMaybe<Scalars['String']>;
+  symbol_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  symbol_starts_with?: InputMaybe<Scalars['String']>;
+  symbol_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  symbol_not_starts_with?: InputMaybe<Scalars['String']>;
+  symbol_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  symbol_ends_with?: InputMaybe<Scalars['String']>;
+  symbol_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  symbol_not_ends_with?: InputMaybe<Scalars['String']>;
+  symbol_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  userBalances_?: InputMaybe<UserBalance_filter>;
+  workstreamBalance_?: InputMaybe<WorkstreamBalance_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Token_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Token_filter>>>;
+};
+
+export type Token_orderBy =
+  | 'id'
+  | 'tokenID'
+  | 'name'
+  | 'symbol'
+  | 'userBalances'
+  | 'workstreamBalance';
+
+export type User = {
+  id: Scalars['ID'];
+  fuxer: Scalars['Boolean'];
+  balances?: Maybe<Array<UserBalance>>;
+  workstreams?: Maybe<Array<WorkstreamContributor>>;
+  evaluations?: Maybe<Array<Evaluation>>;
+};
+
+
+export type UserbalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<UserBalance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<UserBalance_filter>;
+};
+
+
+export type UserworkstreamsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContributor_filter>;
+};
+
+
+export type UserevaluationsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Evaluation_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Evaluation_filter>;
+};
+
+export type UserBalance = {
   id: Scalars['ID'];
   user: User;
   token: Token;
   amount: Scalars['BigInt'];
 };
 
-export type TokenBalance_filter = {
+export type UserBalance_filter = {
   id?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_gt?: InputMaybe<Scalars['ID']>;
@@ -492,109 +805,21 @@ export type TokenBalance_filter = {
   amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<TokenBalance_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<TokenBalance_filter>>>;
+  and?: InputMaybe<Array<InputMaybe<UserBalance_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<UserBalance_filter>>>;
 };
 
-export type TokenBalance_orderBy =
+export type UserBalance_orderBy =
   | 'id'
   | 'user'
   | 'user__id'
   | 'user__fuxer'
-  | 'user__rewards'
   | 'token'
   | 'token__id'
+  | 'token__tokenID'
   | 'token__name'
   | 'token__symbol'
   | 'amount';
-
-export type Token_filter = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  name?: InputMaybe<Scalars['String']>;
-  name_not?: InputMaybe<Scalars['String']>;
-  name_gt?: InputMaybe<Scalars['String']>;
-  name_lt?: InputMaybe<Scalars['String']>;
-  name_gte?: InputMaybe<Scalars['String']>;
-  name_lte?: InputMaybe<Scalars['String']>;
-  name_in?: InputMaybe<Array<Scalars['String']>>;
-  name_not_in?: InputMaybe<Array<Scalars['String']>>;
-  name_contains?: InputMaybe<Scalars['String']>;
-  name_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_not_contains?: InputMaybe<Scalars['String']>;
-  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_starts_with?: InputMaybe<Scalars['String']>;
-  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_starts_with?: InputMaybe<Scalars['String']>;
-  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_ends_with?: InputMaybe<Scalars['String']>;
-  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_ends_with?: InputMaybe<Scalars['String']>;
-  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  symbol?: InputMaybe<Scalars['String']>;
-  symbol_not?: InputMaybe<Scalars['String']>;
-  symbol_gt?: InputMaybe<Scalars['String']>;
-  symbol_lt?: InputMaybe<Scalars['String']>;
-  symbol_gte?: InputMaybe<Scalars['String']>;
-  symbol_lte?: InputMaybe<Scalars['String']>;
-  symbol_in?: InputMaybe<Array<Scalars['String']>>;
-  symbol_not_in?: InputMaybe<Array<Scalars['String']>>;
-  symbol_contains?: InputMaybe<Scalars['String']>;
-  symbol_contains_nocase?: InputMaybe<Scalars['String']>;
-  symbol_not_contains?: InputMaybe<Scalars['String']>;
-  symbol_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  symbol_starts_with?: InputMaybe<Scalars['String']>;
-  symbol_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  symbol_not_starts_with?: InputMaybe<Scalars['String']>;
-  symbol_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  symbol_ends_with?: InputMaybe<Scalars['String']>;
-  symbol_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  symbol_not_ends_with?: InputMaybe<Scalars['String']>;
-  symbol_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  tokenBalances_?: InputMaybe<TokenBalance_filter>;
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<Token_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<Token_filter>>>;
-};
-
-export type Token_orderBy =
-  | 'id'
-  | 'name'
-  | 'symbol'
-  | 'tokenBalances';
-
-export type User = {
-  id: Scalars['ID'];
-  fuxer?: Maybe<Scalars['Boolean']>;
-  balances?: Maybe<Array<TokenBalance>>;
-  workstreams?: Maybe<Array<WorkstreamContributor>>;
-  rewards?: Maybe<Scalars['BigInt']>;
-};
-
-
-export type UserbalancesArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TokenBalance_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TokenBalance_filter>;
-};
-
-
-export type UserworkstreamsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<WorkstreamContributor_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<WorkstreamContributor_filter>;
-};
 
 export type User_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -609,16 +834,9 @@ export type User_filter = {
   fuxer_not?: InputMaybe<Scalars['Boolean']>;
   fuxer_in?: InputMaybe<Array<Scalars['Boolean']>>;
   fuxer_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  balances_?: InputMaybe<TokenBalance_filter>;
+  balances_?: InputMaybe<UserBalance_filter>;
   workstreams_?: InputMaybe<WorkstreamContributor_filter>;
-  rewards?: InputMaybe<Scalars['BigInt']>;
-  rewards_not?: InputMaybe<Scalars['BigInt']>;
-  rewards_gt?: InputMaybe<Scalars['BigInt']>;
-  rewards_lt?: InputMaybe<Scalars['BigInt']>;
-  rewards_gte?: InputMaybe<Scalars['BigInt']>;
-  rewards_lte?: InputMaybe<Scalars['BigInt']>;
-  rewards_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  rewards_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  evaluations_?: InputMaybe<Evaluation_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<User_filter>>>;
@@ -630,16 +848,19 @@ export type User_orderBy =
   | 'fuxer'
   | 'balances'
   | 'workstreams'
-  | 'rewards';
+  | 'evaluations';
 
 export type Workstream = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   coordinator?: Maybe<User>;
+  deadline?: Maybe<Scalars['BigInt']>;
   contributors?: Maybe<Array<WorkstreamContributor>>;
   evaluations?: Maybe<Array<Evaluation>>;
-  funding?: Maybe<Scalars['BigInt']>;
-  deadline?: Maybe<Scalars['BigInt']>;
+  funding?: Maybe<Array<WorkstreamBalance>>;
+  contestings?: Maybe<Array<WorkstreamContestation>>;
+  rewardDistribution?: Maybe<RewardDistribution>;
+  uri?: Maybe<Scalars['String']>;
   status?: Maybe<WorkstreamStatus>;
 };
 
@@ -661,11 +882,214 @@ export type WorkstreamevaluationsArgs = {
   where?: InputMaybe<Evaluation_filter>;
 };
 
+
+export type WorkstreamfundingArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamBalance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamBalance_filter>;
+};
+
+
+export type WorkstreamcontestingsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkstreamContestation_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WorkstreamContestation_filter>;
+};
+
+export type WorkstreamBalance = {
+  id: Scalars['ID'];
+  workstream: Workstream;
+  token: Token;
+  amount: Scalars['BigInt'];
+};
+
+export type WorkstreamBalance_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  workstream?: InputMaybe<Scalars['String']>;
+  workstream_not?: InputMaybe<Scalars['String']>;
+  workstream_gt?: InputMaybe<Scalars['String']>;
+  workstream_lt?: InputMaybe<Scalars['String']>;
+  workstream_gte?: InputMaybe<Scalars['String']>;
+  workstream_lte?: InputMaybe<Scalars['String']>;
+  workstream_in?: InputMaybe<Array<Scalars['String']>>;
+  workstream_not_in?: InputMaybe<Array<Scalars['String']>>;
+  workstream_contains?: InputMaybe<Scalars['String']>;
+  workstream_contains_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_contains?: InputMaybe<Scalars['String']>;
+  workstream_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  workstream_starts_with?: InputMaybe<Scalars['String']>;
+  workstream_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_starts_with?: InputMaybe<Scalars['String']>;
+  workstream_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_ends_with?: InputMaybe<Scalars['String']>;
+  workstream_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_ends_with?: InputMaybe<Scalars['String']>;
+  workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_?: InputMaybe<Workstream_filter>;
+  token?: InputMaybe<Scalars['String']>;
+  token_not?: InputMaybe<Scalars['String']>;
+  token_gt?: InputMaybe<Scalars['String']>;
+  token_lt?: InputMaybe<Scalars['String']>;
+  token_gte?: InputMaybe<Scalars['String']>;
+  token_lte?: InputMaybe<Scalars['String']>;
+  token_in?: InputMaybe<Array<Scalars['String']>>;
+  token_not_in?: InputMaybe<Array<Scalars['String']>>;
+  token_contains?: InputMaybe<Scalars['String']>;
+  token_contains_nocase?: InputMaybe<Scalars['String']>;
+  token_not_contains?: InputMaybe<Scalars['String']>;
+  token_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  token_starts_with?: InputMaybe<Scalars['String']>;
+  token_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  token_not_starts_with?: InputMaybe<Scalars['String']>;
+  token_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  token_ends_with?: InputMaybe<Scalars['String']>;
+  token_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  token_not_ends_with?: InputMaybe<Scalars['String']>;
+  token_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  token_?: InputMaybe<Token_filter>;
+  amount?: InputMaybe<Scalars['BigInt']>;
+  amount_not?: InputMaybe<Scalars['BigInt']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<WorkstreamBalance_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<WorkstreamBalance_filter>>>;
+};
+
+export type WorkstreamBalance_orderBy =
+  | 'id'
+  | 'workstream'
+  | 'workstream__id'
+  | 'workstream__name'
+  | 'workstream__deadline'
+  | 'workstream__uri'
+  | 'workstream__status'
+  | 'token'
+  | 'token__id'
+  | 'token__tokenID'
+  | 'token__name'
+  | 'token__symbol'
+  | 'amount';
+
+export type WorkstreamContestation = {
+  id: Scalars['ID'];
+  user: User;
+  workstream: Workstream;
+  uri: Scalars['String'];
+};
+
+export type WorkstreamContestation_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  user?: InputMaybe<Scalars['String']>;
+  user_not?: InputMaybe<Scalars['String']>;
+  user_gt?: InputMaybe<Scalars['String']>;
+  user_lt?: InputMaybe<Scalars['String']>;
+  user_gte?: InputMaybe<Scalars['String']>;
+  user_lte?: InputMaybe<Scalars['String']>;
+  user_in?: InputMaybe<Array<Scalars['String']>>;
+  user_not_in?: InputMaybe<Array<Scalars['String']>>;
+  user_contains?: InputMaybe<Scalars['String']>;
+  user_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_not_contains?: InputMaybe<Scalars['String']>;
+  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_starts_with?: InputMaybe<Scalars['String']>;
+  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_starts_with?: InputMaybe<Scalars['String']>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_ends_with?: InputMaybe<Scalars['String']>;
+  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_ends_with?: InputMaybe<Scalars['String']>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_?: InputMaybe<User_filter>;
+  workstream?: InputMaybe<Scalars['String']>;
+  workstream_not?: InputMaybe<Scalars['String']>;
+  workstream_gt?: InputMaybe<Scalars['String']>;
+  workstream_lt?: InputMaybe<Scalars['String']>;
+  workstream_gte?: InputMaybe<Scalars['String']>;
+  workstream_lte?: InputMaybe<Scalars['String']>;
+  workstream_in?: InputMaybe<Array<Scalars['String']>>;
+  workstream_not_in?: InputMaybe<Array<Scalars['String']>>;
+  workstream_contains?: InputMaybe<Scalars['String']>;
+  workstream_contains_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_contains?: InputMaybe<Scalars['String']>;
+  workstream_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  workstream_starts_with?: InputMaybe<Scalars['String']>;
+  workstream_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_starts_with?: InputMaybe<Scalars['String']>;
+  workstream_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_ends_with?: InputMaybe<Scalars['String']>;
+  workstream_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_not_ends_with?: InputMaybe<Scalars['String']>;
+  workstream_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  workstream_?: InputMaybe<Workstream_filter>;
+  uri?: InputMaybe<Scalars['String']>;
+  uri_not?: InputMaybe<Scalars['String']>;
+  uri_gt?: InputMaybe<Scalars['String']>;
+  uri_lt?: InputMaybe<Scalars['String']>;
+  uri_gte?: InputMaybe<Scalars['String']>;
+  uri_lte?: InputMaybe<Scalars['String']>;
+  uri_in?: InputMaybe<Array<Scalars['String']>>;
+  uri_not_in?: InputMaybe<Array<Scalars['String']>>;
+  uri_contains?: InputMaybe<Scalars['String']>;
+  uri_contains_nocase?: InputMaybe<Scalars['String']>;
+  uri_not_contains?: InputMaybe<Scalars['String']>;
+  uri_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  uri_starts_with?: InputMaybe<Scalars['String']>;
+  uri_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  uri_not_starts_with?: InputMaybe<Scalars['String']>;
+  uri_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  uri_ends_with?: InputMaybe<Scalars['String']>;
+  uri_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  uri_not_ends_with?: InputMaybe<Scalars['String']>;
+  uri_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<WorkstreamContestation_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<WorkstreamContestation_filter>>>;
+};
+
+export type WorkstreamContestation_orderBy =
+  | 'id'
+  | 'user'
+  | 'user__id'
+  | 'user__fuxer'
+  | 'workstream'
+  | 'workstream__id'
+  | 'workstream__name'
+  | 'workstream__deadline'
+  | 'workstream__uri'
+  | 'workstream__status'
+  | 'uri';
+
 export type WorkstreamContributor = {
   id: Scalars['ID'];
   workstream: Workstream;
   contributor: User;
   commitment?: Maybe<Scalars['BigInt']>;
+  active?: Maybe<Scalars['Boolean']>;
 };
 
 export type WorkstreamContributor_filter = {
@@ -727,6 +1151,10 @@ export type WorkstreamContributor_filter = {
   commitment_lte?: InputMaybe<Scalars['BigInt']>;
   commitment_in?: InputMaybe<Array<Scalars['BigInt']>>;
   commitment_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  active?: InputMaybe<Scalars['Boolean']>;
+  active_not?: InputMaybe<Scalars['Boolean']>;
+  active_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  active_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<WorkstreamContributor_filter>>>;
@@ -738,14 +1166,14 @@ export type WorkstreamContributor_orderBy =
   | 'workstream'
   | 'workstream__id'
   | 'workstream__name'
-  | 'workstream__funding'
   | 'workstream__deadline'
+  | 'workstream__uri'
   | 'workstream__status'
   | 'contributor'
   | 'contributor__id'
   | 'contributor__fuxer'
-  | 'contributor__rewards'
-  | 'commitment';
+  | 'commitment'
+  | 'active';
 
 export type WorkstreamStatus =
   | 'Started'
@@ -802,16 +1230,6 @@ export type Workstream_filter = {
   coordinator_not_ends_with?: InputMaybe<Scalars['String']>;
   coordinator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   coordinator_?: InputMaybe<User_filter>;
-  contributors_?: InputMaybe<WorkstreamContributor_filter>;
-  evaluations_?: InputMaybe<Evaluation_filter>;
-  funding?: InputMaybe<Scalars['BigInt']>;
-  funding_not?: InputMaybe<Scalars['BigInt']>;
-  funding_gt?: InputMaybe<Scalars['BigInt']>;
-  funding_lt?: InputMaybe<Scalars['BigInt']>;
-  funding_gte?: InputMaybe<Scalars['BigInt']>;
-  funding_lte?: InputMaybe<Scalars['BigInt']>;
-  funding_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  funding_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deadline?: InputMaybe<Scalars['BigInt']>;
   deadline_not?: InputMaybe<Scalars['BigInt']>;
   deadline_gt?: InputMaybe<Scalars['BigInt']>;
@@ -820,6 +1238,51 @@ export type Workstream_filter = {
   deadline_lte?: InputMaybe<Scalars['BigInt']>;
   deadline_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deadline_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  contributors_?: InputMaybe<WorkstreamContributor_filter>;
+  evaluations_?: InputMaybe<Evaluation_filter>;
+  funding_?: InputMaybe<WorkstreamBalance_filter>;
+  contestings_?: InputMaybe<WorkstreamContestation_filter>;
+  rewardDistribution?: InputMaybe<Scalars['String']>;
+  rewardDistribution_not?: InputMaybe<Scalars['String']>;
+  rewardDistribution_gt?: InputMaybe<Scalars['String']>;
+  rewardDistribution_lt?: InputMaybe<Scalars['String']>;
+  rewardDistribution_gte?: InputMaybe<Scalars['String']>;
+  rewardDistribution_lte?: InputMaybe<Scalars['String']>;
+  rewardDistribution_in?: InputMaybe<Array<Scalars['String']>>;
+  rewardDistribution_not_in?: InputMaybe<Array<Scalars['String']>>;
+  rewardDistribution_contains?: InputMaybe<Scalars['String']>;
+  rewardDistribution_contains_nocase?: InputMaybe<Scalars['String']>;
+  rewardDistribution_not_contains?: InputMaybe<Scalars['String']>;
+  rewardDistribution_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  rewardDistribution_starts_with?: InputMaybe<Scalars['String']>;
+  rewardDistribution_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  rewardDistribution_not_starts_with?: InputMaybe<Scalars['String']>;
+  rewardDistribution_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  rewardDistribution_ends_with?: InputMaybe<Scalars['String']>;
+  rewardDistribution_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  rewardDistribution_not_ends_with?: InputMaybe<Scalars['String']>;
+  rewardDistribution_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  rewardDistribution_?: InputMaybe<RewardDistribution_filter>;
+  uri?: InputMaybe<Scalars['String']>;
+  uri_not?: InputMaybe<Scalars['String']>;
+  uri_gt?: InputMaybe<Scalars['String']>;
+  uri_lt?: InputMaybe<Scalars['String']>;
+  uri_gte?: InputMaybe<Scalars['String']>;
+  uri_lte?: InputMaybe<Scalars['String']>;
+  uri_in?: InputMaybe<Array<Scalars['String']>>;
+  uri_not_in?: InputMaybe<Array<Scalars['String']>>;
+  uri_contains?: InputMaybe<Scalars['String']>;
+  uri_contains_nocase?: InputMaybe<Scalars['String']>;
+  uri_not_contains?: InputMaybe<Scalars['String']>;
+  uri_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  uri_starts_with?: InputMaybe<Scalars['String']>;
+  uri_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  uri_not_starts_with?: InputMaybe<Scalars['String']>;
+  uri_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  uri_ends_with?: InputMaybe<Scalars['String']>;
+  uri_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  uri_not_ends_with?: InputMaybe<Scalars['String']>;
+  uri_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   status?: InputMaybe<WorkstreamStatus>;
   status_not?: InputMaybe<WorkstreamStatus>;
   status_in?: InputMaybe<Array<WorkstreamStatus>>;
@@ -836,11 +1299,14 @@ export type Workstream_orderBy =
   | 'coordinator'
   | 'coordinator__id'
   | 'coordinator__fuxer'
-  | 'coordinator__rewards'
+  | 'deadline'
   | 'contributors'
   | 'evaluations'
   | 'funding'
-  | 'deadline'
+  | 'contestings'
+  | 'rewardDistribution'
+  | 'rewardDistribution__id'
+  | 'uri'
   | 'status';
 
 export type _Block_ = {
@@ -884,6 +1350,10 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   workstreams: InContextSdkMethod<Query['workstreams'], QueryworkstreamsArgs, MeshContext>,
   /** null **/
+  rewardDistribution: InContextSdkMethod<Query['rewardDistribution'], QueryrewardDistributionArgs, MeshContext>,
+  /** null **/
+  rewardDistributions: InContextSdkMethod<Query['rewardDistributions'], QueryrewardDistributionsArgs, MeshContext>,
+  /** null **/
   evaluation: InContextSdkMethod<Query['evaluation'], QueryevaluationArgs, MeshContext>,
   /** null **/
   evaluations: InContextSdkMethod<Query['evaluations'], QueryevaluationsArgs, MeshContext>,
@@ -896,9 +1366,17 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   tokens: InContextSdkMethod<Query['tokens'], QuerytokensArgs, MeshContext>,
   /** null **/
-  tokenBalance: InContextSdkMethod<Query['tokenBalance'], QuerytokenBalanceArgs, MeshContext>,
+  userBalance: InContextSdkMethod<Query['userBalance'], QueryuserBalanceArgs, MeshContext>,
   /** null **/
-  tokenBalances: InContextSdkMethod<Query['tokenBalances'], QuerytokenBalancesArgs, MeshContext>,
+  userBalances: InContextSdkMethod<Query['userBalances'], QueryuserBalancesArgs, MeshContext>,
+  /** null **/
+  workstreamBalance: InContextSdkMethod<Query['workstreamBalance'], QueryworkstreamBalanceArgs, MeshContext>,
+  /** null **/
+  workstreamBalances: InContextSdkMethod<Query['workstreamBalances'], QueryworkstreamBalancesArgs, MeshContext>,
+  /** null **/
+  workstreamContestation: InContextSdkMethod<Query['workstreamContestation'], QueryworkstreamContestationArgs, MeshContext>,
+  /** null **/
+  workstreamContestations: InContextSdkMethod<Query['workstreamContestations'], QueryworkstreamContestationsArgs, MeshContext>,
   /** Access to subgraph metadata **/
   _meta: InContextSdkMethod<Query['_meta'], Query_metaArgs, MeshContext>
   };
@@ -917,6 +1395,10 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   workstreams: InContextSdkMethod<Subscription['workstreams'], SubscriptionworkstreamsArgs, MeshContext>,
   /** null **/
+  rewardDistribution: InContextSdkMethod<Subscription['rewardDistribution'], SubscriptionrewardDistributionArgs, MeshContext>,
+  /** null **/
+  rewardDistributions: InContextSdkMethod<Subscription['rewardDistributions'], SubscriptionrewardDistributionsArgs, MeshContext>,
+  /** null **/
   evaluation: InContextSdkMethod<Subscription['evaluation'], SubscriptionevaluationArgs, MeshContext>,
   /** null **/
   evaluations: InContextSdkMethod<Subscription['evaluations'], SubscriptionevaluationsArgs, MeshContext>,
@@ -929,9 +1411,17 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   tokens: InContextSdkMethod<Subscription['tokens'], SubscriptiontokensArgs, MeshContext>,
   /** null **/
-  tokenBalance: InContextSdkMethod<Subscription['tokenBalance'], SubscriptiontokenBalanceArgs, MeshContext>,
+  userBalance: InContextSdkMethod<Subscription['userBalance'], SubscriptionuserBalanceArgs, MeshContext>,
   /** null **/
-  tokenBalances: InContextSdkMethod<Subscription['tokenBalances'], SubscriptiontokenBalancesArgs, MeshContext>,
+  userBalances: InContextSdkMethod<Subscription['userBalances'], SubscriptionuserBalancesArgs, MeshContext>,
+  /** null **/
+  workstreamBalance: InContextSdkMethod<Subscription['workstreamBalance'], SubscriptionworkstreamBalanceArgs, MeshContext>,
+  /** null **/
+  workstreamBalances: InContextSdkMethod<Subscription['workstreamBalances'], SubscriptionworkstreamBalancesArgs, MeshContext>,
+  /** null **/
+  workstreamContestation: InContextSdkMethod<Subscription['workstreamContestation'], SubscriptionworkstreamContestationArgs, MeshContext>,
+  /** null **/
+  workstreamContestations: InContextSdkMethod<Subscription['workstreamContestations'], SubscriptionworkstreamContestationsArgs, MeshContext>,
   /** Access to subgraph metadata **/
   _meta: InContextSdkMethod<Subscription['_meta'], Subscription_metaArgs, MeshContext>
   };

@@ -1,4 +1,8 @@
-import { WorkstreamByIDDocument } from "../../.graphclient";
+import {
+  WorkstreamByIDDocument,
+  WorkstreamByIDQuery,
+  WorkstreamByIDQueryVariables,
+} from "../../.graphclient";
 import { FinalizeForm } from "../../components/FUX/FinalizeForm";
 import { StartEvaluation } from "../../components/FUX/StartEvaluation";
 import User from "../../components/FUX/User";
@@ -11,28 +15,35 @@ import {
   StatLabel,
   StatNumber,
   Heading,
+  Flex,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useQuery } from "urql";
+import TokenBalance from "../../components/FUX/TokenBalance";
 
-const Resolve: NextPage = () => {
+const Finalize: NextPage = () => {
   const router = useRouter();
   const { nativeToken } = useConstants();
 
   const { workstreamID } = router.query;
 
-  const [result, reexecuteQuery] = useQuery({
+  const [queryResult, reexecuteQuery] = useQuery<
+    WorkstreamByIDQuery,
+    WorkstreamByIDQueryVariables
+  >({
     query: WorkstreamByIDDocument,
     variables: {
       id: (workstreamID as string) || "",
     },
   });
 
-  const { data, fetching, error } = result;
-  const _workstream = data?.workstream;
+  const { data: workstreams, fetching, error } = queryResult;
+  const _workstream = workstreams?.workstreamContributors.find(
+    ({ workstream }) => workstream?.id === workstreamID
+  )?.workstream;
 
   return _workstream ? (
     <>
@@ -76,14 +87,21 @@ const Resolve: NextPage = () => {
                     : ""
                 }`}</StatNumber>
             </Stat>
-            <Stat p={"1em"}>
-              <StatLabel>Funding</StatLabel>
-              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
-                ${ethers.utils.formatEther(
-                  _workstream.funding
-                )} ${nativeToken}`}</StatNumber>
-            </Stat>
           </HStack>
+          <Flex
+            direction={["column", null, "row"]}
+            align={["center", null, "center"]}
+            flexWrap="wrap"
+          >
+            <Text>Workstream funds available</Text>
+            {_workstream.funding?.map((funding) => (
+              <TokenBalance
+                key={funding.token.id}
+                token={funding.token}
+                amount={funding.amount}
+              />
+            ))}
+          </Flex>
           {_workstream.status === "Started" ? (
             <StartEvaluation workstream={_workstream} />
           ) : _workstream.status === "Evaluation" ? (
@@ -99,4 +117,4 @@ const Resolve: NextPage = () => {
   );
 };
 
-export default Resolve;
+export default Finalize;

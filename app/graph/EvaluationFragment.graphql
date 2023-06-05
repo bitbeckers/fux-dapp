@@ -1,0 +1,9 @@
+fragment EvaluationFragment on Evaluation {
+  contributor {
+    id
+  }
+  rating
+  creator {
+    id
+  }
+}

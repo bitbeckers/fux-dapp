@@ -47,7 +47,7 @@ const StartEvaluation: React.FC<{
       <>
         <Text>
           The coordinator can promote the workstream to Evaluation state. This
-          step is required before finalizing the workstream
+          step block further additions to the contributor list
         </Text>
         <Button
           isDisabled={
