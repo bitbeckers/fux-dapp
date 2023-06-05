@@ -4,12 +4,12 @@ import { ethers } from "hardhat";
 import { getDefaultSigners } from "./utils";
 
 const buildFixture = async () => {
-  const { deployer, owner, user } = await getDefaultSigners();
+  const { deployer, owner, user, anon } = await getDefaultSigners();
 
   // Contract factory
   const fuxFactory = await ethers.getContractFactory("FUX");
   // Contracts
-  const fux = await fuxFactory.connect(owner).deploy();
+  const fux = await fuxFactory.connect(deployer).deploy();
 
   // Struct
   return {
@@ -17,6 +17,7 @@ const buildFixture = async () => {
     deployer,
     owner,
     user,
+    anon,
   };
 };
 

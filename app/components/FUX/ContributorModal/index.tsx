@@ -32,6 +32,7 @@ import { Fragment } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
+import { useBlockTx } from "../../../hooks/blockTx";
 
 type FormData = {
   contributors: string[];
@@ -45,6 +46,7 @@ const ContributorModal: React.FC<{
 }> = ({ workstreamID, workstreamName, contributors }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { error, success } = useCustomToasts();
+  const { checkChain } = useBlockTx();
 
   const {
     control,
@@ -70,16 +72,17 @@ const ContributorModal: React.FC<{
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
-    functionName: "addContributors",
+    functionName: "updateContributors",
     args: [
       workstreamID,
       newContributors
         .map((entry) => entry.address)
         .filter((address) => isAddress(address)),
+      true,
     ],
   });
 
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+  const { write } = useContractWrite({
     ...config,
     onError(e) {
       error(e);
@@ -91,7 +94,7 @@ const ContributorModal: React.FC<{
   });
 
   const onSubmit = () => {
-    if (newContributors.length > 0) {
+    if (newContributors.length > 0 && checkChain()) {
       write?.();
       onClose();
     }

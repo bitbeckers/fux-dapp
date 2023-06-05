@@ -1,7 +1,13 @@
-import { WorkstreamByIDDocument } from "../../.graphclient";
+import {
+  WorkstreamByIDDocument,
+  WorkstreamByIDQuery,
+  WorkstreamByIDQueryVariables,
+} from "../../.graphclient";
 import { FinalizeForm } from "../../components/FUX/FinalizeForm";
 import { StartEvaluation } from "../../components/FUX/StartEvaluation";
+import TokenBalance from "../../components/FUX/TokenBalance";
 import User from "../../components/FUX/User";
+import { useGraphClient } from "../../hooks/graphSdk";
 import { useConstants } from "../../utils/constants";
 import {
   VStack,
@@ -11,28 +17,34 @@ import {
   StatLabel,
   StatNumber,
   Heading,
+  Flex,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { ethers } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useQuery } from "urql";
 
-const Resolve: NextPage = () => {
+const Finalize: NextPage = () => {
   const router = useRouter();
   const { nativeToken } = useConstants();
+  const { sdk } = useGraphClient();
 
   const { workstreamID } = router.query;
 
-  const [result, reexecuteQuery] = useQuery({
-    query: WorkstreamByIDDocument,
-    variables: {
-      id: (workstreamID as string) || "",
-    },
+  const {
+    isLoading,
+    data: workstreams,
+    error,
+  } = useQuery({
+    queryKey: ["workstream", workstreamID],
+    queryFn: () => sdk.WorkstreamByID({ id: workstreamID as string }),
+    refetchInterval: 5000,
   });
 
-  const { data, fetching, error } = result;
-  const _workstream = data?.workstream;
+  const _workstream = workstreams?.workstreamContributors.find(
+    ({ workstream }) => workstream?.id === workstreamID
+  )?.workstream;
 
   return _workstream ? (
     <>
@@ -44,9 +56,7 @@ const Resolve: NextPage = () => {
           align="center"
           pb={"2em"}
         >
-          <Heading>{`Finalize ${
-            _workstream.name ?? _workstream.name
-          }`}</Heading>
+          <Heading>{`Finalize ${_workstream?.name}`}</Heading>
           <Text w={"50%"} textAlign="center">
             Review and close workstream. Contributors will get their FUX back in
             addition to vFUX and any applicable funds.
@@ -76,14 +86,21 @@ const Resolve: NextPage = () => {
                     : ""
                 }`}</StatNumber>
             </Stat>
-            <Stat p={"1em"}>
-              <StatLabel>Funding</StatLabel>
-              <StatNumber bg="#301A3A" pl={"5"} w="8em">{`
-                ${ethers.utils.formatEther(
-                  _workstream.funding
-                )} ${nativeToken}`}</StatNumber>
-            </Stat>
           </HStack>
+          <Flex
+            direction={["column", null, "row"]}
+            align={["center", null, "center"]}
+            flexWrap="wrap"
+          >
+            <Text>Workstream funds available</Text>
+            {_workstream.funding?.map((funding) => (
+              <TokenBalance
+                key={funding.token.id}
+                token={funding.token}
+                amount={funding.amount}
+              />
+            ))}
+          </Flex>
           {_workstream.status === "Started" ? (
             <StartEvaluation workstream={_workstream} />
           ) : _workstream.status === "Evaluation" ? (
@@ -99,4 +116,4 @@ const Resolve: NextPage = () => {
   );
 };
 
-export default Resolve;
+export default Finalize;

@@ -1,19 +1,23 @@
-import { UserDocument } from "../.graphclient";
+import { UserByAddressDocument } from "../.graphclient";
 import ConnectWallet from "../components/ConnectWallet";
 import FuxOverview from "../components/FUX/FuxOverview";
+import { useBlockTx } from "../hooks/blockTx";
+import { useGraphClient } from "../hooks/graphSdk";
 import { useCustomToasts } from "../hooks/toast";
 import { contractAddresses, contractABI } from "../utils/constants";
 import { VStack, Button, Text, Center } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useQuery } from "urql";
 import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
 
 const Start: NextPage = () => {
   const router = useRouter();
   const { address } = useAccount();
   const toast = useCustomToasts();
+  const { sdk } = useGraphClient();
+  const { checkChain } = useBlockTx();
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
@@ -32,21 +36,23 @@ const Start: NextPage = () => {
     },
   });
 
-
-  const [result] = useQuery({
-    query: UserDocument,
-    variables: {
-      address: address?.toLowerCase() || "",
-    },
+  const { isLoading, data } = useQuery({
+    queryKey: ["userByAddress", address?.toLowerCase() || ""],
+    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() || "" }),
+    refetchInterval: 5000,
   });
-
-  const { data, fetching, error } = result;
 
   useEffect(() => {
     if (data?.user?.fuxer) {
       router.push("/workstreams");
     }
   }, [data, router]);
+
+  const handleClaim = () => {
+    if (checkChain()) {
+      write?.();
+    }
+  };
 
   return (
     <VStack spacing={8} w={"100%"}>
@@ -55,7 +61,7 @@ const Start: NextPage = () => {
         <Center w="80%" justifyContent="center">
           <VStack>
             <Text fontSize="4xl">Claim your FUX to get started</Text>
-            <Button onClick={() => write?.()}>Claim 100 FUX</Button>
+            <Button onClick={handleClaim}>Claim 100 FUX</Button>
           </VStack>
         </Center>
       ) : (

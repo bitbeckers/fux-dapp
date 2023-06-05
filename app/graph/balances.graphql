@@ -1,20 +1,21 @@
-query BalancesForAddress($address: ID!) @live {
-  user(id: $address) {
-    id
-    balances {
-      token {
-        name
-        symbol
-      }
-      amount
+#import "./TokenFragment.graphql"
+query BalancesByUser($address: ID = "") {
+  userBalances(where: { user_: { id: $address } }) {
+    amount
+    token {
+      ...TokenFragment
     }
   }
 }
 
-query TokenBalance($address: ID!, $symbol: String!) @live {
-  tokenBalances(
-    where: { token_: { symbol: $symbol }, user_: { id: $address } }
-  ) {
-    amount
+query BalancesByWorkstream($workstreamID: ID = "") {
+  workstreams {
+    funding(where: { id: $workstreamID }) {
+      amount
+      token {
+        ...TokenFragment
+      }
+    }
   }
 }
+

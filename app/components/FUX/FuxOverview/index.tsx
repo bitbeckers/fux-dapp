@@ -1,4 +1,4 @@
-import { UserDocument } from "../../../.graphclient";
+import { useGraphClient } from "../../../hooks/graphSdk";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
 import User from "../User";
@@ -14,13 +14,14 @@ import {
   StatGroup,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import NextLink from "next/link";
 import React from "react";
-import { useQuery } from "urql";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 const FuxOverview: React.FC<{}> = ({}) => {
   const { address } = useAccount();
+  const { sdk } = useGraphClient();
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   const { error: errorToast, success: successToast } = useCustomToasts();
@@ -29,12 +30,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
     abi: contractABI.fux,
     functionName: "mintFux",
   });
-  const {
-    data: tx,
-    isLoading,
-    isSuccess,
-    write,
-  } = useContractWrite({
+  const { data: tx, write } = useContractWrite({
     ...config,
     onError(e) {
       errorToast(e);
@@ -45,21 +41,24 @@ const FuxOverview: React.FC<{}> = ({}) => {
     },
   });
 
-  const [result, reexecuteQuery] = useQuery({
-    query: UserDocument,
-    variables: {
-      address: address?.toLowerCase() || "",
-    },
+  const { isLoading, data } = useQuery({
+    queryKey: ["userByAddress", address?.toLowerCase() || ""],
+    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() || "" }),
+    refetchInterval: 5000,
   });
 
-  const { data, fetching, error } = result;
-
   const fuxBalance = data?.user?.balances?.find(
-    (balance) => balance.token.name === "FUX"
+    ({ token }) =>
+      token.id.toLowerCase() ===
+        contractAddresses.fuxContractAddress.toLowerCase() &&
+      token.name === "FUX"
   )?.amount;
 
   const vFuxBalance = data?.user?.balances?.find(
-    (balance) => balance.token.name === "vFUX"
+    ({ token }) =>
+      token.id.toLowerCase() ===
+        contractAddresses.fuxContractAddress.toLowerCase() &&
+      token.name === "vFUX"
   )?.amount;
 
   return (
@@ -70,7 +69,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
       align="center"
       pb={"2em"}
     >
-      {!address || fetching ? undefined : (
+      {!address || isLoading ? undefined : (
         <Flex
           flexWrap="wrap"
           direction={["column", null, "row"]}
@@ -98,7 +97,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
                 p={3}
                 my={2}
                 w="10em"
-              >{`${fuxBalance ? fuxBalance : "..."} / 100 FUX`}</StatNumber>
+              >{`${fuxBalance ? `${fuxBalance} /100` : "0"} FUX`}</StatNumber>
               {fuxBalance ? (
                 <></>
               ) : (

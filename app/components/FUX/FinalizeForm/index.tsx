@@ -1,4 +1,5 @@
 import { Workstream, WorkstreamContributor } from "../../../.graphclient";
+import { useBlockTx } from "../../../hooks/blockTx";
 import { useCustomToasts } from "../../../hooks/toast";
 import {
   contractAddresses,
@@ -70,8 +71,8 @@ const FinalizeForm: React.FC<{
   workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
   const toast = useCustomToasts();
-  const { nativeToken } = useConstants();
   const { address } = useAccount();
+  const { checkChain } = useBlockTx();
 
   const _workstream = workstream as Workstream;
 
@@ -131,12 +132,13 @@ const FinalizeForm: React.FC<{
       return;
     }
 
-    write?.();
+    if (checkChain()) {
+      write?.();
+    }
   };
 
   const contributors = _workstream.contributors;
   const coordinator = _workstream.coordinator?.id;
-  const funding = ethers.utils.formatEther(_workstream.funding);
 
   const finalizeForm =
     contributors && contributors?.length > 0 ? (
@@ -189,12 +191,7 @@ const FinalizeForm: React.FC<{
                   justifyContent="end"
                   alignContent="center"
                 >
-                  {relative[address]
-                    ? `${_.multiply(
-                        Number(funding),
-                        Number(relative[address]) / 100
-                      ).toFixed(4)} ${nativeToken}`
-                    : `0 ${nativeToken}`}
+                  <Text>Token Values</Text>
                 </GridItem>
               </Fragment>
             );

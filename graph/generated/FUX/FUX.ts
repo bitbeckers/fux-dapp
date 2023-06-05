@@ -76,25 +76,29 @@ export class BeaconUpgraded__Params {
   }
 }
 
-export class ContributorsAdded extends ethereum.Event {
-  get params(): ContributorsAdded__Params {
-    return new ContributorsAdded__Params(this);
+export class ContributorsUpdated extends ethereum.Event {
+  get params(): ContributorsUpdated__Params {
+    return new ContributorsUpdated__Params(this);
   }
 }
 
-export class ContributorsAdded__Params {
-  _event: ContributorsAdded;
+export class ContributorsUpdated__Params {
+  _event: ContributorsUpdated;
 
-  constructor(event: ContributorsAdded) {
+  constructor(event: ContributorsUpdated) {
     this._event = event;
   }
 
-  get id(): BigInt {
+  get workstreamID(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 
   get contributors(): Array<Address> {
     return this._event.parameters[1].value.toAddressArray();
+  }
+
+  get add(): boolean {
+    return this._event.parameters[2].value.toBoolean();
   }
 }
 
@@ -163,7 +167,33 @@ export class FuxGiven__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get workstreamId(): BigInt {
+  get workstreamID(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class FuxWithdrawn extends ethereum.Event {
+  get params(): FuxWithdrawn__Params {
+    return new FuxWithdrawn__Params(this);
+  }
+}
+
+export class FuxWithdrawn__Params {
+  _event: FuxWithdrawn;
+
+  constructor(event: FuxWithdrawn) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get workstreamID(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
 
@@ -187,50 +217,6 @@ export class Initialized__Params {
 
   get version(): i32 {
     return this._event.parameters[0].value.toI32();
-  }
-}
-
-export class RewardsClaimed extends ethereum.Event {
-  get params(): RewardsClaimed__Params {
-    return new RewardsClaimed__Params(this);
-  }
-}
-
-export class RewardsClaimed__Params {
-  _event: RewardsClaimed;
-
-  constructor(event: RewardsClaimed) {
-    this._event = event;
-  }
-
-  get user(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-}
-
-export class RewardsReserved extends ethereum.Event {
-  get params(): RewardsReserved__Params {
-    return new RewardsReserved__Params(this);
-  }
-}
-
-export class RewardsReserved__Params {
-  _event: RewardsReserved;
-
-  constructor(event: RewardsReserved) {
-    this._event = event;
-  }
-
-  get user(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
   }
 }
 
@@ -312,16 +298,16 @@ export class RoleRevoked__Params {
   }
 }
 
-export class StateUpdate extends ethereum.Event {
-  get params(): StateUpdate__Params {
-    return new StateUpdate__Params(this);
+export class StateUpdated extends ethereum.Event {
+  get params(): StateUpdated__Params {
+    return new StateUpdated__Params(this);
   }
 }
 
-export class StateUpdate__Params {
-  _event: StateUpdate;
+export class StateUpdated__Params {
+  _event: StateUpdated;
 
-  constructor(event: StateUpdate) {
+  constructor(event: StateUpdated) {
     this._event = event;
   }
 
@@ -424,6 +410,28 @@ export class URI__Params {
   }
 }
 
+export class UpdatedWorkstreamURI extends ethereum.Event {
+  get params(): UpdatedWorkstreamURI__Params {
+    return new UpdatedWorkstreamURI__Params(this);
+  }
+}
+
+export class UpdatedWorkstreamURI__Params {
+  _event: UpdatedWorkstreamURI;
+
+  constructor(event: UpdatedWorkstreamURI) {
+    this._event = event;
+  }
+
+  get workstreamID(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get uri(): string {
+    return this._event.parameters[1].value.toString();
+  }
+}
+
 export class Upgraded extends ethereum.Event {
   get params(): Upgraded__Params {
     return new Upgraded__Params(this);
@@ -439,46 +447,6 @@ export class Upgraded__Params {
 
   get implementation(): Address {
     return this._event.parameters[0].value.toAddress();
-  }
-}
-
-export class VFuxClaimed extends ethereum.Event {
-  get params(): VFuxClaimed__Params {
-    return new VFuxClaimed__Params(this);
-  }
-}
-
-export class VFuxClaimed__Params {
-  _event: VFuxClaimed;
-
-  constructor(event: VFuxClaimed) {
-    this._event = event;
-  }
-
-  get user(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get workstreamID(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-}
-
-export class WorkstreamCancelled extends ethereum.Event {
-  get params(): WorkstreamCancelled__Params {
-    return new WorkstreamCancelled__Params(this);
-  }
-}
-
-export class WorkstreamCancelled__Params {
-  _event: WorkstreamCancelled;
-
-  constructor(event: WorkstreamCancelled) {
-    this._event = event;
-  }
-
-  get workstreamID(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
   }
 }
 
@@ -498,6 +466,40 @@ export class WorkstreamClosed__Params {
   get workstreamID(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
+
+  get contributors(): Array<Address> {
+    return this._event.parameters[1].value.toAddressArray();
+  }
+
+  get vFux(): Array<BigInt> {
+    return this._event.parameters[2].value.toBigIntArray();
+  }
+}
+
+export class WorkstreamContested extends ethereum.Event {
+  get params(): WorkstreamContested__Params {
+    return new WorkstreamContested__Params(this);
+  }
+}
+
+export class WorkstreamContested__Params {
+  _event: WorkstreamContested;
+
+  constructor(event: WorkstreamContested) {
+    this._event = event;
+  }
+
+  get workstreamID(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get user(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get uri(): string {
+    return this._event.parameters[2].value.toString();
+  }
 }
 
 export class WorkstreamMinted extends ethereum.Event {
@@ -513,20 +515,28 @@ export class WorkstreamMinted__Params {
     this._event = event;
   }
 
-  get id(): BigInt {
+  get workstreamID(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 
-  get funds(): BigInt {
+  get deadline(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get deadline(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+  get rewardsToken(): Array<Address> {
+    return this._event.parameters[2].value.toAddressArray();
+  }
+
+  get rewards(): Array<BigInt> {
+    return this._event.parameters[3].value.toBigIntArray();
+  }
+
+  get value(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
   }
 
   get metadataUri(): string {
-    return this._event.parameters[3].value.toString();
+    return this._event.parameters[5].value.toString();
   }
 }
 
@@ -553,16 +563,12 @@ export class FUX__getWorkstreamResultWorkstreamStruct extends ethereum.Tuple {
     return this[2].toBigInt();
   }
 
-  get funds(): BigInt {
-    return this[3].toBigInt();
-  }
-
   get state(): i32 {
-    return this[4].toI32();
+    return this[3].toI32();
   }
 
   get exists(): boolean {
-    return this[5].toBoolean();
+    return this[4].toBoolean();
   }
 }
 
@@ -731,25 +737,6 @@ export class FUX extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigIntArray());
   }
 
-  exists(id: BigInt): boolean {
-    let result = super.call("exists", "exists(uint256):(bool)", [
-      ethereum.Value.fromUnsignedBigInt(id)
-    ]);
-
-    return result[0].toBoolean();
-  }
-
-  try_exists(id: BigInt): ethereum.CallResult<boolean> {
-    let result = super.tryCall("exists", "exists(uint256):(bool)", [
-      ethereum.Value.fromUnsignedBigInt(id)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
   getCommitment(user: Address, workstreamID: BigInt): BigInt {
     let result = super.call(
       "getCommitment",
@@ -821,25 +808,6 @@ export class FUX extends ethereum.SmartContract {
     );
   }
 
-  getRewards(user: Address): BigInt {
-    let result = super.call("getRewards", "getRewards(address):(uint256)", [
-      ethereum.Value.fromAddress(user)
-    ]);
-
-    return result[0].toBigInt();
-  }
-
-  try_getRewards(user: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("getRewards", "getRewards(address):(uint256)", [
-      ethereum.Value.fromAddress(user)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   getRoleAdmin(role: Bytes): Bytes {
     let result = super.call("getRoleAdmin", "getRoleAdmin(bytes32):(bytes32)", [
       ethereum.Value.fromFixedBytes(role)
@@ -866,7 +834,7 @@ export class FUX extends ethereum.SmartContract {
   ): FUX__getWorkstreamResultWorkstreamStruct {
     let result = super.call(
       "getWorkstream",
-      "getWorkstream(uint256):((string,address,uint256,uint256,uint8,bool))",
+      "getWorkstream(uint256):((string,address,uint256,uint8,bool))",
       [ethereum.Value.fromUnsignedBigInt(workstreamID)]
     );
 
@@ -880,7 +848,7 @@ export class FUX extends ethereum.SmartContract {
   ): ethereum.CallResult<FUX__getWorkstreamResultWorkstreamStruct> {
     let result = super.tryCall(
       "getWorkstream",
-      "getWorkstream(uint256):((string,address,uint256,uint256,uint8,bool))",
+      "getWorkstream(uint256):((string,address,uint256,uint8,bool))",
       [ethereum.Value.fromUnsignedBigInt(workstreamID)]
     );
     if (result.reverted) {
@@ -890,6 +858,38 @@ export class FUX extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       changetype<FUX__getWorkstreamResultWorkstreamStruct>(value[0].toTuple())
     );
+  }
+
+  getWorkstreamRewards(workstreamID: BigInt, token: Address): BigInt {
+    let result = super.call(
+      "getWorkstreamRewards",
+      "getWorkstreamRewards(uint256,address):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(workstreamID),
+        ethereum.Value.fromAddress(token)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getWorkstreamRewards(
+    workstreamID: BigInt,
+    token: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getWorkstreamRewards",
+      "getWorkstreamRewards(uint256,address):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(workstreamID),
+        ethereum.Value.fromAddress(token)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   hasRole(role: Bytes, account: Address): boolean {
@@ -946,21 +946,21 @@ export class FUX extends ethereum.SmartContract {
   }
 
   onERC1155BatchReceived(
-    _operator: Address,
-    _from: Address,
-    _ids: Array<BigInt>,
-    _values: Array<BigInt>,
-    _data: Bytes
+    param0: Address,
+    param1: Address,
+    param2: Array<BigInt>,
+    param3: Array<BigInt>,
+    param4: Bytes
   ): Bytes {
     let result = super.call(
       "onERC1155BatchReceived",
       "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes):(bytes4)",
       [
-        ethereum.Value.fromAddress(_operator),
-        ethereum.Value.fromAddress(_from),
-        ethereum.Value.fromUnsignedBigIntArray(_ids),
-        ethereum.Value.fromUnsignedBigIntArray(_values),
-        ethereum.Value.fromBytes(_data)
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromAddress(param1),
+        ethereum.Value.fromUnsignedBigIntArray(param2),
+        ethereum.Value.fromUnsignedBigIntArray(param3),
+        ethereum.Value.fromBytes(param4)
       ]
     );
 
@@ -968,21 +968,21 @@ export class FUX extends ethereum.SmartContract {
   }
 
   try_onERC1155BatchReceived(
-    _operator: Address,
-    _from: Address,
-    _ids: Array<BigInt>,
-    _values: Array<BigInt>,
-    _data: Bytes
+    param0: Address,
+    param1: Address,
+    param2: Array<BigInt>,
+    param3: Array<BigInt>,
+    param4: Bytes
   ): ethereum.CallResult<Bytes> {
     let result = super.tryCall(
       "onERC1155BatchReceived",
       "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes):(bytes4)",
       [
-        ethereum.Value.fromAddress(_operator),
-        ethereum.Value.fromAddress(_from),
-        ethereum.Value.fromUnsignedBigIntArray(_ids),
-        ethereum.Value.fromUnsignedBigIntArray(_values),
-        ethereum.Value.fromBytes(_data)
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromAddress(param1),
+        ethereum.Value.fromUnsignedBigIntArray(param2),
+        ethereum.Value.fromUnsignedBigIntArray(param3),
+        ethereum.Value.fromBytes(param4)
       ]
     );
     if (result.reverted) {
@@ -993,21 +993,21 @@ export class FUX extends ethereum.SmartContract {
   }
 
   onERC1155Received(
-    _operator: Address,
-    _from: Address,
-    _id: BigInt,
-    _value: BigInt,
-    _data: Bytes
+    param0: Address,
+    param1: Address,
+    param2: BigInt,
+    param3: BigInt,
+    param4: Bytes
   ): Bytes {
     let result = super.call(
       "onERC1155Received",
       "onERC1155Received(address,address,uint256,uint256,bytes):(bytes4)",
       [
-        ethereum.Value.fromAddress(_operator),
-        ethereum.Value.fromAddress(_from),
-        ethereum.Value.fromUnsignedBigInt(_id),
-        ethereum.Value.fromUnsignedBigInt(_value),
-        ethereum.Value.fromBytes(_data)
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromAddress(param1),
+        ethereum.Value.fromUnsignedBigInt(param2),
+        ethereum.Value.fromUnsignedBigInt(param3),
+        ethereum.Value.fromBytes(param4)
       ]
     );
 
@@ -1015,21 +1015,21 @@ export class FUX extends ethereum.SmartContract {
   }
 
   try_onERC1155Received(
-    _operator: Address,
-    _from: Address,
-    _id: BigInt,
-    _value: BigInt,
-    _data: Bytes
+    param0: Address,
+    param1: Address,
+    param2: BigInt,
+    param3: BigInt,
+    param4: Bytes
   ): ethereum.CallResult<Bytes> {
     let result = super.tryCall(
       "onERC1155Received",
       "onERC1155Received(address,address,uint256,uint256,bytes):(bytes4)",
       [
-        ethereum.Value.fromAddress(_operator),
-        ethereum.Value.fromAddress(_from),
-        ethereum.Value.fromUnsignedBigInt(_id),
-        ethereum.Value.fromUnsignedBigInt(_value),
-        ethereum.Value.fromBytes(_data)
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromAddress(param1),
+        ethereum.Value.fromUnsignedBigInt(param2),
+        ethereum.Value.fromUnsignedBigInt(param3),
+        ethereum.Value.fromBytes(param4)
       ]
     );
     if (result.reverted) {
@@ -1104,27 +1104,6 @@ export class FUX extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  totalSupply(id: BigInt): BigInt {
-    let result = super.call("totalSupply", "totalSupply(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(id)
-    ]);
-
-    return result[0].toBigInt();
-  }
-
-  try_totalSupply(id: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "totalSupply",
-      "totalSupply(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(id)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   uri(tokenId: BigInt): string {
     let result = super.call("uri", "uri(uint256):(string)", [
       ethereum.Value.fromUnsignedBigInt(tokenId)
@@ -1167,66 +1146,6 @@ export class ConstructorCall__Outputs {
   _call: ConstructorCall;
 
   constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-}
-
-export class AddContributorsCall extends ethereum.Call {
-  get inputs(): AddContributorsCall__Inputs {
-    return new AddContributorsCall__Inputs(this);
-  }
-
-  get outputs(): AddContributorsCall__Outputs {
-    return new AddContributorsCall__Outputs(this);
-  }
-}
-
-export class AddContributorsCall__Inputs {
-  _call: AddContributorsCall;
-
-  constructor(call: AddContributorsCall) {
-    this._call = call;
-  }
-
-  get workstreamID(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _contributors(): Array<Address> {
-    return this._call.inputValues[1].value.toAddressArray();
-  }
-}
-
-export class AddContributorsCall__Outputs {
-  _call: AddContributorsCall;
-
-  constructor(call: AddContributorsCall) {
-    this._call = call;
-  }
-}
-
-export class ClaimRewardsCall extends ethereum.Call {
-  get inputs(): ClaimRewardsCall__Inputs {
-    return new ClaimRewardsCall__Inputs(this);
-  }
-
-  get outputs(): ClaimRewardsCall__Outputs {
-    return new ClaimRewardsCall__Outputs(this);
-  }
-}
-
-export class ClaimRewardsCall__Inputs {
-  _call: ClaimRewardsCall;
-
-  constructor(call: ClaimRewardsCall) {
-    this._call = call;
-  }
-}
-
-export class ClaimRewardsCall__Outputs {
-  _call: ClaimRewardsCall;
-
-  constructor(call: ClaimRewardsCall) {
     this._call = call;
   }
 }
@@ -1423,36 +1342,6 @@ export class MintFuxCall__Outputs {
   }
 }
 
-export class MintVFuxCall extends ethereum.Call {
-  get inputs(): MintVFuxCall__Inputs {
-    return new MintVFuxCall__Inputs(this);
-  }
-
-  get outputs(): MintVFuxCall__Outputs {
-    return new MintVFuxCall__Outputs(this);
-  }
-}
-
-export class MintVFuxCall__Inputs {
-  _call: MintVFuxCall;
-
-  constructor(call: MintVFuxCall) {
-    this._call = call;
-  }
-
-  get workstreamID(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class MintVFuxCall__Outputs {
-  _call: MintVFuxCall;
-
-  constructor(call: MintVFuxCall) {
-    this._call = call;
-  }
-}
-
 export class MintWorkstreamCall extends ethereum.Call {
   get inputs(): MintWorkstreamCall__Inputs {
     return new MintWorkstreamCall__Inputs(this);
@@ -1485,12 +1374,58 @@ export class MintWorkstreamCall__Inputs {
   get deadline(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
   }
+
+  get rewardsTokens(): Array<Address> {
+    return this._call.inputValues[4].value.toAddressArray();
+  }
+
+  get rewards(): Array<BigInt> {
+    return this._call.inputValues[5].value.toBigIntArray();
+  }
+
+  get metadataUri(): string {
+    return this._call.inputValues[6].value.toString();
+  }
 }
 
 export class MintWorkstreamCall__Outputs {
   _call: MintWorkstreamCall;
 
   constructor(call: MintWorkstreamCall) {
+    this._call = call;
+  }
+}
+
+export class PostContestationCall extends ethereum.Call {
+  get inputs(): PostContestationCall__Inputs {
+    return new PostContestationCall__Inputs(this);
+  }
+
+  get outputs(): PostContestationCall__Outputs {
+    return new PostContestationCall__Outputs(this);
+  }
+}
+
+export class PostContestationCall__Inputs {
+  _call: PostContestationCall;
+
+  constructor(call: PostContestationCall) {
+    this._call = call;
+  }
+
+  get workstreamID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _uri(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+}
+
+export class PostContestationCall__Outputs {
+  _call: PostContestationCall;
+
+  constructor(call: PostContestationCall) {
     this._call = call;
   }
 }
@@ -1614,8 +1549,12 @@ export class SetURICall__Inputs {
     this._call = call;
   }
 
+  get tokenID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
   get newuri(): string {
-    return this._call.inputValues[0].value.toString();
+    return this._call.inputValues[1].value.toString();
   }
 }
 
@@ -1623,6 +1562,70 @@ export class SetURICall__Outputs {
   _call: SetURICall;
 
   constructor(call: SetURICall) {
+    this._call = call;
+  }
+}
+
+export class SetWorkstreamToEvaluationCall extends ethereum.Call {
+  get inputs(): SetWorkstreamToEvaluationCall__Inputs {
+    return new SetWorkstreamToEvaluationCall__Inputs(this);
+  }
+
+  get outputs(): SetWorkstreamToEvaluationCall__Outputs {
+    return new SetWorkstreamToEvaluationCall__Outputs(this);
+  }
+}
+
+export class SetWorkstreamToEvaluationCall__Inputs {
+  _call: SetWorkstreamToEvaluationCall;
+
+  constructor(call: SetWorkstreamToEvaluationCall) {
+    this._call = call;
+  }
+
+  get workstreamID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetWorkstreamToEvaluationCall__Outputs {
+  _call: SetWorkstreamToEvaluationCall;
+
+  constructor(call: SetWorkstreamToEvaluationCall) {
+    this._call = call;
+  }
+}
+
+export class SetWorkstreamURICall extends ethereum.Call {
+  get inputs(): SetWorkstreamURICall__Inputs {
+    return new SetWorkstreamURICall__Inputs(this);
+  }
+
+  get outputs(): SetWorkstreamURICall__Outputs {
+    return new SetWorkstreamURICall__Outputs(this);
+  }
+}
+
+export class SetWorkstreamURICall__Inputs {
+  _call: SetWorkstreamURICall;
+
+  constructor(call: SetWorkstreamURICall) {
+    this._call = call;
+  }
+
+  get workstreamID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get newuri(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+}
+
+export class SetWorkstreamURICall__Outputs {
+  _call: SetWorkstreamURICall;
+
+  constructor(call: SetWorkstreamURICall) {
     this._call = call;
   }
 }
@@ -1661,6 +1664,44 @@ export class SubmitEvaluationCall__Outputs {
   _call: SubmitEvaluationCall;
 
   constructor(call: SubmitEvaluationCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateContributorsCall extends ethereum.Call {
+  get inputs(): UpdateContributorsCall__Inputs {
+    return new UpdateContributorsCall__Inputs(this);
+  }
+
+  get outputs(): UpdateContributorsCall__Outputs {
+    return new UpdateContributorsCall__Outputs(this);
+  }
+}
+
+export class UpdateContributorsCall__Inputs {
+  _call: UpdateContributorsCall;
+
+  constructor(call: UpdateContributorsCall) {
+    this._call = call;
+  }
+
+  get workstreamID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _contributors(): Array<Address> {
+    return this._call.inputValues[1].value.toAddressArray();
+  }
+
+  get add(): boolean {
+    return this._call.inputValues[2].value.toBoolean();
+  }
+}
+
+export class UpdateContributorsCall__Outputs {
+  _call: UpdateContributorsCall;
+
+  constructor(call: UpdateContributorsCall) {
     this._call = call;
   }
 }
@@ -1725,6 +1766,36 @@ export class UpgradeToAndCallCall__Outputs {
   _call: UpgradeToAndCallCall;
 
   constructor(call: UpgradeToAndCallCall) {
+    this._call = call;
+  }
+}
+
+export class WithdrawFromWorkstreamCall extends ethereum.Call {
+  get inputs(): WithdrawFromWorkstreamCall__Inputs {
+    return new WithdrawFromWorkstreamCall__Inputs(this);
+  }
+
+  get outputs(): WithdrawFromWorkstreamCall__Outputs {
+    return new WithdrawFromWorkstreamCall__Outputs(this);
+  }
+}
+
+export class WithdrawFromWorkstreamCall__Inputs {
+  _call: WithdrawFromWorkstreamCall;
+
+  constructor(call: WithdrawFromWorkstreamCall) {
+    this._call = call;
+  }
+
+  get workstreamID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class WithdrawFromWorkstreamCall__Outputs {
+  _call: WithdrawFromWorkstreamCall;
+
+  constructor(call: WithdrawFromWorkstreamCall) {
     this._call = call;
   }
 }

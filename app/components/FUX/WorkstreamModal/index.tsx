@@ -1,4 +1,5 @@
-import { UserDocument } from "../../../.graphclient";
+import { useBlockTx } from "../../../hooks/blockTx";
+import { useGraphClient } from "../../../hooks/graphSdk";
 import { useCustomToasts } from "../../../hooks/toast";
 import {
   contractABI,
@@ -38,35 +39,39 @@ import {
   IconButton,
   InputRightElement,
   Divider,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
-import { ethers } from "ethers";
+import { useQuery } from "@tanstack/react-query";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { DateTime } from "luxon";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
-import { RiInformationLine } from "react-icons/ri";
-import { useQuery } from "urql";
 import {
-  useAccount,
-  useBalance,
-  useNetwork,
-  usePrepareContractWrite,
-  useContractWrite,
-} from "wagmi";
+  BsCashStack,
+  BsFillPersonPlusFill,
+  BsFillPersonXFill,
+  BsBackspaceFill,
+} from "react-icons/bs";
+import { RiInformationLine } from "react-icons/ri";
+import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
 
 type FormData = {
   name: string;
   duration: string;
-  funding: number;
-  fuxGiven: number;
+  coordinatorCommitment: number;
   contributors: { address: string }[];
+  funding: { address: string; amount: BigNumberish; symbol?: string }[];
+  metadataUri: string;
 };
 
-const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
+const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   onCloseAction,
 }) => {
   const { address } = useAccount();
   const { error: errorToast, success: successToast } = useCustomToasts();
+  const { sdk } = useGraphClient();
+  const { checkChain } = useBlockTx();
 
   const {
     handleSubmit,
@@ -79,18 +84,46 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     defaultValues: {
       name: "",
       duration: DateTime.now().plus({ day: 1 }).toISODate(),
-      funding: 0,
-      fuxGiven: 0,
+      coordinatorCommitment: 0,
       contributors: [{ address: "" }],
+      funding: [{ address: ethers.constants.AddressZero, amount: 0 }],
+      metadataUri: "",
     },
   });
 
-  const { fields, append, remove } = useFieldArray<FormData>({
+  const {
+    fields: contributors,
+    append: addContributor,
+    remove: removeContributor,
+  } = useFieldArray<FormData>({
     control,
     name: "contributors",
   });
 
+  const {
+    fields: funding,
+    append: addFunding,
+    remove: removeFunding,
+  } = useFieldArray<FormData>({
+    control,
+    name: "funding",
+  });
+
   const formState = watch();
+  console.log(formState);
+
+  const getNativeTokenAmount = () => {
+    if (!formState.funding || formState.funding.length === 0)
+      return BigNumber.from(0);
+
+    let nativeToken = formState.funding?.filter(
+      (token) => token.address === ethers.constants.AddressZero
+    );
+
+    if (!nativeToken || nativeToken.length === 0) return BigNumber.from(0);
+
+    return BigNumber.from(nativeToken[0].amount.toString());
+  };
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
@@ -101,18 +134,24 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
       [
         ...formState.contributors
           .map((entry) => entry.address)
-          .filter((address) => isAddress(address)),
+          .filter(
+            (address) =>
+              isAddress(address) && address != ethers.constants.AddressZero
+          ),
         address,
       ],
-      formState.fuxGiven,
+      formState.coordinatorCommitment,
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
+      [...formState.funding.map((token) => token.address)],
+      [...formState.funding.map((token) => BigNumber.from(token.amount))],
+      formState.metadataUri,
     ],
     overrides: {
-      value: ethers.utils.parseEther(
-        formState.funding ? formState.funding.toString() : "0"
-      ),
+      value: getNativeTokenAmount(),
     },
   });
+
+  console.log(getNativeTokenAmount().toString());
 
   const { data: tx, write } = useContractWrite({
     ...config,
@@ -125,38 +164,29 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
     },
   });
 
-  const { chain } = useNetwork();
-  const { data: balance, isLoading: balanceLoading } = useBalance({
-    address,
-    chainId: chain?.id,
-  });
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { nativeToken } = useConstants();
 
-  const [result] = useQuery({
-    query: UserDocument,
-    variables: {
-      address: address?.toLowerCase() || "",
-    },
+  const { isLoading, data } = useQuery({
+    queryKey: ["userByAddress", address],
+    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() }),
+    enabled: !!address,
+    refetchInterval: 5000,
   });
-
-  const { data, fetching, error } = result;
 
   const fuxBalance = data?.user?.balances?.find(
     (balance) => balance.token.name === "FUX"
   )?.amount;
 
-  const amountToSpend = () => {
-    let formatted = balance?.formatted ?? 0;
-    let margin = Number(formatted) - formState.funding;
-
-    return margin.toFixed(2);
-  };
+  console.log(data);
+  console.log(address);
 
   const onSubmit = () => {
-    write?.();
-    onClose();
-    onCloseAction();
+    console.log("submitting");
+    if (checkChain()) {
+      write?.();
+      onClose();
+      onCloseAction?.();
+    }
   };
 
   const input = (
@@ -218,10 +248,10 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
 
           <Flex justify={"space-between"} direction={"column"}>
             <Controller
-              name={`fuxGiven`}
+              name={`coordinatorCommitment`}
               control={control}
               rules={{ required: true }}
-              key={`fuxGiven`}
+              key={`coordinatorCommitment`}
               render={({ field: { ref, ...restField } }) => (
                 <>
                   <FormHelperText
@@ -268,8 +298,8 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                       >
                         {" "}
                         {`${
-                          formState.fuxGiven
-                            ? fuxBalance - formState.fuxGiven
+                          formState.coordinatorCommitment
+                            ? fuxBalance - formState.coordinatorCommitment
                             : fuxBalance
                         } FUX to give`}
                       </StatNumber>
@@ -278,74 +308,136 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                 </>
               )}
             />
-            <Flex justify={"space-between"} direction={"column"}>
-              <Controller
-                name={`funding`}
-                control={control}
-                rules={{ required: false }}
-                key={`funding`}
-                render={({ field: { ref, ...restField } }) => (
-                  <>
-                    <FormHelperText
-                      textColor={"white"}
-                      w={"100%"}
-                      display={"flex"}
-                    >
-                      Fund workstream
-                      <Tooltip label="Funding will auto-split to contributors based on evaluation">
-                        <Box ml={2}>
-                          <RiInformationLine />
-                        </Box>
-                      </Tooltip>
-                    </FormHelperText>
-                    <InputGroup>
-                      <NumberInput
-                        precision={2}
-                        step={0.05}
-                        min={0}
-                        max={Number(balance?.formatted)}
-                        {...restField}
-                      >
-                        <NumberInputField
-                          ref={ref}
-                          name={restField.name}
-                          borderRightRadius={0}
-                        />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                      <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-                        <Text>{`${nativeToken}`}</Text>
-                      </InputRightAddon>
-                    </InputGroup>
-                    <StatGroup>
-                      <Stat>
-                        <StatNumber
-                          fontFamily="mono"
-                          fontSize="xs"
-                          fontWeight="100"
-                          color={"#8e4ec6"}
-                        >
-                          {!balanceLoading
-                            ? `${amountToSpend()} ${balance?.symbol} to fund`
-                            : "Loading"}
-                        </StatNumber>
-                      </Stat>
-                    </StatGroup>
-                  </>
-                )}
-              />
-            </Flex>
           </Flex>
         </Flex>
 
         <Divider my={"0.5em"} />
 
+        <Text>Add funding </Text>
+
+        <>
+          <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
+            Fund workstream
+            <Tooltip label="Funding will auto-split to contributors based on evaluation">
+              <Box ml={2}>
+                <RiInformationLine />
+              </Box>
+            </Tooltip>
+          </FormHelperText>
+
+          {funding.map((field, index) => (
+            <InputGroup key={field.id} marginTop={"1em"}>
+              <Grid
+                templateAreas={`"address address address"
+                                "name symbol amount"
+                              `}
+                gap={2}
+              >
+                <GridItem area={"address"}>
+                  <Input
+                    id="funding.address"
+                    defaultValue={`${field.address}`}
+                    isInvalid={!isAddress(formState.funding[index].address)}
+                    {...register(`funding.${index}.address`)}
+                  />
+                </GridItem>
+
+                <GridItem area={"name"}>
+                  <Text>NAME</Text>
+                </GridItem>
+
+                <GridItem area={"symbol"}>
+                  <Text>SYMBOL</Text>
+                </GridItem>
+
+                <GridItem area={"amount"}>
+                  <Controller
+                    name={`funding.${index}.amount`}
+                    control={control}
+                    rules={{ required: false }}
+                    key={`funding[${index}]amount`}
+                    render={({
+                      field: { ref, value, onChange, ...restField },
+                    }) => (
+                      <Flex direction={"row"}>
+                        <NumberInput
+                          precision={2}
+                          step={0.05}
+                          min={0}
+                          onChange={(valueString) => {
+                            onChange(
+                              valueString
+                                ? ethers.utils.parseEther(valueString)
+                                : "0"
+                            );
+                          }}
+                          value={ethers.utils.formatEther(value)}
+                          {...restField}
+                        >
+                          <NumberInputField
+                            ref={ref}
+                            name={restField.name}
+                            borderRightRadius={0}
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                        {index == funding.length - 1 ? (
+                          <>
+                            <Tooltip
+                              hasArrow
+                              label="Add another token"
+                              aria-label="Add another token"
+                            >
+                              <IconButton
+                                aria-label="Add another token"
+                                onClick={() => {
+                                  if (
+                                    !isAddress(formState.funding[index].address)
+                                  ) {
+                                    errorToast({
+                                      name: "Invalid address",
+                                      message: `${formState.funding[index].address} is not valid`,
+                                    });
+                                    return;
+                                  }
+                                  addFunding({ address: "" });
+                                }}
+                                icon={<Icon as={BsCashStack} />}
+                              />
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <>
+                            <Tooltip
+                              hasArrow
+                              label="Remove funding"
+                              aria-label="Remove funding"
+                            >
+                              <IconButton
+                                aria-label="remove funding"
+                                background={"red.500"}
+                                onClick={() => removeFunding(index)}
+                                icon={<Icon as={BsBackspaceFill} />}
+                              />
+                            </Tooltip>
+                          </>
+                        )}
+                      </Flex>
+                    )}
+                  />
+                </GridItem>
+              </Grid>
+            </InputGroup>
+          ))}
+          <Divider my={"0.5em"} />
+        </>
+
         <Text>Invite Contributors</Text>
 
-        {fields.map((field, index) => (
+        {contributors.map((field, index) => (
           <InputGroup key={field.id} marginTop={"1em"}>
             <Input
               id="contributors"
@@ -353,7 +445,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
               isInvalid={!isAddress(formState.contributors[index].address)}
               {...register(`contributors.${index}.address`)}
             />
-            {index == fields.length - 1 ? (
+            {index == contributors.length - 1 ? (
               <InputRightElement>
                 <Tooltip
                   hasArrow
@@ -370,7 +462,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                         });
                         return;
                       }
-                      append({ address: "" });
+                      addContributor({ address: "" });
                     }}
                     icon={<Icon as={BsFillPersonPlusFill} />}
                   />
@@ -386,7 +478,7 @@ const WorkstreamModal: React.FC<{ onCloseAction: () => void }> = ({
                   <IconButton
                     aria-label="remove contributor"
                     background={"red.500"}
-                    onClick={() => remove(index)}
+                    onClick={() => removeContributor(index)}
                     icon={<Icon as={BsFillPersonXFill} />}
                   />
                 </Tooltip>
