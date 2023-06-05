@@ -53,6 +53,7 @@ export function getOrCreateERC20Token(address: string): Token {
   token = new Token(id);
   token.symbol = erc20.symbol();
   token.name = erc20.name();
+  token.decimals = erc20.decimals();
 
   token.save();
 
@@ -71,12 +72,12 @@ export function getOrCreate1155Token(address: string, tokenID: BigInt): Token {
 
   token.tokenID = tokenID;
 
-  if (tokenID === FUX_TOKEN && address === FUX_ADDRESS.toHexString()) {
+  if (tokenID.equals(FUX_TOKEN)) {
     token.symbol = "FUX";
     token.name = "FUX";
   }
 
-  if (tokenID === VFUX_TOKEN && address === FUX_ADDRESS.toHexString()) {
+  if (tokenID.equals(VFUX_TOKEN)) {
     token.symbol = "vFUX";
     token.name = "vFUX";
   }

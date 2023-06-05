@@ -51,14 +51,14 @@ const FuxOverview: React.FC<{}> = ({}) => {
     ({ token }) =>
       token.id.toLowerCase() ===
         contractAddresses.fuxContractAddress.toLowerCase() &&
-      token.tokenID === 1
+      token.name === "FUX"
   )?.amount;
 
   const vFuxBalance = data?.user?.balances?.find(
     ({ token }) =>
       token.id.toLowerCase() ===
         contractAddresses.fuxContractAddress.toLowerCase() &&
-      token.tokenID === 0
+      token.name === "vFUX"
   )?.amount;
 
   return (
@@ -97,9 +97,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
                 p={3}
                 my={2}
                 w="10em"
-              >{`${
-                fuxBalance ? `${fuxBalance} /100` : "0"
-              } FUX`}</StatNumber>
+              >{`${fuxBalance ? `${fuxBalance} /100` : "0"} FUX`}</StatNumber>
               {fuxBalance ? (
                 <></>
               ) : (

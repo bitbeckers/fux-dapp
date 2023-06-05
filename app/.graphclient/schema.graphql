@@ -694,6 +694,7 @@ type Subscription {
 type Token {
   id: ID!
   tokenID: BigInt
+  decimals: BigInt
   name: String
   symbol: String
   userBalances(skip: Int = 0, first: Int = 100, orderBy: UserBalance_orderBy, orderDirection: OrderDirection, where: UserBalance_filter): [UserBalance!]
@@ -717,6 +718,14 @@ input Token_filter {
   tokenID_lte: BigInt
   tokenID_in: [BigInt!]
   tokenID_not_in: [BigInt!]
+  decimals: BigInt
+  decimals_not: BigInt
+  decimals_gt: BigInt
+  decimals_lt: BigInt
+  decimals_gte: BigInt
+  decimals_lte: BigInt
+  decimals_in: [BigInt!]
+  decimals_not_in: [BigInt!]
   name: String
   name_not: String
   name_gt: String
@@ -768,6 +777,7 @@ input Token_filter {
 enum Token_orderBy {
   id
   tokenID
+  decimals
   name
   symbol
   userBalances
@@ -862,6 +872,7 @@ enum UserBalance_orderBy {
   token
   token__id
   token__tokenID
+  token__decimals
   token__name
   token__symbol
   amount
@@ -994,6 +1005,7 @@ enum WorkstreamBalance_orderBy {
   token
   token__id
   token__tokenID
+  token__decimals
   token__name
   token__symbol
   amount
