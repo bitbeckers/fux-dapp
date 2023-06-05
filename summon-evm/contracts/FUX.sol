@@ -593,24 +593,26 @@ contract FUX is
         nonReentrant
     {
         Workstream storage workstream = workstreams[workstreamID];
-        if (!workstream.exists && workstream.state == WorkstreamState.Closed) revert NotAllowed();
+        if (!workstream.exists || workstream.state == WorkstreamState.Closed) revert NotAllowed();
 
         // Transfer the coordinator's commitment back to them
         uint256 coordinatorCommitment = userWorkstreamFux[msg.sender][workstreamID];
         userWorkstreamFux[msg.sender][workstreamID] = 0;
 
-        address[] memory _targets = new address[](1);
-        _targets[0] = msg.sender;
-        // Calculate the total amount of funds in the workstream by mapping over all the reward tokens
-        if (workstreamTokens[workstreamID].length > 0) {
-            uint256 len = workstreamTokens[workstreamID].length;
+        {
+            address[] memory _target = new address[](1);
+            _target[0] = msg.sender;
 
-            for (uint256 i = 0; i < len; i++) {
+            uint256[] memory _vFux = new uint256[](1);
+            _vFux[0] = 100;
+            // Calculate the total amount of funds in the workstream by mapping over all the reward tokens
+            // uint256 len = workstreamTokens[workstreamID].length;
+
+            for (uint256 i = 0; i < workstreamTokens[workstreamID].length; i++) {
                 address token = workstreamTokens[workstreamID][i];
                 uint256 funds = workstreamTokenBalances[workstreamID][token];
-
                 workstreamTokenBalances[workstreamID][token] = 0;
-                _payoutFunds(_targets, new uint256[](0), token, funds, workstreamID);
+                _payoutFunds(_target, _vFux, token, funds, workstreamID);
             }
         }
 

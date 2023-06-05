@@ -1,4 +1,5 @@
 import { Workstream, WorkstreamContributor } from "../../../.graphclient";
+import { useBlockTx } from "../../../hooks/blockTx";
 import { useCustomToasts } from "../../../hooks/toast";
 import { contractAddresses, contractABI } from "../../../utils/constants";
 import { Button, Text } from "@chakra-ui/react";
@@ -10,13 +11,14 @@ const StartEvaluation: React.FC<{
 }> = ({ workstream }) => {
   const toast = useCustomToasts();
   const { address: user } = useAccount();
+  const { checkChain } = useBlockTx();
 
   const _workstream = workstream as Workstream;
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
-    functionName: "mintVFux",
+    functionName: "setWorkstreamToEvaluation",
     args: [workstream.id],
   });
 
@@ -28,14 +30,16 @@ const StartEvaluation: React.FC<{
     onSuccess(data) {
       toast.success(
         "Starting Evaluation",
-        "Minting vFUX for contributor rewards"
+        "No new contributors can be added to this workstream"
       );
       console.log(data);
     },
   });
 
   const onSubmit = () => {
-    write?.();
+    if (checkChain()) {
+      write?.();
+    }
   };
 
   console.log("Workstream: ", workstream);

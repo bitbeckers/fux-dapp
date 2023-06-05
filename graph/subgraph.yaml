@@ -6,7 +6,7 @@ dataSources:
     name: FUX
     network: goerli
     source:
-      address: "0x942d23Fd9d6a510D05f43e3C10d0B3d552Cf964b"
+      address: "0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA"
       abi: FUX
       startBlock: 9126009
     mapping:

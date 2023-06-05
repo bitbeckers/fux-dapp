@@ -1,4 +1,5 @@
 import { Workstream, WorkstreamContributor } from "../../../.graphclient";
+import { useBlockTx } from "../../../hooks/blockTx";
 import { useCustomToasts } from "../../../hooks/toast";
 import {
   contractAddresses,
@@ -70,8 +71,8 @@ const FinalizeForm: React.FC<{
   workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
   const toast = useCustomToasts();
-  const { nativeToken } = useConstants();
   const { address } = useAccount();
+  const { checkChain } = useBlockTx();
 
   const _workstream = workstream as Workstream;
 
@@ -131,7 +132,9 @@ const FinalizeForm: React.FC<{
       return;
     }
 
-    write?.();
+    if (checkChain()) {
+      write?.();
+    }
   };
 
   const contributors = _workstream.contributors;

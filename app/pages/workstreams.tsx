@@ -1,7 +1,5 @@
 import {
-  BalancesByUserDocument,
   Workstream,
-  WorkstreamsByContributorDocument,
 } from "../.graphclient";
 import FuxOverview from "../components/FUX/FuxOverview";
 import WorkstreamModal from "../components/FUX/WorkstreamModal";
