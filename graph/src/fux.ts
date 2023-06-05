@@ -97,7 +97,7 @@ export function handleFuxWithdrawn(event: FuxWithdrawn): void {
 export function handleTransferSingle(event: TransferSingle): void {
   let token = getOrCreate1155Token(
     event.address.toHexString(),
-    event.params.id
+    event.params.id,
   );
 
   let recipient = getOrCreateUser(event.params.to.toHexString());

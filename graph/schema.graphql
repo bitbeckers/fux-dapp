@@ -52,6 +52,7 @@ type WorkstreamContributor @entity {
 type Token @entity {
   id: ID!
   tokenID: BigInt
+  decimals: BigInt
   name: String
   symbol: String
   userBalances: [UserBalance!] @derivedFrom(field: "token")
