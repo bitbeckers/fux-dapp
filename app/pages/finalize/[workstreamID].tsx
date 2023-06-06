@@ -7,6 +7,7 @@ import { FinalizeForm } from "../../components/FUX/FinalizeForm";
 import { StartEvaluation } from "../../components/FUX/StartEvaluation";
 import TokenBalance from "../../components/FUX/TokenBalance";
 import User from "../../components/FUX/User";
+import WorkstreamCard from "../../components/FUX/WorkstreamCard";
 import { useGraphClient } from "../../hooks/graphSdk";
 import { useConstants } from "../../utils/constants";
 import {
@@ -101,12 +102,13 @@ const Finalize: NextPage = () => {
               />
             ))}
           </Flex>
-          {_workstream.status === "Started" ? (
-            <StartEvaluation workstream={_workstream} />
-          ) : _workstream.status === "Evaluation" ? (
+          {_workstream.status !== "Closed" ? (
             <FinalizeForm workstream={_workstream} />
           ) : (
-            <Heading>Workstream not active</Heading>
+            <>
+              <Heading>Workstream not active</Heading>
+              <WorkstreamCard workstream={_workstream} />
+            </>
           )}
         </VStack>
       </VStack>

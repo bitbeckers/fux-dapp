@@ -1,4 +1,3 @@
-
 import { StartEvaluation } from "../../components/FUX/StartEvaluation";
 import User from "../../components/FUX/User";
 import ValueHeader from "../../components/FUX/ValueHeader";
@@ -11,13 +10,16 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Divider,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useAccount } from "wagmi";
 
 const Evaluate: NextPage = () => {
+  const { address } = useAccount();
   const router = useRouter();
   const { workstreamID } = router.query;
   const { sdk } = useGraphClient();
@@ -42,9 +44,7 @@ const Evaluate: NextPage = () => {
 
     if (!ws?.status) return <Text>Workstream status not found</Text>;
 
-    if (ws?.status && ws.status === "Started")
-      return <StartEvaluation workstream={ws} />;
-    if (ws?.status && ws.status === "Evaluation")
+    if (ws?.status && ws.status !== "Closed")
       return <ValueReviewForm workstream={ws} />;
     if (ws?.status && ws.status === "Closed")
       return <Text>Workstream is resolved</Text>;
@@ -81,6 +81,13 @@ const Evaluate: NextPage = () => {
                 }`}</StatNumber>
             </Stat>
           </HStack>
+          {_workstream.coordinator?.id.toLowerCase() ===
+            address?.toLowerCase() && (
+            <>
+              <StartEvaluation workstream={_workstream} />
+              <Divider />
+            </>
+          )}
           {form}
         </VStack>
       </VStack>
