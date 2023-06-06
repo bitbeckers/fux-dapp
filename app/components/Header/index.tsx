@@ -4,6 +4,7 @@ import {
   Box,
   Flex,
   Heading,
+  Image,
   Link,
   Spacer,
   Text,
@@ -28,9 +29,7 @@ const Header: React.FC<{}> = () => {
       <Flex gap={"1em"} direction={["column", "row"]}>
         <NextLink href="/" passHref>
           <Link>
-            <Heading fontSize="4xl" fontWeight="900" fontFamily="">
-              FUX
-            </Heading>
+            <Image src="fux_logo-dark.png" alt="fux logo" h="50px"/>
           </Link>
         </NextLink>
         {isSmallScreen ? undefined : (

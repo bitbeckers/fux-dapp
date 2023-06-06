@@ -108,7 +108,7 @@ const WorkstreamCard: React.FC<{
       </AccordionButton>
       <AccordionPanel pb={4}>
         <Flex direction="column" alignItems={"flex-start"} py={3}>
-          <Link href={'/workstream/' + _workstream?.id}>
+          <Link href={'/workstream/' + _workstream?.id} color="primary">
            View Workstream
           </Link>
           <Text>

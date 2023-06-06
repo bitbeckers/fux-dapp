@@ -3,6 +3,7 @@ import ConnectWallet from "../components/ConnectWallet";
 import {
   Box,
   Button,
+  Image,
   Flex,
   VStack,
   Text,
@@ -61,11 +62,11 @@ const Home: NextPage = () => {
       maxW="1200px"
       p={[6, null, 12]}
     >
-      <Flex direction={"column"} minW={"50%"}>
+      <Flex direction={"column"} minW={"40%"}>
         <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
           How many FUX do you give?
         </Text>
-        <Text fontSize={["lg", null, "xl"]} my={3}>
+        <Text fontSize={["lg", null, "xl"]} my={12}>
           Gain perspective on how to allocate your attention based on perceived
           value created, as evaluated by your peers.
         </Text>
@@ -82,7 +83,7 @@ const Home: NextPage = () => {
           connectWallet
         )}
       </Flex>
-      <Box minW={"50%"} pl={[0, null, 12]} pt={[12, null, 0]}>
+      <Box minW={"60%"} pl={[0, null, 12]} pt={[12, null, 0]}>
         <VStack gap={3} align="left">
           <Text textAlign="left" my={3} fontWeight="900">
             The FUX flywheel
@@ -95,8 +96,9 @@ const Home: NextPage = () => {
             3. GET vFUX: Peer to Peer evaluations of perceived value created.
           </Text>
           <Text>
-            <i>... Repeat</i>
+            <i>... Repeat to gain insight into <strong>value per attention</strong></i>
           </Text>
+          <Image src="fux_flywheel-white.png" alt="fux flywheel" />
         </VStack>
       </Box>
     </Flex>
