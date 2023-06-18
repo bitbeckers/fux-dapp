@@ -13,7 +13,7 @@ import {
   WorkstreamContested,
 } from "../generated/FUX/FUX";
 import { User, Workstream, Evaluation } from "../generated/schema";
-import { ZERO_ADDRESS } from "./utils/constants";
+import { FUX_ADDRESS, ZERO_ADDRESS } from "./utils/constants";
 import {
   getOrCreate1155Token,
   getOrCreateUserBalance,
@@ -167,7 +167,7 @@ export function handleTransferSingle(event: TransferSingle): void {
   let tokenBalanceSender = getOrCreateUserBalance(sender, token);
 
   // Deposit to contract
-  if (event.params.to == event.address) {
+  if (event.params.to == FUX_ADDRESS) {
     // Decrease the sender's token balance by the transferred amount and save the balance.
     tokenBalanceSender.amount = tokenBalanceSender.amount.minus(
       event.params.value
@@ -176,7 +176,7 @@ export function handleTransferSingle(event: TransferSingle): void {
   }
 
   // Returned from contract
-  if (event.params.from == event.address) {
+  if (event.params.from == FUX_ADDRESS) {
     // Increase the recipient's token balance by the transferred amount and save the balance.
     tokenBalanceRecipient.amount = tokenBalanceRecipient.amount.plus(
       event.params.value
@@ -185,7 +185,12 @@ export function handleTransferSingle(event: TransferSingle): void {
   }
 
   // Transfer between users
-  if (event.params.from != event.address && event.params.to != event.address) {
+  if (
+    event.params.from != FUX_ADDRESS &&
+    event.params.to != FUX_ADDRESS &&
+    event.params.from != ZERO_ADDRESS &&
+    event.params.to != ZERO_ADDRESS
+  ) {
     // Decrease the sender's token balance by the transferred amount and save the balance.
     tokenBalanceSender.amount = tokenBalanceSender.amount.minus(
       event.params.value

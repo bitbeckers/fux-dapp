@@ -22,7 +22,7 @@ const StartEvaluation: React.FC<{
     args: [workstream.id],
   });
 
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+  const { isLoading, write } = useContractWrite({
     ...config,
     onError(e) {
       toast.error(e);
@@ -41,8 +41,6 @@ const StartEvaluation: React.FC<{
       write?.();
     }
   };
-
-  console.log("Workstream: ", workstream);
 
   const contributors = _workstream.contributors;
 

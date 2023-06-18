@@ -1,20 +1,20 @@
 import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
 import { useGraphClient } from "../../hooks/useGraphClient";
-import {
-  contractABI,
-  contractAddresses,
-  useConstants,
-} from "../../utils/constants";
+import { contractABI, contractAddresses } from "../../utils/constants";
+import { ContractAddressInput } from "../FormComponents/ContractAddressInput";
+import { ControlledNumberInput } from "../FormComponents/ControlledNumberInput";
+import { DateInput } from "../FormComponents/DateInput";
+import { TextInput } from "../FormComponents/TextInput";
+import { TokenAmountInput } from "../FormComponents/TokenAmountInput";
+import { UserAddressInput } from "../FormComponents/UserAddressInput";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   ButtonGroup,
   FormControl,
-  Input,
   InputGroup,
-  InputRightAddon,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -25,11 +25,6 @@ import {
   Tooltip,
   Text,
   useDisclosure,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   FormHelperText,
   Flex,
   Stat,
@@ -41,27 +36,33 @@ import {
   Divider,
   Grid,
   GridItem,
+  Switch,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
-import { isAddress } from "ethers/lib/utils";
 import { DateTime } from "luxon";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import {
-  BsCashStack,
-  BsFillPersonPlusFill,
-  BsFillPersonXFill,
-  BsBackspaceFill,
-} from "react-icons/bs";
+import { useState, useEffect } from "react";
+import { useFieldArray, useForm, FormProvider } from "react-hook-form";
+import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
 import { RiInformationLine } from "react-icons/ri";
-import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
+import {
+  useAccount,
+  usePrepareContractWrite,
+  useContractWrite,
+  useContractRead,
+} from "wagmi";
 
 type FormData = {
   name: string;
   duration: string;
   coordinatorCommitment: number;
   contributors: { address: string }[];
-  funding: { address: string; amount: BigNumberish; symbol?: string }[];
+  funding: {
+    address: string;
+    amount: BigNumberish;
+    symbol?: string;
+    decimals?: BigNumberish;
+  };
   metadataUri: string;
 };
 
@@ -72,24 +73,67 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   const { error: errorToast, success: successToast } = useCustomToasts();
   const { sdk } = useGraphClient();
   const { checkChain } = useBlockTx();
+  const [erc20Token, setErc20Token] = useState<boolean>(false);
+  const [erc20Info, setErc20Info] = useState<{
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: BigNumberish;
+  }>({ address: "", name: "", symbol: "", decimals: 0 });
+
+  const { data: name } = useContractRead({
+    address: erc20Info.address as `0x${string}`,
+    abi: contractABI.erc20,
+    functionName: "name",
+  });
+
+  const { data: symbol } = useContractRead({
+    address: erc20Info.address as `0x${string}`,
+    abi: contractABI.erc20,
+    functionName: "symbol",
+  });
+
+  const { data: decimals } = useContractRead({
+    address: erc20Info.address as `0x${string}`,
+    abi: contractABI.erc20,
+    functionName: "decimals",
+  });
+
+  useEffect(() => {
+    if (name && symbol && decimals) {
+      setErc20Info({
+        ...erc20Info,
+        name: name as string,
+        symbol: symbol as string,
+        decimals: decimals as BigNumberish,
+      });
+    }
+  }, [name, symbol, decimals]);
+
+  const formMethods = useForm<FormData>({
+    defaultValues: {
+      name: "",
+      duration: DateTime.now().plus({ day: 1 }).toISODate() || "",
+      coordinatorCommitment: undefined,
+      contributors: [{ address: "" }],
+      funding: {
+        address: "",
+        amount: 0,
+        decimals: 18,
+      },
+      metadataUri: "",
+    },
+  });
 
   const {
     handleSubmit,
     watch,
-    register,
     reset,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    defaultValues: {
-      name: "",
-      duration: DateTime.now().plus({ day: 1 }).toISODate() || "",
-      coordinatorCommitment: 0,
-      contributors: [{ address: "" }],
-      funding: [{ address: ethers.constants.AddressZero, amount: 0 }],
-      metadataUri: "",
-    },
-  });
+  } = formMethods;
+
+  console.warn(errors);
 
   const {
     fields: contributors,
@@ -100,29 +144,14 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     name: "contributors",
   });
 
-  const {
-    fields: funding,
-    append: addFunding,
-    remove: removeFunding,
-  } = useFieldArray<FormData>({
-    control,
-    name: "funding",
-  });
-
   const formState = watch();
   console.log(formState);
 
   const getNativeTokenAmount = () => {
-    if (!formState.funding || formState.funding.length === 0)
-      return BigNumber.from(0);
-
-    let nativeToken = formState.funding?.filter(
-      (token) => token.address === ethers.constants.AddressZero
-    );
-
-    if (!nativeToken || nativeToken.length === 0) return BigNumber.from(0);
-
-    return BigNumber.from(nativeToken[0].amount.toString());
+    if (!erc20Token) {
+      return BigNumber.from(formState.funding.amount);
+    }
+    return undefined;
   };
 
   const { config } = usePrepareContractWrite({
@@ -134,16 +163,13 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
       [
         ...formState.contributors
           .map((entry) => entry.address)
-          .filter(
-            (address) =>
-              isAddress(address) && address != ethers.constants.AddressZero
-          ),
+          .filter((address) => address != ethers.constants.AddressZero),
         address,
       ],
       formState.coordinatorCommitment,
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
-      [...formState.funding.map((token) => token.address)],
-      [...formState.funding.map((token) => BigNumber.from(token.amount))],
+      erc20Token ? [formState.funding.address] : [],
+      erc20Token ? [formState.funding.amount] : [],
       formState.metadataUri,
     ],
     overrides: {
@@ -151,12 +177,14 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     },
   });
 
-  console.log(getNativeTokenAmount().toString());
-
   const { data: tx, write } = useContractWrite({
     ...config,
     onError(e) {
       errorToast(e);
+    },
+    onSettled(data, error) {
+      onClose();
+      onCloseAction?.();
     },
     onSuccess(tx) {
       successToast(`Created workstream`, "");
@@ -166,7 +194,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { isLoading, data } = useQuery({
+  const { data } = useQuery({
     queryKey: ["userByAddress", address],
     queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() }),
     enabled: !!address,
@@ -177,326 +205,196 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     (balance) => balance.token.name === "FUX"
   )?.amount;
 
-  console.log(data);
-  console.log(address);
-
   const onSubmit = () => {
     console.log("submitting");
     if (checkChain()) {
+      console.log("writing");
+
       write?.();
-      onClose();
-      onCloseAction?.();
     }
   };
 
+  const handleNativeTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setErc20Token(!erc20Token);
+  };
+
+  const handleAddressInput = (e: { target: any; type?: any }) => {
+    setErc20Info({ ...erc20Info, address: e.target.value });
+  };
+
+  const FormButtons = ({ isSubmitting }: { isSubmitting: boolean }) => {
+    return (
+      <>
+        <ButtonGroup marginTop={"1em"} justifyContent="space-around" w="100%">
+          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
+            Reset
+          </Button>
+          <Spacer />
+          <Button isLoading={isSubmitting} type="submit">
+            Create Workstream
+          </Button>
+        </ButtonGroup>
+      </>
+    );
+  };
   const input = (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl>
-        <FormHelperText
-          textColor={"white"}
-          mb={"1em"}
-          display={"flex"}
-          alignItems={"center"}
-        >
-          Name
-          <Tooltip label="Name your workstream">
-            <Box ml={2}>
-              <RiInformationLine />
-            </Box>
-          </Tooltip>
-        </FormHelperText>
+    <FormProvider {...formMethods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormControl>
+          <TextInput
+            fieldName={"name"}
+            label={"Name"}
+            placeholder={"Name your workstream"}
+            tooltipText={"Name your workstream"}
+            config={{ required: "Name is required" }}
+          />
 
-        <Input
-          id="name"
-          mb={"1em"}
-          placeholder="Name"
-          {...register("name", {
-            required: "This is required",
-            minLength: { value: 4, message: "Minimum length should be 4" },
-          })}
-        />
-
-        <Flex align={"flex-start"} gap={"1em"}>
-          <Flex justify={"space-between"} direction={"column"}>
-            <FormHelperText
-              textColor={"white"}
-              w={"100%"}
-              display={"flex"}
-              mb={"1em"}
-            >
-              Deadline
-              <Tooltip label="Just an estimated time of delivery as reference for contributors. It has no other effect, such as triggering evaluations.">
-                <Box ml={2}>
-                  <RiInformationLine />
-                </Box>
-              </Tooltip>
-            </FormHelperText>
-
-            <Input
-              id="duration"
-              type="date"
-              placeholder="duration"
-              {...register("duration", {
-                required: "This is required",
-                minLength: {
-                  value: 1,
-                  message: "Minimum length should be 1",
-                },
-              })}
+          <Flex align={"flex-start"} gap={"1em"}>
+            <DateInput
+              fieldName={"duration"}
+              label={"Deadline"}
+              toolTipText={
+                "Just an estimated time of delivery as reference for contributors. It has no other effect, such as triggering evaluations."
+              }
             />
-          </Flex>
 
-          <Flex justify={"space-between"} direction={"column"}>
-            <Controller
-              name={`coordinatorCommitment`}
-              control={control}
-              rules={{ required: true }}
-              key={`coordinatorCommitment`}
-              render={({ field: { ref, ...restField } }) => (
-                <>
-                  <FormHelperText
-                    textColor={"white"}
-                    w={"100%"}
-                    display={"flex"}
+            <Flex justify={"space-between"} direction={"column"}>
+              {" "}
+              <ControlledNumberInput
+                fieldName="coordinatorCommitment"
+                helperText="How many FUX do you give?"
+                tooltipText="Stake some FUX if you'll also be contributin"
+                max={fuxBalance}
+                units="FUX"
+                step={1}
+                precision={0}
+                min={0}
+                config={{ required: "Your commitment is required", min: 0 }}
+              />
+              <StatGroup>
+                <Stat>
+                  <StatNumber
+                    fontFamily="mono"
+                    fontSize="xs"
+                    fontWeight="100"
+                    color={"#8e4ec6"}
                   >
-                    How many FUX do you give?
-                    <Tooltip label="Stake some FUX if you'll also be contributing">
-                      <Box ml={2}>
-                        <RiInformationLine />
-                      </Box>
-                    </Tooltip>
-                  </FormHelperText>
-                  <InputGroup>
-                    <NumberInput
-                      precision={0}
-                      step={1}
-                      min={0}
-                      max={fuxBalance}
-                      {...restField}
-                    >
-                      <NumberInputField
-                        ref={ref}
-                        name={restField.name}
-                        borderRightRadius={0}
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                    <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-                      <Text>FUX</Text>
-                    </InputRightAddon>
-                  </InputGroup>
-                  <StatGroup>
-                    <Stat>
-                      <StatNumber
-                        fontFamily="mono"
-                        fontSize="xs"
-                        fontWeight="100"
-                        color={"#8e4ec6"}
-                      >
-                        {" "}
-                        {`${
-                          formState.coordinatorCommitment
-                            ? fuxBalance - formState.coordinatorCommitment
-                            : fuxBalance
-                        } FUX to give`}
-                      </StatNumber>
-                    </Stat>
-                  </StatGroup>
-                </>
-              )}
-            />
+                    {" "}
+                    {`${
+                      formState.coordinatorCommitment
+                        ? fuxBalance - formState.coordinatorCommitment
+                        : fuxBalance
+                    } FUX to give`}
+                  </StatNumber>
+                </Stat>
+              </StatGroup>
+            </Flex>
           </Flex>
-        </Flex>
 
-        <Divider my={"0.5em"} />
+          <Divider my={"0.5em"} />
 
-        <Text>Add funding </Text>
-
-        <>
-          <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
-            Fund workstream
+          <Flex direction={"row"} gap={2}>
+            <Text>Add funding </Text>
             <Tooltip label="Funding will auto-split to contributors based on evaluation">
               <Box ml={2}>
                 <RiInformationLine />
               </Box>
             </Tooltip>
-          </FormHelperText>
+          </Flex>
 
-          {funding.map((field, index) => (
-            <InputGroup key={field.id} marginTop={"1em"}>
-              <Grid
-                templateAreas={`"address address address"
-                                "name symbol amount"
+          <Flex dir={"row"}>
+            <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
+              <Switch
+                id="native-token"
+                pr={"1em"}
+                isChecked={erc20Token}
+                onChange={handleNativeTokenChange}
+              />
+              Native token or ERC20?
+            </FormHelperText>
+          </Flex>
+
+          <InputGroup key={"funding"} marginTop={"1em"}>
+            <Grid
+              templateAreas={`"address address address"
+                                "input input input"
                               `}
-                gap={2}
-              >
-                <GridItem area={"address"}>
-                  <Input
-                    id="funding.address"
-                    defaultValue={`${field.address}`}
-                    isInvalid={!isAddress(formState.funding[index].address)}
-                    {...register(`funding.${index}.address`)}
+              gap={4}
+            >
+              <GridItem area={"address"}>
+                {erc20Token ? (
+                  <ContractAddressInput
+                    onChange={handleAddressInput}
+                    name={"funding.address"}
+                    placeholder="Contract address 0x...."
                   />
-                </GridItem>
+                ) : undefined}
+              </GridItem>
 
-                <GridItem area={"name"}>
-                  <Text>NAME</Text>
-                </GridItem>
-
-                <GridItem area={"symbol"}>
-                  <Text>SYMBOL</Text>
-                </GridItem>
-
-                <GridItem area={"amount"}>
-                  <Controller
-                    name={`funding.${index}.amount`}
-                    control={control}
-                    rules={{ required: false }}
-                    key={`funding[${index}]amount`}
-                    render={({
-                      field: { ref, value, onChange, ...restField },
-                    }) => (
-                      <Flex direction={"row"}>
-                        <NumberInput
-                          precision={2}
-                          step={0.05}
-                          min={0}
-                          onChange={(valueString) => {
-                            onChange(
-                              valueString
-                                ? ethers.utils.parseEther(valueString)
-                                : "0"
-                            );
-                          }}
-                          value={ethers.utils.formatEther(value)}
-                          {...restField}
-                        >
-                          <NumberInputField
-                            ref={ref}
-                            name={restField.name}
-                            borderRightRadius={0}
-                          />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                        {index == funding.length - 1 ? (
-                          <>
-                            <Tooltip
-                              hasArrow
-                              label="Add another token"
-                              aria-label="Add another token"
-                            >
-                              <IconButton
-                                aria-label="Add another token"
-                                onClick={() => {
-                                  if (
-                                    !isAddress(formState.funding[index].address)
-                                  ) {
-                                    errorToast({
-                                      name: "Invalid address",
-                                      message: `${formState.funding[index].address} is not valid`,
-                                    });
-                                    return;
-                                  }
-                                  addFunding({ address: "" });
-                                }}
-                                icon={<Icon as={BsCashStack} />}
-                              />
-                            </Tooltip>
-                          </>
-                        ) : (
-                          <>
-                            <Tooltip
-                              hasArrow
-                              label="Remove funding"
-                              aria-label="Remove funding"
-                            >
-                              <IconButton
-                                aria-label="remove funding"
-                                background={"red.500"}
-                                onClick={() => removeFunding(index)}
-                                icon={<Icon as={BsBackspaceFill} />}
-                              />
-                            </Tooltip>
-                          </>
-                        )}
-                      </Flex>
-                    )}
+              <GridItem area={"input"}>
+                {erc20Token ? (
+                  <TokenAmountInput
+                    fieldName="funding.amount"
+                    native={false}
+                    name={name as string}
+                    decimals={decimals as BigNumberish}
+                    symbol={symbol as string}
                   />
-                </GridItem>
-              </Grid>
+                ) : (
+                  <TokenAmountInput fieldName="funding.amount" native={true} />
+                )}
+              </GridItem>
+            </Grid>
+          </InputGroup>
+
+          <Divider my={"0.5em"} />
+
+          <Text>Invite Contributors</Text>
+
+          {contributors.map((field, index) => (
+            <InputGroup key={field.id} marginTop={"1em"}>
+              <UserAddressInput
+                id="contributors"
+                fieldName={`contributors.${index}.address`}
+              />
+              {index == contributors.length - 1 ? (
+                <InputRightElement>
+                  <Tooltip
+                    hasArrow
+                    label="Add Another Contributor"
+                    aria-label="Add Another Contributor"
+                  >
+                    <IconButton
+                      aria-label="Add another contributor"
+                      onClick={() => {
+                        addContributor({ address: "" });
+                      }}
+                      icon={<Icon as={BsFillPersonPlusFill} />}
+                    />
+                  </Tooltip>
+                </InputRightElement>
+              ) : (
+                <InputRightElement>
+                  <Tooltip
+                    hasArrow
+                    label="Remove Contributor"
+                    aria-label="Remove Contributor"
+                  >
+                    <IconButton
+                      aria-label="remove contributor"
+                      background={"red.500"}
+                      onClick={() => removeContributor(index)}
+                      icon={<Icon as={BsFillPersonXFill} />}
+                    />
+                  </Tooltip>
+                </InputRightElement>
+              )}
             </InputGroup>
           ))}
-          <Divider my={"0.5em"} />
-        </>
-
-        <Text>Invite Contributors</Text>
-
-        {contributors.map((field, index) => (
-          <InputGroup key={field.id} marginTop={"1em"}>
-            <Input
-              id="contributors"
-              defaultValue={`${field.address}`}
-              isInvalid={!isAddress(formState.contributors[index].address)}
-              {...register(`contributors.${index}.address`)}
-            />
-            {index == contributors.length - 1 ? (
-              <InputRightElement>
-                <Tooltip
-                  hasArrow
-                  label="Add Another Contributor"
-                  aria-label="Add Another Contributor"
-                >
-                  <IconButton
-                    aria-label="Add another contributor"
-                    onClick={() => {
-                      if (!isAddress(formState.contributors[index].address)) {
-                        errorToast({
-                          name: "Invalid address",
-                          message: `${formState.contributors[index].address} is not valid`,
-                        });
-                        return;
-                      }
-                      addContributor({ address: "" });
-                    }}
-                    icon={<Icon as={BsFillPersonPlusFill} />}
-                  />
-                </Tooltip>
-              </InputRightElement>
-            ) : (
-              <InputRightElement>
-                <Tooltip
-                  hasArrow
-                  label="Remove Contributor"
-                  aria-label="Remove Contributor"
-                >
-                  <IconButton
-                    aria-label="remove contributor"
-                    background={"red.500"}
-                    onClick={() => removeContributor(index)}
-                    icon={<Icon as={BsFillPersonXFill} />}
-                  />
-                </Tooltip>
-              </InputRightElement>
-            )}
-          </InputGroup>
-        ))}
-      </FormControl>
-      <ButtonGroup marginTop={"1em"} justifyContent="space-around" w="100%">
-        <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-          Reset
-        </Button>
-        <Spacer />
-        <Button isLoading={isSubmitting} type="submit">
-          Create Workstream
-        </Button>
-      </ButtonGroup>
-    </form>
+        </FormControl>
+        <FormButtons isSubmitting={isSubmitting} />
+      </form>
+    </FormProvider>
   );
 
   return (

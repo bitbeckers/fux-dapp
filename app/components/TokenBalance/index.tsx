@@ -55,7 +55,7 @@ const TokenBalance: React.FC<{
   };
 
   return (
-    <Flex direction={direction} align="center">
+    <Flex direction={direction} align="center" gap={2}>
       <Flex direction={"row"} gap={2}>
         <Button variant={"link"} size={size} onClick={() => handleClick()}>
           <Text mr={2}>{name ? name : `${address?.slice(0, 6)}...`}</Text>{" "}

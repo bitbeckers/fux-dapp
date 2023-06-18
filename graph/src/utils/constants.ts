@@ -5,7 +5,7 @@ export const ZERO_ADDRESS = Address.fromString(
 );
 
 export const FUX_ADDRESS = Address.fromString(
-  "0x942d23Fd9d6a510D05f43e3C10d0B3d552Cf964b"
+  "0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA"
 );
 
 export const FUX_TOKEN = BigInt.fromI32(1);

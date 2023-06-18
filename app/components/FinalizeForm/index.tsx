@@ -4,7 +4,9 @@ import { useCustomToasts } from "../../hooks/useCustomToasts";
 import {
   contractAddresses,
   contractABI,
+  useConstants,
 } from "../../utils/constants";
+import { calculateRelative, parseEvaluations } from "../../utils/helpers";
 import { CloseButton } from "../CloseButton";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
@@ -18,53 +20,10 @@ import {
   Flex,
   ButtonGroup,
 } from "@chakra-ui/react";
-import { BigNumberish } from "ethers";
-import _, { groupBy, mapValues, meanBy } from "lodash";
+import { BigNumber, ethers } from "ethers";
+import _ from "lodash";
 import React, { Fragment } from "react";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
-
-type Ratings = {
-  [address: string]: BigNumberish;
-};
-
-const parseEvaluations = (workstream: Workstream) => {
-  const currentEvaluations = groupBy(workstream?.evaluations, "contributor.id");
-
-  return mapValues(currentEvaluations, (evaluation) =>
-    meanBy(evaluation, (e) => Number(e.rating))
-  ) as Ratings;
-};
-
-const roundToTarget = (ratings: Ratings, target: number) => {
-  let l = Object.values(ratings) as number[];
-  let off = target - _.reduce(l, (acc, x) => acc + Math.round(x), 0);
-  let flat = Object.entries(ratings);
-
-  let rounded = _.chain(flat)
-    .sortBy((flat) => Math.round(Number(flat[1])) - Number(flat[1]))
-    .map((x, i) => {
-      let newX = x;
-      newX[1] =
-        Math.round(Number(x[1])) +
-        (off > i ? 1 : 0) -
-        (i >= l.length + off ? 1 : 0);
-      return newX;
-    })
-    .value();
-
-  return Object.fromEntries(rounded) as Ratings;
-};
-
-const calculateRelative = (data: Ratings) => {
-  const total = _.sum(Object.values(data));
-
-  const relative = mapValues(
-    data,
-    (value) => _.divide(Number(value), Number(total)) * 100
-  );
-
-  return roundToTarget(relative, 100);
-};
 
 const FinalizeForm: React.FC<{
   workstream: Partial<WorkstreamContributor>;
@@ -72,6 +31,7 @@ const FinalizeForm: React.FC<{
   const toast = useCustomToasts();
   const { address } = useAccount();
   const { checkChain } = useBlockTx();
+  const { nativeToken } = useConstants();
 
   const _workstream = workstream as Workstream;
 
@@ -84,8 +44,8 @@ const FinalizeForm: React.FC<{
     functionName: "finalizeWorkstream",
     args: [
       workstream.id,
-      Object.keys(relative) as `0x${string}`[],
-      Object.values(relative),
+      Object.keys(relative || {}) as `0x${string}`[],
+      Object.values(relative || {}),
     ],
   });
 
@@ -167,7 +127,7 @@ const FinalizeForm: React.FC<{
                       displayAvatar={true}
                     />
                     {coordinator?.toLowerCase() === address.toLowerCase() ? (
-                      <StarIcon ml={"1em"} />
+                      <StarIcon ml={"1em"} color={"yellow"} />
                     ) : undefined}
                   </Flex>
                 </GridItem>
@@ -190,7 +150,25 @@ const FinalizeForm: React.FC<{
                   justifyContent="end"
                   alignContent="center"
                 >
-                  <Text>Token Values</Text>
+                  {_workstream?.funding && _workstream.funding.length > 0 ? (
+                    <Text fontFamily="mono" pr={"1em"}>
+                      {`${
+                        relative[address]
+                          ? ethers.utils.formatUnits(
+                              BigNumber.from(_workstream.funding[0].amount).mul(
+                                BigNumber.from(relative[address]).div(100)
+                              ),
+                              _workstream.funding[0].token.decimals
+                            )
+                          : "0"
+                      } ${
+                        _workstream.funding[0].token.symbol?.toLowerCase() ===
+                        "native"
+                          ? nativeToken.symbol
+                          : _workstream.funding[0].token.symbol
+                      }`}
+                    </Text>
+                  ) : undefined}
                 </GridItem>
               </Fragment>
             );

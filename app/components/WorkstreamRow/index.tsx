@@ -49,11 +49,11 @@ const WorkstreamRow: React.FC<{
         >
           <Button variant={"link"}>
             <Flex direction="row">
-              <Text mr={2} noOfLines={1}>
+              <Text mr={2} noOfLines={1} color={"white"}>
                 {workstream.name}
               </Text>
               {coordinator?.toLowerCase() === user?.toLowerCase() ? (
-                <StarIcon />
+                <StarIcon color={"yellow"} />
               ) : undefined}
             </Flex>
           </Button>
@@ -68,7 +68,14 @@ const WorkstreamRow: React.FC<{
       >
         {workstream?.funding && workstream.funding.length > 0 ? (
           <Text fontFamily="mono" pr={"1em"}>
-            🍑
+            {`${ethers.utils.formatUnits(
+              workstream.funding[0].amount,
+              workstream.funding[0].token.decimals
+            )} ${
+              workstream.funding[0].token.symbol?.toLowerCase() === "native"
+                ? nativeToken.symbol
+                : workstream.funding[0].token.symbol
+            }`}
           </Text>
         ) : undefined}
       </GridItem>

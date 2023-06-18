@@ -3,7 +3,6 @@ import {
 } from "../../.graphclient";
 import CommitFuxModal from "../../components/CommitFuxModal";
 import { ContributorOverview } from "../../components/ContributorOverview";
-import { contractAddresses, useConstants } from "../../utils/constants";
 import {
   Box,
   VStack,
@@ -28,6 +27,7 @@ import { useAccount } from "wagmi";
 import { CloseButton } from "../../components/CloseButton";
 import TokenBalance from "../../components/TokenBalance";
 import { useGraphClient } from "../../hooks/useGraphClient";
+import { calculateRelative, parseEvaluations } from "../../utils/helpers";
 
 const Workstream: NextPage = () => {
   const router = useRouter();
@@ -35,13 +35,13 @@ const Workstream: NextPage = () => {
   const { workstreamID } = router.query;
   const { sdk } = useGraphClient();
 
-  const {isLoading: workstreamLoading, data: workstream, error: workstreamError} = useQuery({
+  const {isLoading: workstreamLoading, data: workstream} = useQuery({
     queryKey: ["workstream", workstreamID],
     queryFn: () => sdk.WorkstreamByID({ id: workstreamID as string }),
     refetchInterval: 5000,
   });
 
-  const {isLoading: userBalancesLoading, data: userBalances, error: userBalancesError} = useQuery({
+  const {data: userBalances} = useQuery({
     queryKey: ["userBalances", user?.toLowerCase()],
     queryFn: () => sdk.BalancesByUser({ address: user?.toLowerCase() }),
     refetchInterval: 5000,
@@ -75,7 +75,7 @@ const Workstream: NextPage = () => {
   }
 
 
-  const fuxAvailable = userBalances?.userBalances.find((balance) => balance.token.id.toLowerCase() === contractAddresses.fuxContractAddress.toLowerCase())?.amount
+  const fuxAvailable = userBalances?.userBalances.find((balance) => balance.token?.name === "FUX")?.amount
 
   if (!fuxAvailable) {
     fuxGiven = BigNumber.from("0");
@@ -100,7 +100,7 @@ const Workstream: NextPage = () => {
             </Text>
         </Flex>
 
-        <Flex direction={['column', null, 'row']} align={['center', null, 'center']} flexWrap="wrap">
+        <Flex direction={'column'} align={['center', null, 'center']} flexWrap="wrap" gap={2}>
           <Text>Workstream funds available</Text>
           {_workstream.funding?.map(funding => <TokenBalance key={funding.token.id} token={funding.token} amount={funding.amount} />)}
         </Flex>
