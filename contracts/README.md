@@ -1,17 +1,18 @@
-# Solidity Template
+# FUX Contracts
 
-My favorite setup for writing Solidity smart contracts.
+The FUX Contracts package contains the smart contracts that power the FUX decentralized application (Dapp) on the Ethereum blockchain. The contracts are written in Solidity and use the OpenZeppelin library for secure and tested smart contract development.
 
-- [Hardhat](https://github.com/nomiclabs/hardhat): compile and run the smart contracts on a local development network
-- [TypeChain](https://github.com/ethereum-ts/TypeChain): generate TypeScript types for smart contracts
-- [Ethers](https://github.com/ethers-io/ethers.js/): renowned Ethereum library and wallet implementation
-- [Waffle](https://github.com/EthWorks/Waffle): tooling for writing comprehensive smart contract tests
-- [Solhint](https://github.com/protofire/solhint): linter
-- [Solcover](https://github.com/sc-forks/solidity-coverage): code coverage
-- [Prettier Plugin Solidity](https://github.com/prettier-solidity/prettier-plugin-solidity): code formatter
+## FUX.sol
 
-This is a GitHub template, which means you can reuse it as many times as you want. You can do that by clicking the "Use this
-template" button at the top of the page.
+FUX.sol is the main contract that defines the FUX token and the workstream system. The contract inherits from several OpenZeppelin contracts, including `ERC1155Upgradeable`, `AccessControlUpgradeable`, `ERC1155URIStorageUpgradeable`, `ERC1155ReceiverUpgradeable`, `ReentrancyGuard`, `Initializable`, and `UUPSUpgradeable`.
+
+## Deployment
+
+FUX contracts and Graph are only on Goerli during the development phase.
+
+### Goerli
+
+Contract: [0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA](https://goerli.etherscan.io/address/0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA)
 
 ## Usage
 

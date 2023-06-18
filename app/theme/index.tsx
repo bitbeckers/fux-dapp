@@ -13,7 +13,7 @@ export const theme = extendTheme({
     mono: `'bdr-mono', monospace`,
   },
   colors: {
-    primary: "#8E4EC6",
+    primary: "white",
   },
   styles: {
     global: {

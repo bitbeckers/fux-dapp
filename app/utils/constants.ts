@@ -15,6 +15,10 @@ export const checkEnvVarConfig = () => {
       name: "NEXT_PUBLIC_ALCHEMY_API_KEY",
       value: process.env["NEXT_PUBLIC_ALCHEMY_API_KEY"],
     },
+    {
+      name: "NEXT_PUBLIC_WC_PROJECT_ID",
+      value: process.env["NEXT_PUBLIC_WC_PROJECT_ID"],
+    },
   ];
 
   requiredEnvVarNames.forEach((envVarConfig) => {

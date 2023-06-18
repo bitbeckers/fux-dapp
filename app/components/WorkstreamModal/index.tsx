@@ -1,6 +1,6 @@
 import { useBlockTx } from "../../hooks/useBlockTx";
-import { useGraphClient } from "../../hooks/useGraphClient";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
+import { useGraphClient } from "../../hooks/useGraphClient";
 import {
   contractABI,
   contractAddresses,
@@ -83,7 +83,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   } = useForm<FormData>({
     defaultValues: {
       name: "",
-      duration: DateTime.now().plus({ day: 1 }).toISODate(),
+      duration: DateTime.now().plus({ day: 1 }).toISODate() || "",
       coordinatorCommitment: 0,
       contributors: [{ address: "" }],
       funding: [{ address: ethers.constants.AddressZero, amount: 0 }],

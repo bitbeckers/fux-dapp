@@ -8,6 +8,7 @@ import "hardhat-contract-sizer";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
+import "solidity-docgen";
 
 import "./tasks";
 import { accounts, nodeUrl } from "./utils/network";
@@ -60,6 +61,7 @@ const config: HardhatUserConfig = {
     strict: true,
   },
   defaultNetwork: "hardhat",
+  docgen: {outputDir: "../docs/docs/Solidity"},
   etherscan: {
     apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY || "",
@@ -84,7 +86,7 @@ const config: HardhatUserConfig = {
       chainId: chainIds.hardhat,
       forking: {
         url: nodeUrl("goerli"),
-      }
+      },
     },
     mainnet: getChainConfig("mainnet"),
     goerli: getChainConfig("goerli"),

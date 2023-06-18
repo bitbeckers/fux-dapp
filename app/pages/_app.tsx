@@ -4,9 +4,10 @@ import { theme } from "../theme";
 import "./index.css";
 import { ChakraProvider, Flex, Spacer, VStack } from "@chakra-ui/react";
 import {
-  connectorsForWallets,
   darkTheme,
   RainbowKitProvider,
+  connectorsForWallets,
+  getDefaultWallets,
 } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import {
@@ -17,32 +18,30 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
-import { createClient, configureChains, WagmiConfig, mainnet } from "wagmi";
-import { goerli } from "wagmi/chains";
+import { useEffect } from "react";
+import { createClient, configureChains, WagmiConfig } from "wagmi";
+import { goerli, mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
+const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
 
 export const { chains, provider } = configureChains(
   [goerli, mainnet],
   [alchemyProvider({ apiKey: ALCHEMY_API_KEY! }), publicProvider()]
 );
 
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      metaMaskWallet({ chains }),
-      walletConnectWallet({ chains }),
-      injectedWallet({ chains }),
-      rainbowWallet({ chains }),
-    ],
-  },
-]);
+const { wallets } = getDefaultWallets({
+  appName: "FUX Dapp",
+  projectId: WC_PROJECT_ID!,
+  chains,
+});
+
+const connectors = connectorsForWallets([...wallets]);
 
 export const wagmiClient = createClient({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   provider,
 });
@@ -50,6 +49,9 @@ export const wagmiClient = createClient({
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    wagmiClient.autoConnect();
+  }, []);
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
