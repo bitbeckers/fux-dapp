@@ -1,6 +1,5 @@
-import { UserByAddressDocument } from "../.graphclient";
 import ConnectWallet from "../components/ConnectWallet";
-import { useGraphClient } from "../hooks/graphSdk";
+import { useGraphClient } from "../hooks/useGraphClient";
 import {
   Box,
   Button,

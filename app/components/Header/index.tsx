@@ -1,11 +1,11 @@
 import ConnectWallet from "../ConnectWallet";
-import WorkstreamModal from "../FUX/WorkstreamModal";
+import WorkstreamModal from "../WorkstreamModal";
 import {
   Box,
+  Center,
   Flex,
   Heading,
   Link,
-  Spacer,
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
@@ -19,16 +19,15 @@ const Header: React.FC<{}> = () => {
       w={"100%"}
       as="nav"
       p={{ base: 3, lg: 6 }}
-      justify="space-between"
       align="center"
       bg="#221527"
       flexWrap="wrap"
       gap={"1em"}
     >
-      <Flex gap={"1em"} direction={["column", "row"]}>
+      <Center gap={"3em"} justifyItems={"center"}>
         <NextLink href="/" passHref>
           <Link>
-            <Heading fontSize="4xl" fontWeight="900" fontFamily="">
+            <Heading fontSize="6xl" fontWeight="900" fontFamily="">
               FUX
             </Heading>
           </Link>
@@ -36,8 +35,12 @@ const Header: React.FC<{}> = () => {
         {isSmallScreen ? undefined : (
           <WorkstreamModal onCloseAction={() => {}} />
         )}
-      </Flex>
-      <Flex gap={"2em"} order={{ base: 0, sm: 1, md: 0 }} margin={"auto"}>
+      </Center>
+      <Flex
+        gap={"2em"}
+        order={{ base: 0, sm: 1, md: 0 }}
+        margin={"auto"}
+      >
         <NextLink href="/workstreams" passHref>
           <Link>
             <Text fontSize="lg" color="primary">

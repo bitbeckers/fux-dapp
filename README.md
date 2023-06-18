@@ -3,9 +3,9 @@
 ## QUICKSTART
 
 1. `yarn` to install all packages and dependencies
-2. Create `.env` file in `./evm` based of `./evm/.env.example`
+2. Create `.env` file in `./summon-evm` based of `./evm/.env.example`
    > for now, the mnemonic is the most important since this is local)
-3. run `yarn deploy` in `./evm` to deploy a local instance
+3. run `yarn deploy` in `./summon-evm` to deploy a local instance
    > You should/could see an updated `./evm/deployments/localhost` folder
 4. Create `.env` file in `./app` based of `./app/env.local.example`
    > Use addresses from `./evm/deployments/localhost` in `./app/.env`

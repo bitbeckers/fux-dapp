@@ -1,18 +1,8 @@
 import {
-  BalancesByUserDocument,
   Workstream,
-  WorkstreamByIDDocument,
-  BalancesByUserQuery,
-  WorkstreamByIDQuery,
-  WorkstreamByIDQueryVariables,
-  BalancesByUserQueryVariables,
-  BalancesByWorkstreamDocument,
-  BalancesByWorkstreamQuery,
-  BalancesByWorkstreamQueryVariables,
-  
 } from "../../.graphclient";
-import CommitFuxModal from "../../components/FUX/CommitFuxModal";
-import { ContributorOverview } from "../../components/FUX/ContributorOverview";
+import CommitFuxModal from "../../components/CommitFuxModal";
+import { ContributorOverview } from "../../components/ContributorOverview";
 import { contractAddresses, useConstants } from "../../utils/constants";
 import {
   Box,
@@ -35,9 +25,9 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
-import { CloseButton } from "../../components/FUX/CloseButton";
-import TokenBalance from "../../components/FUX/TokenBalance";
-import { useGraphClient } from "../../hooks/graphSdk";
+import { CloseButton } from "../../components/CloseButton";
+import TokenBalance from "../../components/TokenBalance";
+import { useGraphClient } from "../../hooks/useGraphClient";
 
 const Workstream: NextPage = () => {
   const router = useRouter();

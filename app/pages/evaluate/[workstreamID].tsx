@@ -1,8 +1,8 @@
-import { StartEvaluation } from "../../components/FUX/StartEvaluation";
-import User from "../../components/FUX/User";
-import ValueHeader from "../../components/FUX/ValueHeader";
-import { ValueReviewForm } from "../../components/FUX/ValueReviewForm";
-import { useGraphClient } from "../../hooks/graphSdk";
+import { StartEvaluation } from "../../components/StartEvaluation";
+import User from "../../components//User";
+import ValueHeader from "../../components/ValueHeader";
+import { ValueReviewForm } from "../../components/ValueReviewForm";
+import { useGraphClient } from "../../hooks/useGraphClient";
 import {
   VStack,
   Text,

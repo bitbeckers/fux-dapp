@@ -1,10 +1,10 @@
 import {
   Workstream,
 } from "../.graphclient";
-import FuxOverview from "../components/FUX/FuxOverview";
-import WorkstreamModal from "../components/FUX/WorkstreamModal";
-import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
-import { useGraphClient } from "../hooks/graphSdk";
+import FuxOverview from "../components/FuxOverview";
+import WorkstreamModal from "../components/WorkstreamModal";
+import { WorkstreamRow } from "../components/WorkstreamRow";
+import { useGraphClient } from "../hooks/useGraphClient";
 import { contractAddresses } from "../utils/constants";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
