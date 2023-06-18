@@ -1,4 +1,4 @@
-import FUX_ABI from "../../summon-evm/abis/contracts/FUX.sol/FUX.json";
+import FUX_ABI from "../../contracts/abis/contracts/FUX.sol/FUX.json";
 import { useNetwork } from "wagmi";
 
 export const checkEnvVarConfig = () => {

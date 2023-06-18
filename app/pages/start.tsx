@@ -1,9 +1,8 @@
-import { UserByAddressDocument } from "../.graphclient";
 import ConnectWallet from "../components/ConnectWallet";
-import FuxOverview from "../components/FUX/FuxOverview";
-import { useBlockTx } from "../hooks/blockTx";
-import { useGraphClient } from "../hooks/graphSdk";
-import { useCustomToasts } from "../hooks/toast";
+import FuxOverview from "../components/FuxOverview";
+import { useBlockTx } from "../hooks/useBlockTx";
+import { useGraphClient } from "../hooks/useGraphClient";
+import { useCustomToasts } from "../hooks/useCustomToasts";
 import { contractAddresses, contractABI } from "../utils/constants";
 import { VStack, Button, Text, Center } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";

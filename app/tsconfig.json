@@ -22,8 +22,8 @@
     "**/*.tsx",
     "./.graphclient/index.ts",
     "./.graphclient/sources/fux/**.ts",
-    "../summon-evm/abis/contracts/FUX.sol/FUX.json"
+    "../contracts/abis/contracts/FUX.sol/FUX.json"
   ],
   "exclude": ["node_modules"],
-  "references": [{ "path": "../summon-evm" }]
+  "references": [{ "path": "../contracts" }]
 }

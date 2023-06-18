@@ -1,24 +1,24 @@
 {
-  "name": "summon-raid-app",
+  "name": "fux-dapp",
   "version": "0.0.1",
-  "description": "quickly spin up a RG themed web3 dev env",
+  "description": "FUX monorepo",
   "main": "index.js",
   "author": "bitbeckers <code@bitbeckers.com>",
   "license": "MIT",
   "private": true,
   "workspaces": [
     "app",
-    "summon-evm",
+    "contracts",
     "graph",
-    "doc"
+    "docs"
   ],
   "scripts": {
     "build:fleek": "yarn workspace app build && yarn workspace app export -o ../out/",
-    "prestart": "yarn workspace summon-evm typechain && yarn workspace summon-evm test",
+    "prestart": "yarn workspace contracts typechain && yarn workspace contracts test",
     "start:graph": "yarn workspace graph deploy:local",
-    "start:evm": "yarn workspace summon-evm local",
+    "start:evm": "yarn workspace contracts local",
     "start:app": "yarn workspace app dev",
     "start": " yarn start:evm & yarn start:app",
-    "test": "yarn workspace summon-evm test"
+    "test": "yarn workspace contracts test"
   }
 }

@@ -1,7 +1,7 @@
 import { WorkstreamContributor } from "../.graphclient";
-import FuxOverview from "../components/FUX/FuxOverview";
-import WorkstreamCard from "../components/FUX/WorkstreamCard";
-import { useGraphClient } from "../hooks/graphSdk";
+import FuxOverview from "../components/FuxOverview";
+import WorkstreamCard from "../components/WorkstreamCard";
+import { useGraphClient } from "../hooks/useGraphClient";
 import {
   Box,
   Flex,

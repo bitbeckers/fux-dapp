@@ -10,7 +10,7 @@ import {
   RewardDistribution,
 } from "../../generated/schema";
 import { ERC20 } from "../../generated/templates/ERC20/ERC20";
-import { FUX_ADDRESS, FUX_TOKEN, VFUX_TOKEN, ZERO_ADDRESS } from "./constants";
+import { FUX_TOKEN, VFUX_TOKEN, ZERO_ADDRESS } from "./constants";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export function getOrCreateUser(address: string): User {
