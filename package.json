@@ -13,12 +13,7 @@
     "docs"
   ],
   "scripts": {
-    "build:fleek": "yarn workspace app build && yarn workspace app export -o ../out/",
-    "prestart": "yarn workspace contracts typechain && yarn workspace contracts test",
-    "start:graph": "yarn workspace graph deploy:local",
-    "start:evm": "yarn workspace contracts local",
-    "start:app": "yarn workspace app dev",
-    "start": " yarn start:evm & yarn start:app",
-    "test": "yarn workspace contracts test"
+    "build": "yarn workspace contracts compile && yarn workspace app build",
+    "test": "yarn workspace contracts test && yarn workspace graph test"
   }
 }

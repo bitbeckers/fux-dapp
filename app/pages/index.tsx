@@ -16,13 +16,14 @@ import NextLink from "next/link";
 import { useAccount } from "wagmi";
 
 const Home: NextPage = () => {
-  const { address } = useAccount();
+  const { address, isConnecting } = useAccount();
   const { sdk } = useGraphClient();
 
-  const { isLoading, data, error } = useQuery({
+  const { data, error } = useQuery({
     queryKey: ["user", address?.toLowerCase()],
     queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() }),
     refetchInterval: 5000,
+    enabled: !address,
   });
 
   const claimLink = (
@@ -70,7 +71,7 @@ const Home: NextPage = () => {
           value created, as evaluated by your peers.
         </Text>
         <Spacer />
-        {isLoading ? (
+        {isConnecting ? (
           <Spinner size="md" />
         ) : address ? (
           data?.user?.fuxer ? (
