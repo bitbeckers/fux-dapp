@@ -22,7 +22,8 @@
     "**/*.tsx",
     "./.graphclient/index.ts",
     "./.graphclient/sources/fux/**.ts",
-    "../contracts/abis/contracts/FUX.sol/FUX.json"
+    "../contracts/abis/contracts/FUX.sol/FUX.json",
+    "./resources/ERC20.json"
   ],
   "exclude": ["node_modules"],
   "references": [{ "path": "../contracts" }]

@@ -1,4 +1,5 @@
 import { Workstream } from "../../.graphclient";
+import { calculateRelative, parseEvaluations } from "../../utils/helpers";
 import ContributorModal from "../ContributorModal";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
@@ -21,6 +22,9 @@ export const ContributorOverview: React.FC<{
   if (!contributors) {
     return null;
   }
+
+  const averages = parseEvaluations(workstream as Workstream);
+  const relative = calculateRelative(averages);
 
   return (
     <Grid
@@ -85,9 +89,9 @@ export const ContributorOverview: React.FC<{
               textAlign="right"
               fontFamily="mono"
             >
-              <StatNumber>{`${cont.contributor.balances?.find(
-    (balance) => balance.token.name === "vFUX"
-  )?.amount || 0}%`}</StatNumber>
+              <StatNumber>{`${
+                relative[cont.contributor.id] || 0
+              }`}</StatNumber>
             </Stat>
           </GridItem>
         </>

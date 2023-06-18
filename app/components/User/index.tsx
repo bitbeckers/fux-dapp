@@ -6,6 +6,7 @@ import {
   Button,
   useToast,
   VStack,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useEnsAvatar, useEnsName } from "wagmi";
@@ -19,6 +20,7 @@ const User: React.FC<{
   const { data: ensName } = useEnsName({
     address,
     chainId: 1,
+    scopeKey: "wagmi",
   });
 
   const {
@@ -28,6 +30,7 @@ const User: React.FC<{
   } = useEnsAvatar({
     address,
     chainId: 1,
+    scopeKey: "wagmi",
   });
   const [avatar, setAvatar] = useState<string>();
   const toast = useToast();
@@ -54,7 +57,13 @@ const User: React.FC<{
       <VStack>
         {displayAvatar ? <Avatar name={address} src={avatar} /> : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
-          <Text mr={2}>{ensName ? ensName : `${address.slice(0, 6)}...`}</Text>{" "}
+          {ensName ? (
+            <Tooltip label={address}>
+              <Text mr={2}>{ensName}</Text>
+            </Tooltip>
+          ) : (
+            <Text mr={2}>{`${address.slice(0, 6)}...`}</Text>
+          )}
           <CopyIcon />
         </Button>
       </VStack>
@@ -66,9 +75,13 @@ const User: React.FC<{
       <HStack>
         {displayAvatar ? <Avatar name={address} src={avatar} /> : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
-          <Text mr={2} size={size}>
-            {ensName ? ensName : `${address.slice(0, 6)}...`}
-          </Text>{" "}
+          {ensName ? (
+            <Tooltip label={address}>
+              <Text mr={2}>{ensName}</Text>
+            </Tooltip>
+          ) : (
+            <Text mr={2}>{`${address.slice(0, 6)}...`}</Text>
+          )}
           <CopyIcon />
         </Button>
       </HStack>

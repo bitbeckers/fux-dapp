@@ -73,7 +73,7 @@ export function getOrCreateERC20Token(address: string): Token {
 }
 
 export function getOrCreate1155Token(address: string, tokenID: BigInt): Token {
-  let id = address;
+  let id = address.concat(tokenID.toHexString());
   let token = Token.load(id);
 
   if (token != null) {

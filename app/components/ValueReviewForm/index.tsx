@@ -26,6 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { BigNumberish } from "ethers";
 import _ from "lodash";
+import { useRouter } from "next/router";
 import React, { Fragment } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
@@ -59,6 +60,8 @@ const findEvaluations = (workstream: Workstream, user: `0x${string}`) => {
 const ValueReviewForm: React.FC<{
   workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
+  const router = useRouter();
+
   const { address: user } = useAccount();
   const toast = useCustomToasts();
   const { checkChain } = useBlockTx();
@@ -103,6 +106,9 @@ const ValueReviewForm: React.FC<{
     onSuccess(data) {
       toast.success("Submitted Evaluation", "Evaluation submitted succesfully");
       console.log(data);
+    },
+    onSettled() {
+      router.back();
     },
   });
 
@@ -180,7 +186,7 @@ const ValueReviewForm: React.FC<{
                       displayAvatar={true}
                     />
                     {coordinator?.toLowerCase() === address.toLowerCase() ? (
-                      <StarIcon />
+                      <StarIcon color={"yellow"} />
                     ) : undefined}
                   </Flex>
                 </GridItem>

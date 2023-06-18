@@ -1,6 +1,7 @@
 import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
 import { contractAddresses, contractABI } from "../../utils/constants";
+import { ControlledNumberInput } from "../FormComponents/ControlledNumberInput";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -26,7 +27,7 @@ import {
   StatNumber,
 } from "@chakra-ui/react";
 import { BigNumber, BigNumberish } from "ethers";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, FormProvider } from "react-hook-form";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
 type FormData = {
@@ -44,18 +45,18 @@ const CommitFuxModal: React.FC<{
   const _fuxGiven = BigNumber.from(fuxGiven);
   const { checkChain } = useBlockTx();
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    watch,
-    register,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({
+  const formMethods = useForm<FormData>({
     defaultValues: {
       fux: _fuxGiven ? _fuxGiven.toNumber() : 0,
     },
   });
+
+  const {
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors, isSubmitting },
+  } = formMethods;
 
   const newFux = watch("fux");
 
@@ -77,7 +78,7 @@ const CommitFuxModal: React.FC<{
     onSuccess() {
       success("FUX Given", `Committed ${newFux} FUX to workstream`);
     },
-    onMutate() {
+    onSettled() {
       onClose();
     },
   });
@@ -91,65 +92,43 @@ const CommitFuxModal: React.FC<{
   };
 
   const input = (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl>
-        <Controller
-          name={`fux`}
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { ref, onChange, ...restField } }) => (
-            <NumberInput
-              step={1}
-              min={0}
-              max={maxValue}
-              keepWithinRange={true}
-              inputMode="numeric"
-              precision={0}
-              onChange={(valueAsString) => {
-                valueAsString === ""
-                  ? onChange(0)
-                  : onChange(
-                      Math.round(Number(valueAsString.replace(/\D/g, "")))
-                    );
-              }}
-              {...restField}
-            >
-              <NumberInputField
-                ref={ref}
-                name={restField.name}
-                borderRadius={0}
-                placeholder={fuxGiven?.toString() || "0"}
-              />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          )}
-        />
-      </FormControl>
-      <StatGroup>
-        <Stat>
-          <StatNumber fontFamily="mono" fontSize="md" fontWeight="100">{`${
-            maxValue - newFux || 0
-          } / ${maxValue} FUX available`}</StatNumber>
-        </Stat>
-      </StatGroup>
-      <Spacer p={"0.5em"} />
-      <ButtonGroup justifyContent="space-around" w="100%">
-        <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-          Reset
-        </Button>
-        <Spacer />
-        <Button
-          isDisabled={_fuxGiven.eq(BigNumber.from(newFux))}
-          isLoading={isSubmitting}
-          type="submit"
-        >
-          Give FUX
-        </Button>
-      </ButtonGroup>
-    </form>
+    <FormProvider {...formMethods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormControl>
+          <ControlledNumberInput
+            fieldName="fux"
+            helperText="FUX to give"
+            tooltipText="The amount of FUX you want to give to this workstream"
+            units="FUX"
+            precision={0}
+            step={1}
+            min={0}
+            max={maxValue}
+          />
+        </FormControl>
+        <StatGroup>
+          <Stat>
+            <StatNumber fontFamily="mono" fontSize="md" fontWeight="100">{`${
+              maxValue - newFux || 0
+            } / ${maxValue} FUX available`}</StatNumber>
+          </Stat>
+        </StatGroup>
+        <Spacer p={"0.5em"} />
+        <ButtonGroup justifyContent="space-around" w="100%">
+          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
+            Reset
+          </Button>
+          <Spacer />
+          <Button
+            isDisabled={_fuxGiven.eq(BigNumber.from(newFux))}
+            isLoading={isSubmitting}
+            type="submit"
+          >
+            Give FUX
+          </Button>
+        </ButtonGroup>
+      </form>
+    </FormProvider>
   );
 
   const component = tiny ? (
