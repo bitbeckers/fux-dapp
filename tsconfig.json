@@ -1,6 +1,6 @@
 {
   "references": [
-    { "path": "./summon-evm" },
+    { "path": "./contracts" },
     { "path": "./app" },
     { "path": "./doc" }
   ],
