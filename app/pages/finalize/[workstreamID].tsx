@@ -3,12 +3,12 @@ import {
   WorkstreamByIDQuery,
   WorkstreamByIDQueryVariables,
 } from "../../.graphclient";
-import { FinalizeForm } from "../../components/FUX/FinalizeForm";
-import { StartEvaluation } from "../../components/FUX/StartEvaluation";
-import TokenBalance from "../../components/FUX/TokenBalance";
-import User from "../../components/FUX/User";
-import WorkstreamCard from "../../components/FUX/WorkstreamCard";
-import { useGraphClient } from "../../hooks/graphSdk";
+import { FinalizeForm } from "../../components/FinalizeForm";
+import { StartEvaluation } from "../../components/StartEvaluation";
+import TokenBalance from "../../components/TokenBalance";
+import User from "../../components/User";
+import WorkstreamCard from "../../components/WorkstreamCard";
+import { useGraphClient } from "../../hooks/useGraphClient";
 import { useConstants } from "../../utils/constants";
 import {
   VStack,

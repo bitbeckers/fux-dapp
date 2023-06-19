@@ -5,16 +5,9 @@
   "author": "bitbeckers",
   "license": "MIT",
   "scripts": {
-    "start:local": "docker-compose up -d",
-    "stop:local": "docker-compose down",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ bitbeckers/fux-goerli",
-    "create:local": "graph create --node http://localhost:8020/ bitbeckers/fux-goerli",
-    "remove:local": "graph remove --node http://localhost:8020/ bitbeckers/fux-goerli",
-    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 bitbeckers/fux-goerli",
-    "predeploy:local": "yarn create:local",
-    "precreate:local": "yarn start:local",
     "test": "graph test"
   },
   "dependencies": {

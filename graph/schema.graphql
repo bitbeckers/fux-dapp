@@ -1,81 +1,81 @@
 type User @entity {
-  id: ID!
-  fuxer: Boolean!
-  balances: [UserBalance!] @derivedFrom(field: "user")
-  workstreams: [WorkstreamContributor!] @derivedFrom(field: "contributor")
-  evaluations: [Evaluation!] @derivedFrom(field: "creator")
+  id: ID! # The unique identifier of the user.
+  fuxer: Boolean! # Indicates whether the user is a FUX token holder.
+  balances: [UserBalance!] @derivedFrom(field: "user") # The balances of the user for each token.
+  workstreams: [WorkstreamContributor!] @derivedFrom(field: "contributor") # The workstreams that the user is a contributor to.
+  evaluations: [Evaluation!] @derivedFrom(field: "creator") # The evaluations that the user has created.
 }
 
 enum WorkstreamStatus {
-  Started
-  Evaluation
-  Closed
+  Started # The workstream has been started.
+  Evaluation # The workstream is in the evaluation phase.
+  Closed # The workstream has been closed.
 }
 
 type Workstream @entity {
-  id: ID!
-  name: String
-  coordinator: User
-  deadline: BigInt
-  contributors: [WorkstreamContributor!] @derivedFrom(field: "workstream")
-  evaluations: [Evaluation!] @derivedFrom(field: "workstream")
-  funding: [WorkstreamBalance!] @derivedFrom(field: "workstream")
-  contestings: [WorkstreamContestation!] @derivedFrom(field: "workstream")
-  rewardDistribution: RewardDistribution
-  uri: String
-  status: WorkstreamStatus
+  id: ID! # The unique identifier of the workstream.
+  name: String # The name of the workstream.
+  coordinator: User # The user who is coordinating the workstream.
+  deadline: BigInt # The deadline for the workstream.
+  contributors: [WorkstreamContributor!] @derivedFrom(field: "workstream") # The contributors who are working on the workstream.
+  evaluations: [Evaluation!] @derivedFrom(field: "workstream") # The evaluations that have been created for the workstream.
+  funding: [WorkstreamBalance!] @derivedFrom(field: "workstream") # The funding for the workstream.
+  contestings: [WorkstreamContestation!] @derivedFrom(field: "workstream") # The contestations that have been created for the workstream.
+  rewardDistribution: RewardDistribution # The distribution of rewards for the workstream.
+  uri: String # The URI of the workstream.
+  status: WorkstreamStatus # The status of the workstream.
 }
 
 type RewardDistribution @entity {
-  id: ID!
-  workstream: Workstream!
-  contributors: [User!]!
-  shares: [BigInt!]!
+  id: ID! # The unique identifier of the reward distribution.
+  workstream: Workstream! # The workstream that the reward distribution is for.
+  contributors: [User!]! # The contributors who are receiving rewards.
+  shares: [BigInt!]! # The shares of rewards that each contributor is receiving.
 }
 
 type Evaluation @entity {
-  id: ID!
-  creator: User!
-  workstream: Workstream!
-  contributor: User!
-  rating: BigInt!
+  id: ID! # The unique identifier of the evaluation.
+  creator: User! # The user who created the evaluation.
+  workstream: Workstream! # The workstream that the evaluation is for.
+  contributor: User! # The contributor who is being evaluated.
+  rating: BigInt! # The rating that the contributor received.
 }
 
 type WorkstreamContributor @entity {
-  id: ID!
-  workstream: Workstream!
-  contributor: User!
-  commitment: BigInt
-  active: Boolean
+  id: ID! # The unique identifier of the workstream contributor.
+  workstream: Workstream! # The workstream that the contributor is working on.
+  contributor: User! # The user who is contributing to the workstream.
+  commitment: BigInt # The commitment of the contributor to the workstream.
+  active: Boolean # Indicates whether the contributor is active on the workstream.
 }
 
 type Token @entity {
-  id: ID!
-  tokenID: BigInt
-  decimals: BigInt
-  name: String
-  symbol: String
-  userBalances: [UserBalance!] @derivedFrom(field: "token")
-  workstreamBalance: [WorkstreamBalance!] @derivedFrom(field: "token")
+  id: ID! # The unique identifier of the token.
+  tokenID: BigInt # The ID of the token.
+  decimals: BigInt # The number of decimal places for the token.
+  name: String # The name of the token.
+  symbol: String # The symbol of the token.
+  userBalances: [UserBalance!] @derivedFrom(field: "token") # The balances of the token for each user.
+  workstreamBalance: [WorkstreamBalance!] @derivedFrom(field: "token") # The balances of the token for each workstream.
 }
 
 type UserBalance @entity {
-  id: ID!
-  user: User!
-  token: Token!
-  amount: BigInt!
+  id: ID! # The unique identifier of the user balance.
+  user: User! # The user who owns the balance.
+  token: Token! # The token that the balance is for.
+  amount: BigInt! # The amount of the token in the balance.
 }
 
 type WorkstreamBalance @entity {
-  id: ID!
-  workstream: Workstream!
-  token: Token!
-  amount: BigInt!
+  id: ID! # The unique identifier of the workstream balance.
+  workstream: Workstream! # The workstream that the balance is for.
+  token: Token! # The token that the balance is for.
+  amount: BigInt! # The amount of the token in the balance.
 }
 
 type WorkstreamContestation @entity {
-  id: ID!
-  user: User!
-  workstream: Workstream!
-  uri: String!
+  id: ID! # The unique identifier of the workstream contestation.
+  user: User! # The user who created the contestation.
+  workstream: Workstream! # The workstream that the contestation is for.
+  uri: String! # The URI of the contestation.
 }

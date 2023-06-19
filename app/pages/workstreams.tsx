@@ -1,10 +1,8 @@
-import {
-  Workstream,
-} from "../.graphclient";
-import FuxOverview from "../components/FUX/FuxOverview";
-import WorkstreamModal from "../components/FUX/WorkstreamModal";
-import { WorkstreamRow } from "../components/FUX/WorkstreamRow";
-import { useGraphClient } from "../hooks/graphSdk";
+import { Workstream } from "../.graphclient";
+import FuxOverview from "../components/FuxOverview";
+import WorkstreamModal from "../components/WorkstreamModal";
+import { WorkstreamRow } from "../components/WorkstreamRow";
+import { useGraphClient } from "../hooks/useGraphClient";
 import { contractAddresses } from "../utils/constants";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
@@ -27,7 +25,6 @@ const Workstreams: NextPage = () => {
   const { address: user } = useAccount();
   const [sortFux, setSortFux] = useBoolean();
   const [sortTitle, setSortTitle] = useBoolean();
-  const [sortFunding, setSortFunding] = useBoolean();
   const { sdk } = useGraphClient();
 
   const { data: workstreamsByUser, isLoading } = useQuery({
@@ -37,7 +34,7 @@ const Workstreams: NextPage = () => {
     refetchInterval: 5000,
   });
 
-  const { data: balancesByUser, isLoading: balancesLoading } = useQuery({
+  const { data: balancesByUser } = useQuery({
     queryKey: ["balancesByUser", user?.toLowerCase()],
     queryFn: () => sdk.BalancesByUser({ address: user?.toLowerCase() }),
     refetchInterval: 5000,
@@ -49,7 +46,6 @@ const Workstreams: NextPage = () => {
       contractAddresses.fuxContractAddress.toLowerCase()
   )?.amount;
 
-  console.log(workstreamsByUser);
   const sortedData = workstreamsByUser?.workstreamContributors.sort((a, b) => {
     if (sortFux) {
       let fuxGivenA = a.workstream.contributors?.find(
@@ -61,9 +57,6 @@ const Workstreams: NextPage = () => {
           contributor.contributor.id.toLowerCase() === user?.toLowerCase()
       )?.commitment;
 
-      console.log("FUX GIVEN A: ", fuxGivenA);
-      console.log("FUX GIVEN B: ", fuxGivenB);
-
       if (!fuxGivenA) {
         fuxGivenA = 0;
       }
@@ -74,18 +67,6 @@ const Workstreams: NextPage = () => {
       return fuxGivenA < fuxGivenB ? -1 : 1;
     } else if (sortTitle) {
       return (a?.workstream?.name || "") < (b?.workstream?.name || "") ? -1 : 1;
-    } else if (sortFunding) {
-      let fundingA = BigNumber.from(a.workstream.funding);
-      let fundingB = BigNumber.from(b.workstream.funding);
-
-      if (!fundingA) {
-        fundingA = BigNumber.from("0");
-      }
-      if (!fundingB) {
-        fundingB = BigNumber.from("0");
-      }
-
-      return fundingA.lt(fundingB) ? -1 : 1;
     }
     return 0;
   });
@@ -118,7 +99,6 @@ const Workstreams: NextPage = () => {
               <Button
                 onClick={() => {
                   setSortTitle.toggle();
-                  setSortFunding.off();
                   setSortFux.off();
                 }}
                 variant="ghost"
@@ -137,11 +117,7 @@ const Workstreams: NextPage = () => {
             </GridItem>
             <GridItem colSpan={4}>
               <Button
-                onClick={() => {
-                  setSortFunding.toggle();
-                  setSortFux.off();
-                  setSortTitle.off();
-                }}
+                disabled={true}
                 variant="ghost"
                 fontSize={"sm"}
                 fontWeight={"normal"}
@@ -152,7 +128,7 @@ const Workstreams: NextPage = () => {
                 <IconButton
                   aria-label="Sort by FUX"
                   variant="ghost"
-                  icon={sortFunding ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                  icon={undefined}
                 />
               </Button>
             </GridItem>
@@ -160,7 +136,6 @@ const Workstreams: NextPage = () => {
               <Button
                 onClick={() => {
                   setSortFux.toggle();
-                  setSortFunding.off();
                   setSortTitle.off();
                 }}
                 variant="ghost"

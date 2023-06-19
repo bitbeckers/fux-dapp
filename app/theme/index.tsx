@@ -1,4 +1,4 @@
-import { extendTheme, defineStyleConfig, ThemeConfig } from "@chakra-ui/react";
+import { extendTheme, ThemeConfig } from "@chakra-ui/react";
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -13,7 +13,7 @@ export const theme = extendTheme({
     mono: `'bdr-mono', monospace`,
   },
   colors: {
-    primary: "#8E4EC6",
+    primary: "white",
   },
   styles: {
     global: {

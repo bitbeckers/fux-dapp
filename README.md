@@ -1,125 +1,24 @@
-# summon-raid-app
+# FUX dApp
 
-## QUICKSTART
+The FUX dApp is a decentralized application (Dapp) that allows users to create and manage workstreams, which represent projects or tasks that require contributions from multiple users. The Dapp is built on the Ethereum blockchain using Solidity smart contracts and the Next.js framework for the frontend.
 
-1. `yarn` to install all packages and dependencies
-2. Create `.env` file in `./evm` based of `./evm/.env.example`
-   > for now, the mnemonic is the most important since this is local)
-3. run `yarn deploy` in `./evm` to deploy a local instance
-   > You should/could see an updated `./evm/deployments/localhost` folder
-4. Create `.env` file in `./app` based of `./app/env.local.example`
-   > Use addresses from `./evm/deployments/localhost` in `./app/.env`
-5. From root dir `./` run `yarn start`
+## What is FUX?
 
-Yarn start triggers, in order:
+The FUX dApp is part of the FUX Protocol, which is a decentralized workstream protocol that allows users to create and manage workstreams, contribute to workstreams, and receive acknowledgement in the form of vFUX tokens. FUX tokens are ERC-1155 tokens that represent the value of work done by contributors in a workstream. The FUX Protocol is designed to be flexible and customizable, allowing for a wide range of use cases and applications.The fux flow goes through a commitment stage and then a resolution stage.
 
-- the smart contract test suite
-- typechain to provide the front end with typings for Quiver
-- `hardhat node` from `./evm/` instance for local evm chain
-- `yarn dev` from `./app` for local frontend on `localhost:3000`
+In the commitment stage, individuals will commit portions of their attention to workstreams established by DAO’s or projects via the FUX dashboard. This will provide visibility to an individual’s allocation of their bandwidth and a sanity step to prevent over-committing.
 
-Connect you wallet to RPC `http://localhost:8545/`
+DAO’s in general and Workstream owners specifically, will create workstreams and invite collaborators to assign their attention to said workstream. Through the Fux dashboard managers will be able to see the allocation of potential contributors’ attention before entrusting them with their project’s work.
 
-Changes to front-end will be live, changed to smart-contract code require restart
+### Quickstart
 
-## DEVELOPMENT
+Check the readme files for the packages to get started with contributing.
 
-#### Smart contracts
+## Deployments
 
-- Create or change smart contracts in `./emv/contracts/`
-- Create or change test suites in `./evm/test/`
-- Run `yarn test` from `./evm/`
-  > This will also create types for the app and abis for the Graph
+The app is hosted on [fux.gg](https://fux.gg)
 
-#### Front-end
+### Goerli
 
-- Create `./app/.env.local` from `./app/.env.local.template`
-- Update `./app/hooks/`
-- Create or change pages (and components) in `./app/pages/`
-
-#### Run local
-
-- Run `yarn start` from `./`
-  > Runs smart contracts tests
-  > Generates types for app and ABIs for Graph
-  > Start local hardhat node (evm instance)
-  > Start front-end app
-
-To interact with the app, connect your wallet to local RPC `http://localhost:8485/`
-
-#### Graph
-
-In case you need more complex data objects, or want to reduce multiple get calls to the contract to a single database query, or whatever, you can use the Graph. This package runs a local instance of the Graph where you can deploy to and call the endpoint via your app. It requires `docker-compose`.
-
-- Change and/or update `./graph/schema.graphql`
-  > Define your entitites and relations
-- Change and/or update `./graph/subgraph.yaml.ts`
-  > Define the data sources
-- Change and/or update `./graph/mapping.ts`
-
-  > Define the data processing from events from source to entities and relations in schema
-
-- Run `yarn setup` from `./graph`
-  > Create Docker-compose instance
-- Run `yarn create:local` from `./graph`
-
-Inspect your Graph on http://localhost:8000/subgraphs/name/summon/raid-app/graphql
-
-#### Local integration
-
-> If you're using the Graph open 2 terminals
-
-- Run `yarn start` from `./`
-
-  > Inspect app on localhost:3000
-  > Remember to connect your wallet to RPC localhost:8545
-
-- Run yarn start:grap`from`./`
-
-Play around with the interaction. The second derived address in your wallet is the owner of the token as you can see under ERC20
-
-- Mint some tokens
-- Stake portion of those tokens
-- Claim rewards
-- Mint NFTs
-- Play around
-
-Cool bonus: when you create a stake, that is registered by the Graph and displayed in the 'Latest stakes' card under Staking
-
-## DEPLOYMENT - SMART CONTRACT
-
-The used addresses for `deployer`, `owner` and `user` are configured in `./evm/hardhat.config.ts`. For local testing different addresses are used to validate the ownership or role-based modifiers.
-
-- Update or add deployment scripts in `./evm/deploy/`
-- Run `hardhat deploy` to validate the deployment
-- Run `yarn hardhat --network [NETWORK_NAME_HERE] deploy`
-  > Use a network configured in `./evm/hardhat.config.ts`
-- Run `yarn hardhat --network [NETWORK_NAME_HERE] etherscan-verify` to verify the contracts on the relevant block explorer.
-
-## DEPLOYMENT - APP
-
-Check out Vercel
-
--[ ] Add in fleek.co deployment
-
-## DEPLOYMENT - GRAPH
-
-- Create subgraph entry in [Hosted Version Dashboard](https://thegraph.com/hosted-service/dashboard)
-- Update deploy script with subgraph name
-- Run `yarn deploy` from `./graph`
-
-## CODEBASE
-
-**APP**
-
-- NextJS
-- [Raid Guild Design System](https://github.com/raid-guild/design-system)
-
-**EVM**
-
-- [Solidity-template](https://github.com/PaulRBerg/solidity-template)
-- [Hardhat-deploy](https://github.com/wighawag/hardhat-deploy/tree/master)
-
-## TODO
-
--[ ] Error handling and toasts -[X] Add Graph module -[X] Staking pools contract and tests
+Contract: [0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA](https://goerli.etherscan.io/address/0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA)
+Graph: [bitbeckers/fux-goerli](https://thegraph.com/hosted-service/subgraph/bitbeckers/fux-goerli)
