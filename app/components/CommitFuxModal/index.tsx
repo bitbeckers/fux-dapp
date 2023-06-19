@@ -15,11 +15,6 @@ import {
   useDisclosure,
   IconButton,
   FormControl,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   Spacer,
   Tooltip,
   StatGroup,
@@ -27,7 +22,7 @@ import {
   StatNumber,
 } from "@chakra-ui/react";
 import { BigNumber, BigNumberish } from "ethers";
-import { Controller, useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
 type FormData = {

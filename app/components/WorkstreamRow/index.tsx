@@ -41,6 +41,7 @@ const WorkstreamRow: React.FC<{
         bg="#301A3A"
         colSpan={7}
         pl={5}
+        height={"2.5em"}
       >
         <NextLink
           href={{
@@ -99,11 +100,13 @@ const WorkstreamRow: React.FC<{
         </GridItem>
       ) : undefined}
       <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
-        <ContributorModal
-          workstreamID={BigNumber.from(workstream.id)}
-          workstreamName={workstream.name || ""}
-          contributors={workstream.contributors ?? []}
-        />
+        {coordinator?.toLowerCase() === user?.toLowerCase() ? (
+          <ContributorModal
+            workstreamID={BigNumber.from(workstream.id)}
+            workstreamName={workstream.name || ""}
+            contributors={workstream.contributors ?? []}
+          />
+        ) : undefined}
       </GridItem>
     </>
   );
