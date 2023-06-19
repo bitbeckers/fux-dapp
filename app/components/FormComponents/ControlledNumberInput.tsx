@@ -15,7 +15,6 @@ import {
   Controller,
   FieldValues,
   RegisterOptions,
-  useForm,
   useFormContext,
 } from "react-hook-form";
 import { RiInformationLine } from "react-icons/ri";
@@ -71,11 +70,11 @@ const ControlledNumberInput: React.FC<{
               min={min}
               max={max}
               onChange={(valueAsString) => {
-                valueAsString === ""
-                  ? onChange(0)
-                  : onChange(
-                      Math.round(Number(valueAsString.replace(/\D/g, "")))
-                    );
+                onChange(
+                  valueAsString
+                    ? Math.round(Number(valueAsString.replace(/\D/g, "")))
+                    : 0
+                );
               }}
               {...restField}
             >
@@ -90,11 +89,9 @@ const ControlledNumberInput: React.FC<{
                 <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
-            <InputRightAddon
-              bg={"#8E4EC6"}
-              fontWeight={"bold"}
-              children={units}
-            />
+            <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
+              {units}
+            </InputRightAddon>
           </InputGroup>
           {errors[fieldName] && (
             <Text color="red.500" fontSize="sm">
