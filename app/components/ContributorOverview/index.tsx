@@ -13,10 +13,12 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
+import { useAccount } from "wagmi";
 
 export const ContributorOverview: React.FC<{
   workstream: Partial<Workstream>;
 }> = ({ workstream }) => {
+  const { address } = useAccount();
   const contributors = workstream?.contributors;
 
   if (!contributors) {
@@ -25,6 +27,9 @@ export const ContributorOverview: React.FC<{
 
   const averages = parseEvaluations(workstream as Workstream);
   const relative = calculateRelative(averages);
+
+  const userIsCoordinator =
+    workstream.coordinator?.id.toLowerCase() === address;
 
   return (
     <Grid
@@ -41,7 +46,7 @@ export const ContributorOverview: React.FC<{
         alignItems="center"
       >
         <Text pr={6}>Contributor</Text>
-        {workstream.status === "Closed" ? undefined : (
+        {workstream.status === "Closed" || !userIsCoordinator ? undefined : (
           <ContributorModal
             workstreamID={BigNumber.from(workstream.id)}
             workstreamName={workstream.name || ""}
@@ -89,9 +94,7 @@ export const ContributorOverview: React.FC<{
               textAlign="right"
               fontFamily="mono"
             >
-              <StatNumber>{`${
-                relative[cont.contributor.id] || 0
-              }`}</StatNumber>
+              <StatNumber>{`${relative[cont.contributor.id] || 0}`}</StatNumber>
             </Stat>
           </GridItem>
         </>

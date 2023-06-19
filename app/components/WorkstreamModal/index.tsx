@@ -39,7 +39,9 @@ import {
   Switch,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import { fetchEnsAddress } from "@wagmi/core";
 import { BigNumber, BigNumberish, ethers } from "ethers";
+import { isAddress } from "ethers/lib/utils.js";
 import { DateTime } from "luxon";
 import { useState, useEffect } from "react";
 import { useFieldArray, useForm, FormProvider } from "react-hook-form";
@@ -133,8 +135,6 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     formState: { errors, isSubmitting },
   } = formMethods;
 
-  console.warn(errors);
-
   const {
     fields: contributors,
     append: addContributor,
@@ -163,12 +163,19 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
       [
         ...formState.contributors
           .map((entry) => entry.address)
-          .filter((address) => address != ethers.constants.AddressZero),
+          .filter((address) => address != ethers.constants.AddressZero)
+          .map((account) => {
+            if (!isAddress(account)) {
+              return fetchEnsAddress({ chainId: 1, name: account });
+            } else if (isAddress(account)) {
+              return account;
+            }
+          }),
         address,
       ],
       formState.coordinatorCommitment,
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
-      erc20Token ? [formState.funding.address] : [],
+      erc20Token ? [erc20Info.address] : [],
       erc20Token ? [formState.funding.amount] : [],
       formState.metadataUri,
     ],

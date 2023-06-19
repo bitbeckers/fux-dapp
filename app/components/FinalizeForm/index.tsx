@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { Workstream, WorkstreamContributor } from "../../.graphclient";
 import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
@@ -28,6 +29,7 @@ import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 const FinalizeForm: React.FC<{
   workstream: Partial<WorkstreamContributor>;
 }> = ({ workstream }) => {
+  const router = useRouter();
   const toast = useCustomToasts();
   const { address } = useAccount();
   const { checkChain } = useBlockTx();
@@ -60,6 +62,9 @@ const FinalizeForm: React.FC<{
         "Returning FUX and paying out rewards"
       );
       console.log(data);
+    },
+    onSettled() {
+      router.push("/workstreams");
     },
   });
 
