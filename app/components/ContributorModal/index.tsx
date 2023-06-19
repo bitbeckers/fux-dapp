@@ -30,12 +30,13 @@ import {
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { Fragment } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
+import { fetchEnsAddress } from "wagmi/actions";
 
 type FormData = {
   contributors: string[];
