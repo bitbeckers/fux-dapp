@@ -69,11 +69,9 @@ const TokenAmountInput: React.FC<{
                 <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
-            <InputRightAddon
-              bg={"#8E4EC6"}
-              fontWeight={"bold"}
-              children={native ? nativeToken.symbol : symbol}
-            />
+            <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
+              {native ? nativeToken.symbol : symbol}
+            </InputRightAddon>
           </InputGroup>
         </Flex>
       )}
