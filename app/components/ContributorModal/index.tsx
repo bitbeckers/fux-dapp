@@ -81,7 +81,14 @@ const ContributorModal: React.FC<{
       workstreamID,
       newContributors
         .map((entry) => entry.address)
-        .filter((address) => isAddress(address)),
+        .filter((address) => address != ethers.constants.AddressZero)
+        .map((account) => {
+          if (!isAddress(account)) {
+            return fetchEnsAddress({ chainId: 1, name: account });
+          } else if (isAddress(account)) {
+            return account;
+          }
+        }),
       true,
     ],
   });
