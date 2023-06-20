@@ -2,7 +2,7 @@
   "references": [
     { "path": "./contracts" },
     { "path": "./app" },
-    { "path": "./doc" }
+    { "path": "./docs" }
   ],
   "files": [],
   "include": [],
