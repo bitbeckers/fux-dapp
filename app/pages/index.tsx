@@ -1,5 +1,6 @@
 import ConnectWallet from "../components/ConnectWallet";
 import { useGraphClient } from "../hooks/useGraphClient";
+import { contractAddresses, contractABI } from "../utils/constants";
 import {
   Box,
   Button,
@@ -13,7 +14,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import NextLink from "next/link";
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
 
 const Home: NextPage = () => {
   const { address, isConnecting } = useAccount();
@@ -25,6 +26,18 @@ const Home: NextPage = () => {
     refetchInterval: 5000,
     enabled: !address,
   });
+
+  // Method for demo purposes
+  const { data: fuxBalance } = useContractRead({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "balanceOf",
+    args: [address?.toLowerCase() || "", 1],
+    enabled: !!address,
+  });
+
+  console.log("fuxBalance as BigNumber", fuxBalance);
+  console.log("fuxBalance as string", fuxBalance?.toString());
 
   const claimLink = (
     <Flex direction={"column"} gap={2}>

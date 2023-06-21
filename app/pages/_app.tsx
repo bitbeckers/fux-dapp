@@ -10,12 +10,6 @@ import {
   getDefaultWallets,
 } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
-import {
-  injectedWallet,
-  rainbowWallet,
-  walletConnectWallet,
-  metaMaskWallet,
-} from "@rainbow-me/rainbowkit/wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
 import { useEffect } from "react";

@@ -28,8 +28,6 @@ export type { UUPSUpgradeable } from "./@openzeppelin/contracts-upgradeable/prox
 export { UUPSUpgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable__factory";
 export type { ERC1155Upgradeable } from "./@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable";
 export { ERC1155Upgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable__factory";
-export type { ERC1155SupplyUpgradeable } from "./@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155SupplyUpgradeable";
-export { ERC1155SupplyUpgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155SupplyUpgradeable__factory";
 export type { ERC1155URIStorageUpgradeable } from "./@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable";
 export { ERC1155URIStorageUpgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable__factory";
 export type { IERC1155MetadataURIUpgradeable } from "./@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/IERC1155MetadataURIUpgradeable";

@@ -49,10 +49,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC1155Upgradeable__factory>;
     getContractFactory(
-      name: "ERC1155SupplyUpgradeable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC1155SupplyUpgradeable__factory>;
-    getContractFactory(
       name: "ERC1155URIStorageUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC1155URIStorageUpgradeable__factory>;
@@ -138,11 +134,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ERC1155Upgradeable>;
-    getContractAt(
-      name: "ERC1155SupplyUpgradeable",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC1155SupplyUpgradeable>;
     getContractAt(
       name: "ERC1155URIStorageUpgradeable",
       address: string,
