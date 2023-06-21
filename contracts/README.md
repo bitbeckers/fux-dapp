@@ -14,6 +14,8 @@ FUX contracts and Graph are only on Goerli during the development phase.
 
 Contract: [0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA](https://goerli.etherscan.io/address/0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA)
 
+> Note: In case ver
+
 ## Usage
 
 ### Pre Requisites
@@ -96,7 +98,19 @@ $ yarn clean
 Deploy the contracts to Hardhat Network:
 
 ```sh
-$ yarn deploy --greeting "Bonjour, le monde!"
+$ yarn deploy"
+```
+
+Deploy the contracts to other network:
+
+```sh
+$ yarn deploy --network [NetworkName]"
+```
+
+Deployment will also verify the contract. In case this fails (for instance the block explorer is still processing):
+
+```sh
+yarn hardhat verify --network [NetworkName] [ProxyAddress]
 ```
 
 ## Syntax Highlighting

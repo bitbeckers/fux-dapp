@@ -13,7 +13,7 @@
     "docs"
   ],
   "scripts": {
-    "build": "yarn workspace contracts compile && yarn workspace app build",
-    "test": "yarn workspace contracts test && yarn workspace graph test"
+    "build": "yarn workspace contracts compile && yarn workspace app build && yarn workspace docs build",
+    "test": "yarn workspace contracts test && yarn workspace graph test && yarn workspace docs typecheck"
   }
 }

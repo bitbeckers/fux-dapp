@@ -6,7 +6,7 @@ import { config as dotenvConfig } from "dotenv";
 import "hardhat-abi-exporter";
 import "hardhat-contract-sizer";
 import { HardhatUserConfig } from "hardhat/config";
-import { NetworkUserConfig } from "hardhat/types";
+import { HardhatNetworkUserConfig, NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
 import "solidity-docgen";
 
@@ -15,19 +15,9 @@ import { accounts, nodeUrl } from "./utils/network";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-// Ensure that we have all the environment variables we need.
-const mnemonic: string | undefined = process.env.MNEMONIC;
-if (!mnemonic) {
-  throw new Error("Please set your MNEMONIC in a .env file");
-}
-
-const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
-if (!infuraApiKey) {
-  throw new Error("Please set your INFURA_API_KEY in a .env file");
-}
-
 const chainIds = {
   hardhat: 1337,
+  localhost: 1337,
   mainnet: 1,
   "polygon-mainnet": 137,
   "polygon-mumbai": 80001,
@@ -35,15 +25,33 @@ const chainIds = {
 };
 
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
-  let jsonRpcUrl = nodeUrl(chain);
+  if (chain === "hardhat") {
+    return {
+      accounts: {
+        count: 10,
+        ...accounts(chain),
+        path: "m/44'/60'/0'/0",
+      },
+      chainId: chainIds[chain],
+    };
+  }
+
+  if (chain === "localhost") {
+    return {
+      accounts: {
+        count: 10,
+        ...accounts(chain),
+        path: "m/44'/60'/0'/0",
+      },
+      chainId: chainIds[chain],
+      url: nodeUrl(chain),
+    };
+  }
+
   return {
-    accounts: {
-      count: 10,
-      ...accounts(chain),
-      path: "m/44'/60'/0'/0",
-    },
+    accounts: [process.env.DEPLOY_PK || "0xa2e0097c961c67ec197b6865d7ecea6caffc68ebeb00e6050368c8f67fc9c588"],
     chainId: chainIds[chain],
-    url: jsonRpcUrl,
+    url: nodeUrl(chain),
   };
 }
 
@@ -61,7 +69,7 @@ const config: HardhatUserConfig = {
     strict: true,
   },
   defaultNetwork: "hardhat",
-  docgen: {outputDir: "../docs/docs/Solidity"},
+  docgen: { outputDir: "../docs/docs/Solidity" },
   etherscan: {
     apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY || "",
@@ -80,14 +88,9 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      accounts: {
-        mnemonic,
-      },
-      chainId: chainIds.hardhat,
-      forking: {
-        url: nodeUrl("goerli"),
-      },
+      ...(getChainConfig("hardhat") as HardhatNetworkUserConfig),
     },
+    localhost: getChainConfig("localhost"),
     mainnet: getChainConfig("mainnet"),
     goerli: getChainConfig("goerli"),
     "polygon-mainnet": getChainConfig("polygon-mainnet"),

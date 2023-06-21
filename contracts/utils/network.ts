@@ -1,25 +1,18 @@
-import * as dotenv from "dotenv";
-
-dotenv.config();
-
 export function nodeUrl(chain: string): string {
   let uri = "";
-  const infuraApiKey = process.env.INFURA_API_KEY || "";
 
   switch (chain) {
-    case "avalanche":
-      uri = "https://api.avax.network/ext/bc/C/rpc";
-      break;
-    case "bsc":
-      uri = "https://bsc-dataseed1.binance.org";
-      break;
     case "hardhat":
       uri = "http://localhost:8545";
       break;
     case "localhost":
-      uri = "http://localhost:8545";
+      uri = "http://127.0.0.1:8545";
       break;
     default:
+      const infuraApiKey = process.env.INFURA_API_KEY;
+      if (!infuraApiKey) {
+        throw new Error("Please set your INFURA_API_KEY in a .env file");
+      }
       uri = "https://" + chain + ".infura.io/v3/" + infuraApiKey;
   }
 
@@ -35,7 +28,7 @@ export function getMnemonic(networkName: string): string {
   }
 
   const mnemonic = process.env.MNEMONIC;
-  if (!mnemonic || mnemonic === "") {
+  if (!mnemonic) {
     return "test test test test test test test test test test test junk";
   }
   return mnemonic;

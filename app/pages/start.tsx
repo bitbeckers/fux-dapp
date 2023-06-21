@@ -1,15 +1,19 @@
 import ConnectWallet from "../components/ConnectWallet";
 import FuxOverview from "../components/FuxOverview";
 import { useBlockTx } from "../hooks/useBlockTx";
-import { useGraphClient } from "../hooks/useGraphClient";
 import { useCustomToasts } from "../hooks/useCustomToasts";
+import { useGraphClient } from "../hooks/useGraphClient";
 import { contractAddresses, contractABI } from "../utils/constants";
 import { VStack, Button, Text, Center } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
+import {
+  useAccount,
+  usePrepareContractWrite,
+  useContractWrite,
+} from "wagmi";
 
 const Start: NextPage = () => {
   const router = useRouter();
