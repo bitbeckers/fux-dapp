@@ -49,7 +49,7 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
   }
 
   return {
-    accounts: [process.env.DEPLOY_PK!],
+    accounts: [process.env.DEPLOY_PK || "0xa2e0097c961c67ec197b6865d7ecea6caffc68ebeb00e6050368c8f67fc9c588"],
     chainId: chainIds[chain],
     url: nodeUrl(chain),
   };
