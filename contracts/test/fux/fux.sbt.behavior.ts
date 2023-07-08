@@ -12,6 +12,8 @@ export function shouldBehaveLikeFuxSBT(): void {
       const { fux, user } = await setupTest();
       const contractWithUser = fux.connect(user);
       // Mint FUX SBT for the user
+      await contractWithUser.mintFux();
+
       await expect(contractWithUser.mintFux()).to.emit(fux, "FuxSBTMinted").withArgs(user.address, 2);
       // Attempt to mint FUX tokens again (which should fail)
       await expect(contractWithUser.mintFux()).to.be.revertedWithCustomError(fux, "TokensAlreadyMinted");

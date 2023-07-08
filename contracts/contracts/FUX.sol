@@ -116,8 +116,8 @@ contract FUX is
 
     uint256 public constant FUX_TOKEN_ID = 1;
     uint256 public constant VFUX_TOKEN_ID = 0;
+    uint256 internal sbtCounter;
     uint256 internal counter;
-    uint256 internal sbtCounter = 1;
 
     bytes4 internal constant ERC1155_ACCEPTED = 0xf23a6e61;
     bytes4 internal constant ERC1155_BATCH_ACCEPTED = 0xbc197c81;
@@ -315,6 +315,11 @@ contract FUX is
         _grantRole(UPGRADER_ROLE, msg.sender);
 
         counter = 0;
+        sbtCounter = 0;
+    }
+
+    function getSbtCounter() public view returns (uint256) {
+        return sbtCounter;
     }
 
     /**
@@ -411,11 +416,15 @@ contract FUX is
 
     /**
      * @dev Mints FuxSBT to the caller
-     * @notice THis function can only be called once per address
+     * @notice This function can only be called once per address
      * @dev Emits a Fux
      */
     function mintSBT() internal {
-        sbtCounter += 1;
+        if (sbtCounter == 0) {
+            sbtCounter += 2;
+        } else {
+            sbtCounter += 1;
+        }
         _mint(msg.sender, sbtCounter, 1, "");
 
         sbtIds[sbtCounter] = msg.sender;
