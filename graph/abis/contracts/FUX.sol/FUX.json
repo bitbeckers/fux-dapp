@@ -198,6 +198,25 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "fuxID",
+        "type": "uint256"
+      }
+    ],
+    "name": "FuxSBTMinted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "workstreamID",
         "type": "uint256"
       },
@@ -1208,6 +1227,25 @@
     "name": "safeTransferFrom",
     "outputs": [],
     "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "sbtIds",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

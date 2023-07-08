@@ -4,7 +4,7 @@ The FUX Contracts package contains the smart contracts that power the FUX decent
 
 ## FUX.sol
 
-FUX.sol is the main contract that defines the FUX token and the workstream system. The contract inherits from several OpenZeppelin contracts, including `ERC1155Upgradeable`, `AccessControlUpgradeable`, `ERC1155URIStorageUpgradeable`, `ERC1155ReceiverUpgradeable`, `ReentrancyGuard`, `Initializable`, and `UUPSUpgradeable`.
+FUX.sol is the main contract that defines the FUX token and the workstream system. The contract inherits from several OpenZeppelin contracts, including `ERC1155Upgradeable`, `AccessControlUpgradeable`, `ERC1155URIStorageUpgradeable`, `ERC1155ReceiverUpgradeable`, `ReentrancyGuard`, `Initializable`, `Base64Upgradeable`, `StringsUpgradeable`, and `UUPSUpgradeable`.
 
 ## Deployment
 
