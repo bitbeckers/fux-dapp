@@ -3,6 +3,7 @@ import WorkstreamModal from "../WorkstreamModal";
 import {
   Box,
   Center,
+  Container,
   Flex,
   Heading,
   Link,
@@ -16,47 +17,62 @@ const Header: React.FC<{}> = () => {
   return (
     <Flex
       direction={{ base: "column", md: "row" }}
+      // flex="column"
       w={"100%"}
       as="nav"
-      p={{ base: 3, lg: 6 }}
-      align="center"
+      // p={{ base: 3, lg: 6 }}
+      // align="center"
+      justify="center"
       bg="#221527"
       flexWrap="wrap"
-      gap={"1em"}
+      // gap={"1em"}
     >
-      <Center gap={"3em"} justifyItems={"center"}>
-        <NextLink href="/" passHref>
-          <Link>
-            <Heading fontSize="6xl" fontWeight="900" fontFamily="">
-              FUX
-            </Heading>
-          </Link>
-        </NextLink>
-        {isSmallScreen ? undefined : (
-          <WorkstreamModal onCloseAction={() => {}} />
-        )}
-      </Center>
       <Flex
-        gap={"2em"}
-        order={{ base: 0, sm: 1, md: 0 }}
-        margin={"auto"}
+        maxW="1200px"
+        width="100%"
+        direction={{ base: "column", md: "row" }}
+        p={{ base: 3, lg: 6 }}
+        align="center"
+        // justifyContent=""
+        flexWrap="wrap"
+        gap={"1em"}
       >
-        <NextLink href="/workstreams" passHref>
-          <Link>
-            <Text fontSize="lg" color="primary">
-              WORKSTREAMS
-            </Text>
-          </Link>
-        </NextLink>
-        <NextLink href="/history" passHref>
-          <Link>
-            <Text fontSize="lg" color="primary">
-              HISTORY
-            </Text>
-          </Link>
-        </NextLink>
+        <Center gap={"3em"} justifyItems={"center"}>
+          <NextLink href="/" passHref>
+            <Link>
+              <Heading
+                fontSize="6xl"
+                fontWeight="900"
+                fontFamily=""
+                color="primary"
+              >
+                FUX
+              </Heading>
+            </Link>
+          </NextLink>
+          {isSmallScreen ? undefined : (
+            <WorkstreamModal onCloseAction={() => {}} />
+          )}
+        </Center>
+        <Flex gap={"2em"} order={{ base: 0, sm: 1, md: 0 }} margin={"auto"}>
+          <NextLink href="/workstreams" passHref>
+            <Link>
+              <Text fontSize="lg" color="primary">
+                WORKSTREAMS
+              </Text>
+            </Link>
+          </NextLink>
+          <NextLink href="/history" passHref>
+            <Link>
+              <Text fontSize="lg" color="primary">
+                HISTORY
+              </Text>
+            </Link>
+          </NextLink>
+        </Flex>
+        <ConnectWallet />
       </Flex>
-      <ConnectWallet />
+      <Box w="100%" h="1px" bg="gray.200" mt={0} />
     </Flex>
   );
 };
