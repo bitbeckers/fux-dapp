@@ -318,10 +318,6 @@ contract FUX is
         sbtCounter = 0;
     }
 
-    function getSbtCounter() public view returns (uint256) {
-        return sbtCounter;
-    }
-
     /**
      * READING FUNCTIONS
      */
@@ -934,12 +930,12 @@ contract FUX is
                 StringsUpgradeable.toString(_tokenId),
                 "&vfux=",
                 StringsUpgradeable.toString(ERC1155Upgradeable(address(this)).balanceOf(sbtIds[_tokenId], 0)),
-                "&currentWork=",
+                "&currentwork=",
                 StringsUpgradeable.toString(_getCurrentWorkstreams(sbtIds[_tokenId])),
-                "&completeWork=",
+                "&completework=",
                 StringsUpgradeable.toString(_getCompletedWorkstreams(sbtIds[_tokenId])),
                 "&percentage=",
-                StringsUpgradeable.toString(ERC1155Upgradeable(address(this)).balanceOf(sbtIds[_tokenId], 1))
+                StringsUpgradeable.toString(100 - ERC1155Upgradeable(address(this)).balanceOf(sbtIds[_tokenId], 1))
             )
         );
 

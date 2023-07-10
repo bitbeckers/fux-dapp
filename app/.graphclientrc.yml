@@ -2,7 +2,7 @@ sources:
   - name: fux
     handler:
       graphql:
-        endpoint: https://api.thegraph.com/subgraphs/name/bitbeckers/fux-goerli
+        endpoint: https://api.thegraph.com/subgraphs/name/mike4751/fux-testing
 
 plugins:
   - pollingLive:

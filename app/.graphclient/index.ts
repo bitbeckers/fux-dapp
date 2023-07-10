@@ -1782,7 +1782,7 @@ const fuxTransforms = [];
 const additionalTypeDefs = [] as any[];
 const fuxHandler = new GraphqlHandler({
               name: "fux",
-              config: {"endpoint":"https://api.thegraph.com/subgraphs/name/bitbeckers/fux-goerli"},
+              config: {"endpoint":"https://api.thegraph.com/subgraphs/name/mike4751/fux-testing"},
               baseDir,
               cache,
               pubsub,

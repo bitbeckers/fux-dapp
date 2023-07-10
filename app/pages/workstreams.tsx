@@ -3,7 +3,7 @@ import FuxOverview from "../components/FuxOverview";
 import WorkstreamModal from "../components/WorkstreamModal";
 import { WorkstreamRow } from "../components/WorkstreamRow";
 import { useGraphClient } from "../hooks/useGraphClient";
-import { contractAddresses } from "../utils/constants";
+import { contractAddresses, contractABI } from "../utils/constants";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
   VStack,
@@ -19,7 +19,8 @@ import { useQuery } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import type { NextPage } from "next";
 import React from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
+import { decodeURI } from "../utils/helpers";
 
 const Workstreams: NextPage = () => {
   const { address: user } = useAccount();
@@ -46,6 +47,12 @@ const Workstreams: NextPage = () => {
       contractAddresses.fuxContractAddress.toLowerCase()
   )?.amount;
 
+  const fuxID = balancesByUser?.userBalances.find(
+    ({ token }) =>
+      parseInt(token.tokenID) > 1
+  )?.token.tokenID;
+
+  console.log("TOKEN", fuxID);
   const sortedData = workstreamsByUser?.workstreamContributors.sort((a, b) => {
     if (sortFux) {
       let fuxGivenA = a.workstream.contributors?.find(
@@ -71,6 +78,18 @@ const Workstreams: NextPage = () => {
     return 0;
   });
 
+  const { data: tokenUri } = useContractRead({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "uri",
+    args: [parseInt(fuxID)],
+    enabled: !!user,
+  });
+  console.log("DATA", tokenUri);
+
+
+  const tokenLink = tokenUri !== undefined ? decodeURI(tokenUri) : undefined;
+
   return (
     <VStack spacing={8} w={"100%"}>
       <FuxOverview />
@@ -85,6 +104,14 @@ const Workstreams: NextPage = () => {
         />
       ) : (
         <>
+        {tokenLink !== undefined ? 
+            <GridItem colSpan={4}>
+              <iframe src={"https://ipfs.io/ipfs" + tokenLink} width="389px" height="561px" frameborder="0" scrolling="no"></iframe>
+            </GridItem> :
+            <GridItem colSpan={4}>
+              Loading
+          </GridItem> 
+            }
           <Grid
             maxW={"800px"}
             w="100%"

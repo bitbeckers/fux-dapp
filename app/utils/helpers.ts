@@ -44,3 +44,17 @@ export const calculateRelative = (data: Ratings) => {
 
   return roundToTarget(relative, 100);
 };
+
+export const decodeURI = (data: string) => {
+
+  let decodedString: string;
+  console.log("DATA", data);
+  const base64String = data.split(",")[1];
+  const buffer = Buffer.from(base64String, 'base64');
+  decodedString = buffer.toString();
+  const json = JSON.parse(decodedString);
+  const splitLink = json.image.substring(6)
+  console.log("SPLITLINK", splitLink);
+  return splitLink;
+}
+

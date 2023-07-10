@@ -79,7 +79,6 @@ export interface FUXInterface extends utils.Interface {
     "getCommitment(address,uint256)": FunctionFragment;
     "getEvaluation(address,uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
-    "getSbtCounter()": FunctionFragment;
     "getWorkstream(uint256)": FunctionFragment;
     "getWorkstreamRewards(uint256,address)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
@@ -126,7 +125,6 @@ export interface FUXInterface extends utils.Interface {
       | "getCommitment"
       | "getEvaluation"
       | "getRoleAdmin"
-      | "getSbtCounter"
       | "getWorkstream"
       | "getWorkstreamRewards"
       | "grantRole"
@@ -213,10 +211,6 @@ export interface FUXInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getSbtCounter",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getWorkstream",
@@ -419,10 +413,6 @@ export interface FUXInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getSbtCounter",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -905,8 +895,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getSbtCounter(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     getWorkstream(
       workstreamID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -1145,8 +1133,6 @@ export interface FUX extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getSbtCounter(overrides?: CallOverrides): Promise<BigNumber>;
-
   getWorkstream(
     workstreamID: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -1382,8 +1368,6 @@ export interface FUX extends BaseContract {
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    getSbtCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
     getWorkstream(
       workstreamID: PromiseOrValue<BigNumberish>,
@@ -1835,8 +1819,6 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getSbtCounter(overrides?: CallOverrides): Promise<BigNumber>;
-
     getWorkstream(
       workstreamID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -2075,8 +2057,6 @@ export interface FUX extends BaseContract {
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    getSbtCounter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getWorkstream(
       workstreamID: PromiseOrValue<BigNumberish>,
