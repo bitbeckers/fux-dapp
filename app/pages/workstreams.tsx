@@ -104,16 +104,18 @@ const Workstreams: NextPage = () => {
         />
       ) : (
         <>
+        <Grid gap={2} templateColumns="repeat(20, 1fr)">
         {tokenLink !== undefined ? 
-            <GridItem colSpan={4}>
+            <GridItem colSpan={5}>
               <iframe src={"https://ipfs.io/ipfs" + tokenLink} width="389px" height="561px" frameborder="0" scrolling="no"></iframe>
             </GridItem> :
-            <GridItem colSpan={4}>
+            <GridItem colSpan={5}>
               Loading
           </GridItem> 
             }
+          <GridItem colSpan={15}>
           <Grid
-            maxW={"800px"}
+            maxW={"1000px"}
             w="100%"
             mx={"auto"}
             gap={2}
@@ -184,7 +186,7 @@ const Workstreams: NextPage = () => {
             </GridItem>
           </Grid>
           <Grid
-            maxW={"800px"}
+            maxW={"1000px"}
             mx="auto"
             w="100%"
             gap={2}
@@ -202,10 +204,14 @@ const Workstreams: NextPage = () => {
                   )
                 )
               : undefined}
+              <GridItem colSpan={16} p="3em" textAlign={"center"}>
+              <WorkstreamModal />
+              </GridItem>
+          </Grid>
+          </GridItem>
           </Grid>
         </>
       )}
-      <WorkstreamModal />
     </VStack>
   );
 };
