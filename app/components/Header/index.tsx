@@ -17,15 +17,11 @@ const Header: React.FC<{}> = () => {
   return (
     <Flex
       direction={{ base: "column", md: "row" }}
-      // flex="column"
       w={"100%"}
       as="nav"
-      // p={{ base: 3, lg: 6 }}
-      // align="center"
       justify="center"
       bg="#221527"
       flexWrap="wrap"
-      // gap={"1em"}
     >
       <Flex
         maxW="1200px"
@@ -33,7 +29,6 @@ const Header: React.FC<{}> = () => {
         direction={{ base: "column", md: "row" }}
         p={{ base: 3, lg: 6 }}
         align="center"
-        // justifyContent=""
         flexWrap="wrap"
         gap={"1em"}
       >
