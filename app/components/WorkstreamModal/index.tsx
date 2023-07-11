@@ -406,7 +406,15 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
 
   return (
     <>
-      <Button onClick={onOpen} leftIcon={<AddIcon />} borderRadius={0}>
+      <Button
+        onClick={onOpen}
+        leftIcon={<AddIcon />}
+        borderRadius={0}
+        fontWeight={300}
+        fontSize={16}
+        gap={2}
+        paddingInline={4}
+      >
         Add Workstream
       </Button>
 
