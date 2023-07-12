@@ -10,13 +10,19 @@ import {
   Link,
   Spinner,
   Spacer,
+  useBreakpointValue,
 } from "@chakra-ui/react";
+import { Image } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useAccount, useContractRead } from "wagmi";
 
 // Create Test Commit For Collaborative WorkFlow
+
+const backgroundSvg = "/images/FUX.svg";
+const backgroundPng = "/images/FUX.png";
+const icon1 = "../icons/FUX.png";
 
 const Home: NextPage = () => {
   const { address, isConnecting } = useAccount();
@@ -72,32 +78,71 @@ const Home: NextPage = () => {
 
   return (
     <Flex
-      direction={["column", null, "row"]}
-      mx="auto"
-      maxW="1200px"
-      p={[6, null, 12]}
+      // direction={["column", null, "row"]}
+      direction={"column"}
+      w={{ base: "100%", "2xl": "1440px" }}
+      paddingInline={{ base: "20px", lg: "40px" }}
+      className="Active"
     >
-      <Flex direction={"column"} minW={"50%"}>
-        <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
-          How many FUX do you give?
-        </Text>
-        <Text fontSize={["lg", null, "xl"]} my={3}>
-          Gain perspective on how to allocate your attention based on perceived
-          value created, as evaluated by your peers.
-        </Text>
-        <Spacer />
-        {isConnecting ? (
-          <Spinner size="md" />
-        ) : address ? (
-          data?.user?.fuxer ? (
-            workstreamLink
+      <Flex className="Secton1">
+        <Flex
+          direction={"column"}
+          minW={"30%"}
+          paddingBlock={"15%"}
+          style={useBreakpointValue({
+            base: {
+              backgroundImage: `url(${backgroundPng})`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "80%",
+              backgroundPosition: "bottom",
+              opacity: "80%",
+            },
+            lg: { backgroundImage: "none" },
+          })}
+        >
+          <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
+            How many FUX do you give?
+          </Text>
+          <Text fontSize={["lg", null, "xl"]} my={3}>
+            Gain perspective on how to allocate your most valuable asset: your
+            attention.
+          </Text>
+          <Text fontSize={["lg", null, "xl"]} my={3}>
+            Your FUX allocation equals how much time you can dedicate to the
+            project.
+          </Text>
+          <Spacer />
+          {isConnecting ? (
+            <Spinner size="md" />
+          ) : address ? (
+            data?.user?.fuxer ? (
+              workstreamLink
+            ) : (
+              claimLink
+            )
           ) : (
-            claimLink
-          )
-        ) : (
-          connectWallet
-        )}
+            connectWallet
+          )}
+        </Flex>
+        <Flex
+          display={{ base: "none", lg: "flex" }}
+          direction={"column"}
+          minW={"70%"}
+          fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
+          style={{
+            backgroundImage: `url(${backgroundPng})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100%",
+            backgroundPosition: "bottom",
+            opacity: "80%",
+          }}
+        ></Flex>
       </Flex>
+      <Flex className="Carousel"></Flex>
+      <Flex className="Secton2"></Flex>
+      <Flex className="Secton3"></Flex>
+      <Flex className="Secton4"></Flex>
+      <Flex className="Secton5"></Flex>
       <Box minW={"50%"} pl={[0, null, 12]} pt={[12, null, 0]}>
         <VStack gap={3} align="left">
           <Text textAlign="left" my={3} fontWeight="900">
