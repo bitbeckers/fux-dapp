@@ -76,6 +76,10 @@ const Home: NextPage = () => {
       <ConnectWallet />
     </Flex>
   );
+  const gradientDark = "#1B131C";
+  const gradientLight = "#B956BF";
+
+  const gradient = `linear-gradient(180deg, ${gradientDark} 25%, ${gradientLight} 45%, ${gradientLight} 65%, ${gradientDark} 85%)`;
 
   return (
     <Flex
@@ -83,6 +87,7 @@ const Home: NextPage = () => {
       w={"100%"}
       className="Active"
       alignItems={"center"}
+      bgGradient={gradient}
     >
       <Flex
         className="Section1"
@@ -90,6 +95,7 @@ const Home: NextPage = () => {
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         gap={{ base: "0%", lg: "5%" }}
         position="relative"
+        // backgroundColor={"#1B131C"}
       >
         <Flex
           direction="column"
@@ -210,24 +216,48 @@ const Home: NextPage = () => {
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         justifyContent={"space-between"}
-        height={"300px"}
       >
-        <Flex w="40%" flexDirection={"column"} justifyContent={"space-between"}>
-          <Text>Box 1 HERE</Text>
-          <Text>Box 2 HERE</Text>
-          <Text>Box 3 HERE</Text>
+        <Flex
+          w="40%"
+          flexDirection={"column"}
+          justifyContent={"space-between"}
+          gap={5}
+        >
+          {futureData.map((box, index) => (
+            <Box
+              borderRadius={8}
+              border={"1px"}
+              borderColor={"white"}
+              key={index}
+              display="flex"
+              flexDirection="column"
+              alignItems="flex-start"
+              justifyContent="flex-start"
+              padding={5}
+            >
+              <Image src={box.imageSrc} />
+              <Text maxW={index === 0 ? "60%" : "90%"} pt={5}>
+                {box.text}
+              </Text>
+            </Box>
+          ))}
         </Flex>
-        <Flex w="40%" flexDirection={"column"} justifyContent={"center"}>
-          <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
-            Your future with vFUX
+        <Flex w="30%" flexDirection={"column"} justifyContent={"center"}>
+          <Text fontSize={["5xl", null, "7xl"]} fontWeight="300">
+            Your future
           </Text>
+          <Flex>
+            <Text fontSize={["5xl", null, "7xl"]} fontWeight="300">
+              with v
+            </Text>
+            <Text fontSize={["5xl", null, "7xl"]} fontWeight="500">
+              FUX
+            </Text>
+          </Flex>
 
-          <Text>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates,
-            illo. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Distinctio, laboriosam temporibus? Ullam veritatis earum, minima
-            aliquam, adipisci, itaque illum rerum nulla harum accusantium fugit
-            placeat explicabo nisi numquam porro a!
+          <Text fontStyle={"italic"} paddingTop={10}>
+            vFUX: (noun) A measure of one’s value as determined by the other
+            members of your workstream in the evaluation stage.
           </Text>
         </Flex>
       </Flex>
@@ -274,6 +304,20 @@ const boxData = [
   {
     imageSrc: "/images/Icon_6.svg",
     text: "Learn how teammates value your contributions to help your continual skill growth",
+  },
+];
+const futureData = [
+  {
+    imageSrc: "/images/Feedback.svg",
+    text: "Receive feedback from fellow workstream participants",
+  },
+  {
+    imageSrc: "/images/Dimond.svg",
+    text: "Assign value based on vFUX evaluations if a workstream is funded",
+  },
+  {
+    imageSrc: "/images/Collective.svg",
+    text: "Distribute funds across workstream participants based on vFUX ratings",
   },
 ];
 
