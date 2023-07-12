@@ -18,9 +18,9 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useEnsAvatar, useEnsName, useContractRead } from "wagmi";
-import { useGraphClient } from "/home/mikey/raid-guild/fux-dapp/app/hooks/useGraphClient.ts";
-import { decodeURI } from "/home/mikey/raid-guild/fux-dapp/app/utils/helpers.ts";
-import { contractAddresses, contractABI } from "/home/mikey/raid-guild/fux-dapp/app/utils/constants.ts";
+import { useGraphClient } from "../../hooks/useGraphClient";
+import { decodeURI } from "../../utils/helpers";
+import { contractAddresses, contractABI } from "../../utils/constants";
 import { useQuery } from "@tanstack/react-query";
 
 const User: React.FC<{
@@ -80,6 +80,7 @@ const User: React.FC<{
     abi: contractABI.fux,
     functionName: "uri",
     args: [parseInt(fuxID)],
+    watch: true,
   });
   console.log("DATA", tokenUri);
 

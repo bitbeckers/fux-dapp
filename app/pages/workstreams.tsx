@@ -84,11 +84,13 @@ const Workstreams: NextPage = () => {
     functionName: "uri",
     args: [parseInt(fuxID)],
     enabled: !!user,
+    watch: true
   });
   console.log("DATA", tokenUri);
 
-
   const tokenLink = tokenUri !== undefined ? decodeURI(tokenUri) : undefined;
+  console.log("TOKEN LINK", tokenLink);
+  
 
   return (
     <VStack spacing={8} w={"100%"}>
