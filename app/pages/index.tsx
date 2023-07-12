@@ -11,6 +11,7 @@ import {
   Spinner,
   Spacer,
   useBreakpointValue,
+  Grid,
 } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
@@ -167,19 +168,42 @@ const Home: NextPage = () => {
         </Flex>
       </Flex>
       <Flex
-        className="Secton3"
+        className="Section3"
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
-        flexDirection={"column"}
-        justifyContent={"center"}
-        height={"300px"}
+        flexDirection="column"
+        justifyContent="center"
+        paddingBlock={20}
       >
-        <Flex w="100%" justifyContent={"center"}>
-          Why should you give a FUX?
+        <Flex w="100%" justifyContent="center">
+          <Text fontSize={["2xl", null, "3xl"]} fontWeight="500">
+            Why should you give a FUX?
+          </Text>
         </Flex>
-        <Flex w="100%" justifyContent={"center"}>
-          Insert 6 icons here
-        </Flex>
+        <Grid
+          templateColumns={{
+            base: "repeat(1, 1fr)",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          }}
+          gap={20}
+          pt={20}
+        >
+          {boxData.map((box, index) => (
+            <Box
+              key={index}
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="flex-start"
+            >
+              <Image src={box.imageSrc} />
+              <Text textAlign="center" maxW="65%" pt={5}>
+                {box.text}
+              </Text>
+            </Box>
+          ))}
+        </Grid>
       </Flex>
       <Flex
         className="Secton4"
@@ -225,5 +249,32 @@ const Home: NextPage = () => {
     </Flex>
   );
 };
+
+const boxData = [
+  {
+    imageSrc: "/images/Icon_1.svg",
+    text: "Avoid burnout due to overcommitting",
+  },
+  {
+    imageSrc: "/images/Icon_2.svg",
+    text: "Easily calculate your capacity for new projects",
+  },
+  {
+    imageSrc: "/images/Icon_3.svg",
+    text: "Enhance your time management skills with one place to view all your projects and commitments",
+  },
+  {
+    imageSrc: "/images/Icon_4.svg",
+    text: "Provides projects coordinators a peace of mind to know who is committed",
+  },
+  {
+    imageSrc: "/images/Icon_5.svg",
+    text: "Helps you manage and identify over commitments across all your projects",
+  },
+  {
+    imageSrc: "/images/Icon_6.svg",
+    text: "Learn how teammates value your contributions to help your continual skill growth",
+  },
+];
 
 export default Home;
