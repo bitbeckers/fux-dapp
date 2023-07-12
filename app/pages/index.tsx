@@ -187,7 +187,7 @@ const Home: NextPage = () => {
             lg: "repeat(3, 1fr)",
           }}
           gap={20}
-          pt={20}
+          pt={40}
         >
           {boxData.map((box, index) => (
             <Box
