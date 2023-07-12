@@ -138,7 +138,7 @@ const Home: NextPage = () => {
           }}
         ></Flex>
       </Flex>
-      <Flex className="Carousel"></Flex>
+      <Flex className="Carousel">hey joshua from abhi</Flex>
       <Flex className="Secton2"></Flex>
       <Flex className="Secton3"></Flex>
       <Flex className="Secton4"></Flex>
