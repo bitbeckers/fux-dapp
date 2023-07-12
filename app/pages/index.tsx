@@ -192,7 +192,7 @@ const Home: NextPage = () => {
             md: "repeat(2, 1fr)",
             lg: "repeat(3, 1fr)",
           }}
-          gap={20}
+          gap={{ base: 5, lg: 20 }}
           pt={40}
         >
           {boxData.map((box, index) => (
@@ -204,7 +204,11 @@ const Home: NextPage = () => {
               justifyContent="flex-start"
             >
               <Image src={box.imageSrc} />
-              <Text textAlign="center" maxW="65%" pt={5}>
+              <Text
+                textAlign="center"
+                maxW={{ base: "75%", sm: "50%", md: "65%", lg: "65%" }}
+                pt={5}
+              >
                 {box.text}
               </Text>
             </Box>
@@ -216,12 +220,14 @@ const Home: NextPage = () => {
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         justifyContent={"space-between"}
+        flexDirection={{ base: "column", lg: "row" }}
       >
         <Flex
-          w="40%"
+          w={{ base: "100%", lg: "50%", "2xl": "40%" }}
           flexDirection={"column"}
           justifyContent={"space-between"}
           gap={5}
+          order={{ base: 2, lg: 1 }}
         >
           {futureData.map((box, index) => (
             <Box
@@ -236,13 +242,25 @@ const Home: NextPage = () => {
               padding={5}
             >
               <Image src={box.imageSrc} />
-              <Text maxW={index === 0 ? "60%" : "90%"} pt={5}>
+              <Text
+                maxW={{
+                  base: "100%",
+                  md: "50%",
+                  lg: index === 0 ? "60%" : "90%",
+                }}
+                pt={5}
+              >
                 {box.text}
               </Text>
             </Box>
           ))}
         </Flex>
-        <Flex w="30%" flexDirection={"column"} justifyContent={"center"}>
+        <Flex
+          w={{ base: "100%", lg: "40%", "2xl": "30%" }}
+          flexDirection={"column"}
+          justifyContent={"center"}
+          order={{ base: 1, lg: 2 }}
+        >
           <Text fontSize={["5xl", null, "7xl"]} fontWeight="300">
             Your future
           </Text>
@@ -255,7 +273,11 @@ const Home: NextPage = () => {
             </Text>
           </Flex>
 
-          <Text fontStyle={"italic"} paddingTop={10}>
+          <Text
+            fontStyle={"italic"}
+            paddingTop={10}
+            paddingBottom={{ base: "60px", lg: 0 }}
+          >
             vFUX: (noun) A measure of one’s value as determined by the other
             members of your workstream in the evaluation stage.
           </Text>
