@@ -78,27 +78,23 @@ const Home: NextPage = () => {
 
   return (
     <Flex
-      // direction={["column", null, "row"]}
       direction={"column"}
-      w={{ base: "100%", "2xl": "1440px" }}
-      paddingInline={{ base: "20px", lg: "40px" }}
+      w={"100%"}
       className="Active"
+      alignItems={"center"}
     >
-      <Flex className="Secton1">
+      <Flex
+        className="Section1"
+        w={{ base: "100%", "2xl": "1440px" }}
+        paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
+        gap={{ base: "0%", lg: "5%" }}
+        position="relative"
+      >
         <Flex
-          direction={"column"}
-          minW={"30%"}
-          paddingBlock={"15%"}
-          style={useBreakpointValue({
-            base: {
-              backgroundImage: `url(${backgroundPng})`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "80%",
-              backgroundPosition: "bottom",
-              opacity: "80%",
-            },
-            lg: { backgroundImage: "none" },
-          })}
+          direction="column"
+          minW="30%"
+          paddingBlock="15%"
+          paddingBottom={{ base: "20%", lg: "15%" }}
         >
           <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
             How many FUX do you give?
@@ -127,39 +123,105 @@ const Home: NextPage = () => {
         <Flex
           display={{ base: "none", lg: "flex" }}
           direction={"column"}
-          minW={"70%"}
+          minW={"65%"}
           fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
           style={{
             backgroundImage: `url(${backgroundPng})`,
             backgroundRepeat: "no-repeat",
             backgroundSize: "100%",
             backgroundPosition: "bottom",
-            opacity: "80%",
+            opacity: "10%",
           }}
         ></Flex>
+        <Image
+          display={{ base: "flex", lg: "none" }}
+          src={backgroundPng}
+          alt="Background Image"
+          objectFit="cover"
+          opacity="0.1"
+          position="absolute"
+          bottom="0"
+          left="50%"
+          width="80%"
+          height="auto"
+          transform="translateX(-50%)"
+        />
       </Flex>
-      <Flex className="Carousel">hey joshua from abhi</Flex>
-      <Flex className="Secton2"></Flex>
-      <Flex className="Secton3"></Flex>
-      <Flex className="Secton4"></Flex>
-      <Flex className="Secton5"></Flex>
-      <Box minW={"50%"} pl={[0, null, 12]} pt={[12, null, 0]}>
-        <VStack gap={3} align="left">
-          <Text textAlign="left" my={3} fontWeight="900">
-            The FUX flywheel
+      <Flex className="Carousel" height={"300px"}>
+        hey joshua from abhi
+      </Flex>
+      <Flex
+        className="Secton2"
+        w={{ base: "100%", "2xl": "1440px" }}
+        paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
+        justifyContent={"space-between"}
+        height={"300px"}
+      >
+        <Flex w="40%">IMAGE HERE IMAGE HERE IMAGE HERE</Flex>
+        <Flex w="40%">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates,
+          illo. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Distinctio, laboriosam temporibus? Ullam veritatis earum, minima
+          aliquam, adipisci, itaque illum rerum nulla harum accusantium fugit
+          placeat explicabo nisi numquam porro a!
+        </Flex>
+      </Flex>
+      <Flex
+        className="Secton3"
+        w={{ base: "100%", "2xl": "1440px" }}
+        paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
+        flexDirection={"column"}
+        justifyContent={"center"}
+        height={"300px"}
+      >
+        <Flex w="100%" justifyContent={"center"}>
+          Why should you give a FUX?
+        </Flex>
+        <Flex w="100%" justifyContent={"center"}>
+          Insert 6 icons here
+        </Flex>
+      </Flex>
+      <Flex
+        className="Secton4"
+        w={{ base: "100%", "2xl": "1440px" }}
+        paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
+        justifyContent={"space-between"}
+        height={"300px"}
+      >
+        <Flex w="40%" flexDirection={"column"} justifyContent={"space-between"}>
+          <Text>Box 1 HERE</Text>
+          <Text>Box 2 HERE</Text>
+          <Text>Box 3 HERE</Text>
+        </Flex>
+        <Flex w="40%" flexDirection={"column"} justifyContent={"center"}>
+          <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
+            Your future with vFUX
           </Text>
-          <Text>1. CREATE Workstream(s) and invite contributors</Text>
+
           <Text>
-            2. GIVE FUX: Contributors stake their attention into workstreams.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates,
+            illo. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Distinctio, laboriosam temporibus? Ullam veritatis earum, minima
+            aliquam, adipisci, itaque illum rerum nulla harum accusantium fugit
+            placeat explicabo nisi numquam porro a!
           </Text>
-          <Text>
-            3. GET vFUX: Peer to Peer evaluations of perceived value created.
-          </Text>
-          <Text>
-            <i>... Repeat</i>
-          </Text>
-        </VStack>
-      </Box>
+        </Flex>
+      </Flex>
+      <Flex
+        className="Secton4"
+        w={{ base: "100%", "2xl": "1440px" }}
+        paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
+        flexDirection={"column"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        height={"300px"}
+      >
+        <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
+          Ready to give some FUX
+        </Text>
+        <ConnectWallet />
+      </Flex>
+      <Flex className="FOOTER COMPONENT HERE">FOOTER COMPONENT HERE</Flex>
     </Flex>
   );
 };
