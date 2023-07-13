@@ -12,18 +12,23 @@ import {
   Spacer,
   useBreakpointValue,
   Grid,
+  Center,
+  StackDivider,
 } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import NextLink from "next/link";
+import { relative } from "path";
 import { useAccount, useContractRead } from "wagmi";
 
 // Create Test Commit For Collaborative WorkFlow
 
-const backgroundSvg = "/images/FUX.svg";
 const backgroundPng = "/images/FUX.png";
-const icon1 = "../icons/FUX.png";
+const gradientDark = "#1B131C";
+const gradientLight = "#B956BF";
+
+const btnPurple = "#8E4EC6";
 
 const Home: NextPage = () => {
   const { address, isConnecting } = useAccount();
@@ -76,10 +81,6 @@ const Home: NextPage = () => {
       <ConnectWallet />
     </Flex>
   );
-  const gradientDark = "#1B131C";
-  const gradientLight = "#B956BF";
-
-  const gradient = `linear-gradient(180deg, ${gradientDark} 25%, ${gradientLight} 45%, ${gradientLight} 65%, ${gradientDark} 85%)`;
 
   return (
     <Flex
@@ -87,7 +88,7 @@ const Home: NextPage = () => {
       w={"100%"}
       className="Active"
       alignItems={"center"}
-      bgGradient={gradient}
+      bgGradient={`linear-gradient(180deg, ${gradientDark} 25%, ${gradientLight} 45%, ${gradientLight} 65%, ${gradientDark} 85%)`}
     >
       <Flex
         className="Section1"
@@ -95,18 +96,18 @@ const Home: NextPage = () => {
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         gap={{ base: "0%", lg: "5%" }}
         position="relative"
-        // backgroundColor={"#1B131C"}
+        zIndex={1}
       >
         <Flex
           direction="column"
-          minW="30%"
+          w={{ base: "100%", sm: "100%", md: "80%", lg: "40%" }}
           paddingBlock="15%"
           paddingBottom={{ base: "20%", lg: "15%" }}
         >
           <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
             How many FUX do you give?
           </Text>
-          <Text fontSize={["lg", null, "xl"]} my={3}>
+          <Text pt={10} fontSize={["lg", null, "xl"]} my={3}>
             Gain perspective on how to allocate your most valuable asset: your
             attention.
           </Text>
@@ -114,7 +115,7 @@ const Home: NextPage = () => {
             Your FUX allocation equals how much time you can dedicate to the
             project.
           </Text>
-          <Spacer />
+          <Spacer pt={10} />
           {isConnecting ? (
             <Spinner size="md" />
           ) : address ? (
@@ -124,13 +125,13 @@ const Home: NextPage = () => {
               claimLink
             )
           ) : (
-            connectWallet
+            <ConnectWallet />
           )}
         </Flex>
         <Flex
           display={{ base: "none", lg: "flex" }}
           direction={"column"}
-          minW={"65%"}
+          w={"60%"}
           fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
           style={{
             backgroundImage: `url(${backgroundPng})`,
@@ -221,6 +222,7 @@ const Home: NextPage = () => {
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         justifyContent={"space-between"}
         flexDirection={{ base: "column", lg: "row" }}
+        paddingTop={{ base: "0px", lg: "100px" }}
       >
         <Flex
           w={{ base: "100%", lg: "50%", "2xl": "40%" }}
@@ -290,14 +292,125 @@ const Home: NextPage = () => {
         flexDirection={"column"}
         justifyContent={"center"}
         alignItems={"center"}
-        height={"300px"}
+        paddingBlock={"150px"}
+        position={"relative"}
       >
-        <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
-          Ready to give some FUX
+        <Text
+          fontSize={["5xl", null, "6xl"]}
+          fontWeight="300"
+          textAlign={"center"}
+          paddingBottom={"50px"}
+          width={{ base: "80%", lg: "40%" }}
+        >
+          Ready to give some FUX?
         </Text>
-        <ConnectWallet />
+        <Flex zIndex={1}>
+          <ConnectWallet />
+        </Flex>
+        <Image
+          src={backgroundPng}
+          alt="Background Image"
+          objectFit="cover"
+          opacity="0.1"
+          position="absolute"
+          bottom="10%"
+          left="50%"
+          width="80%"
+          height="auto"
+          transform="translateX(-50%)"
+          zIndex={0}
+        />
       </Flex>
-      <Flex className="FOOTER COMPONENT HERE">FOOTER COMPONENT HERE</Flex>
+      <Flex
+        className="FOOTER COMPONENT HERE"
+        w={{ base: "100%", "2xl": "1440px" }}
+        paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
+        flexDirection={"column"}
+        width={"100%"}
+        alignItems={"center"}
+      >
+        <Box width={"100%"} height={"1px"} bgColor={btnPurple}></Box>
+        <Flex
+          width={"100%"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          <Link
+            href="/"
+            _hover={{
+              textDecoration: "none",
+            }}
+          >
+            <Box paddingBlock={5}>
+              <Text
+                color={"white"}
+                fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
+                fontWeight="900"
+              >
+                FUX
+              </Text>
+            </Box>
+          </Link>
+
+          <Flex alignItems={"center"} color={btnPurple}>
+            <Link
+              href="/workstreams"
+              _hover={{
+                textDecoration: "none",
+              }}
+            >
+              <Box paddingInline={5} paddingBlock={5}>
+                <Text color={"#FFFFFF"}>WORKSTREAMS</Text>
+              </Box>
+            </Link>
+            |
+            <Link
+              href="/history"
+              _hover={{
+                textDecoration: "none",
+              }}
+            >
+              <Box paddingInline={5} paddingBlock={5}>
+                <Text color={"#FFFFFF"}>HISTORY</Text>
+              </Box>
+            </Link>
+            |
+            <Link
+              href="https://fux-docs.vercel.app/#what-is-fux"
+              _hover={{
+                textDecoration: "none",
+              }}
+            >
+              <Box paddingInline={5} paddingBlock={5}>
+                <Text color={"#FFFFFF"}>ABOUT</Text>
+              </Box>
+            </Link>{" "}
+            |
+            <Link
+              href="https://fux-docs.vercel.app/"
+              _hover={{
+                textDecoration: "none",
+              }}
+            >
+              <Box paddingInline={5} paddingBlock={5}>
+                <Text color={"#FFFFFF"}>DOCS</Text>
+              </Box>
+            </Link>
+          </Flex>
+          <Flex gap={5}>
+            <Link href="https://twitter.com/bitbeckers">
+              <Box paddingBlock={5}>
+                <Image src="/images/twitter.svg" />
+              </Box>
+            </Link>
+            <Link href="https://github.com/bitbeckers/fux-dapp">
+              <Box paddingBlock={5}>
+                <Image src="/images/discord.svg" />
+              </Box>
+            </Link>
+          </Flex>
+        </Flex>
+      </Flex>
     </Flex>
   );
 };
