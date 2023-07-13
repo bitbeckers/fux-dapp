@@ -5,29 +5,24 @@ import {
   Box,
   Button,
   Flex,
-  VStack,
   Text,
   Link,
   Spinner,
   Spacer,
   useBreakpointValue,
   Grid,
-  Center,
-  StackDivider,
+  OrderedList,
+  ListItem,
 } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import NextLink from "next/link";
-import { relative } from "path";
 import { useAccount, useContractRead } from "wagmi";
-
-// Create Test Commit For Collaborative WorkFlow
 
 const backgroundPng = "/images/FUX.png";
 const gradientDark = "#1B131C";
 const gradientLight = "#B956BF";
-
 const btnPurple = "#8E4EC6";
 
 const Home: NextPage = () => {
@@ -90,6 +85,7 @@ const Home: NextPage = () => {
       alignItems={"center"}
       bgGradient={`linear-gradient(180deg, ${gradientDark} 25%, ${gradientLight} 45%, ${gradientLight} 65%, ${gradientDark} 85%)`}
     >
+      {/* INTRO SECTION */}
       <Flex
         className="Section1"
         w={{ base: "100%", "2xl": "1440px" }}
@@ -155,27 +151,58 @@ const Home: NextPage = () => {
           transform="translateX(-50%)"
         />
       </Flex>
+
+      {/* CAROUSEL SECTION */}
       <Flex className="Carousel" height={"300px"}>
         hey joshua from abhi
       </Flex>
+
+      {/* THE FUX FLYWHEEL */}
       <Flex
-        className="Secton2"
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         justifyContent={"space-between"}
-        height={"300px"}
+        flexDirection={{ base: "column-reverse", lg: "row" }}
       >
-        <Flex w="40%">IMAGE HERE IMAGE HERE IMAGE HERE</Flex>
-        <Flex w="40%">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates,
-          illo. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Distinctio, laboriosam temporibus? Ullam veritatis earum, minima
-          aliquam, adipisci, itaque illum rerum nulla harum accusantium fugit
-          placeat explicabo nisi numquam porro a!
+        <Flex w={{ base: "100%", md: "80%", lg: "50%" }} alignSelf={"center"}>
+          <Image src="/images/FuxFlyWheel.png" objectFit="cover" />
+        </Flex>
+        <Flex
+          w={{ base: "100%", lg: "40%" }}
+          alignItems={"flex-start"}
+          display={"flex"}
+          gap={10}
+          flexDirection={"column"}
+          justifyContent={"center"}
+          paddingBottom={{ base: "10", md: "20", lg: "0" }}
+        >
+          <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
+            The FUX flywheel
+          </Text>
+          <OrderedList
+            display={"flex"}
+            gap={10}
+            flexDirection={"column"}
+            fontSize={["lg", null, "xl"]}
+          >
+            <ListItem>CREATE Workstream(s) and invite contributors.</ListItem>
+            <ListItem>
+              GIVE FUX: Contributors stake their attention into workstreams.
+            </ListItem>
+            <ListItem>
+              GET vFUX: Peer to Peer evaluations of perceived value created.
+            </ListItem>
+            <ListItem>
+              GROW your skills by learning from your evaluations and contribute
+              to new workstreams.
+            </ListItem>
+            <ListItem listStyleType={"none"}>... Repeat</ListItem>
+          </OrderedList>
         </Flex>
       </Flex>
+
+      {/* WHY SHOULD YOU GIVE A FUX */}
       <Flex
-        className="Section3"
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         flexDirection="column"
@@ -194,7 +221,7 @@ const Home: NextPage = () => {
             lg: "repeat(3, 1fr)",
           }}
           gap={{ base: 5, lg: 20 }}
-          pt={40}
+          pt={{ base: 20, md: 20, lg: 40 }}
         >
           {boxData.map((box, index) => (
             <Box
@@ -216,8 +243,9 @@ const Home: NextPage = () => {
           ))}
         </Grid>
       </Flex>
+
+      {/* FUTURE WITH VFUX */}
       <Flex
-        className="Secton4"
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         justifyContent={"space-between"}
@@ -285,8 +313,9 @@ const Home: NextPage = () => {
           </Text>
         </Flex>
       </Flex>
+
+      {/* CLOSING SECTION */}
       <Flex
-        className="Secton4"
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         flexDirection={"column"}
@@ -321,8 +350,9 @@ const Home: NextPage = () => {
           zIndex={0}
         />
       </Flex>
+
+      {/* FOOTER */}
       <Flex
-        className="FOOTER COMPONENT HERE"
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
         flexDirection={"column"}
