@@ -21,6 +21,8 @@ import {
 } from "@chakra-ui/react";
 import { MouseEventHandler } from "react";
 
+const linkColor = "gray.200";
+const linkHoverColor = "white";
 interface NavItem {
   label: string;
   subLabel?: string;
@@ -113,9 +115,6 @@ export default function Header() {
 }
 
 const DesktopNav = () => {
-  const linkColor = useColorModeValue("gray.600", "gray.200");
-  const linkHoverColor = useColorModeValue("gray.800", "white");
-
   return (
     <Stack direction="row" spacing={4}>
       {NAV_ITEMS.map((navItem) => (
@@ -148,16 +147,17 @@ const MobileNav: React.FC<MobileNavProps> = ({ onToggle }) => {
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
-      <Box
+      <Flex
         onClick={onToggle}
         w="100%"
-        align="center"
         display={{ base: "", md: "none" }}
         pt={5}
       >
-        <WorkstreamModal onCloseAction={() => {}} />
-      </Box>
-      <Box onClick={onToggle} w="100%" align="center" py={5}>
+        <Flex justify="center" className="ALTO">
+          <WorkstreamModal onCloseAction={() => {}} />
+        </Flex>
+      </Flex>
+      <Box onClick={onToggle} w="100%" py={5}>
         <Flex
           as={Link}
           justify="center"
@@ -189,15 +189,18 @@ const MobileNavItem: React.FC<NavItem> = ({ label, children, href }) => {
         href={href ?? "#"}
         justify="center"
         alignContent="center"
+        width="100%"
         _hover={{
           textDecoration: "none",
         }}
-        width="100%"
       >
         <Text
           fontWeight={300}
           fontSize={16}
-          color={useColorModeValue("gray.600", "gray.200")}
+          color={linkColor}
+          _hover={{
+            color: linkHoverColor,
+          }}
         >
           {label}
         </Text>
