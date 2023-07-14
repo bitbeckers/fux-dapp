@@ -21,18 +21,36 @@ import {
 } from "@chakra-ui/react";
 import { MouseEventHandler } from "react";
 
+interface NavItem {
+  label: string;
+  subLabel?: string;
+  children?: Array<NavItem>;
+  href?: string;
+}
+
+const NAV_ITEMS: Array<NavItem> = [
+  {
+    label: "WORKSTREAMS",
+    href: "/workstreams",
+  },
+  {
+    label: "HISTORY",
+    href: "/history",
+  },
+];
+
 export default function Header() {
   const { isOpen, onToggle } = useDisclosure();
 
   return (
-    <Flex w={"100%"} flexDirection={"column"}>
+    <Flex w="100%" flexDirection="column">
       <Flex
-        w={"100%"}
-        bg={"#221527"}
+        w="100%"
+        bg="#221527"
         borderBottom={1}
         borderStyle="solid"
         borderColor="white"
-        justifyContent={"center"}
+        justifyContent="center"
       >
         <Flex
           h="80px"
@@ -50,7 +68,7 @@ export default function Header() {
               }}
             >
               <Text
-                color={"white"}
+                color="white"
                 fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
                 fontWeight="900"
               >
@@ -80,8 +98,8 @@ export default function Header() {
                     <HamburgerIcon w={5} h={5} />
                   )
                 }
-                variant={"ghost"}
-                aria-label={"Toggle Navigation"}
+                variant="ghost"
+                aria-label="Toggle Navigation"
               />
             </Flex>
           </Flex>
@@ -99,33 +117,32 @@ const DesktopNav = () => {
   const linkHoverColor = useColorModeValue("gray.800", "white");
 
   return (
-    <Stack direction={"row"} spacing={4}>
+    <Stack direction="row" spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        <Box key={navItem.label}>
-          <Link
-            p={2}
-            href={navItem.href ?? "#"}
-            fontWeight={300}
-            fontSize={16}
-            color={linkColor}
-            _hover={{
-              textDecoration: "none",
-              color: linkHoverColor,
-            }}
-          >
-            {navItem.label}
-          </Link>
-        </Box>
+        <Link
+          p={2}
+          href={navItem.href ?? "#"}
+          fontWeight={300}
+          fontSize={16}
+          color={linkColor}
+          _hover={{
+            textDecoration: "none",
+            color: linkHoverColor,
+          }}
+          key={navItem.label}
+        >
+          <Box paddingBlock={5}>{navItem.label}</Box>
+        </Link>
       ))}
     </Stack>
   );
 };
 
-interface MobileNav {
+interface MobileNavProps {
   onToggle: MouseEventHandler;
 }
 
-const MobileNav = ({ onToggle }: MobileNav) => {
+const MobileNav: React.FC<MobileNavProps> = ({ onToggle }) => {
   return (
     <Stack bg="#221527" px={0} display={{ lg: "none" }} pt={0}>
       {NAV_ITEMS.map((navItem) => (
@@ -133,27 +150,26 @@ const MobileNav = ({ onToggle }: MobileNav) => {
       ))}
       <Box
         onClick={onToggle}
-        w={"100%"}
+        w="100%"
         align="center"
         display={{ base: "", md: "none" }}
         pt={5}
       >
         <WorkstreamModal onCloseAction={() => {}} />
       </Box>
-      <Box onClick={onToggle} w={"100%"} align="center" py={5}>
+      <Box onClick={onToggle} w="100%" align="center" py={5}>
         <Flex
-          //
           as={Link}
-          justify={"center"}
-          alignContent={"center"}
+          justify="center"
+          alignContent="center"
           _hover={{
             textDecoration: "none",
           }}
-          width={"100%"}
+          width="100%"
         >
           <Icon
             as={ArrowBackIcon}
-            transition={"all .25s ease-in-out"}
+            transition="all .25s ease-in-out"
             w={6}
             h={6}
           />
@@ -163,20 +179,20 @@ const MobileNav = ({ onToggle }: MobileNav) => {
   );
 };
 
-const MobileNavItem = ({ label, children, href }: NavItem) => {
+const MobileNavItem: React.FC<NavItem> = ({ label, children, href }) => {
   const { isOpen, onToggle } = useDisclosure();
 
   return (
-    <Stack onClick={children && onToggle} align={"center"} pt={5}>
+    <Stack onClick={children && onToggle} align="center" pt={5}>
       <Flex
         as={Link}
         href={href ?? "#"}
-        justify={"center"}
-        alignContent={"center"}
+        justify="center"
+        alignContent="center"
         _hover={{
           textDecoration: "none",
         }}
-        width={"100%"}
+        width="100%"
       >
         <Text
           fontWeight={300}
@@ -188,7 +204,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         {children && (
           <Icon
             as={ChevronDownIcon}
-            transition={"all .25s ease-in-out"}
+            transition="all .25s ease-in-out"
             transform={isOpen ? "rotate(180deg)" : ""}
             w={6}
             h={6}
@@ -198,21 +214,3 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
     </Stack>
   );
 };
-
-interface NavItem {
-  label: string;
-  subLabel?: string;
-  children?: Array<NavItem>;
-  href?: string;
-}
-
-const NAV_ITEMS: Array<NavItem> = [
-  {
-    label: "WORKSTREAMS",
-    href: "/workstreams",
-  },
-  {
-    label: "HISTORY",
-    href: "/history",
-  },
-];
