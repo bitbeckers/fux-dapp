@@ -15,7 +15,6 @@ import {
   Collapse,
   Icon,
   Link,
-  useColorModeValue,
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
