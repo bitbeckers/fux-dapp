@@ -173,7 +173,7 @@ const Home: NextPage = () => {
             keyboard={true}
             modules={[Navigation, Pagination, Mousewheel, Keyboard]}
           >
-            {swiperContent.map((slide, index) => (
+            {swiperContent.map((slide, index, alt) => (
               <SwiperSlide key={index}>
                 <Flex
                   flexDirection="column"
@@ -205,7 +205,11 @@ const Home: NextPage = () => {
                     </Text>
                     <Text>{slide.text}</Text>
                   </Flex>
-                  <Image src={slide.imageSrc} objectFit="cover" />
+                  <Image
+                    src={slide.imageSrc}
+                    objectFit="cover"
+                    alt={slide.alt}
+                  />
                 </Flex>
               </SwiperSlide>
             ))}
@@ -221,7 +225,11 @@ const Home: NextPage = () => {
         flexDirection={{ base: "column-reverse", lg: "row" }}
       >
         <Flex w={{ base: "100%", md: "80%", lg: "50%" }} alignSelf="center">
-          <Image src="/images/FuxFlyWheel.png" objectFit="cover" />
+          <Image
+            src="/images/FuxFlyWheel.png"
+            alt="Flywheel image"
+            objectFit="cover"
+          />
         </Flex>
         <Flex
           w={{ base: "100%", lg: "40%" }}
@@ -279,7 +287,7 @@ const Home: NextPage = () => {
           gap={{ base: 5, lg: 20 }}
           pt={{ base: 20, md: 20, lg: 40 }}
         >
-          {boxData.map((box, index) => (
+          {boxData.map((box, index, alt) => (
             <Box
               key={index}
               display="flex"
@@ -287,7 +295,7 @@ const Home: NextPage = () => {
               alignItems="center"
               justifyContent="flex-start"
             >
-              <Image src={box.imageSrc} />
+              <Image src={box.imageSrc} alt={box.alt} />
               <Text
                 textAlign="center"
                 maxW={{ base: "75%", sm: "50%", md: "65%", lg: "65%" }}
@@ -315,7 +323,7 @@ const Home: NextPage = () => {
           gap={5}
           order={{ base: 2, lg: 1 }}
         >
-          {futureData.map((box, index) => (
+          {futureData.map((box, index, alt) => (
             <Box
               borderRadius={8}
               border="1px"
@@ -327,7 +335,7 @@ const Home: NextPage = () => {
               justifyContent="flex-start"
               padding={5}
             >
-              <Image src={box.imageSrc} />
+              <Image src={box.imageSrc} alt={box.alt} />
               <Text
                 maxW={{
                   base: "100%",
@@ -453,10 +461,12 @@ const Home: NextPage = () => {
             <SocialLink
               href="https://twitter.com/bitbeckers"
               icon="/images/twitter.svg"
+              alt="twitter"
             />
             <SocialLink
               href="https://github.com/bitbeckers/fux-dapp"
               icon="/images/discord.svg"
+              alt="discord"
             />
           </Flex>
         </Flex>
@@ -484,12 +494,13 @@ const NavLink: React.FC<NavLinkProps> = ({ href, children }) => (
 interface SocialLinkProps {
   href: string;
   icon: string;
+  alt: string;
 }
 
-const SocialLink: React.FC<SocialLinkProps> = ({ href, icon }) => (
+const SocialLink = ({ href, icon, alt }: SocialLinkProps) => (
   <Link href={href}>
     <Box paddingBlock={5}>
-      <Image src={icon} />
+      <Image src={icon} alt={alt} />
     </Box>
   </Link>
 );
@@ -497,40 +508,49 @@ const boxData = [
   {
     imageSrc: "/images/Icon_1.svg",
     text: "Avoid burnout due to overcommitting",
+    alt: "Burn out icon",
   },
   {
     imageSrc: "/images/Icon_2.svg",
     text: "Easily calculate your capacity for new projects",
+    alt: "Capacity icon",
   },
   {
     imageSrc: "/images/Icon_3.svg",
     text: "Enhance your time management skills with one place to view all your projects and commitments",
+    alt: "Time Icon",
   },
   {
     imageSrc: "/images/Icon_4.svg",
     text: "Provides projects coordinators a peace of mind to know who is committed",
+    alt: "coordinate icon",
   },
   {
     imageSrc: "/images/Icon_5.svg",
     text: "Helps you manage and identify over commitments across all your projects",
+    alt: "identify commitments icon",
   },
   {
     imageSrc: "/images/Icon_6.svg",
     text: "Learn how teammates value your contributions to help your continual skill growth",
+    alt: "contribution icon",
   },
 ];
 const futureData = [
   {
     imageSrc: "/images/Feedback.svg",
     text: "Receive feedback from fellow workstream participants",
+    alt: "feedback icon",
   },
   {
     imageSrc: "/images/Dimond.svg",
     text: "Assign value based on vFUX evaluations if a workstream is funded",
+    alt: "diamond icon",
   },
   {
     imageSrc: "/images/Collective.svg",
     text: "Distribute funds across workstream participants based on vFUX ratings",
+    alt: "collective icon",
   },
 ];
 
@@ -539,21 +559,31 @@ const swiperContent = [
     number: "1",
     text: "Connect your wallet and claim your FUX",
     imageSrc: "/images/Display1.png",
+    alt: "Guide image 1",
   },
   {
     number: "2",
     text: "Allocate your FUX to workstreams",
     imageSrc: "/images/Display2.png",
+    alt: "Guide image 1",
   },
   {
     number: "3",
     text: "Get vFUX and evaluate your fellow workstream participants",
     imageSrc: "/images/Display3.png",
+    alt: "Guide image 5",
   },
   {
     number: "4",
     text: "Improve your skills and grow with FUX",
     imageSrc: "/images/Display4.png",
+    alt: "Guide image 4",
+  },
+  {
+    number: "5",
+    text: "Evaluate completed workstreams and distribute vFUX across contributors",
+    imageSrc: "/images/Display5.png",
+    alt: "Guide image 5",
   },
 ];
 
