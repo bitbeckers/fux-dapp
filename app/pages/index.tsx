@@ -13,7 +13,6 @@ import {
   Grid,
   OrderedList,
   ListItem,
-  Center,
 } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
@@ -55,10 +54,10 @@ const Home: NextPage = () => {
   console.log("fuxBalance as string", fuxBalance?.toString());
 
   const claimLink = (
-    <Flex direction={"column"} gap={2}>
+    <Flex direction="column" gap={2}>
       <Text fontWeight="500">Get started.</Text>
       <NextLink href="/start" passHref>
-        <Button p={"1em"} maxW={"xs"}>
+        <Button p="1em" maxW="xs">
           <Link>Enter</Link>
         </Button>
       </NextLink>
@@ -66,30 +65,26 @@ const Home: NextPage = () => {
   );
 
   const workstreamLink = (
-    <Flex direction={"column"} gap={2}>
+    <Flex direction="column" gap={2}>
       <Text fontWeight="500">View your workstreams.</Text>
       <NextLink href="/workstreams" passHref>
-        <Button p={"1em"} maxW={"xs"}>
+        <Button p="1em" maxW="xs">
           <Link>Workstreams</Link>
         </Button>
       </NextLink>
     </Flex>
   );
 
-  const connectWallet = (
-    <Flex direction={"column"} gap={2}>
-      <Text fontWeight="500">Let&apos;s get connected.</Text>
-      <ConnectWallet />
-    </Flex>
-  );
-
   return (
     <Flex
-      direction={"column"}
-      w={"100%"}
+      direction="column"
+      w="100%"
       className="Active"
-      alignItems={"center"}
-      bgGradient={`linear-gradient(180deg, ${gradientDark} 25%, ${gradientLight} 45%, ${gradientLight} 65%, ${gradientDark} 85%)`}
+      alignItems="center"
+      bgGradient={{
+        base: `linear-gradient(180deg, ${gradientDark} 10%, ${gradientLight} 30%, ${gradientLight} 65%, ${gradientDark} 85%)`,
+        lg: `linear-gradient(180deg, ${gradientDark} 25%, ${gradientLight} 45%, ${gradientLight} 65%, ${gradientDark} 85%)`,
+      }}
     >
       {/* INTRO SECTION */}
       <Flex
@@ -132,8 +127,8 @@ const Home: NextPage = () => {
         </Flex>
         <Flex
           display={{ base: "none", lg: "flex" }}
-          direction={"column"}
-          w={"60%"}
+          direction="column"
+          w="60%"
           fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
           style={{
             backgroundImage: `url(${backgroundPng})`,
@@ -160,11 +155,11 @@ const Home: NextPage = () => {
 
       {/* CAROUSEL SECTION */}
       <Flex
-        width={"100%"}
-        flexDirection={"column"}
+        width="100%"
+        flexDirection="column"
         paddingBottom={{ base: 100, lg: 200 }}
       >
-        <Flex width={"100%"}>
+        <Flex width="100%">
           <Swiper
             pagination={{
               clickable: true,
@@ -181,20 +176,24 @@ const Home: NextPage = () => {
             {swiperContent.map((slide, index) => (
               <SwiperSlide key={index}>
                 <Flex
-                  flexDirection={"column"}
-                  height={"100%"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
+                  flexDirection="column"
+                  height="100%"
+                  justifyContent="space-between"
+                  alignItems="center"
                 >
                   <Flex
-                    width={"100%"}
-                    justifyContent={"center"}
-                    fontSize={{ base: "small", md: "lg", "2xl": "xl" }}
+                    width="100%"
+                    justifyContent="center"
+                    fontSize={{
+                      base: "small",
+                      md: "lg",
+                      "2xl": "xl",
+                    }}
                     maxW={{ base: "100%", sm: "80%" }}
                     fontWeight={300}
                     pb={10}
                     paddingInline={7}
-                    textAlign={"center"}
+                    textAlign="center"
                     flexDirection={{ base: "column", sm: "row" }}
                   >
                     <Text
@@ -218,28 +217,28 @@ const Home: NextPage = () => {
       <Flex
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
-        justifyContent={"space-between"}
+        justifyContent="space-between"
         flexDirection={{ base: "column-reverse", lg: "row" }}
       >
-        <Flex w={{ base: "100%", md: "80%", lg: "50%" }} alignSelf={"center"}>
+        <Flex w={{ base: "100%", md: "80%", lg: "50%" }} alignSelf="center">
           <Image src="/images/FuxFlyWheel.png" objectFit="cover" />
         </Flex>
         <Flex
           w={{ base: "100%", lg: "40%" }}
-          alignItems={"flex-start"}
-          display={"flex"}
+          alignItems="flex-start"
+          display="flex"
           gap={10}
-          flexDirection={"column"}
-          justifyContent={"center"}
+          flexDirection="column"
+          justifyContent="center"
           paddingBottom={{ base: "10", md: "20", lg: "0" }}
         >
           <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
             The FUX flywheel
           </Text>
           <OrderedList
-            display={"flex"}
+            display="flex"
             gap={10}
-            flexDirection={"column"}
+            flexDirection="column"
             fontSize={["lg", null, "xl"]}
           >
             <ListItem>CREATE Workstream(s) and invite contributors.</ListItem>
@@ -253,7 +252,7 @@ const Home: NextPage = () => {
               GROW your skills by learning from your evaluations and contribute
               to new workstreams.
             </ListItem>
-            <ListItem listStyleType={"none"}>... Repeat</ListItem>
+            <ListItem listStyleType="none">... Repeat</ListItem>
           </OrderedList>
         </Flex>
       </Flex>
@@ -543,23 +542,18 @@ const swiperContent = [
   },
   {
     number: "2",
-    text: "Create a project workstream and add contributors",
+    text: "Allocate your FUX to workstreams",
     imageSrc: "/images/Display2.png",
   },
   {
     number: "3",
-    text: "View all workstreams you've created and/or are contributing to in one place",
+    text: "Get vFUX and evaluate your fellow workstream participants",
     imageSrc: "/images/Display3.png",
   },
   {
     number: "4",
-    text: "Commit FUX to your workstreams based on your capacity",
+    text: "Improve your skills and grow with FUX",
     imageSrc: "/images/Display4.png",
-  },
-  {
-    number: "5",
-    text: "Evaluate completed workstreams and distribute vFUX across contributors",
-    imageSrc: "/images/Display5.png",
   },
 ];
 
