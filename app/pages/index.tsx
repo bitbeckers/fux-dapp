@@ -13,11 +13,17 @@ import {
   Grid,
   OrderedList,
   ListItem,
+  Center,
 } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import NextLink from "next/link";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useAccount, useContractRead } from "wagmi";
 
 const backgroundPng = "/images/FUX.png";
@@ -153,8 +159,59 @@ const Home: NextPage = () => {
       </Flex>
 
       {/* CAROUSEL SECTION */}
-      <Flex className="Carousel" height={"300px"}>
-        hey joshua from abhi
+      <Flex
+        width={"100%"}
+        flexDirection={"column"}
+        paddingBottom={{ base: 100, lg: 200 }}
+      >
+        <Flex width={"100%"}>
+          <Swiper
+            pagination={{
+              clickable: true,
+            }}
+            cssMode={true}
+            navigation={useBreakpointValue({ base: false, md: true })}
+            mousewheel={true}
+            slidesPerView={1.3}
+            spaceBetween={useBreakpointValue({ base: 15, md: 40 })}
+            centeredSlides={true}
+            keyboard={true}
+            modules={[Navigation, Pagination, Mousewheel, Keyboard]}
+          >
+            {swiperContent.map((slide, index) => (
+              <SwiperSlide key={index}>
+                <Flex
+                  flexDirection={"column"}
+                  height={"100%"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                >
+                  <Flex
+                    width={"100%"}
+                    justifyContent={"center"}
+                    fontSize={{ base: "small", md: "lg", "2xl": "xl" }}
+                    maxW={{ base: "100%", sm: "80%" }}
+                    fontWeight={300}
+                    pb={10}
+                    paddingInline={7}
+                    textAlign={"center"}
+                    flexDirection={{ base: "column", sm: "row" }}
+                  >
+                    <Text
+                      fontWeight={900}
+                      paddingRight={{ base: 0, sm: 5 }}
+                      paddingBottom={{ base: 5, sm: 0 }}
+                    >
+                      {slide.number}
+                    </Text>
+                    <Text>{slide.text}</Text>
+                  </Flex>
+                  <Image src={slide.imageSrc} objectFit="cover" />
+                </Flex>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Flex>
       </Flex>
 
       {/* THE FUX FLYWHEEL */}
@@ -248,22 +305,22 @@ const Home: NextPage = () => {
       <Flex
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
-        justifyContent={"space-between"}
+        justifyContent="space-between"
         flexDirection={{ base: "column", lg: "row" }}
         paddingTop={{ base: "0px", lg: "100px" }}
       >
         <Flex
           w={{ base: "100%", lg: "50%", "2xl": "40%" }}
-          flexDirection={"column"}
-          justifyContent={"space-between"}
+          flexDirection="column"
+          justifyContent="space-between"
           gap={5}
           order={{ base: 2, lg: 1 }}
         >
           {futureData.map((box, index) => (
             <Box
               borderRadius={8}
-              border={"1px"}
-              borderColor={"white"}
+              border="1px"
+              borderColor="white"
               key={index}
               display="flex"
               flexDirection="column"
@@ -287,8 +344,8 @@ const Home: NextPage = () => {
         </Flex>
         <Flex
           w={{ base: "100%", lg: "40%", "2xl": "30%" }}
-          flexDirection={"column"}
-          justifyContent={"center"}
+          flexDirection="column"
+          justifyContent="center"
           order={{ base: 1, lg: 2 }}
         >
           <Text fontSize={["5xl", null, "7xl"]} fontWeight="300">
@@ -302,9 +359,8 @@ const Home: NextPage = () => {
               FUX
             </Text>
           </Flex>
-
           <Text
-            fontStyle={"italic"}
+            fontStyle="italic"
             paddingTop={10}
             paddingBottom={{ base: "60px", lg: 0 }}
           >
@@ -318,17 +374,17 @@ const Home: NextPage = () => {
       <Flex
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
-        flexDirection={"column"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        paddingBlock={"150px"}
-        position={"relative"}
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        paddingBlock="150px"
+        position="relative"
       >
         <Text
           fontSize={["5xl", null, "6xl"]}
           fontWeight="300"
-          textAlign={"center"}
-          paddingBottom={"50px"}
+          textAlign="center"
+          paddingBottom="50px"
           width={{ base: "80%", lg: "40%" }}
         >
           Ready to give some FUX?
@@ -355,25 +411,21 @@ const Home: NextPage = () => {
       <Flex
         w={{ base: "100%", "2xl": "1440px" }}
         paddingInline={{ base: "20px", lg: "40px", "2xl": "0px" }}
-        flexDirection={"column"}
-        width={"100%"}
-        alignItems={"center"}
+        flexDirection="column"
+        width="100%"
+        alignItems="center"
       >
-        <Box width={"100%"} height={"1px"} bgColor={btnPurple}></Box>
+        <Box width="100%" height="1px" bgColor={btnPurple}></Box>
         <Flex
-          width={"100%"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
+          flexDirection={{ base: "column", md: "row" }}
+          alignItems={{ base: "flex-start", sm: "center" }}
+          width="100%"
+          justifyContent="space-between"
         >
-          <Link
-            href="/"
-            _hover={{
-              textDecoration: "none",
-            }}
-          >
+          <Link href="/" _hover={{ textDecoration: "none" }}>
             <Box paddingBlock={5}>
               <Text
-                color={"white"}
+                color="white"
                 fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
                 fontWeight="900"
               >
@@ -382,62 +434,31 @@ const Home: NextPage = () => {
             </Box>
           </Link>
 
-          <Flex alignItems={"center"} color={btnPurple}>
-            <Link
-              href="/workstreams"
-              _hover={{
-                textDecoration: "none",
-              }}
-            >
-              <Box paddingInline={5} paddingBlock={5}>
-                <Text color={"#FFFFFF"}>WORKSTREAMS</Text>
-              </Box>
-            </Link>
-            |
-            <Link
-              href="/history"
-              _hover={{
-                textDecoration: "none",
-              }}
-            >
-              <Box paddingInline={5} paddingBlock={5}>
-                <Text color={"#FFFFFF"}>HISTORY</Text>
-              </Box>
-            </Link>
-            |
-            <Link
-              href="https://fux-docs.vercel.app/#what-is-fux"
-              _hover={{
-                textDecoration: "none",
-              }}
-            >
-              <Box paddingInline={5} paddingBlock={5}>
-                <Text color={"#FFFFFF"}>ABOUT</Text>
-              </Box>
-            </Link>{" "}
-            |
-            <Link
-              href="https://fux-docs.vercel.app/"
-              _hover={{
-                textDecoration: "none",
-              }}
-            >
-              <Box paddingInline={5} paddingBlock={5}>
-                <Text color={"#FFFFFF"}>DOCS</Text>
-              </Box>
-            </Link>
+          <Flex
+            alignItems={{ base: "flex-start", sm: "center" }}
+            color={btnPurple}
+            flexDirection={{ base: "column", sm: "row" }}
+          >
+            <NavLink href="/workstreams">WORKSTREAMS</NavLink>
+            <Box display={{ base: "none", sm: "flex" }}>|</Box>
+            <NavLink href="/history">HISTORY</NavLink>
+            <Box display={{ base: "none", sm: "flex" }}>|</Box>
+            <NavLink href="https://fux-docs.vercel.app/#what-is-fux">
+              ABOUT
+            </NavLink>
+            <Box display={{ base: "none", sm: "flex" }}>|</Box>
+            <NavLink href="https://fux-docs.vercel.app/">DOCS</NavLink>
           </Flex>
+
           <Flex gap={5}>
-            <Link href="https://twitter.com/bitbeckers">
-              <Box paddingBlock={5}>
-                <Image src="/images/twitter.svg" />
-              </Box>
-            </Link>
-            <Link href="https://github.com/bitbeckers/fux-dapp">
-              <Box paddingBlock={5}>
-                <Image src="/images/discord.svg" />
-              </Box>
-            </Link>
+            <SocialLink
+              href="https://twitter.com/bitbeckers"
+              icon="/images/twitter.svg"
+            />
+            <SocialLink
+              href="https://github.com/bitbeckers/fux-dapp"
+              icon="/images/discord.svg"
+            />
           </Flex>
         </Flex>
       </Flex>
@@ -445,6 +466,34 @@ const Home: NextPage = () => {
   );
 };
 
+interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+}
+
+const NavLink: React.FC<NavLinkProps> = ({ href, children }) => (
+  <Link href={href} _hover={{ textDecoration: "none" }}>
+    <Box
+      paddingInline={{ base: "0", sm: "5" }}
+      paddingBlock={{ base: "2", sm: "5" }}
+    >
+      <Text color="#FFFFFF">{children}</Text>
+    </Box>
+  </Link>
+);
+
+interface SocialLinkProps {
+  href: string;
+  icon: string;
+}
+
+const SocialLink: React.FC<SocialLinkProps> = ({ href, icon }) => (
+  <Link href={href}>
+    <Box paddingBlock={5}>
+      <Image src={icon} />
+    </Box>
+  </Link>
+);
 const boxData = [
   {
     imageSrc: "/images/Icon_1.svg",
@@ -483,6 +532,34 @@ const futureData = [
   {
     imageSrc: "/images/Collective.svg",
     text: "Distribute funds across workstream participants based on vFUX ratings",
+  },
+];
+
+const swiperContent = [
+  {
+    number: "1",
+    text: "Connect your wallet and claim your FUX",
+    imageSrc: "/images/Display1.png",
+  },
+  {
+    number: "2",
+    text: "Create a project workstream and add contributors",
+    imageSrc: "/images/Display2.png",
+  },
+  {
+    number: "3",
+    text: "View all workstreams you've created and/or are contributing to in one place",
+    imageSrc: "/images/Display3.png",
+  },
+  {
+    number: "4",
+    text: "Commit FUX to your workstreams based on your capacity",
+    imageSrc: "/images/Display4.png",
+  },
+  {
+    number: "5",
+    text: "Evaluate completed workstreams and distribute vFUX across contributors",
+    imageSrc: "/images/Display5.png",
   },
 ];
 

@@ -33,6 +33,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.33.1",
     "react-icons": "^4.7.1",
+    "swiper": "^10.0.4",
     "wagmi": "0.12.15",
     "web3modal": "^1.9.8"
   },
