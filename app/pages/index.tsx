@@ -101,7 +101,7 @@ const Home: NextPage = () => {
           paddingBlock="15%"
           paddingBottom={{ base: "20%", lg: "15%" }}
         >
-          <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
+          <Text fontSize={["3xl", null, "4xl"]} fontWeight="900">
             How many FUX do you give?
           </Text>
           <Text pt={10} fontSize={["lg", null, "xl"]} my={3}>
@@ -122,7 +122,9 @@ const Home: NextPage = () => {
               claimLink
             )
           ) : (
-            <ConnectWallet />
+            <Flex zIndex={1}>
+              <ConnectWallet />
+            </Flex>
           )}
         </Flex>
         <Flex
@@ -240,7 +242,7 @@ const Home: NextPage = () => {
           justifyContent="center"
           paddingBottom={{ base: "10", md: "20", lg: "0" }}
         >
-          <Text fontSize={["2xl", null, "3xl"]} fontWeight="900">
+          <Text fontSize={["3xl", null, "4xl"]} fontWeight="900">
             The FUX flywheel
           </Text>
           <OrderedList
@@ -274,7 +276,7 @@ const Home: NextPage = () => {
         paddingBlock={20}
       >
         <Flex w="100%" justifyContent="center">
-          <Text fontSize={["2xl", null, "3xl"]} fontWeight="500">
+          <Text fontSize={["3xl", null, "4xl"]} fontWeight="500">
             Why should you give a FUX?
           </Text>
         </Flex>
@@ -355,14 +357,14 @@ const Home: NextPage = () => {
           justifyContent="center"
           order={{ base: 1, lg: 2 }}
         >
-          <Text fontSize={["5xl", null, "7xl"]} fontWeight="300">
+          <Text fontSize={["3xl", null, "4xl"]} fontWeight="300">
             Your future
           </Text>
           <Flex>
-            <Text fontSize={["5xl", null, "7xl"]} fontWeight="300">
+            <Text fontSize={["3xl", null, "4xl"]} fontWeight="300">
               with v
             </Text>
-            <Text fontSize={["5xl", null, "7xl"]} fontWeight="500">
+            <Text fontSize={["3xl", null, "4xl"]} fontWeight="500">
               FUX
             </Text>
           </Flex>
