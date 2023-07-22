@@ -13,13 +13,12 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   useDisclosure
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useEnsAvatar, useEnsName, useContractRead } from "wagmi";
 import { useGraphClient } from "../../hooks/useGraphClient";
-import { decodeURI } from "../../utils/helpers";
+import { decodeURI, shortenString } from "../../utils/helpers";
 import { contractAddresses, contractABI } from "../../utils/constants";
 import { useQuery } from "@tanstack/react-query";
 
@@ -82,8 +81,6 @@ const User: React.FC<{
     args: [parseInt(fuxID)],
     watch: true,
   });
-  console.log("DATA", tokenUri);
-
 
   const tokenLink = tokenUri !== undefined ? decodeURI(tokenUri) : undefined;
 
@@ -128,13 +125,13 @@ const User: React.FC<{
   return (
     <>
     {component}
-    <Modal blockScrollOnMount={false} isOpen={isOpen} size={"xl"} onClose={onClose}>
+    <Modal blockScrollOnMount={false} isOpen={isOpen} size={"xs"} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{address}</ModalHeader>
+        <ModalHeader display="flex" justifyContent="center" alignItems="center">{shortenString(address, 15)}</ModalHeader>
         <ModalBody display="flex" justifyContent="center" alignItems="center">
         {tokenLink !== undefined ? 
-            <iframe src={"https://ipfs.io/ipfs" + tokenLink} width="389px" height="561px" frameborder="0" scrolling="no"></iframe>
+            <iframe src={"https://ipfs.io/ipfs" + tokenLink} width="286.5px" height="415px" frameBorder="0" scrolling="no" style={{ borderRadius: "20px"}}></iframe>
             :
             <Text>
               Loading

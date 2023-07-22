@@ -18,7 +18,6 @@ export function shouldBehaveLikeFuxSBT(): void {
       await expect(contractWithUser.mintFux()).to.be.revertedWithCustomError(fux, "TokensAlreadyMinted");
       // Check that the user's balance has been updated
       expect(await fux.balanceOf(user.address, 2)).to.be.eq("1");
-      console.log("ID", await fux.sbtIds(2));
     });
 
     it("does not allow transfer or batch transfer of FUX SBT", async function () {
@@ -55,7 +54,7 @@ export function shouldBehaveLikeFuxSBT(): void {
     const jsonObject = JSON.parse(decodedData.toString());
 
     // For a new user they should have 0 vFux, 0 active workstreams, 0 completed workstreams, and 0 committed FUX tokens
-    await expect(jsonObject.image).to.be.eq('ipfs://QmVV8K2mmprmWLrMQv2EtwS8zDvXmjitC6wMtA8eZj6ZVC?seed=2&vfux=0&currentwork=0&completework=0&percentage=0');
+    await expect(jsonObject.image).to.be.eq(`ipfs://QmNXwWzzZGvS3sp9JChSArdrZ7p8eo7QjBiW499yBBXRD3?vfux=0&currentwork=0&completework=0&percentage=0&address=${user.address.toLowerCase()}`);
     
   });
 
@@ -93,7 +92,7 @@ export function shouldBehaveLikeFuxSBT(): void {
     const jsonObject = JSON.parse(decodedData.toString());
 
     // The user should now have 0 vFux, 1 active workstreams, 0 completed workstreams, and 50 available FUX tokens
-    await expect(jsonObject.image).to.be.eq('ipfs://QmVV8K2mmprmWLrMQv2EtwS8zDvXmjitC6wMtA8eZj6ZVC?seed=2&vfux=0&currentwork=1&completework=0&percentage=50');
+    await expect(jsonObject.image).to.be.eq(`ipfs://QmNXwWzzZGvS3sp9JChSArdrZ7p8eo7QjBiW499yBBXRD3?vfux=0&currentwork=1&completework=0&percentage=50&address=${user.address.toLowerCase()}`);
     
   });
   });

@@ -52,7 +52,6 @@ const Workstreams: NextPage = () => {
       parseInt(token.tokenID) > 1
   )?.token.tokenID;
 
-  console.log("TOKEN", fuxID);
   const sortedData = workstreamsByUser?.workstreamContributors.sort((a, b) => {
     if (sortFux) {
       let fuxGivenA = a.workstream.contributors?.find(
@@ -86,11 +85,8 @@ const Workstreams: NextPage = () => {
     enabled: !!user,
     watch: true
   });
-  console.log("DATA", tokenUri);
 
   const tokenLink = tokenUri !== undefined ? decodeURI(tokenUri) : undefined;
-  console.log("TOKEN LINK", tokenLink);
-  
 
   return (
     <VStack spacing={8} w={"100%"}>
@@ -106,16 +102,16 @@ const Workstreams: NextPage = () => {
         />
       ) : (
         <>
-        <Grid gap={2} templateColumns="repeat(20, 1fr)">
+        <Grid gap={2} templateColumns="repeat(16, 1fr)" >
         {tokenLink !== undefined ? 
             <GridItem colSpan={5}>
-              <iframe src={"https://ipfs.io/ipfs" + tokenLink} width="389px" height="561px" frameborder="0" scrolling="no"></iframe>
+              <iframe src={"https://ipfs.io/ipfs" + tokenLink} width="286.5px" height="415px" frameBorder="0" scrolling="no" style={{ borderRadius: "20px" }}></iframe>
             </GridItem> :
             <GridItem colSpan={5}>
               Loading
           </GridItem> 
             }
-          <GridItem colSpan={15}>
+          <GridItem colSpan={11}>
           <Grid
             maxW={"1000px"}
             w="100%"

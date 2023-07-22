@@ -86,7 +86,6 @@ export interface FUXInterface extends utils.Interface {
     "initialize()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintFux()": FunctionFragment;
-    "mintSBT()": FunctionFragment;
     "mintWorkstream(string,address[],uint256,uint256,address[],uint256[],string)": FunctionFragment;
     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
@@ -97,7 +96,7 @@ export interface FUXInterface extends utils.Interface {
     "revokeRole(bytes32,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
-    "sbtIds(address)": FunctionFragment;
+    "sbtIds(uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setURI(uint256,string)": FunctionFragment;
     "setWorkstreamToEvaluation(uint256)": FunctionFragment;
@@ -133,7 +132,6 @@ export interface FUXInterface extends utils.Interface {
       | "initialize"
       | "isApprovedForAll"
       | "mintFux"
-      | "mintSBT"
       | "mintWorkstream"
       | "onERC1155BatchReceived"
       | "onERC1155Received"
@@ -239,7 +237,6 @@ export interface FUXInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "mintFux", values?: undefined): string;
-  encodeFunctionData(functionFragment: "mintSBT", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "mintWorkstream",
     values: [
@@ -314,7 +311,7 @@ export interface FUXInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "sbtIds",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
@@ -434,7 +431,6 @@ export interface FUXInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mintFux", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "mintSBT", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "mintWorkstream",
     data: BytesLike
@@ -938,10 +934,6 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    mintSBT(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     mintWorkstream(
       name: PromiseOrValue<string>,
       _contributors: PromiseOrValue<string>[],
@@ -1015,9 +1007,9 @@ export interface FUX extends BaseContract {
     ): Promise<[void]>;
 
     sbtIds(
-      arg0: PromiseOrValue<string>,
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<[string]>;
 
     setApprovalForAll(
       operator: PromiseOrValue<string>,
@@ -1178,10 +1170,6 @@ export interface FUX extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  mintSBT(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   mintWorkstream(
     name: PromiseOrValue<string>,
     _contributors: PromiseOrValue<string>[],
@@ -1255,9 +1243,9 @@ export interface FUX extends BaseContract {
   ): Promise<void>;
 
   sbtIds(
-    arg0: PromiseOrValue<string>,
+    arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<string>;
 
   setApprovalForAll(
     operator: PromiseOrValue<string>,
@@ -1414,8 +1402,6 @@ export interface FUX extends BaseContract {
 
     mintFux(overrides?: CallOverrides): Promise<void>;
 
-    mintSBT(overrides?: CallOverrides): Promise<void>;
-
     mintWorkstream(
       name: PromiseOrValue<string>,
       _contributors: PromiseOrValue<string>[],
@@ -1489,9 +1475,9 @@ export interface FUX extends BaseContract {
     ): Promise<void>;
 
     sbtIds(
-      arg0: PromiseOrValue<string>,
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<string>;
 
     setApprovalForAll(
       operator: PromiseOrValue<string>,
@@ -1870,10 +1856,6 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    mintSBT(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     mintWorkstream(
       name: PromiseOrValue<string>,
       _contributors: PromiseOrValue<string>[],
@@ -1947,7 +1929,7 @@ export interface FUX extends BaseContract {
     ): Promise<BigNumber>;
 
     sbtIds(
-      arg0: PromiseOrValue<string>,
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -2113,10 +2095,6 @@ export interface FUX extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    mintSBT(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     mintWorkstream(
       name: PromiseOrValue<string>,
       _contributors: PromiseOrValue<string>[],
@@ -2190,7 +2168,7 @@ export interface FUX extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     sbtIds(
-      arg0: PromiseOrValue<string>,
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

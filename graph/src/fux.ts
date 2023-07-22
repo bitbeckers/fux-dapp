@@ -319,7 +319,7 @@ export function handleUpdatedWorkstreamUri(event: UpdatedWorkstreamURI): void {
  */
 export function handleSBTClaim(event: FuxSBTMinted): void {
   // Get or create the token associated with the event
-  let fuxSBT = getOrCreate1155Token(event.params.user.toHexString(), event.params.fuxId);
+  let fuxSBT = getOrCreate1155Token(event.params.user.toHexString(), event.params.fuxID);
 
   // Save the token
   fuxSBT.save();

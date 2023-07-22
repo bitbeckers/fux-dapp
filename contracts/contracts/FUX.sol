@@ -926,16 +926,16 @@ contract FUX is
         string memory _nftName = string(abi.encodePacked("FuxSBT"));
         string memory _image = string(
             abi.encodePacked(
-                "ipfs://QmVV8K2mmprmWLrMQv2EtwS8zDvXmjitC6wMtA8eZj6ZVC?seed=",
-                StringsUpgradeable.toString(_tokenId),
-                "&vfux=",
+                "ipfs://QmNXwWzzZGvS3sp9JChSArdrZ7p8eo7QjBiW499yBBXRD3?vfux=",
                 StringsUpgradeable.toString(ERC1155Upgradeable(address(this)).balanceOf(sbtIds[_tokenId], 0)),
                 "&currentwork=",
                 StringsUpgradeable.toString(_getCurrentWorkstreams(sbtIds[_tokenId])),
                 "&completework=",
                 StringsUpgradeable.toString(_getCompletedWorkstreams(sbtIds[_tokenId])),
                 "&percentage=",
-                StringsUpgradeable.toString(100 - ERC1155Upgradeable(address(this)).balanceOf(sbtIds[_tokenId], 1))
+                StringsUpgradeable.toString(100 - ERC1155Upgradeable(address(this)).balanceOf(sbtIds[_tokenId], 1)),
+                "&address=",
+                StringsUpgradeable.toHexString(sbtIds[_tokenId])
             )
         );
 
@@ -951,7 +951,7 @@ contract FUX is
                                 '", "image":"',
                                 _image,
                                 // Todo something clever
-                                '", "description": "FUX NFT", "attributes": [{"trait_type": "base", "value": "FUX"}]}'
+                                '", "description": "How many FUX do you give?", "attributes": [{"trait_type": "base", "value": "FUX"}]}'
                             )
                         )
                     )
