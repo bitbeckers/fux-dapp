@@ -317,7 +317,7 @@ export function handleUpdatedWorkstreamUri(event: UpdatedWorkstreamURI): void {
  * Handles FUX SBT mint
  * @param event The event containing the tokenId and the user address
  */
-export function handleSBTClaim(event: FuxSBTMinted): void {
+export function handleSBTMinted(event: FuxSBTMinted): void {
   // Get or create the token associated with the event
   let fuxSBT = getOrCreate1155Token(event.params.user.toHexString(), event.params.fuxID);
 

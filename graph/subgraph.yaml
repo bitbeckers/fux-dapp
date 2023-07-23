@@ -6,9 +6,9 @@ dataSources:
     name: FUX
     network: goerli
     source:
-      address: "0xDb176E0FbCFb811145D604eE851516d3D0f32Ea0"
+      address: "0x52E92887ce5a7Fc7f5f7DdB3D42E9E8680968A0C"
       abi: FUX
-      startBlock: 9317450
+      startBlock: 9393474
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -34,6 +34,8 @@ dataSources:
           handler: handleFuxGiven
         - event: FuxWithdrawn(address,uint256,uint256)
           handler: handleFuxWithdrawn
+        - event: FuxSBTMinted(address,uint256)
+          handler: handleSBTMinted
         - event: StateUpdated(uint256,uint8)
           handler: handleStateUpdated
         - event: UpdatedWorkstreamURI(uint256,string)
