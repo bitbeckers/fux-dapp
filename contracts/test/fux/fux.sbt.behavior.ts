@@ -10,6 +10,7 @@ export function shouldBehaveLikeFuxSBT(): void {
     it("allows anyone to mint SBT once", async function () {
       // Set up the test environment
       const { fux, user } = await setupTest();
+
       const contractWithUser = fux.connect(user);
       // Mint FUX SBT for the user
 

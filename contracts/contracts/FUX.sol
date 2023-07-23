@@ -1,18 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import { ERC1155Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import { IERC20 } from "@openzeppelin/contracts/interfaces/IERC20.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ERC1155URIStorageUpgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
-import { ERC1155ReceiverUpgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverUpgradeable.sol";
-import { Base64Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
-import { StringsUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {ERC1155URIStorageUpgradeable} from
+    "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
+import {ERC1155ReceiverUpgradeable} from
+    "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverUpgradeable.sol";
+import {Base64Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
+import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
  * ERROR MESSAGES
@@ -99,25 +101,26 @@ enum WorkstreamState {
  * This contract implements the FUX token and the VFUX token, which are ERC-1155 tokens used to reward contributors to workstreams.
  */
 contract FUX is
-    ReentrancyGuard,
     Initializable,
     ERC1155Upgradeable,
     AccessControlUpgradeable,
     ERC1155URIStorageUpgradeable,
     ERC1155ReceiverUpgradeable,
+    ReentrancyGuardUpgradeable,
     UUPSUpgradeable
 {
     using StringsUpgradeable for uint256;
     /**
      * @notice Role definitions
      */
+
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     uint256 public constant FUX_TOKEN_ID = 1;
     uint256 public constant VFUX_TOKEN_ID = 0;
-    uint256 internal sbtCounter;
-    uint256 internal counter;
+    uint256 internal sbtTokenId;
+    uint256 internal wsCounter;
 
     bytes4 internal constant ERC1155_ACCEPTED = 0xf23a6e61;
     bytes4 internal constant ERC1155_BATCH_ACCEPTED = 0xbc197c81;
@@ -314,8 +317,7 @@ contract FUX is
         _grantRole(URI_SETTER_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
 
-        counter = 0;
-        sbtCounter = 0;
+        sbtTokenId = 2;
     }
 
     /**
@@ -357,10 +359,11 @@ contract FUX is
      * @param token The address of the token
      * @return availableRewards The amount of rewards available to the workstream in the given token
      */
-    function getWorkstreamRewards(
-        uint256 workstreamID,
-        address token
-    ) external view returns (uint256 availableRewards) {
+    function getWorkstreamRewards(uint256 workstreamID, address token)
+        external
+        view
+        returns (uint256 availableRewards)
+    {
         availableRewards = workstreamTokenBalances[workstreamID][token];
     }
 
@@ -384,9 +387,12 @@ contract FUX is
      * @param tokenId The ID of the token
      * @return The URI for the given token ID
      */
-    function uri(
-        uint256 tokenId
-    ) public view override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable) returns (string memory) {
+    function uri(uint256 tokenId)
+        public
+        view
+        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
+        returns (string memory)
+    {
         if (tokenId > 1) {
             return _constructTokenURI(tokenId);
         }
@@ -405,9 +411,9 @@ contract FUX is
         isFuxer[msg.sender] = true;
         _mint(msg.sender, FUX_TOKEN_ID, 100, "");
 
-        emit FuxClaimed(msg.sender);
+        _mintSBT();
 
-        mintSBT();
+        emit FuxClaimed(msg.sender);
     }
 
     /**
@@ -415,16 +421,15 @@ contract FUX is
      * @notice This function can only be called once per address
      * @dev Emits a Fux
      */
-    function mintSBT() internal {
-        if (sbtCounter == 0) {
-            sbtCounter += 2;
-        } else {
-            sbtCounter += 1;
-        }
-        _mint(msg.sender, sbtCounter, 1, "");
+    function _mintSBT() internal {
+        if (sbtIds[sbtTokenId] != address(0)) revert TokensAlreadyMinted();
 
-        sbtIds[sbtCounter] = msg.sender;
-        emit FuxSBTMinted(msg.sender, sbtCounter);
+        _mint(msg.sender, sbtTokenId, 1, "");
+
+        sbtIds[sbtTokenId] = msg.sender;
+        emit FuxSBTMinted(msg.sender, sbtTokenId);
+
+        sbtTokenId += 1;
     }
 
     /**
@@ -472,11 +477,10 @@ contract FUX is
      * @dev Emits a ContributorsUpdated event upon successful addition of contributors to the workstream
      * @dev Throws a NotAllowed error if the workstream is not in the Started state
      */
-    function updateContributors(
-        uint256 workstreamID,
-        address[] calldata _contributors,
-        bool add
-    ) external onlyCoordinator(workstreamID) {
+    function updateContributors(uint256 workstreamID, address[] calldata _contributors, bool add)
+        external
+        onlyCoordinator(workstreamID)
+    {
         if (workstreams[workstreamID].state != WorkstreamState.Started) revert NotAllowed();
 
         _updateContributors(workstreamID, _contributors, add);
@@ -575,11 +579,11 @@ contract FUX is
      * @dev Emits a WorkstreamClosed event upon successful closure of the workstream
      * @dev Throws a NotAllowed error if the workstream does not exist or is not in the Closed state
      */
-    function finalizeWorkstream(
-        uint256 workstreamID,
-        address[] memory _contributors,
-        uint256[] memory vFuxGiven
-    ) public onlyCoordinator(workstreamID) nonReentrant {
+    function finalizeWorkstream(uint256 workstreamID, address[] memory _contributors, uint256[] memory vFuxGiven)
+        public
+        onlyCoordinator(workstreamID)
+        nonReentrant
+    {
         Workstream storage workstream = workstreams[workstreamID];
         if (!workstream.exists && workstream.state == WorkstreamState.Closed) revert NotAllowed();
 
@@ -621,10 +625,11 @@ contract FUX is
      * @param _contributors An array of addresses representing the contributors to the workstream
      * @notice This function can only be called by the coordinator of the workstream
      */
-    function closeWorkstream(
-        uint256 workstreamID,
-        address[] memory _contributors
-    ) public onlyCoordinator(workstreamID) nonReentrant {
+    function closeWorkstream(uint256 workstreamID, address[] memory _contributors)
+        public
+        onlyCoordinator(workstreamID)
+        nonReentrant
+    {
         Workstream storage workstream = workstreams[workstreamID];
         if (!workstream.exists || workstream.state == WorkstreamState.Closed) revert NotAllowed();
 
@@ -701,7 +706,7 @@ contract FUX is
         address[] memory rewardToken,
         uint256[] memory rewards
     ) private returns (uint256) {
-        counter += 1;
+        wsCounter += 1;
 
         Workstream memory _workstream;
         _workstream.name = name;
@@ -717,19 +722,19 @@ contract FUX is
                 address token = rewardToken[i];
                 uint256 reward = rewards[i];
 
-                workstreamTokens[counter].push(token);
-                workstreamTokenBalances[counter][token] = reward;
+                workstreamTokens[wsCounter].push(token);
+                workstreamTokenBalances[wsCounter][token] = reward;
             }
         }
 
         if (msg.value > 0) {
-            workstreamTokens[counter].push(address(0));
-            workstreamTokenBalances[counter][address(0)] = msg.value;
+            workstreamTokens[wsCounter].push(address(0));
+            workstreamTokenBalances[wsCounter][address(0)] = msg.value;
         }
 
-        workstreams[counter] = _workstream;
+        workstreams[wsCounter] = _workstream;
 
-        return counter;
+        return wsCounter;
     }
 
     /**
@@ -763,7 +768,7 @@ contract FUX is
             if (_rewardToken == address(0)) {
                 // Handle native token (Ether)
                 require(address(this).balance >= rewardAmount, "Insufficient balance");
-                (bool success, ) = contributor.call{ value: rewardAmount }("");
+                (bool success,) = contributor.call{value: rewardAmount}("");
                 require(success, "Transfer failed");
             } else {
                 // Handle ERC20 token
@@ -791,7 +796,7 @@ contract FUX is
      */
     function _returnFux(uint256 workstreamID, address[] memory contributors) private {
         uint256 size = contributors.length;
-        for (uint256 i = 0; i < size; ) {
+        for (uint256 i = 0; i < size;) {
             address contributor = contributors[i];
             uint256 commitment = userWorkstreamFux[contributor][workstreamID];
 
@@ -816,7 +821,7 @@ contract FUX is
         if (_getTotal(vFuxGiven) != 100) revert NotAllowed();
         uint256 size = vFuxGiven.length;
 
-        for (uint256 i = 0; i < size; ) {
+        for (uint256 i = 0; i < size;) {
             if (vFuxGiven[i] > 0) {
                 _mint(_contributors[i], VFUX_TOKEN_ID, vFuxGiven[i], "");
             }
@@ -837,7 +842,7 @@ contract FUX is
      */
     function _getTotal(uint256[] memory values) internal pure returns (uint256 total) {
         uint256 len = values.length;
-        for (uint256 i = 0; i < len; ) {
+        for (uint256 i = 0; i < len;) {
             total += values[i];
             unchecked {
                 ++i;
@@ -852,7 +857,7 @@ contract FUX is
      */
     function _noSelfFuxing(address[] memory _contributors) internal view {
         uint256 size = _contributors.length;
-        for (uint256 i = 0; i < size; ) {
+        for (uint256 i = 0; i < size;) {
             if (_contributors[i] == msg.sender) revert NotAllowed();
             unchecked {
                 ++i;
@@ -896,7 +901,7 @@ contract FUX is
 
     function _getCurrentWorkstreams(address _user) internal view returns (uint256) {
         uint256 currentWork = 0;
-        for (uint256 i = 0; i <= counter; i++) {
+        for (uint256 i = 0; i <= wsCounter; i++) {
             if (userWorkstreamFux[_user][i] != 0) {
                 unchecked {
                     currentWork++;
@@ -908,7 +913,7 @@ contract FUX is
 
     function _getCompletedWorkstreams(address _user) internal view returns (uint256) {
         uint256 completedWork = 0;
-        for (uint256 i = 0; i <= counter; i++) {
+        for (uint256 i = 0; i <= wsCounter; i++) {
             if (workstreamContributors[i][_user] == true && workstreams[i].state == WorkstreamState.Closed) {
                 unchecked {
                     completedWork++;
@@ -939,24 +944,23 @@ contract FUX is
             )
         );
 
-        return
-            string(
-                abi.encodePacked(
-                    "data:application/json;base64,",
-                    Base64Upgradeable.encode(
-                        bytes(
-                            abi.encodePacked(
-                                '{"name":"',
-                                _nftName,
-                                '", "image":"',
-                                _image,
-                                // Todo something clever
-                                '", "description": "How many FUX do you give?", "attributes": [{"trait_type": "base", "value": "FUX"}]}'
-                            )
+        return string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64Upgradeable.encode(
+                    bytes(
+                        abi.encodePacked(
+                            '{"name":"',
+                            _nftName,
+                            '", "image":"',
+                            _image,
+                            // Todo something clever
+                            '", "description": "How many FUX do you give?", "attributes": [{"trait_type": "base", "value": "FUX"}]}'
                         )
                     )
                 )
-            );
+            )
+        );
     }
 
     /**
@@ -981,10 +985,10 @@ contract FUX is
      * @dev Throws a NotAllowed error
      */
     function safeTransferFrom(
-        address /* from */,
-        address /* to */,
-        uint256 /* id */,
-        uint256 /* amount */,
+        address, /* from */
+        address, /* to */
+        uint256, /* id */
+        uint256, /* amount */
         bytes memory /* data */
     ) public pure override {
         revert NotAllowed();
@@ -1000,10 +1004,10 @@ contract FUX is
      * @dev Throws a NotAllowed error
      */
     function safeBatchTransferFrom(
-        address /* from */,
-        address /* to */,
-        uint256[] memory /* ids */,
-        uint256[] memory /* amounts */,
+        address, /* from */
+        address, /* to */
+        uint256[] memory, /* ids */
+        uint256[] memory, /* amounts */
         bytes memory /* data */
     ) public pure virtual override {
         revert NotAllowed();
@@ -1050,27 +1054,30 @@ contract FUX is
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC1155Upgradeable, ERC1155ReceiverUpgradeable, AccessControlUpgradeable)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 
     function onERC1155Received(
-        address /* _operator */,
-        address /* _from */,
-        uint256 /* _id */,
-        uint256 /* _value */,
+        address, /* _operator */
+        address, /* _from */
+        uint256, /* _id */
+        uint256, /* _value */
         bytes calldata /* _data */
     ) external pure returns (bytes4) {
         return ERC1155_ACCEPTED;
     }
 
     function onERC1155BatchReceived(
-        address /* _operator */,
-        address /* _from */,
-        uint256[] calldata /* _ids */,
-        uint256[] calldata /* _values */,
+        address, /* _operator */
+        address, /* _from */
+        uint256[] calldata, /* _ids */
+        uint256[] calldata, /* _values */
         bytes calldata /* _data */
     ) external pure returns (bytes4) {
         return ERC1155_BATCH_ACCEPTED;
