@@ -93,6 +93,11 @@ export function getOrCreate1155Token(address: string, tokenID: BigInt): Token {
     token.symbol = "vFUX";
     token.name = "vFUX";
   }
+
+  if (tokenID.gt(BigInt.fromI32(1))) {
+    token.symbol = "FUXsbt";
+    token.name = "FUX SBT";
+  }
   token.save();
 
   return token;

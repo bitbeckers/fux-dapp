@@ -90,7 +90,7 @@ const WorkstreamRow: React.FC<{
         <Text fontFamily="mono" pr={"1em"}>{`${commitment} %`}</Text>
       </GridItem>
       {fuxAvailable ? (
-        <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
+        <GridItem display={"flex"} justifyContent={"center"} alignItems={"end"} colSpan={2}>
           <CommitFuxModal
             workstreamID={BigNumber.from(workstream.id)}
             fuxGiven={BigNumber.from(commitment)}
@@ -99,7 +99,7 @@ const WorkstreamRow: React.FC<{
           />
         </GridItem>
       ) : undefined}
-      <GridItem display={"flex"} alignItems={"center"} colSpan={1}>
+      <GridItem display={"flex"} justifyContent={"center"} alignItems={"end"} colSpan={2}>
         {coordinator?.toLowerCase() === user?.toLowerCase() ? (
           <ContributorModal
             workstreamID={BigNumber.from(workstream.id)}

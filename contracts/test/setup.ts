@@ -1,5 +1,5 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
 import { getDefaultSigners } from "./utils";
 
@@ -9,7 +9,7 @@ const buildFixture = async () => {
   // Contract factory
   const fuxFactory = await ethers.getContractFactory("FUX");
   // Contracts
-  const fux = await fuxFactory.connect(deployer).deploy();
+  const fux = await upgrades.deployProxy(fuxFactory);
 
   // Struct
   return {

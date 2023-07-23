@@ -73,8 +73,6 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY || "",
-      polygon: process.env.POLYGONSCAN_API_KEY || "",
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
       goerli: process.env.ETHERSCAN_API_KEY || "",
     },
   },
@@ -93,8 +91,6 @@ const config: HardhatUserConfig = {
     localhost: getChainConfig("localhost"),
     mainnet: getChainConfig("mainnet"),
     goerli: getChainConfig("goerli"),
-    "polygon-mainnet": getChainConfig("polygon-mainnet"),
-    "polygon-mumbai": getChainConfig("polygon-mumbai"),
   },
   paths: {
     artifacts: "./artifacts",
@@ -114,7 +110,7 @@ const config: HardhatUserConfig = {
       // https://hardhat.org/hardhat-network/#solidity-optimizer-support
       optimizer: {
         enabled: true,
-        runs: 10000,
+        runs: 2000,
       },
     },
   },
