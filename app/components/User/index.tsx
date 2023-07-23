@@ -1,3 +1,7 @@
+import { TokenFragmentFragment } from "../../.graphclient";
+import { useGraphClient } from "../../hooks/useGraphClient";
+import { contractAddresses, contractABI } from "../../utils/constants";
+import { decodeURI, shortenString } from "../../utils/helpers";
 import { CopyIcon } from "@chakra-ui/icons";
 import {
   HStack,
@@ -13,14 +17,11 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useEnsAvatar, useEnsName, useContractRead } from "wagmi";
-import { useGraphClient } from "../../hooks/useGraphClient";
-import { decodeURI, shortenString } from "../../utils/helpers";
-import { contractAddresses, contractABI } from "../../utils/constants";
-import { useQuery } from "@tanstack/react-query";
 
 const User: React.FC<{
   address: `0x${string}`;
@@ -70,8 +71,7 @@ const User: React.FC<{
   });
 
   const fuxID = balancesByUser?.userBalances.find(
-    ({ token }) =>
-      parseInt(token.tokenID) > 1
+    ({ token }: { token: TokenFragmentFragment }) => parseInt(token.tokenID) > 1
   )?.token.tokenID;
 
   const { data: tokenUri } = useContractRead({
@@ -82,14 +82,21 @@ const User: React.FC<{
     watch: true,
   });
 
-  const tokenLink = tokenUri !== undefined ? decodeURI(tokenUri) : undefined;
+  const tokenLink = tokenUri ? decodeURI(tokenUri as string) : undefined;
 
   let component = <></>;
 
   if (direction === "vertical") {
     component = (
       <VStack>
-        {displayAvatar ? <Avatar name={address} src={avatar} onClick={onOpen} _hover={{ cursor: 'pointer' }}/> : undefined}
+        {displayAvatar ? (
+          <Avatar
+            name={address}
+            src={avatar}
+            onClick={onOpen}
+            _hover={{ cursor: "pointer" }}
+          />
+        ) : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
           {ensName ? (
             <Tooltip label={address}>
@@ -107,7 +114,14 @@ const User: React.FC<{
   if (!direction || direction === "horizontal") {
     component = (
       <HStack>
-        {displayAvatar ? <Avatar name={address} src={avatar} onClick={onOpen} _hover={{ cursor: 'pointer' }}/> : undefined}
+        {displayAvatar ? (
+          <Avatar
+            name={address}
+            src={avatar}
+            onClick={onOpen}
+            _hover={{ cursor: "pointer" }}
+          />
+        ) : undefined}
         <Button variant={"link"} size={_size} onClick={() => handleClick()}>
           {ensName ? (
             <Tooltip label={address}>
@@ -124,30 +138,45 @@ const User: React.FC<{
 
   return (
     <>
-    {component}
-    <Modal blockScrollOnMount={false} isOpen={isOpen} size={"xs"} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader display="flex" justifyContent="center" alignItems="center">{shortenString(address, 15)}</ModalHeader>
-        <ModalBody display="flex" justifyContent="center" alignItems="center">
-        {tokenLink !== undefined ? 
-            <iframe src={"https://ipfs.io/ipfs" + tokenLink} width="286.5px" height="415px" frameBorder="0" scrolling="no" style={{ borderRadius: "20px"}}></iframe>
-            :
-            <Text>
-              Loading
-            </Text>
-            
-        }        
-        </ModalBody>
-        <ModalFooter>
-          <Button colorScheme='blue' mr={3} onClick={onClose}>
-            Close
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  </>
-  )
+      {component}
+      <Modal
+        blockScrollOnMount={false}
+        isOpen={isOpen}
+        size={"xs"}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            {shortenString(address, 15)}
+          </ModalHeader>
+          <ModalBody display="flex" justifyContent="center" alignItems="center">
+            {tokenLink !== undefined ? (
+              <iframe
+                src={"https://ipfs.io/ipfs" + tokenLink}
+                width="286.5px"
+                height="415px"
+                frameBorder="0"
+                scrolling="no"
+                style={{ borderRadius: "20px" }}
+              ></iframe>
+            ) : (
+              <Text>Loading</Text>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
 };
 
 export default User;
