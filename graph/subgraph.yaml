@@ -1,4 +1,4 @@
-specVersion: 0.0.4
+specVersion: 0.0.5
 schema:
   file: ./schema.graphql
 dataSources:
@@ -6,9 +6,9 @@ dataSources:
     name: FUX
     network: goerli
     source:
-      address: "0x4923b3Ee71499A4F7a295771E3F9fc17f68537CA"
+      address: "0x52E92887ce5a7Fc7f5f7DdB3D42E9E8680968A0C"
       abi: FUX
-      startBlock: 9126009
+      startBlock: 9393474
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -34,6 +34,8 @@ dataSources:
           handler: handleFuxGiven
         - event: FuxWithdrawn(address,uint256,uint256)
           handler: handleFuxWithdrawn
+        - event: FuxSBTMinted(address,uint256)
+          handler: handleSBTMinted
         - event: StateUpdated(uint256,uint8)
           handler: handleStateUpdated
         - event: UpdatedWorkstreamURI(uint256,string)

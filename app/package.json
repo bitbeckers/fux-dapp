@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "yarn graphclient build && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -17,8 +17,6 @@
     "@graphprotocol/client-urql": "^1.0.12",
     "@rainbow-me/rainbowkit": "0.12.15",
     "@tanstack/react-query": "^4.29.12",
-    "@types/luxon": "^3.0.0",
-    "@types/react": "^18.2.12",
     "@walletconnect/web3-provider": "^1.7.8",
     "contracts": "*",
     "eslint-config-next": "^13.4.6",
@@ -39,7 +37,9 @@
   },
   "devDependencies": {
     "@graphprotocol/client-cli": "^2.2.15",
+    "@types/luxon": "^3.0.0",
     "@types/node": "^18.15.0",
+    "@types/react": "18.2.14",
     "@types/react-dom": "^18.2.0",
     "eslint": "8.18.0",
     "ts-loader": "^9.3.1",

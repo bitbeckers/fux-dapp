@@ -96,6 +96,7 @@ export interface FUXInterface extends utils.Interface {
     "revokeRole(bytes32,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
+    "sbtIds(uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setURI(uint256,string)": FunctionFragment;
     "setWorkstreamToEvaluation(uint256)": FunctionFragment;
@@ -141,6 +142,7 @@ export interface FUXInterface extends utils.Interface {
       | "revokeRole"
       | "safeBatchTransferFrom"
       | "safeTransferFrom"
+      | "sbtIds"
       | "setApprovalForAll"
       | "setURI"
       | "setWorkstreamToEvaluation"
@@ -308,6 +310,10 @@ export interface FUXInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "sbtIds",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setApprovalForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
   ): string;
@@ -462,6 +468,7 @@ export interface FUXInterface extends utils.Interface {
     functionFragment: "safeTransferFrom",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "sbtIds", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setApprovalForAll",
     data: BytesLike
@@ -506,6 +513,7 @@ export interface FUXInterface extends utils.Interface {
     "EvaluationSubmitted(uint256,address,address[],uint256[])": EventFragment;
     "FuxClaimed(address)": EventFragment;
     "FuxGiven(address,uint256,uint256)": EventFragment;
+    "FuxSBTMinted(address,uint256)": EventFragment;
     "FuxWithdrawn(address,uint256,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
@@ -529,6 +537,7 @@ export interface FUXInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "EvaluationSubmitted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxGiven"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "FuxSBTMinted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FuxWithdrawn"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
@@ -623,6 +632,17 @@ export type FuxGivenEvent = TypedEvent<
 >;
 
 export type FuxGivenEventFilter = TypedEventFilter<FuxGivenEvent>;
+
+export interface FuxSBTMintedEventObject {
+  user: string;
+  fuxID: BigNumber;
+}
+export type FuxSBTMintedEvent = TypedEvent<
+  [string, BigNumber],
+  FuxSBTMintedEventObject
+>;
+
+export type FuxSBTMintedEventFilter = TypedEventFilter<FuxSBTMintedEvent>;
 
 export interface FuxWithdrawnEventObject {
   user: string;
@@ -986,6 +1006,11 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
+    sbtIds(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     setApprovalForAll(
       operator: PromiseOrValue<string>,
       approved: PromiseOrValue<boolean>,
@@ -1217,6 +1242,11 @@ export interface FUX extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
+  sbtIds(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   setApprovalForAll(
     operator: PromiseOrValue<string>,
     approved: PromiseOrValue<boolean>,
@@ -1444,6 +1474,11 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    sbtIds(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     setApprovalForAll(
       operator: PromiseOrValue<string>,
       approved: PromiseOrValue<boolean>,
@@ -1573,6 +1608,12 @@ export interface FUX extends BaseContract {
       workstreamID?: null,
       amount?: null
     ): FuxGivenEventFilter;
+
+    "FuxSBTMinted(address,uint256)"(
+      user?: null,
+      fuxID?: null
+    ): FuxSBTMintedEventFilter;
+    FuxSBTMinted(user?: null, fuxID?: null): FuxSBTMintedEventFilter;
 
     "FuxWithdrawn(address,uint256,uint256)"(
       user?: null,
@@ -1887,6 +1928,11 @@ export interface FUX extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    sbtIds(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setApprovalForAll(
       operator: PromiseOrValue<string>,
       approved: PromiseOrValue<boolean>,
@@ -2118,6 +2164,11 @@ export interface FUX extends BaseContract {
       arg2: PromiseOrValue<BigNumberish>,
       arg3: PromiseOrValue<BigNumberish>,
       arg4: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    sbtIds(
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

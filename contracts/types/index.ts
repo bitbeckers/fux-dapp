@@ -26,6 +26,8 @@ export type { Initializable } from "./@openzeppelin/contracts-upgradeable/proxy/
 export { Initializable__factory } from "./factories/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable__factory";
 export type { UUPSUpgradeable } from "./@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable";
 export { UUPSUpgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable__factory";
+export type { ReentrancyGuardUpgradeable } from "./@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable";
+export { ReentrancyGuardUpgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable__factory";
 export type { ERC1155Upgradeable } from "./@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable";
 export { ERC1155Upgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable__factory";
 export type { ERC1155URIStorageUpgradeable } from "./@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable";
