@@ -18,10 +18,10 @@ import { Image } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import NextLink from "next/link";
+import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useAccount, useContractRead } from "wagmi";
 
@@ -163,6 +163,7 @@ const Home: NextPage = () => {
       >
         <Flex width="100%">
           <Swiper
+            modules={[Navigation, Pagination, Mousewheel, Keyboard]}
             pagination={{
               clickable: true,
             }}
@@ -173,7 +174,6 @@ const Home: NextPage = () => {
             spaceBetween={useBreakpointValue({ base: 15, md: 40 })}
             centeredSlides={true}
             keyboard={true}
-            modules={[Navigation, Pagination, Mousewheel, Keyboard]}
           >
             {swiperContent.map((slide, index, alt) => (
               <SwiperSlide key={index}>

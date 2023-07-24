@@ -38,6 +38,10 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "HISTORY",
     href: "/history",
   },
+  {
+    label: "DOCS",
+    href: "https://docs.fux.gg",
+  },
 ];
 
 export default function Header() {
