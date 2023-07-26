@@ -1,9 +1,11 @@
 name: Deploy prod
 
 on:
+  pull_request:
   push:
     branches:
       - main
+      - develop
     # Review gh actions docs if you want to further define triggers, paths, etc
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
 
