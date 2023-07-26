@@ -5,7 +5,7 @@ const ConnectWallet: React.FC = () => {
   const isSmallScreen = useBreakpointValue({ base: true, md: true, lg: false });
 
   return isSmallScreen ? (
-    <ConnectButton chainStatus={"icon"} showBalance={false} />
+    <ConnectButton chainStatus="icon" showBalance={false} />
   ) : (
     <ConnectButton />
   );
