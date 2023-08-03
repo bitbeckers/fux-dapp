@@ -7,6 +7,7 @@ import { shouldBehaveLikeFuxCanFinalize } from "./fux.finalize.behavior";
 import { shouldBehaveLikeFuxToken } from "./fux.token.behavior";
 import { shouldBehaveLikeFuxWorkstream } from "./fux.workstream.behavior";
 import { shouldBehaveLikeFuxWorkstreamFunding } from "./fux.workstream.funding.behavior";
+import { shouldBehaveLikeFuxSBT } from "./fux.sbt.behavior";
 
 describe("Unit tests", function () {
   describe("ERC1155 Token", function () {
@@ -21,6 +22,7 @@ describe("Unit tests", function () {
     });
 
     shouldBehaveLikeFuxToken();
+    shouldBehaveLikeFuxSBT();
     shouldBehaveLikeFuxWorkstream();
     shouldBehaveLikeFuxContributor();
     shouldBehaveLikeFuxEvaluation();

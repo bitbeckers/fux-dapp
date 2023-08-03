@@ -5,8 +5,8 @@ import { useNetwork } from "wagmi";
 export const checkEnvVarConfig = () => {
   const requiredEnvVarNames = [
     {
-      name: "NEXT_PUBLIC_CONTRACT_ADDRESS_FUX",
-      value: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"],
+      name: "NEXT_PUBLIC_CONTRACT_ADDRESS",
+      value: process.env["NEXT_PUBLIC_CONTRACT_ADDRESS"],
     },
     {
       name: "NEXT_PUBLIC_DEFAULT_CHAIN",
@@ -30,11 +30,12 @@ export const checkEnvVarConfig = () => {
     }
   });
 };
+
 checkEnvVarConfig();
 
 export const contractAddresses = {
   fuxContractAddress: process.env[
-    "NEXT_PUBLIC_CONTRACT_ADDRESS_FUX"
+    "NEXT_PUBLIC_CONTRACT_ADDRESS"
   ]! as `0x${string}`,
 };
 

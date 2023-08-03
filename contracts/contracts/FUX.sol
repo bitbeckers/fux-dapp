@@ -3,13 +3,15 @@ pragma solidity ^0.8.4;
 
 import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {ERC1155URIStorageUpgradeable} from
     "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
 import {ERC1155ReceiverUpgradeable} from
     "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverUpgradeable.sol";
+import {Base64Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
+import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -99,23 +101,26 @@ enum WorkstreamState {
  * This contract implements the FUX token and the VFUX token, which are ERC-1155 tokens used to reward contributors to workstreams.
  */
 contract FUX is
-    ReentrancyGuard,
     Initializable,
     ERC1155Upgradeable,
     AccessControlUpgradeable,
     ERC1155URIStorageUpgradeable,
     ERC1155ReceiverUpgradeable,
+    ReentrancyGuardUpgradeable,
     UUPSUpgradeable
 {
+    using StringsUpgradeable for uint256;
     /**
      * @notice Role definitions
      */
+
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     uint256 public constant FUX_TOKEN_ID = 1;
     uint256 public constant VFUX_TOKEN_ID = 0;
-    uint256 internal counter;
+    uint256 internal sbtTokenId;
+    uint256 internal wsCounter;
 
     bytes4 internal constant ERC1155_ACCEPTED = 0xf23a6e61;
     bytes4 internal constant ERC1155_BATCH_ACCEPTED = 0xbc197c81;
@@ -140,6 +145,13 @@ contract FUX is
      * @param amount The amount of FUX withdrawn.
      */
     event FuxWithdrawn(address user, uint256 workstreamID, uint256 amount);
+
+    /**
+     * @dev This event is emitted when a new FUX SBT is minted
+     * @param user The address associated with the FUX SBT.
+     * @param fuxID The ID of the newly minted FUX SBT.
+     */
+    event FuxSBTMinted(address user, uint256 fuxID);
 
     /**
      * @dev This event is emitted when a new workstream is minted
@@ -281,6 +293,11 @@ contract FUX is
      */
     mapping(uint256 => string) internal workstreamURIs;
 
+    /**
+     * @dev This mapping keeps track of the FUX SBT Ids
+     */
+    mapping(uint256 => address) public sbtIds;
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -300,7 +317,7 @@ contract FUX is
         _grantRole(URI_SETTER_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
 
-        counter = 0;
+        sbtTokenId = 2;
     }
 
     /**
@@ -376,6 +393,9 @@ contract FUX is
         override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
         returns (string memory)
     {
+        if (tokenId > 1) {
+            return _constructTokenURI(tokenId);
+        }
         return ERC1155URIStorageUpgradeable.uri(tokenId);
     }
 
@@ -391,7 +411,25 @@ contract FUX is
         isFuxer[msg.sender] = true;
         _mint(msg.sender, FUX_TOKEN_ID, 100, "");
 
+        _mintSBT();
+
         emit FuxClaimed(msg.sender);
+    }
+
+    /**
+     * @dev Mints FuxSBT to the caller
+     * @notice This function can only be called once per address
+     * @dev Emits a Fux
+     */
+    function _mintSBT() internal {
+        if (sbtIds[sbtTokenId] != address(0)) revert TokensAlreadyMinted();
+
+        _mint(msg.sender, sbtTokenId, 1, "");
+
+        sbtIds[sbtTokenId] = msg.sender;
+        emit FuxSBTMinted(msg.sender, sbtTokenId);
+
+        sbtTokenId += 1;
     }
 
     /**
@@ -668,7 +706,7 @@ contract FUX is
         address[] memory rewardToken,
         uint256[] memory rewards
     ) private returns (uint256) {
-        counter += 1;
+        wsCounter += 1;
 
         Workstream memory _workstream;
         _workstream.name = name;
@@ -684,19 +722,19 @@ contract FUX is
                 address token = rewardToken[i];
                 uint256 reward = rewards[i];
 
-                workstreamTokens[counter].push(token);
-                workstreamTokenBalances[counter][token] = reward;
+                workstreamTokens[wsCounter].push(token);
+                workstreamTokenBalances[wsCounter][token] = reward;
             }
         }
 
         if (msg.value > 0) {
-            workstreamTokens[counter].push(address(0));
-            workstreamTokenBalances[counter][address(0)] = msg.value;
+            workstreamTokens[wsCounter].push(address(0));
+            workstreamTokenBalances[wsCounter][address(0)] = msg.value;
         }
 
-        workstreams[counter] = _workstream;
+        workstreams[wsCounter] = _workstream;
 
-        return counter;
+        return wsCounter;
     }
 
     /**
@@ -859,6 +897,70 @@ contract FUX is
     function setWorkstreamURI(uint256 workstreamID, string memory newuri) public onlyCoordinator(workstreamID) {
         workstreamURIs[workstreamID] = newuri;
         emit UpdatedWorkstreamURI(workstreamID, newuri);
+    }
+
+    function _getCurrentWorkstreams(address _user) internal view returns (uint256) {
+        uint256 currentWork = 0;
+        for (uint256 i = 0; i <= wsCounter; i++) {
+            if (userWorkstreamFux[_user][i] != 0) {
+                unchecked {
+                    currentWork++;
+                }
+            }
+        }
+        return currentWork;
+    }
+
+    function _getCompletedWorkstreams(address _user) internal view returns (uint256) {
+        uint256 completedWork = 0;
+        for (uint256 i = 0; i <= wsCounter; i++) {
+            if (workstreamContributors[i][_user] == true && workstreams[i].state == WorkstreamState.Closed) {
+                unchecked {
+                    completedWork++;
+                }
+            }
+        }
+        return completedWork;
+    }
+
+    /**
+     * @dev Constructs the SBT Uri
+     * @param _tokenId The Id of the SBT to generate Uri for
+     */
+    function _constructTokenURI(uint256 _tokenId) internal view returns (string memory) {
+        string memory _nftName = string(abi.encodePacked("FuxSBT"));
+        string memory _image = string(
+            abi.encodePacked(
+                "ipfs://QmNXwWzzZGvS3sp9JChSArdrZ7p8eo7QjBiW499yBBXRD3?vfux=",
+                StringsUpgradeable.toString(ERC1155Upgradeable(address(this)).balanceOf(sbtIds[_tokenId], 0)),
+                "&currentwork=",
+                StringsUpgradeable.toString(_getCurrentWorkstreams(sbtIds[_tokenId])),
+                "&completework=",
+                StringsUpgradeable.toString(_getCompletedWorkstreams(sbtIds[_tokenId])),
+                "&percentage=",
+                StringsUpgradeable.toString(100 - ERC1155Upgradeable(address(this)).balanceOf(sbtIds[_tokenId], 1)),
+                "&address=",
+                StringsUpgradeable.toHexString(sbtIds[_tokenId])
+            )
+        );
+
+        return string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64Upgradeable.encode(
+                    bytes(
+                        abi.encodePacked(
+                            '{"name":"',
+                            _nftName,
+                            '", "image":"',
+                            _image,
+                            // Todo something clever
+                            '", "description": "How many FUX do you give?", "attributes": [{"trait_type": "base", "value": "FUX"}]}'
+                        )
+                    )
+                )
+            )
+        );
     }
 
     /**

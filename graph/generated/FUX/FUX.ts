@@ -176,6 +176,28 @@ export class FuxGiven__Params {
   }
 }
 
+export class FuxSBTMinted extends ethereum.Event {
+  get params(): FuxSBTMinted__Params {
+    return new FuxSBTMinted__Params(this);
+  }
+}
+
+export class FuxSBTMinted__Params {
+  _event: FuxSBTMinted;
+
+  constructor(event: FuxSBTMinted) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get fuxID(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class FuxWithdrawn extends ethereum.Event {
   get params(): FuxWithdrawn__Params {
     return new FuxWithdrawn__Params(this);
@@ -1079,6 +1101,25 @@ export class FUX extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
+  sbtIds(param0: BigInt): Address {
+    let result = super.call("sbtIds", "sbtIds(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(param0)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_sbtIds(param0: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall("sbtIds", "sbtIds(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(param0)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   supportsInterface(interfaceId: Bytes): boolean {

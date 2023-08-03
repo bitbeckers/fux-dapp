@@ -1,2 +1,10 @@
 @import url("https://use.typekit.net/pgp1osb.css");
 
+/* Override the default navigation styles */
+:root {
+  --swiper-navigation-size: 60px;
+  --swiper-navigation-top-offset: 50%;
+  --swiper-navigation-sides-offset: 40px;
+  --swiper-navigation-color: #b956bf;
+  --swiper-pagination-color: #b956bf;
+}
