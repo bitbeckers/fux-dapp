@@ -115,7 +115,7 @@ const FinalizeForm: React.FC<{
             <Text>Committed</Text>
           </GridItem>
           <GridItem colSpan={2}>
-            <Text>vFUX</Text>
+            <Text>Rating</Text>
           </GridItem>
           <GridItem colSpan={3}>
             <Text>Funds</Text>
@@ -152,7 +152,7 @@ const FinalizeForm: React.FC<{
                   bg="#301A3A"
                   display={"inline-grid"}
                   colSpan={3}
-                  justifyContent="end"
+                  justifyContent="start"
                   alignContent="center"
                 >
                   {_workstream?.funding && _workstream.funding.length > 0 ? (
@@ -173,7 +173,7 @@ const FinalizeForm: React.FC<{
                           : _workstream.funding[0].token.symbol
                       }`}
                     </Text>
-                  ) : undefined}
+                  ) : "N/A"}
                 </GridItem>
               </Fragment>
             );

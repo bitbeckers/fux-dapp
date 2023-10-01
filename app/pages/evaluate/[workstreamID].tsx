@@ -82,12 +82,13 @@ const Evaluate: NextPage = () => {
             </Stat>
           </HStack>
           {_workstream.coordinator?.id.toLowerCase() ===
-            address?.toLowerCase() && (
-            <>
-              <StartEvaluation workstream={_workstream} />
-              <Divider />
-            </>
-          )}
+            address?.toLowerCase() &&
+            _workstream.status === "Started" && (
+              <>
+                <StartEvaluation workstream={_workstream} />
+                <Divider />
+              </>
+            )}
           {form}
         </VStack>
       </VStack>

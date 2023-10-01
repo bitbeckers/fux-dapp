@@ -36,12 +36,10 @@ type FormData = {
   };
 };
 
-const findEvaluations = (
-  workstream: Partial<Workstream>,
-  user: `0x${string}`
-) => {
-  const currentEvaluations = workstream?.evaluations?.filter(
-    (evaluation) => evaluation.creator.id.toLowerCase() === user.toLowerCase()
+const findEvaluations = (evaluations: any, user: `0x${string}`) => {
+  const currentEvaluations = evaluations?.filter(
+    (evaluation: any) =>
+      evaluation.creator.id.toLowerCase() === user.toLowerCase()
   );
 
   if (!currentEvaluations) {
@@ -59,7 +57,7 @@ const findEvaluations = (
 };
 
 const ValueReviewForm: React.FC<{
-  workstreamWithContributor: Partial<WorkstreamContributor>;
+  workstreamWithContributor: any;
 }> = ({ workstreamWithContributor }) => {
   const router = useRouter();
 
@@ -67,10 +65,11 @@ const ValueReviewForm: React.FC<{
   const toast = useCustomToasts();
   const { checkChain } = useBlockTx();
 
-  const { workstream } = workstreamWithContributor;
+  const { evaluations, contributors, coordinator } = workstreamWithContributor;
+  console.log({ workstreamWithContributor });
 
   const currentEvaluations = findEvaluations(
-    workstream || ({} as Workstream),
+    evaluations,
     user || ("" as `0x${string}`)
   );
 
@@ -81,21 +80,26 @@ const ValueReviewForm: React.FC<{
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
-    defaultValues: currentEvaluations,
+    defaultValues: { ratings: { ...currentEvaluations } },
   });
 
   const formData = watch();
+  const ratings = watch("ratings");
 
-  const _contributors = Object.keys(formData.ratings);
-  const _ratings = Object.values(formData.ratings).map((rating) => +rating);
+  console.log({ formData, ratings });
+
+  const _contributors = ratings ? Object.keys(ratings) : [];
+  const _ratings = ratings
+    ? Object.values(ratings).map((rating) => +rating)
+    : [];
   const total = _ratings.length > 0 ? _ratings.reduce((a, b) => a + b, 0) : 0;
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
     functionName: "submitEvaluation",
-    args: [workstream?.id, _contributors, _ratings],
-    enabled: !!workstream?.id,
+    args: [workstreamWithContributor?.id, _contributors, _ratings],
+    enabled: !!workstreamWithContributor?.id,
   });
 
   const { write } = useContractWrite({
@@ -113,7 +117,7 @@ const ValueReviewForm: React.FC<{
   });
 
   if (!user) {
-    return <Text>Cannot determine user</Text>;
+    return <Text>Cannot determine user or contributors</Text>;
   }
 
   const onSubmit = (_: FormData) => {
@@ -142,13 +146,19 @@ const ValueReviewForm: React.FC<{
     );
   };
 
-  const filtered = filterContributors(workstream?.contributors || []);
+  const filtered =
+    contributors && contributors.length > 0
+      ? filterContributors(contributors)
+      : [];
 
   if (filtered.length === 0) {
     return (
       <Flex direction={"column"} gap={2}>
         <Text>No contributors found</Text>
-        <CloseButton workstreamId={workstream?.id} disabled={false} />
+        <CloseButton
+          workstreamId={workstreamWithContributor?.id}
+          disabled={false}
+        />
       </Flex>
     );
   }
@@ -169,7 +179,7 @@ const ValueReviewForm: React.FC<{
             <Text>Committed</Text>
           </GridItem>
           <GridItem colSpan={2}>
-            <Text>vFUX Rating</Text>
+            <Text>Rating</Text>
           </GridItem>
           {filtered.map((contributor, index) => {
             const address = contributor.contributor.id as `0x${string}`;
@@ -182,7 +192,7 @@ const ValueReviewForm: React.FC<{
                       direction="horizontal"
                       displayAvatar={true}
                     />
-                    {workstream?.coordinator?.id?.toLowerCase() ===
+                    {coordinator?.id?.toLowerCase() ===
                     address.toLowerCase() ? (
                       <StarIcon color={"yellow"} />
                     ) : undefined}

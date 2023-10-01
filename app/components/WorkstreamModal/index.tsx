@@ -81,7 +81,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     symbol: string;
     decimals: number;
   }>({ address: "", name: "", symbol: "", decimals: 0 });
-  const [parsedContributors, setParsedContributors] = useState<string[]>([]);
+  const [contributorAddresses, setContributorAddresses] = useState<string[]>();
 
   const { data: name } = useContractRead({
     address: erc20Info.address as `0x${string}`,
@@ -148,45 +148,39 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   const formState = watch();
   console.log(formState);
 
-  const getNativeTokenAmount = () => {
-    return !erc20Token ? formState.funding.amount : undefined;
-  };
+  const contributorsArray = watch("contributors");
 
   useEffect(() => {
-    const parseContibutors = async (_formState: FormData) => {
-      if (!_formState.contributors || !address) return;
-      const parsedContributors = await Promise.all(
-        _formState.contributors
-          .map((entry) => entry.address)
-          .filter(
-            (address) =>
-              address.length > 0 &&
-              address != "0x0000000000000000000000000000000000000000" &&
-              (isAddress(address) || address.includes(".eth"))
-          )
-          .map(async (account) => {
-            if (account.includes(".eth")) {
-              const address = await fetchEnsAddress({
-                chainId: 1,
-                name: account,
-              });
-              if (address) return address;
-            }
-            return account;
-          })
+    const parsedAddresses = async () => {
+      const addresses = await Promise.all(
+        contributorsArray.map(async (contributor) => {
+          if (isAddress(contributor.address)) {
+            return contributor.address;
+          }
+
+          if (contributor.address.includes(".eth")) {
+            const address = await fetchEnsAddress({
+              chainId: 1,
+              name: contributor.address,
+            });
+            if (address) return address;
+          }
+        })
       );
 
-      const contArray = parsedContributors
-        ? [...parsedContributors, address]
-        : [address];
-
-      console.log(contArray);
-
-      setParsedContributors(contArray);
+      setContributorAddresses(
+        addresses
+          .filter((address) => !!address)
+          .map((address) => address as string)
+      );
     };
 
-    parseContibutors(formState);
-  }, [formState.contributors, address]);
+    parsedAddresses();
+  }, [contributorsArray]);
+
+  const getNativeTokenAmount = () => {
+    return !erc20Token ? formState.funding.amount : 0n;
+  };
 
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
@@ -194,14 +188,14 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     functionName: "mintWorkstream",
     args: [
       formState.name,
-      parsedContributors,
+      contributorAddresses ? [address, ...contributorAddresses] : [address],
       formState.coordinatorCommitment,
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
       erc20Token ? [erc20Info.address] : [],
       erc20Token ? [formState.funding.amount] : [],
       formState.metadataUri,
     ],
-    value: getNativeTokenAmount() ?? 0n,
+    value: getNativeTokenAmount(),
   });
 
   const { data: tx, write } = useContractWrite({

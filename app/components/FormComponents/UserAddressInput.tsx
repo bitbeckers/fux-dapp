@@ -1,6 +1,9 @@
 import { Input, Tooltip, Flex, FormHelperText } from "@chakra-ui/react";
-import { useState } from "react";
+import { fetchEnsAddress } from "@wagmi/core";
+import { add } from "lodash";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { isAddress } from "viem";
 import { useEnsAddress, useEnsName } from "wagmi";
 
 const UserAddressInput: React.FC<{
@@ -23,8 +26,14 @@ const UserAddressInput: React.FC<{
     scopeKey: "wagmi",
   });
 
-  const handleChange = (e: any) => {
-    field.onChange(e);
+  useEffect(() => {
+    if (address) {
+      form.setValue(fieldName, address);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address]);
+
+  const handleChange = async (e: any) => {
     setInput(e.target.value);
   };
 

@@ -77,7 +77,8 @@ const CommitFuxModal: React.FC<{
     },
   });
 
-  const maxValue = Number(_fuxGiven + fuxAvailable);
+  const maxValue = Number(_fuxGiven) + Number(fuxAvailable);
+  console.log({ maxValue, _fuxGiven, fuxAvailable });
 
   const onSubmit = (e: FormData) => {
     if (_fuxGiven !== BigInt(e.fux) && checkChain()) {
@@ -103,7 +104,7 @@ const CommitFuxModal: React.FC<{
         <StatGroup>
           <Stat>
             <StatNumber fontFamily="mono" fontSize="md" fontWeight="100">{`${
-              maxValue - newFux || 0
+              Number(maxValue) - newFux || 0
             } / ${maxValue} FUX available`}</StatNumber>
           </Stat>
         </StatGroup>
