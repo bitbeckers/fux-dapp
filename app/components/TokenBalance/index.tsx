@@ -1,16 +1,8 @@
 import { TokenFragmentFragment } from "../../.graphclient";
 import { CopyIcon } from "@chakra-ui/icons";
-import {
-  HStack,
-  Avatar,
-  Text,
-  Button,
-  useToast,
-  VStack,
-  Flex,
-} from "@chakra-ui/react";
-import { BigNumberish, ethers } from "ethers";
+import { Text, Button, useToast, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { formatEther } from "viem";
 
 // Flex box with token, name, symbol, and amount
 // The box should have a link to the token on etherscan
@@ -19,7 +11,7 @@ import { useEffect, useState } from "react";
 // The other part is amount + symbol
 const TokenBalance: React.FC<{
   token: Partial<TokenFragmentFragment>;
-  amount: BigNumberish;
+  amount: bigint;
   direction?: "row" | "column";
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
 }> = ({ token, amount, direction, size }) => {
@@ -37,6 +29,7 @@ const TokenBalance: React.FC<{
         isClosable: true,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClick = () => {
@@ -63,7 +56,7 @@ const TokenBalance: React.FC<{
         </Button>
       </Flex>
       <Flex direction={"row"} gap={2}>
-        <Text>{ethers.utils.formatEther(amount)}</Text>
+        <Text>{formatEther(amount)}</Text>
         <Text>{symbol}</Text>
       </Flex>
     </Flex>

@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Input,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -30,11 +29,10 @@ import {
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
-import { BigNumber, ethers } from "ethers";
-import { isAddress } from "ethers/lib/utils";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
+import { isAddress } from "viem";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 import { fetchEnsAddress } from "wagmi/actions";
 
@@ -44,13 +42,16 @@ type FormData = {
 };
 
 const ContributorModal: React.FC<{
-  workstreamID: BigNumber;
+  workstreamID: bigint | string;
   workstreamName: string;
   contributors?: WorkstreamContributor[];
 }> = ({ workstreamID, workstreamName, contributors }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { error, success } = useCustomToasts();
   const { checkChain } = useBlockTx();
+  const [contributorAddresses, setContributorAddresses] = useState<string[]>(
+    []
+  );
 
   const formMethods = useForm<FormData>({
     defaultValues: {
@@ -74,24 +75,39 @@ const ContributorModal: React.FC<{
 
   const newContributors = watch("newContributors");
 
+  useEffect(() => {
+    const parsedAddresses = async () => {
+      const addresses = await Promise.all(
+        newContributors.map(async (contributor) => {
+          if (isAddress(contributor.address)) {
+            return contributor.address;
+          }
+
+          if (contributor.address.includes(".eth")) {
+            const address = await fetchEnsAddress({
+              chainId: 1,
+              name: contributor.address,
+            });
+            if (address) return address;
+          }
+        })
+      );
+
+      setContributorAddresses(
+        addresses
+          .filter((address) => !!address)
+          .map((address) => address as string)
+      );
+    };
+
+    parsedAddresses();
+  }, [newContributors]);
+
   const { config } = usePrepareContractWrite({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
     functionName: "updateContributors",
-    args: [
-      workstreamID,
-      newContributors
-        .map((entry) => entry.address)
-        .filter((address) => address != ethers.constants.AddressZero)
-        .map((account) => {
-          if (!isAddress(account)) {
-            return fetchEnsAddress({ chainId: 1, name: account });
-          } else if (isAddress(account)) {
-            return account;
-          }
-        }),
-      true,
-    ],
+    args: [workstreamID, contributorAddresses, true],
   });
 
   const { write } = useContractWrite({
@@ -109,7 +125,7 @@ const ContributorModal: React.FC<{
   });
 
   const onSubmit = () => {
-    if (newContributors.length > 0 && checkChain()) {
+    if (contributorAddresses.length > 0 && checkChain()) {
       write?.();
       onClose();
     }

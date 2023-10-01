@@ -42,7 +42,7 @@ const User: React.FC<{
     isError: avatarError,
     isLoading: avatarLoading,
   } = useEnsAvatar({
-    address,
+    name: ensName,
     chainId: 1,
     scopeKey: "wagmi",
   });

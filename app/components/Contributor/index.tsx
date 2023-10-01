@@ -8,14 +8,13 @@ import {
   StatLabel,
   StatNumber,
 } from "@chakra-ui/react";
-import { BigNumberish } from "ethers";
 
 export const Contributor: React.FC<{
   address: `0x${string}`;
-  commitment: BigNumberish;
+  commitment: bigint;
   coordinator?: boolean;
   direction?: "column" | "row";
-}> = ({ address, commitment, coordinator = false, direction }) => {
+}> = ({ address, commitment = 0n, coordinator = false, direction }) => {
   return (
     <Flex direction={direction}>
       <User address={address} direction="horizontal" displayAvatar={true} />
@@ -23,7 +22,7 @@ export const Contributor: React.FC<{
       <StatGroup>
         <Stat>
           <StatLabel>Committed</StatLabel>
-          <StatNumber>{`${commitment || 0}%`}</StatNumber>
+          <StatNumber>{`${commitment.toString()} %`}</StatNumber>
         </Stat>
         <Stat>
           <StatLabel>vFux</StatLabel>

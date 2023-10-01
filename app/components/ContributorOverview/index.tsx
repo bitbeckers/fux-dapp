@@ -12,7 +12,6 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
 
 export const ContributorOverview: React.FC<{
@@ -21,7 +20,7 @@ export const ContributorOverview: React.FC<{
   const { address } = useAccount();
   const contributors = workstream?.contributors;
 
-  if (!contributors) {
+  if (!contributors || !workstream.id) {
     return null;
   }
 
@@ -48,7 +47,7 @@ export const ContributorOverview: React.FC<{
         <Text pr={6}>Contributor</Text>
         {workstream.status === "Closed" || !userIsCoordinator ? undefined : (
           <ContributorModal
-            workstreamID={BigNumber.from(workstream.id)}
+            workstreamID={BigInt(workstream.id)}
             workstreamName={workstream.name || ""}
             contributors={workstream.contributors ?? []}
           />

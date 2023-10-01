@@ -3,21 +3,21 @@ import { useConstants } from "../../utils/constants";
 import CommitFuxModal from "../CommitFuxModal";
 import ContributorModal from "../ContributorModal";
 import { StarIcon } from "@chakra-ui/icons";
-import { Button, Flex, GridItem, Icon, Text } from "@chakra-ui/react";
-import { BigNumber, ethers } from "ethers";
+import { Button, Flex, GridItem, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import React from "react";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 const WorkstreamRow: React.FC<{
   workstream: Partial<Workstream>;
-  fuxAvailable?: BigNumber;
+  fuxAvailable?: bigint;
   showInactive: boolean;
 }> = ({ workstream, fuxAvailable, showInactive }) => {
   const { address: user } = useAccount();
   const { nativeToken } = useConstants();
 
-  if (!workstream) {
+  if (!workstream || !workstream.id) {
     return null;
   }
 
@@ -69,7 +69,7 @@ const WorkstreamRow: React.FC<{
       >
         {workstream?.funding && workstream.funding.length > 0 ? (
           <Text fontFamily="mono" pr={"1em"}>
-            {`${ethers.utils.formatUnits(
+            {`${formatUnits(
               workstream.funding[0].amount,
               workstream.funding[0].token.decimals
             )} ${
@@ -90,19 +90,29 @@ const WorkstreamRow: React.FC<{
         <Text fontFamily="mono" pr={"1em"}>{`${commitment} %`}</Text>
       </GridItem>
       {fuxAvailable ? (
-        <GridItem display={"flex"} justifyContent={"center"} alignItems={"end"} colSpan={2}>
+        <GridItem
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"end"}
+          colSpan={2}
+        >
           <CommitFuxModal
-            workstreamID={BigNumber.from(workstream.id)}
-            fuxGiven={BigNumber.from(commitment)}
+            workstreamID={workstream.id}
+            fuxGiven={commitment}
             fuxAvailable={fuxAvailable}
             tiny={true}
           />
         </GridItem>
       ) : undefined}
-      <GridItem display={"flex"} justifyContent={"center"} alignItems={"end"} colSpan={2}>
+      <GridItem
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"end"}
+        colSpan={2}
+      >
         {coordinator?.toLowerCase() === user?.toLowerCase() ? (
           <ContributorModal
-            workstreamID={BigNumber.from(workstream.id)}
+            workstreamID={workstream.id}
             workstreamName={workstream.name || ""}
             contributors={workstream.contributors ?? []}
           />

@@ -40,13 +40,12 @@ import {
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchEnsAddress } from "@wagmi/core";
-import { BigNumber, BigNumberish, ethers } from "ethers";
-import { isAddress } from "ethers/lib/utils.js";
 import { DateTime } from "luxon";
 import { useState, useEffect } from "react";
 import { useFieldArray, useForm, FormProvider } from "react-hook-form";
 import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
 import { RiInformationLine } from "react-icons/ri";
+import { isAddress } from "viem";
 import {
   useAccount,
   usePrepareContractWrite,
@@ -61,9 +60,9 @@ type FormData = {
   contributors: { address: string }[];
   funding: {
     address: string;
-    amount: BigNumberish;
+    amount: bigint;
     symbol?: string;
-    decimals?: BigNumberish;
+    decimals?: number;
   };
   metadataUri: string;
 };
@@ -80,8 +79,9 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     address: string;
     name: string;
     symbol: string;
-    decimals: BigNumberish;
+    decimals: number;
   }>({ address: "", name: "", symbol: "", decimals: 0 });
+  const [contributorAddresses, setContributorAddresses] = useState<string[]>();
 
   const { data: name } = useContractRead({
     address: erc20Info.address as `0x${string}`,
@@ -107,9 +107,10 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
         ...erc20Info,
         name: name as string,
         symbol: symbol as string,
-        decimals: decimals as BigNumberish,
+        decimals: decimals as number,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, symbol, decimals]);
 
   const formMethods = useForm<FormData>({
@@ -120,7 +121,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
       contributors: [{ address: "" }],
       funding: {
         address: "",
-        amount: 0,
+        amount: 0n,
         decimals: 18,
       },
       metadataUri: "",
@@ -147,11 +148,38 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
   const formState = watch();
   console.log(formState);
 
+  const contributorsArray = watch("contributors");
+
+  useEffect(() => {
+    const parsedAddresses = async () => {
+      const addresses = await Promise.all(
+        contributorsArray.map(async (contributor) => {
+          if (isAddress(contributor.address)) {
+            return contributor.address;
+          }
+
+          if (contributor.address.includes(".eth")) {
+            const address = await fetchEnsAddress({
+              chainId: 1,
+              name: contributor.address,
+            });
+            if (address) return address;
+          }
+        })
+      );
+
+      setContributorAddresses(
+        addresses
+          .filter((address) => !!address)
+          .map((address) => address as string)
+      );
+    };
+
+    parsedAddresses();
+  }, [contributorsArray]);
+
   const getNativeTokenAmount = () => {
-    if (!erc20Token) {
-      return BigNumber.from(formState.funding.amount);
-    }
-    return undefined;
+    return !erc20Token ? formState.funding.amount : 0n;
   };
 
   const { config } = usePrepareContractWrite({
@@ -160,28 +188,14 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
     functionName: "mintWorkstream",
     args: [
       formState.name,
-      [
-        ...formState.contributors
-          .map((entry) => entry.address)
-          .filter((address) => address != ethers.constants.AddressZero)
-          .map((account) => {
-            if (!isAddress(account)) {
-              return fetchEnsAddress({ chainId: 1, name: account });
-            } else if (isAddress(account)) {
-              return account;
-            }
-          }),
-        address,
-      ],
+      contributorAddresses ? [address, ...contributorAddresses] : [address],
       formState.coordinatorCommitment,
       DateTime.fromISO(formState.duration).endOf("day").toSeconds().toFixed(),
       erc20Token ? [erc20Info.address] : [],
       erc20Token ? [formState.funding.amount] : [],
       formState.metadataUri,
     ],
-    overrides: {
-      value: getNativeTokenAmount(),
-    },
+    value: getNativeTokenAmount(),
   });
 
   const { data: tx, write } = useContractWrite({
@@ -344,7 +358,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
                     fieldName="funding.amount"
                     native={false}
                     name={name as string}
-                    decimals={decimals as BigNumberish}
+                    decimals={decimals as number}
                     symbol={symbol as string}
                   />
                 ) : (

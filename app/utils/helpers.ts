@@ -3,7 +3,7 @@ import { BigNumberish } from "ethers";
 import _, { groupBy, mapValues, meanBy } from "lodash";
 
 export type Ratings = {
-  [address: string]: BigNumberish;
+  [address: string]: number;
 };
 
 export const parseEvaluations = (workstream?: Workstream) => {

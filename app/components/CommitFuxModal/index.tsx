@@ -21,7 +21,6 @@ import {
   Stat,
   StatNumber,
 } from "@chakra-ui/react";
-import { BigNumber, BigNumberish } from "ethers";
 import { useForm, FormProvider } from "react-hook-form";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 
@@ -30,19 +29,19 @@ type FormData = {
 };
 
 const CommitFuxModal: React.FC<{
-  workstreamID?: BigNumber;
-  fuxGiven?: BigNumberish;
-  fuxAvailable?: BigNumberish;
+  workstreamID: bigint | string;
+  fuxGiven: bigint;
+  fuxAvailable: bigint;
   tiny?: boolean;
-}> = ({ workstreamID, fuxGiven, fuxAvailable, tiny }) => {
+}> = ({ workstreamID, fuxGiven = 0n, fuxAvailable = 0n, tiny = false }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { error, success } = useCustomToasts();
-  const _fuxGiven = BigNumber.from(fuxGiven);
+  const _fuxGiven = fuxGiven;
   const { checkChain } = useBlockTx();
 
   const formMethods = useForm<FormData>({
     defaultValues: {
-      fux: _fuxGiven ? _fuxGiven.toNumber() : 0,
+      fux: Number(fuxGiven),
     },
   });
 
@@ -78,10 +77,11 @@ const CommitFuxModal: React.FC<{
     },
   });
 
-  const maxValue = _fuxGiven.add(fuxAvailable || 0).toNumber();
+  const maxValue = Number(_fuxGiven) + Number(fuxAvailable);
+  console.log({ maxValue, _fuxGiven, fuxAvailable });
 
   const onSubmit = (e: FormData) => {
-    if (!_fuxGiven.eq(BigNumber.from(e.fux)) && checkChain()) {
+    if (_fuxGiven !== BigInt(e.fux) && checkChain()) {
       write?.();
     }
   };
@@ -104,7 +104,7 @@ const CommitFuxModal: React.FC<{
         <StatGroup>
           <Stat>
             <StatNumber fontFamily="mono" fontSize="md" fontWeight="100">{`${
-              maxValue - newFux || 0
+              Number(maxValue) - newFux || 0
             } / ${maxValue} FUX available`}</StatNumber>
           </Stat>
         </StatGroup>
@@ -115,7 +115,7 @@ const CommitFuxModal: React.FC<{
           </Button>
           <Spacer />
           <Button
-            isDisabled={_fuxGiven.eq(BigNumber.from(newFux))}
+            isDisabled={_fuxGiven === BigInt(newFux)}
             isLoading={isSubmitting}
             type="submit"
           >

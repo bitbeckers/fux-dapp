@@ -16,7 +16,6 @@ import {
   StatNumber,
   Spinner,
 } from "@chakra-ui/react";
-import { BigNumber, ethers } from "ethers";
 import _ from "lodash";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
@@ -70,14 +69,14 @@ const Workstream: NextPage = () => {
   let fuxGiven = contributor?.commitment;
 
   if (!fuxGiven) {
-    fuxGiven = BigNumber.from("0");
+    fuxGiven = 0n;
   }
 
 
   const fuxAvailable = userBalances?.userBalances.find((balance) => balance.token?.name === "FUX")?.amount
 
   if (!fuxAvailable) {
-    fuxGiven = BigNumber.from("0");
+    fuxGiven = 0n
   }
 
   return workstreamID && _workstream ? (
@@ -113,7 +112,7 @@ const Workstream: NextPage = () => {
             </Stat>
             <Box w="160px" mt={8}>
               <CommitFuxModal
-                workstreamID={BigNumber.from(workstreamID)}
+                workstreamID={workstreamID as string}
                 fuxGiven={fuxGiven}
                 fuxAvailable={fuxAvailable}
               />
