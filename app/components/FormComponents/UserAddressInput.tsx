@@ -1,4 +1,4 @@
-import { Input, Tooltip, Text, Flex, FormHelperText } from "@chakra-ui/react";
+import { Input, Tooltip, Flex, FormHelperText } from "@chakra-ui/react";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useEnsAddress, useEnsName } from "wagmi";
@@ -51,9 +51,7 @@ const UserAddressInput: React.FC<{
             value={input}
           />
           {input && !ens && !address && (
-            <FormHelperText
-              textColor={"red.500"}
-            >
+            <FormHelperText textColor={"red.500"}>
               Invalid address or ENS name
             </FormHelperText>
           )}

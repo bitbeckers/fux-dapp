@@ -1,8 +1,7 @@
 import { Input } from "@chakra-ui/react";
-import { ethers } from "ethers";
-import { isAddress } from "ethers/lib/utils";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { isAddress } from "viem";
 
 const ContractAddressInput: React.FC<{
   onChange: (e: { target: any; type?: any }) => void;

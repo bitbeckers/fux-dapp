@@ -2,12 +2,11 @@ import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
 import { contractAddresses, contractABI } from "../../utils/constants";
 import { Button } from "@chakra-ui/react";
-import { BigNumberish } from "ethers";
 import React from "react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
 type CloseButtonType = {
-  workstreamId: BigNumberish;
+  workstreamId?: string;
   contributors?: string[];
   disabled?: boolean;
   text?: string;
@@ -27,6 +26,7 @@ const CloseButton: React.FC<CloseButtonType> = ({
     abi: contractABI.fux,
     functionName: "closeWorkstream",
     args: [workstreamId, contributors],
+    enabled: !!workstreamId,
   });
 
   const { write } = useContractWrite({

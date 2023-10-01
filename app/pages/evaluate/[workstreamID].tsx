@@ -1,5 +1,5 @@
-import { StartEvaluation } from "../../components/StartEvaluation";
 import User from "../../components//User";
+import { StartEvaluation } from "../../components/StartEvaluation";
 import ValueHeader from "../../components/ValueHeader";
 import { ValueReviewForm } from "../../components/ValueReviewForm";
 import { useGraphClient } from "../../hooks/useGraphClient";
@@ -45,7 +45,7 @@ const Evaluate: NextPage = () => {
     if (!ws?.status) return <Text>Workstream status not found</Text>;
 
     if (ws?.status && ws.status !== "Closed")
-      return <ValueReviewForm workstream={ws} />;
+      return <ValueReviewForm workstreamWithContributor={ws} />;
     if (ws?.status && ws.status === "Closed")
       return <Text>Workstream is resolved</Text>;
   };

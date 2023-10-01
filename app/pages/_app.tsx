@@ -6,51 +6,50 @@ import { ChakraProvider, Flex, Spacer, VStack } from "@chakra-ui/react";
 import {
   darkTheme,
   RainbowKitProvider,
-  connectorsForWallets,
   getDefaultWallets,
 } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
-import { useEffect } from "react";
-import { createClient, configureChains, WagmiConfig } from "wagmi";
-import { goerli, mainnet } from "wagmi/chains";
+import { goerli } from "viem/chains";
+import { WagmiConfig, createConfig, configureChains, mainnet } from "wagmi";
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+import { SafeConnector } from "wagmi/connectors/safe";
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
 const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
 
-export const { chains, provider } = configureChains(
+const { chains, publicClient, webSocketPublicClient } = configureChains(
   [goerli, mainnet],
   [alchemyProvider({ apiKey: ALCHEMY_API_KEY! }), publicProvider()]
 );
 
-const { wallets } = getDefaultWallets({
+const { connectors } = getDefaultWallets({
   appName: "FUX Dapp",
   projectId: WC_PROJECT_ID!,
   chains,
 });
 
-const connectors = connectorsForWallets([...wallets]);
-
-export const wagmiClient = createClient({
-  autoConnect: false,
+const wagmiConfig = createConfig({
+  autoConnect: true,
   connectors,
-  provider,
+  publicClient,
+  webSocketPublicClient,
 });
 
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
-  useEffect(() => {
-    wagmiClient.autoConnect();
-  }, []);
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
       <QueryClientProvider client={queryClient}>
-        <WagmiConfig client={wagmiClient}>
+        <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider
             chains={chains}
             theme={darkTheme({

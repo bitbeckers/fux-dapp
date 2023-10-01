@@ -17,7 +17,6 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import { BigNumber } from "ethers";
 import type { NextPage } from "next";
 import React from "react";
 import { useAccount, useContractRead } from "wagmi";

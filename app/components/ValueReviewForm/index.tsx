@@ -24,7 +24,6 @@ import {
   Stat,
   StatNumber,
 } from "@chakra-ui/react";
-import { BigNumberish } from "ethers";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { Fragment } from "react";
@@ -32,44 +31,46 @@ import { Controller, useForm } from "react-hook-form";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 type FormData = {
-  [address: string]: BigNumberish;
+  ratings: {
+    [address: `0x${string}`]: number;
+  };
 };
 
-const findEvaluations = (workstream: Workstream, user: `0x${string}`) => {
-  let data: FormData = {};
+const findEvaluations = (
+  workstream: Partial<Workstream>,
+  user: `0x${string}`
+) => {
   const currentEvaluations = workstream?.evaluations?.filter(
     (evaluation) => evaluation.creator.id.toLowerCase() === user.toLowerCase()
   );
 
   if (!currentEvaluations) {
     console.log("No current found");
-    return data;
+    return {};
   }
 
-  data = _.transform(
+  return _.transform(
     currentEvaluations,
     (result, v, _) => {
-      result[v.contributor.id] = v.rating;
+      result[v.contributor.id as `0x${string}`] = v.rating;
     },
-    {} as FormData
+    {} as { [address: `0x${string}`]: number }
   );
-
-  return data;
 };
 
 const ValueReviewForm: React.FC<{
-  workstream: Partial<WorkstreamContributor>;
-}> = ({ workstream }) => {
+  workstreamWithContributor: Partial<WorkstreamContributor>;
+}> = ({ workstreamWithContributor }) => {
   const router = useRouter();
 
   const { address: user } = useAccount();
   const toast = useCustomToasts();
   const { checkChain } = useBlockTx();
 
-  const _workstream = workstream as Workstream;
+  const { workstream } = workstreamWithContributor;
 
   const currentEvaluations = findEvaluations(
-    _workstream,
+    workstream || ({} as Workstream),
     user || ("" as `0x${string}`)
   );
 
@@ -80,9 +81,7 @@ const ValueReviewForm: React.FC<{
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
-    defaultValues: {
-      ratings: currentEvaluations,
-    },
+    defaultValues: currentEvaluations,
   });
 
   const formData = watch();
@@ -95,7 +94,8 @@ const ValueReviewForm: React.FC<{
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
     functionName: "submitEvaluation",
-    args: [workstream.id, _contributors, _ratings],
+    args: [workstream?.id, _contributors, _ratings],
+    enabled: !!workstream?.id,
   });
 
   const { write } = useContractWrite({
@@ -135,9 +135,6 @@ const ValueReviewForm: React.FC<{
     }
   };
 
-  const contributors = _workstream.contributors;
-  const coordinator = _workstream.coordinator?.id;
-
   const filterContributors = (contributors: WorkstreamContributor[]) => {
     return contributors.filter(
       (contributor) =>
@@ -145,13 +142,13 @@ const ValueReviewForm: React.FC<{
     );
   };
 
-  const filtered = filterContributors(contributors || []);
+  const filtered = filterContributors(workstream?.contributors || []);
 
   if (filtered.length === 0) {
     return (
       <Flex direction={"column"} gap={2}>
         <Text>No contributors found</Text>
-        <CloseButton workstreamId={_workstream.id} disabled={false} />
+        <CloseButton workstreamId={workstream?.id} disabled={false} />
       </Flex>
     );
   }
@@ -185,7 +182,8 @@ const ValueReviewForm: React.FC<{
                       direction="horizontal"
                       displayAvatar={true}
                     />
-                    {coordinator?.toLowerCase() === address.toLowerCase() ? (
+                    {workstream?.coordinator?.id?.toLowerCase() ===
+                    address.toLowerCase() ? (
                       <StarIcon color={"yellow"} />
                     ) : undefined}
                   </Flex>
@@ -208,7 +206,9 @@ const ValueReviewForm: React.FC<{
                           name={restField.name}
                           borderRadius={0}
                           placeholder={
-                            formData[address.toLowerCase()]?.toString() ?? "0"
+                            formData.ratings[
+                              address.toLowerCase() as `0x${string}`
+                            ]?.toString() ?? "0"
                           }
                         />
                         <NumberInputStepper>

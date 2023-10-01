@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { Workstream, WorkstreamContributor } from "../../.graphclient";
 import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
@@ -21,9 +20,10 @@ import {
   Flex,
   ButtonGroup,
 } from "@chakra-ui/react";
-import { BigNumber, ethers } from "ethers";
 import _ from "lodash";
+import { useRouter } from "next/router";
 import React, { Fragment } from "react";
+import { formatUnits } from "viem";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 const FinalizeForm: React.FC<{
@@ -51,7 +51,7 @@ const FinalizeForm: React.FC<{
     ],
   });
 
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+  const { isLoading, write } = useContractWrite({
     ...config,
     onError(e) {
       toast.error(e);
@@ -105,7 +105,7 @@ const FinalizeForm: React.FC<{
   const coordinator = _workstream.coordinator?.id;
 
   const finalizeForm =
-    contributors && contributors?.length > 0 ? (
+    contributors && contributors?.length > 0 && workstream.id ? (
       <>
         <Grid gap={2} templateColumns="repeat(16, 1fr)">
           <GridItem colSpan={8}>
@@ -159,10 +159,10 @@ const FinalizeForm: React.FC<{
                     <Text fontFamily="mono" pr={"1em"}>
                       {`${
                         relative[address]
-                          ? ethers.utils.formatUnits(
-                              BigNumber.from(_workstream.funding[0].amount).mul(
-                                BigNumber.from(relative[address]).div(100)
-                              ),
+                          ? formatUnits(
+                              (BigInt(_workstream.funding[0].amount) *
+                                BigInt(relative[address])) /
+                                100n,
                               _workstream.funding[0].token.decimals
                             )
                           : "0"
@@ -191,7 +191,7 @@ const FinalizeForm: React.FC<{
             Finalize workstream
           </Button>
           <CloseButton
-            workstreamId={workstream.id || ""}
+            workstreamId={workstream.id}
             contributors={contributors.map((c) => c.contributor.id)}
             disabled={coordinator?.toLowerCase() !== address?.toLowerCase()}
           />

@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Input,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -30,11 +29,10 @@ import {
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
-import { BigNumber, ethers } from "ethers";
-import { isAddress } from "ethers/lib/utils";
 import { Fragment } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { BsFillPersonPlusFill, BsFillPersonXFill } from "react-icons/bs";
+import { isAddress } from "viem";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 import { fetchEnsAddress } from "wagmi/actions";
 
@@ -44,7 +42,7 @@ type FormData = {
 };
 
 const ContributorModal: React.FC<{
-  workstreamID: BigNumber;
+  workstreamID: bigint | string;
   workstreamName: string;
   contributors?: WorkstreamContributor[];
 }> = ({ workstreamID, workstreamName, contributors }) => {
@@ -82,10 +80,16 @@ const ContributorModal: React.FC<{
       workstreamID,
       newContributors
         .map((entry) => entry.address)
-        .filter((address) => address != ethers.constants.AddressZero)
-        .map((account) => {
-          if (!isAddress(account)) {
-            return fetchEnsAddress({ chainId: 1, name: account });
+        .filter(
+          (address) => address != "0x0000000000000000000000000000000000000000"
+        )
+        .map(async (account) => {
+          if (!isAddress(account) && account.includes(".eth")) {
+            const address = await fetchEnsAddress({
+              chainId: 1,
+              name: account,
+            });
+            if (address) return address.toLowerCase();
           } else if (isAddress(account)) {
             return account;
           }

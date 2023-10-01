@@ -10,14 +10,14 @@ import {
   Text,
   InputGroup,
 } from "@chakra-ui/react";
-import { BigNumberish, ethers } from "ethers";
 import { Controller, useFormContext } from "react-hook-form";
+import { formatEther, formatUnits, parseEther, parseUnits } from "viem";
 
 const TokenAmountInput: React.FC<{
   fieldName: string;
   native: boolean;
   name?: string;
-  decimals?: BigNumberish;
+  decimals?: number;
   symbol?: string;
 }> = ({ fieldName, name = "Unknown", native, decimals, symbol = "N/A" }) => {
   const form = useFormContext();
@@ -25,17 +25,17 @@ const TokenAmountInput: React.FC<{
   const { control } = form;
 
   const parseFundingAmount = (value: string) => {
-    if (!native) {
-      return ethers.utils.parseUnits(value, decimals);
+    if (!native && decimals) {
+      return parseUnits(value, decimals);
     }
-    return ethers.utils.parseEther(value);
+    return parseEther(value);
   };
 
-  const formatFundingAmount = (value: BigNumberish) => {
-    if (!native) {
-      return ethers.utils.formatUnits(value, decimals);
+  const formatFundingAmount = (value: bigint) => {
+    if (!native && decimals) {
+      return formatUnits(value, decimals);
     }
-    return ethers.utils.formatEther(value);
+    return formatEther(value);
   };
 
   return (

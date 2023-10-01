@@ -1,15 +1,8 @@
-import {
-  WorkstreamByIDDocument,
-  WorkstreamByIDQuery,
-  WorkstreamByIDQueryVariables,
-} from "../../.graphclient";
 import { FinalizeForm } from "../../components/FinalizeForm";
-import { StartEvaluation } from "../../components/StartEvaluation";
 import TokenBalance from "../../components/TokenBalance";
 import User from "../../components/User";
 import WorkstreamCard from "../../components/WorkstreamCard";
 import { useGraphClient } from "../../hooks/useGraphClient";
-import { useConstants } from "../../utils/constants";
 import {
   VStack,
   Text,
@@ -21,14 +14,12 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import { ethers } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 
 const Finalize: NextPage = () => {
   const router = useRouter();
-  const { nativeToken } = useConstants();
   const { sdk } = useGraphClient();
 
   const { workstreamID } = router.query;
