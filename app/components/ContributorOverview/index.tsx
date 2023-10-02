@@ -71,7 +71,7 @@ export const ContributorOverview: React.FC<{
               {workstream.coordinator?.id.toLowerCase() ===
               cont.contributor.id.toLowerCase() ? (
                 <Tooltip label="Coordinator">
-                  <StarIcon ml={"1em"} />
+                  <StarIcon ml={"1em"} color={"yellow"} />
                 </Tooltip>
               ) : undefined}
             </Flex>

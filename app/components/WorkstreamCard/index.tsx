@@ -1,7 +1,4 @@
-import {
-  Evaluation,
-  WorkstreamContributor,
-} from "../../.graphclient";
+import { Evaluation, WorkstreamContributor } from "../../.graphclient";
 import { useConstants } from "../../utils/constants";
 import { ContributorOverview } from "../ContributorOverview";
 import TokenBalance from "../TokenBalance";
@@ -107,7 +104,9 @@ const WorkstreamCard: React.FC<{
       </AccordionButton>
       <AccordionPanel pb={4}>
         <Flex direction="column" alignItems={"flex-start"} py={3}>
-          <Link href={"/workstream/" + _workstream?.id}>View Workstream</Link>
+          <Link href={"/workstream/" + _workstream?.id} fontWeight={"bold"}>
+            View Workstream
+          </Link>
           <Text>
             Deadline:{" "}
             {DateTime.fromSeconds(
