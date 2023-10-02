@@ -8,6 +8,7 @@ const ValueHeader: React.FC<{ name?: string }> = ({ name }) => {
       bg="#221527"
       justifyContent="center"
       align="center"
+      pt={"2em"}
       pb={"2em"}
     >
       <Heading>{`Evaluate ${name ? name : ""}`}</Heading>

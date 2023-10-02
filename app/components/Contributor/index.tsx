@@ -29,7 +29,7 @@ export const Contributor: React.FC<{
           <StatNumber>--%</StatNumber>
         </Stat>
       </StatGroup>
-      {coordinator ?? <StarIcon mr={"1em"} />}
+      {coordinator ?? <StarIcon mr={"1em"} color={"yellow"} />}
     </Flex>
   );
 };

@@ -21,8 +21,9 @@ import { RiInformationLine } from "react-icons/ri";
 
 const ControlledNumberInput: React.FC<{
   fieldName: string;
-  helperText: string;
-  tooltipText: string;
+  placeholder?: string;
+  helperText?: string;
+  tooltipText?: string;
   units?: string;
   precision?: number;
   step?: number;
@@ -31,6 +32,7 @@ const ControlledNumberInput: React.FC<{
   config?: RegisterOptions<FieldValues, string>;
 }> = ({
   fieldName,
+  placeholder = "0",
   helperText,
   tooltipText,
   units,
@@ -54,15 +56,17 @@ const ControlledNumberInput: React.FC<{
       rules={config}
       key={fieldName}
       render={({ field: { ref, onChange, ...restField } }) => (
-        <>
-          <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
-            {helperText}
-            <Tooltip label={tooltipText}>
-              <Box ml={2}>
-                <RiInformationLine />
-              </Box>
-            </Tooltip>
-          </FormHelperText>
+        <Box>
+          {helperText && tooltipText && (
+            <FormHelperText textColor={"white"} w={"100%"} display={"flex"}>
+              {helperText}
+              <Tooltip label={tooltipText}>
+                <Box ml={2}>
+                  <RiInformationLine />
+                </Box>
+              </Tooltip>
+            </FormHelperText>
+          )}
           <InputGroup>
             <NumberInput
               precision={precision}
@@ -81,24 +85,26 @@ const ControlledNumberInput: React.FC<{
               <NumberInputField
                 ref={ref}
                 name={restField.name}
-                borderRightRadius={0}
-                placeholder={"0"}
+                borderRightRadius={units ? 0 : "base"}
+                placeholder={placeholder}
               />
               <NumberInputStepper>
                 <NumberIncrementStepper />
                 <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
-            <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
-              {units}
-            </InputRightAddon>
+            {units && (
+              <InputRightAddon bg={"#8E4EC6"} fontWeight={"bold"}>
+                {units}
+              </InputRightAddon>
+            )}
           </InputGroup>
           {errors[fieldName] && (
             <Text color="red.500" fontSize="sm">
               {`${fieldName} is required`}
             </Text>
           )}
-        </>
+        </Box>
       )}
     />
   );

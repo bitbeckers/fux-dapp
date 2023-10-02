@@ -3,6 +3,7 @@ import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
 import { contractAddresses, contractABI } from "../../utils/constants";
 import { CloseButton } from "../CloseButton";
+import { ControlledNumberInput } from "../FormComponents/ControlledNumberInput";
 import User from "../User";
 import { StarIcon } from "@chakra-ui/icons";
 import {
@@ -27,7 +28,7 @@ import {
 import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { Fragment } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 type FormData = {
@@ -73,15 +74,16 @@ const ValueReviewForm: React.FC<{
     user || ("" as `0x${string}`)
   );
 
+  const formMethods = useForm<FormData>({
+    defaultValues: { ratings: { ...currentEvaluations } },
+  });
+
   const {
     handleSubmit,
     reset,
     watch,
-    control,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    defaultValues: { ratings: { ...currentEvaluations } },
-  });
+  } = formMethods;
 
   const formData = watch();
   const ratings = watch("ratings");
@@ -99,8 +101,9 @@ const ValueReviewForm: React.FC<{
     abi: contractABI.fux,
     functionName: "submitEvaluation",
     args: [workstreamWithContributor?.id, _contributors, _ratings],
-    enabled: !!workstreamWithContributor?.id,
   });
+
+  console.log({ wsID: workstreamWithContributor?.id, _contributors, _ratings, config });
 
   const { write } = useContractWrite({
     ...config,
@@ -135,6 +138,11 @@ const ValueReviewForm: React.FC<{
     }
 
     if (checkChain()) {
+      toast.success(
+        "Submitting evaluation",
+        "Please validate and sign transaction"
+      );
+      console.log(write);
       write?.();
     }
   };
@@ -164,95 +172,91 @@ const ValueReviewForm: React.FC<{
   }
 
   const reviewForm = (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Center>
-        <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
-          Distribute 100 points to rate value contribution
-        </Text>
-      </Center>
-      <FormControl>
-        <Grid gap={2} templateColumns="repeat(12, 1fr)">
-          <GridItem colSpan={8}>
-            <Text>User</Text>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <Text>Committed</Text>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <Text>Rating</Text>
-          </GridItem>
-          {filtered.map((contributor, index) => {
-            const address = contributor.contributor.id as `0x${string}`;
-            return (
-              <Fragment key={index}>
-                <GridItem colSpan={8}>
-                  <Flex direction={"row"} alignItems={"center"} gap={"2"}>
-                    <User
-                      address={address as `0x${string}`}
-                      direction="horizontal"
-                      displayAvatar={true}
+    <FormProvider {...formMethods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Center>
+          <Text paddingBottom={"2em"} paddingTop={"2em"} textAlign={"center"}>
+            Distribute 100 points to rate value contribution
+          </Text>
+        </Center>
+        <FormControl>
+          <Grid gap={2} templateColumns="repeat(12, 1fr)">
+            <GridItem colSpan={8}>
+              <Text>User</Text>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <Text>Committed</Text>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <Text>Rating</Text>
+            </GridItem>
+            {filtered.map((contributor, index) => {
+              const address = contributor.contributor.id as `0x${string}`;
+              return (
+                <Fragment key={index}>
+                  <GridItem colSpan={8}>
+                    <Flex direction={"row"} alignItems={"center"} gap={"2"}>
+                      <User
+                        address={address as `0x${string}`}
+                        direction="horizontal"
+                        displayAvatar={true}
+                      />
+                      {coordinator?.id?.toLowerCase() ===
+                      address.toLowerCase() ? (
+                        <StarIcon color={"yellow"} />
+                      ) : undefined}
+                    </Flex>
+                  </GridItem>
+                  <GridItem colSpan={2}>
+                    <Stat>
+                      <StatNumber>{`${
+                        contributor.commitment || 0
+                      }%`}</StatNumber>
+                    </Stat>
+                  </GridItem>
+                  <GridItem display={"inline-grid"} colSpan={2}>
+                    <ControlledNumberInput
+                      fieldName={`ratings.${address}`}
+                      precision={0}
+                      step={1}
+                      min={0}
+                      max={100}
+                      placeholder={
+                        formData.ratings[
+                          address.toLowerCase() as `0x${string}`
+                        ]?.toString() ?? "0"
+                      }
                     />
-                    {coordinator?.id?.toLowerCase() ===
-                    address.toLowerCase() ? (
-                      <StarIcon color={"yellow"} />
-                    ) : undefined}
-                  </Flex>
-                </GridItem>
-                <GridItem colSpan={2}>
-                  <Stat>
-                    <StatNumber>{`${contributor.commitment || 0}%`}</StatNumber>
-                  </Stat>
-                </GridItem>
-                <GridItem bg="#301A3A" display={"inline-grid"} colSpan={2}>
-                  <Controller
-                    name={`ratings.${address}`}
-                    control={control}
-                    rules={{ required: true }}
-                    key={`ratings.${address}`}
-                    render={({ field: { ref, ...restField } }) => (
-                      <NumberInput min={0} max={100} step={1} {...restField}>
-                        <NumberInputField
-                          ref={ref}
-                          name={restField.name}
-                          borderRadius={0}
-                          placeholder={
-                            formData.ratings[
-                              address.toLowerCase() as `0x${string}`
-                            ]?.toString() ?? "0"
-                          }
-                        />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    )}
-                  />
-                </GridItem>
-              </Fragment>
-            );
-          })}
-        </Grid>
-      </FormControl>
+                  </GridItem>
+                </Fragment>
+              );
+            })}
+          </Grid>
+        </FormControl>
 
-      <VStack w={"100%"} pt={4}>
-        <ButtonGroup>
-          <Button isLoading={isSubmitting} type="reset" onClick={() => reset()}>
-            Reset
-          </Button>
-          <Spacer />
-          <Button
-            isDisabled={total != 100}
-            isLoading={isSubmitting}
-            type="submit"
-          >
-            {total && total != 100
-              ? `${100 - total} / 100`
-              : "Submit evaluation"}
-          </Button>
-        </ButtonGroup>
-      </VStack>
-    </form>
+        <VStack w={"100%"} pt={4}>
+          <ButtonGroup>
+            <Button
+              isLoading={isSubmitting}
+              type="reset"
+              onClick={() => reset()}
+            >
+              Reset
+            </Button>
+            <Spacer />
+            <Button
+              isDisabled={total != 100}
+              isLoading={isSubmitting}
+              type="submit"
+            >
+              {total && total != 100
+                ? `${100 - total} / 100`
+                : "Submit evaluation"}
+            </Button>
+          </ButtonGroup>
+        </VStack>
+      </form>
+    </FormProvider>
   );
 
   return reviewForm;
