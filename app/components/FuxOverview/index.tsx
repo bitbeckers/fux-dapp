@@ -1,3 +1,4 @@
+import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
 import { useGraphClient } from "../../hooks/useGraphClient";
 import { contractAddresses, contractABI } from "../../utils/constants";
@@ -15,35 +16,40 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import { prepareWriteContract, writeContract } from "@wagmi/core";
 import NextLink from "next/link";
 import React from "react";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
 const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
   const { sdk } = useGraphClient();
+  const { checkChain } = useBlockTx();
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   const { error: errorToast, success: successToast } = useCustomToasts();
-  const { config } = usePrepareContractWrite({
-    address: contractAddresses.fuxContractAddress,
-    abi: contractABI.fux,
-    functionName: "mintFux",
-  });
-  const { data: tx, write } = useContractWrite({
-    ...config,
-    onError(e) {
-      errorToast(e);
-    },
-    onSuccess(tx) {
-      successToast("Minted FUX", `FUX minted to ${address}`);
-      console.log(tx);
-    },
-  });
 
-  const { isLoading, data } = useQuery({
-    queryKey: ["userByAddress", address?.toLowerCase() || ""],
+  const handleClaimFux = async () => {
+    if (checkChain()) {
+      const { request } = await prepareWriteContract({
+        address: contractAddresses.fuxContractAddress,
+        abi: contractABI.fux,
+        functionName: "mintFux",
+      });
+      const { hash } = await writeContract(request);
+
+      if (hash) {
+        successToast(
+          "Claiming FUX",
+          "Transaction submitted with hash: " + hash
+        );
+      }
+    }
+  };
+
+  const { data } = useQuery({
+    queryKey: ["userByAddress", address?.toLowerCase()],
     queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() || "" }),
     refetchInterval: 5000,
+    enabled: !!address,
   });
 
   const fuxBalance = data?.user?.balances?.find(
@@ -62,7 +68,7 @@ const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
       align="center"
       pb={"2em"}
     >
-      {!address || isLoading ? undefined : (
+      {!address ? undefined : (
         <Flex
           flexWrap="wrap"
           direction={["column", null, "row"]}
@@ -95,7 +101,7 @@ const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
                 <></>
               ) : (
                 <StatHelpText color="#BF7AF0">
-                  <Link onClick={() => write?.()}>Claim FUX</Link>
+                  <Link onClick={handleClaimFux}>Claim FUX</Link>
                 </StatHelpText>
               )}
             </Stat>

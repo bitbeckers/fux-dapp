@@ -6,36 +6,20 @@ import { useGraphClient } from "../hooks/useGraphClient";
 import { contractAddresses, contractABI } from "../utils/constants";
 import { VStack, Button, Text, Center } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import { prepareWriteContract, writeContract } from "@wagmi/core";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
+import { useAccount } from "wagmi";
 
 const Start: NextPage = () => {
   const router = useRouter();
   const { address } = useAccount();
-  const toast = useCustomToasts();
   const { sdk } = useGraphClient();
   const { checkChain } = useBlockTx();
+  const { error: errorToast, success: successToast } = useCustomToasts();
 
-  const { config } = usePrepareContractWrite({
-    address: contractAddresses.fuxContractAddress,
-    abi: contractABI.fux,
-    functionName: "mintFux",
-  });
-
-  const { data: tx, write } = useContractWrite({
-    ...config,
-    onError(e) {
-      toast.error(e);
-    },
-    onSuccess(tx) {
-      toast.success("Minting FUX", `Sending FUX to ${address}`);
-      console.log(tx);
-    },
-  });
-
-  const { isLoading, data } = useQuery({
+  const { data } = useQuery({
     queryKey: ["userByAddress", address?.toLowerCase() || ""],
     queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() || "" }),
     refetchInterval: 5000,
@@ -47,9 +31,21 @@ const Start: NextPage = () => {
     }
   }, [data, router]);
 
-  const handleClaim = () => {
+  const handleClaimFux = async () => {
     if (checkChain()) {
-      write?.();
+      const { request } = await prepareWriteContract({
+        address: contractAddresses.fuxContractAddress,
+        abi: contractABI.fux,
+        functionName: "mintFux",
+      });
+      const { hash } = await writeContract(request);
+
+      if (hash) {
+        successToast(
+          "Claiming FUX",
+          "Transaction submitted with hash: " + hash
+        );
+      }
     }
   };
 
@@ -60,7 +56,7 @@ const Start: NextPage = () => {
         <Center w="80%" justifyContent="center">
           <VStack>
             <Text fontSize="4xl">Claim your FUX to get started</Text>
-            <Button onClick={handleClaim}>Claim 100 FUX</Button>
+            <Button onClick={handleClaimFux}>Claim 100 FUX</Button>
           </VStack>
         </Center>
       ) : (
