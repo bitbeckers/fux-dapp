@@ -50,9 +50,6 @@ const Home: NextPage = () => {
     enabled: !!address,
   });
 
-  console.log("fuxBalance as BigNumber", fuxBalance);
-  console.log("fuxBalance as string", fuxBalance?.toString());
-
   const claimLink = (
     <Flex direction="column" gap={2}>
       <Text fontWeight="500">Get started.</Text>

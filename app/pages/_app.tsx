@@ -13,11 +13,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
 import { goerli } from "viem/chains";
 import { WagmiConfig, createConfig, configureChains, mainnet } from "wagmi";
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { SafeConnector } from "wagmi/connectors/safe";
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
@@ -51,7 +46,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider
-            chains={chains}
+            chains={[goerli]}
             theme={darkTheme({
               accentColor: "#8E4EC6",
               accentColorForeground: "white",

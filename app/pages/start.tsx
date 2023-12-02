@@ -9,11 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import {
-  useAccount,
-  usePrepareContractWrite,
-  useContractWrite,
-} from "wagmi";
+import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
 
 const Start: NextPage = () => {
   const router = useRouter();
@@ -59,7 +55,7 @@ const Start: NextPage = () => {
 
   return (
     <VStack spacing={8} w={"100%"}>
-      <FuxOverview />
+      <FuxOverview address={address} />
       {address ? (
         <Center w="80%" justifyContent="center">
           <VStack>

@@ -8,7 +8,7 @@ export const useBlockTx = () => {
   const checkChain = () => {
     console.log("chainId", chainId);
     if (chainId !== 5) {
-      toast.error(new Error("Wrong chain"));
+      toast.error(new Error(`Connected to unsupported chain: ${chainId}`));
       return false;
     }
     return true;

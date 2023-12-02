@@ -1,5 +1,5 @@
-import { useGraphClient } from "../../hooks/useGraphClient";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
+import { useGraphClient } from "../../hooks/useGraphClient";
 import { contractAddresses, contractABI } from "../../utils/constants";
 import User from "../User";
 import {
@@ -17,10 +17,9 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import NextLink from "next/link";
 import React from "react";
-import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
-const FuxOverview: React.FC<{}> = ({}) => {
-  const { address } = useAccount();
+const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
   const { sdk } = useGraphClient();
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
@@ -48,13 +47,11 @@ const FuxOverview: React.FC<{}> = ({}) => {
   });
 
   const fuxBalance = data?.user?.balances?.find(
-    ({ token }) =>
-      token.name === "FUX"
+    ({ token }) => token.name === "FUX"
   )?.amount;
 
   const vFuxBalance = data?.user?.balances?.find(
-    ({ token }) =>
-      token.name === "vFUX"
+    ({ token }) => token.name === "vFUX"
   )?.amount;
 
   return (

@@ -1,3 +1,4 @@
+import BetaBanner from "../BetaBanner";
 import ConnectWallet from "../ConnectWallet";
 import WorkstreamModal from "../WorkstreamModal";
 import {
@@ -110,6 +111,7 @@ export default function Header() {
           </Flex>
         </Flex>
       </Flex>
+      <BetaBanner />
       <Collapse in={isOpen} animateOpacity>
         <MobileNav onToggle={onToggle} />
       </Collapse>
