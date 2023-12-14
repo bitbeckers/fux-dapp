@@ -37,6 +37,7 @@ const User: React.FC<{
   const { data: ensName } = useEnsName({
     address,
     scopeKey: "wagmi",
+    chainId: 1,
   });
 
   const {
@@ -102,10 +103,12 @@ const User: React.FC<{
           <Link href={{ pathname: "/profile", query: { account: address } }}>
             {ensName ? (
               <Tooltip label={address}>
-                <Text mr={2}>{ensName}</Text>
+                <Text mr={2} color={"white"}>
+                  {ensName}
+                </Text>
               </Tooltip>
             ) : (
-              <Text mr={2}>{`${address.slice(0, 6)}...`}</Text>
+              <Text mr={2} color={"white"}>{`${address.slice(0, 6)}...`}</Text>
             )}
           </Link>
           <Button variant={"link"} size={_size} onClick={() => handleClick()}>
@@ -136,10 +139,12 @@ const User: React.FC<{
           >
             {ensName ? (
               <Tooltip label={address}>
-                <Text mr={2}>{ensName}</Text>
+                <Text mr={2} color={"white"}>
+                  {ensName}
+                </Text>
               </Tooltip>
             ) : (
-              <Text mr={2}>{`${address.slice(0, 6)}...`}</Text>
+              <Text mr={2} color={"white"}>{`${address.slice(0, 6)}...`}</Text>
             )}
           </Link>
           <Button variant={"link"} size={_size} onClick={() => handleClick()}>
