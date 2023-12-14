@@ -40,6 +40,9 @@ importers:
       '@urql/core':
         specifier: ^4.2.2
         version: 4.2.2(graphql@16.8.1)
+      '@wagmi/core':
+        specifier: ^1.4.12
+        version: 1.4.12(@types/react@18.2.45)(react@18.2.0)(typescript@5.3.3)(viem@1.20.0)
       connectkit:
         specifier: ^1.5.3
         version: 1.5.3(@babel/core@7.23.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.20.0)(wagmi@1.4.12)
