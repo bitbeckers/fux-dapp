@@ -22,8 +22,9 @@ import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { useAccount } from "wagmi";
-import { UserBalance, Workstream } from "../../__generated__/gql/graphql";
+import { useAccount, useContractRead } from "wagmi";
+import { Workstream } from "../../__generated__/gql/graphql";
+import { contractABI, contractAddresses } from "../../utils/constants";
 
 const Workstream: NextPage = () => {
   const router = useRouter();
@@ -37,24 +38,6 @@ const Workstream: NextPage = () => {
     refetchInterval: 5000,
   });
 
-  const { data: userBalances } = useQuery({
-    queryKey: ["userBalances", user?.toLowerCase()],
-    queryFn: () => balancesByUser(user?.toLowerCase() || ""),
-    refetchInterval: 5000,
-  });
-
-  if (workstreamLoading) {
-    return (
-      <Spinner
-        thickness="4px"
-        speed="0.65s"
-        emptyColor="gray.200"
-        color="white.500"
-        size="xl"
-      />
-    );
-  }
-
   const _workstream = workstream?.workstreamContributors?.[0]?.workstream as Workstream;
   const contributors = _workstream?.contributors;
   const contributorAddresses =
@@ -66,18 +49,35 @@ const Workstream: NextPage = () => {
     (cont) => cont.contributor.id.toLowerCase() === user?.toLowerCase()
   );
 
+  const { data: fuxAvailable, isLoading: fuxLoading } = useContractRead({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "balanceOf",
+    args: [user, 1n],
+    enabled: !!user,
+  });
+
+
   let fuxGiven = contributor?.commitment;
 
   if (!fuxGiven) {
     fuxGiven = 0n;
   }
-
-  const fuxAvailable = userBalances?.userBalances.find(
-    ({balance}: {balance: UserBalance}) => balance.token?.name === "FUX"
-  )?.amount;
-
+ 
   if (!fuxAvailable) {
     fuxGiven = 0n;
+  }
+
+  if (workstreamLoading) {
+    return (
+      <Spinner
+        thickness="4px"
+        speed="0.65s"
+        emptyColor="gray.200"
+        color="white.500"
+        size="xl"
+      />
+    );
   }
 
   return workstreamID && _workstream ? (
@@ -134,7 +134,7 @@ const Workstream: NextPage = () => {
               <CommitFuxModal
                 workstreamID={workstreamID as string}
                 fuxGiven={fuxGiven}
-                fuxAvailable={fuxAvailable}
+                fuxAvailable={fuxAvailable as bigint}
               />
             </Box>
           </Flex>
