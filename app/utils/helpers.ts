@@ -1,5 +1,4 @@
-import { Workstream } from "../.graphclient";
-import { BigNumberish } from "ethers";
+import { Workstream } from "../__generated__/gql/graphql";
 import _, { groupBy, mapValues, meanBy } from "lodash";
 
 export type Ratings = {

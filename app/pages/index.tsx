@@ -32,11 +32,11 @@ const btnPurple = "#8E4EC6";
 
 const Home: NextPage = () => {
   const { address, isConnecting } = useAccount();
-  const { sdk } = useGraphClient();
+  const { userByAddress } = useGraphClient();
 
   const { data, error } = useQuery({
     queryKey: ["user", address?.toLowerCase()],
-    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() }),
+    queryFn: () => userByAddress(address?.toLowerCase() || ""),
     refetchInterval: 5000,
     enabled: !address,
   });

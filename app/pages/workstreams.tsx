@@ -1,4 +1,9 @@
-import { Workstream } from "../.graphclient";
+import {
+  TokenFragmentFragment,
+  Workstream,
+  WorkstreamContributor,
+  WorkstreamContributorFragmentFragment,
+} from "../__generated__/gql/graphql";
 import FuxOverview from "../components/FuxOverview";
 import WorkstreamModal from "../components/WorkstreamModal";
 import { WorkstreamRow } from "../components/WorkstreamRow";
@@ -17,6 +22,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import { Token } from "graphql";
 import type { NextPage } from "next";
 import React from "react";
 import { useAccount, useContractRead } from "wagmi";
@@ -25,55 +31,58 @@ const Workstreams: NextPage = () => {
   const { address: user } = useAccount();
   const [sortFux, setSortFux] = useBoolean();
   const [sortTitle, setSortTitle] = useBoolean();
-  const { sdk } = useGraphClient();
+  const { workstreamByContributor, balancesByUser } = useGraphClient();
 
   const { data: workstreamsByUser, isLoading } = useQuery({
     queryKey: ["workstreamsByUser", user?.toLowerCase()],
-    queryFn: () =>
-      sdk.WorkstreamsByContributor({ address: user?.toLowerCase() }),
+    queryFn: () => workstreamByContributor(user?.toLowerCase() || ""),
     refetchInterval: 5000,
   });
 
-  const { data: balancesByUser } = useQuery({
+  const { data: _balancesByUser } = useQuery({
     queryKey: ["balancesByUser", user?.toLowerCase()],
-    queryFn: () => sdk.BalancesByUser({ address: user?.toLowerCase() }),
+    queryFn: () => balancesByUser(user?.toLowerCase() || ""),
     refetchInterval: 5000,
   });
 
-  const balance = balancesByUser?.userBalances.find(
-    ({ token }) =>
+  const balance = _balancesByUser?.userBalances.find(
+    ({ token }: { token: TokenFragmentFragment }) =>
       token.id.toLowerCase() ===
       contractAddresses.fuxContractAddress.toLowerCase()
   )?.amount;
 
-  const fuxID = balancesByUser?.userBalances.find(
-    ({ token }) => parseInt(token.tokenID) > 1
+  const fuxID = _balancesByUser?.userBalances.find(
+    ({ token }: { token: TokenFragmentFragment }) => parseInt(token.tokenID) > 1
   )?.token.tokenID;
 
-  const sortedData = workstreamsByUser?.workstreamContributors.sort((a, b) => {
-    if (sortFux) {
-      let fuxGivenA = a.workstream.contributors?.find(
-        (contributor) =>
-          contributor.contributor.id.toLowerCase() === user?.toLowerCase()
-      )?.commitment;
-      let fuxGivenB = b.workstream.contributors?.find(
-        (contributor) =>
-          contributor.contributor.id.toLowerCase() === user?.toLowerCase()
-      )?.commitment;
+  const sortedData = workstreamsByUser?.workstreamContributors.sort(
+    (a: WorkstreamContributor, b: WorkstreamContributor) => {
+      if (sortFux) {
+        let fuxGivenA = a.workstream.contributors?.find(
+          (contributor) =>
+            contributor.contributor.id.toLowerCase() === user?.toLowerCase()
+        )?.commitment;
+        let fuxGivenB = b.workstream.contributors?.find(
+          (contributor) =>
+            contributor.contributor.id.toLowerCase() === user?.toLowerCase()
+        )?.commitment;
 
-      if (!fuxGivenA) {
-        fuxGivenA = 0;
-      }
-      if (!fuxGivenB) {
-        fuxGivenB = 0;
-      }
+        if (!fuxGivenA) {
+          fuxGivenA = 0;
+        }
+        if (!fuxGivenB) {
+          fuxGivenB = 0;
+        }
 
-      return fuxGivenA < fuxGivenB ? -1 : 1;
-    } else if (sortTitle) {
-      return (a?.workstream?.name || "") < (b?.workstream?.name || "") ? -1 : 1;
+        return fuxGivenA < fuxGivenB ? -1 : 1;
+      } else if (sortTitle) {
+        return (a?.workstream?.name || "") < (b?.workstream?.name || "")
+          ? -1
+          : 1;
+      }
+      return 0;
     }
-    return 0;
-  });
+  );
 
   const { data: tokenUri } = useContractRead({
     address: contractAddresses.fuxContractAddress,
@@ -195,15 +204,16 @@ const Workstreams: NextPage = () => {
                 templateColumns="repeat(16, 1fr)"
               >
                 {sortedData
-                  ? sortedData?.map(({ workstream }) =>
-                      workstream.status === "Closed" ? undefined : (
-                        <WorkstreamRow
-                          workstream={workstream as Partial<Workstream>}
-                          fuxAvailable={balance?.amount}
-                          showInactive={false}
-                          key={workstream.id}
-                        />
-                      )
+                  ? sortedData?.map(
+                      ({ workstream }: { workstream: Workstream }) =>
+                        workstream.status === "Closed" ? undefined : (
+                          <WorkstreamRow
+                            workstream={workstream as Partial<Workstream>}
+                            fuxAvailable={balance?.amount}
+                            showInactive={false}
+                            key={workstream.id}
+                          />
+                        )
                     )
                   : undefined}
                 <GridItem colSpan={16} p="3em" textAlign={"center"}>

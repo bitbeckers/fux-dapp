@@ -1,4 +1,4 @@
-import { Workstream } from "../../.graphclient";
+import { Workstream } from "../../__generated__/gql/graphql";
 import { calculateRelative, parseEvaluations } from "../../utils/helpers";
 import ContributorModal from "../ContributorModal";
 import User from "../User";

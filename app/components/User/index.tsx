@@ -1,4 +1,4 @@
-import { TokenFragmentFragment } from "../../.graphclient";
+import { TokenFragmentFragment } from "../../__generated__/gql/graphql";
 import { useGraphClient } from "../../hooks/useGraphClient";
 import { contractAddresses, contractABI } from "../../utils/constants";
 import { decodeURI, shortenString } from "../../utils/helpers";
@@ -33,7 +33,7 @@ const User: React.FC<{
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
 }> = ({ address, direction, displayAvatar, size }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { sdk } = useGraphClient();
+  const { balancesByUser } = useGraphClient();
   const { data: ensName } = useEnsName({
     address,
     scopeKey: "wagmi",
@@ -65,13 +65,13 @@ const User: React.FC<{
     });
   };
 
-  const { data: balancesByUser } = useQuery({
+  const { data: _balancesByUser } = useQuery({
     queryKey: ["balancesByUser", address?.toLowerCase()],
-    queryFn: () => sdk.BalancesByUser({ address: address?.toLowerCase() }),
+    queryFn: () => balancesByUser(address?.toLowerCase()),
     refetchInterval: 5000,
   });
 
-  const fuxID = balancesByUser?.userBalances.find(
+  const fuxID = _balancesByUser?.userBalances.find(
     ({ token }: { token: TokenFragmentFragment }) => parseInt(token.tokenID) > 1
   )?.token.tokenID;
 

@@ -12,7 +12,6 @@ import {
   StatLabel,
   StatNumber,
   StatHelpText,
-  StatGroup,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
@@ -22,7 +21,7 @@ import React from "react";
 import { useContractRead } from "wagmi";
 
 const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
-  const { sdk } = useGraphClient();
+  const { userByAddress } = useGraphClient();
   const { checkChain } = useBlockTx();
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
@@ -48,7 +47,7 @@ const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
 
   const { data } = useQuery({
     queryKey: ["userByAddress", address?.toLowerCase()],
-    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() || "" }),
+    queryFn: () => userByAddress(address?.toLowerCase() || ""),
     refetchInterval: 5000,
     enabled: !!address,
   });

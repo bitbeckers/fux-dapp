@@ -1,18 +1,10 @@
-import { WorkstreamContributor } from "../../.graphclient";
-import { FinalizeForm } from "../../components/FinalizeForm";
+import { WorkstreamContributor } from "../../__generated__/gql/graphql";
 import FuxOverview from "../../components/FuxOverview";
-import TokenBalance from "../../components/TokenBalance";
-import User from "../../components/User";
 import WorkstreamCard from "../../components/WorkstreamCard";
 import { useGraphClient } from "../../hooks/useGraphClient";
-import workstreams from "../workstreams";
 import {
   VStack,
   Text,
-  HStack,
-  Stat,
-  StatLabel,
-  StatNumber,
   Heading,
   Flex,
   Accordion,
@@ -21,13 +13,12 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 
 const Profile: NextPage = () => {
   const router = useRouter();
-  const { sdk } = useGraphClient();
+  const { userByAddress, workstreamByContributor } = useGraphClient();
 
   const { account } = router.query;
 
@@ -37,8 +28,7 @@ const Profile: NextPage = () => {
     error,
   } = useQuery({
     queryKey: ["account", account],
-    queryFn: () =>
-      sdk.UserByAddress({ address: (account as string).toLowerCase() }),
+    queryFn: () => userByAddress((account as string).toLowerCase()),
     refetchInterval: 5000,
   });
 
@@ -49,9 +39,7 @@ const Profile: NextPage = () => {
   } = useQuery({
     queryKey: ["workstreams", (account as string)?.toLowerCase()],
     queryFn: () =>
-      sdk.WorkstreamsByContributor({
-        address: (account as string)?.toLowerCase() || "",
-      }),
+      workstreamByContributor((account as string)?.toLowerCase() || ""),
     refetchInterval: 10000,
   });
 

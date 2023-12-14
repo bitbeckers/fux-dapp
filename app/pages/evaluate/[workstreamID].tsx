@@ -22,7 +22,7 @@ const Evaluate: NextPage = () => {
   const { address } = useAccount();
   const router = useRouter();
   const { workstreamID } = router.query;
-  const { sdk } = useGraphClient();
+  const { workstreamById } = useGraphClient();
 
   const {
     isLoading,
@@ -30,12 +30,12 @@ const Evaluate: NextPage = () => {
     error,
   } = useQuery({
     queryKey: ["workstream", workstreamID],
-    queryFn: () => sdk.WorkstreamByID({ id: workstreamID as string }),
+    queryFn: () => workstreamById(workstreamID as string),
     refetchInterval: 5000,
   });
 
   const _workstream = workstreams?.workstreamContributors.find(
-    ({ workstream }) => workstream?.id === workstreamID
+    ({ workstream }: { workstream: any }) => workstream?.id === workstreamID
   )?.workstream;
 
   console.log(_workstream);

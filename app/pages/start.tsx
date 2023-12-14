@@ -15,13 +15,13 @@ import { useAccount } from "wagmi";
 const Start: NextPage = () => {
   const router = useRouter();
   const { address } = useAccount();
-  const { sdk } = useGraphClient();
+  const { userByAddress } = useGraphClient();
   const { checkChain } = useBlockTx();
   const { error: errorToast, success: successToast } = useCustomToasts();
 
-  const { data } = useQuery({
+  const { data, isLoading: userLoading } = useQuery({
     queryKey: ["userByAddress", address?.toLowerCase() || ""],
-    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() || "" }),
+    queryFn: () => userByAddress(address?.toLowerCase() || ""),
     refetchInterval: 5000,
   });
 
@@ -48,6 +48,10 @@ const Start: NextPage = () => {
       }
     }
   };
+
+  if (userLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <VStack spacing={8} w={"100%"}>

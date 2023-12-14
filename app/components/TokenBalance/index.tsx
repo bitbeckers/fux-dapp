@@ -1,4 +1,4 @@
-import { TokenFragmentFragment } from "../../.graphclient";
+import { TokenFragmentFragment } from "../../__generated__/gql/graphql";
 import { CopyIcon } from "@chakra-ui/icons";
 import { Text, Button, useToast, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
