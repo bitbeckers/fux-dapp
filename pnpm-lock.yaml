@@ -28,6 +28,9 @@ importers:
       '@fux-dapp/contracts':
         specifier: '*'
         version: link:../contracts
+      '@graphql-typed-document-node/core':
+        specifier: ^3.2.0
+        version: 3.2.0(graphql@16.8.1)
       '@tanstack/react-query':
         specifier: ^4.29.12
         version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
