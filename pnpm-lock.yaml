@@ -25,18 +25,21 @@ importers:
       '@emotion/styled':
         specifier: ^11.9.3
         version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.45)(react@18.2.0)
+      '@fux-dapp/contracts':
+        specifier: '*'
+        version: link:../contracts
       '@graphprotocol/client-urql':
         specifier: ^1.0.12
         version: 1.0.18(@graphql-mesh/runtime@0.93.2)(@graphql-tools/utils@9.2.1)(@urql/core@4.2.2)(graphql@16.8.1)(wonka@6.3.4)
       '@tanstack/react-query':
         specifier: ^4.29.12
         version: 4.36.1(react-dom@18.2.0)(react-native@0.73.0)(react@18.2.0)
+      '@types/lodash':
+        specifier: ^4.14.202
+        version: 4.14.202
       connectkit:
         specifier: ^1.5.3
         version: 1.5.3(@babel/core@7.23.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.20.0)(wagmi@1.4.12)
-      contracts:
-        specifier: '*'
-        version: link:../contracts
       eslint-config-next:
         specifier: ^13.4.6
         version: 13.5.6(eslint@8.18.0)(typescript@5.3.3)
@@ -5838,6 +5841,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: false
     bundledDependencies:
       - napi-wasm
@@ -14675,6 +14679,10 @@ packages:
   /napi-macros@2.2.2:
     resolution: {integrity: sha512-hmEVtAGYzVQpCKdbQea4skABsdXW4RUh5t5mJ2zzqowJS2OyXZTU1KhDVFhx+NlWZ4ap9mqR9TcDO3LTTttd+g==}
     dev: true
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
+    dev: false
 
   /native-abort-controller@1.0.4(abort-controller@3.0.0):
     resolution: {integrity: sha512-zp8yev7nxczDJMoP6pDxyD20IU0T22eX8VwN2ztDccKvSZhRaV33yP1BGwKSZfXuqWUzsXopVFjBdau9OOAwMQ==}
