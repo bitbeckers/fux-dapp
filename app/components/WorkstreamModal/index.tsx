@@ -72,7 +72,7 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
 }) => {
   const { address } = useAccount();
   const { error: errorToast, success: successToast } = useCustomToasts();
-  const { sdk } = useGraphClient();
+  const { userByAddress } = useGraphClient();
   const { checkChain } = useBlockTx();
   const [erc20Token, setErc20Token] = useState<boolean>(false);
   const [erc20Info, setErc20Info] = useState<{
@@ -217,13 +217,13 @@ const WorkstreamModal: React.FC<{ onCloseAction?: () => void }> = ({
 
   const { data } = useQuery({
     queryKey: ["userByAddress", address],
-    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() }),
+    queryFn: () => userByAddress(address?.toLowerCase() || ""),
     enabled: !!address,
     refetchInterval: 5000,
   });
 
   const fuxBalance = data?.user?.balances?.find(
-    (balance) => balance.token.name === "FUX"
+    (balance: any) => balance.token.name === "FUX"
   )?.amount;
 
   const onSubmit = () => {

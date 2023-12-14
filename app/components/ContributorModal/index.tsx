@@ -1,4 +1,4 @@
-import { WorkstreamContributor } from "../../.graphclient";
+import { WorkstreamContributor } from "../../__generated__/gql/graphql";
 import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
 import { contractAddresses, contractABI } from "../../utils/constants";

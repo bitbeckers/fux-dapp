@@ -1,4 +1,7 @@
-import { Evaluation, WorkstreamContributor } from "../../.graphclient";
+import {
+  WorkstreamContributor,
+  Evaluation,
+} from "../../__generated__/gql/graphql";
 import { useConstants } from "../../utils/constants";
 import { ContributorOverview } from "../ContributorOverview";
 import TokenBalance from "../TokenBalance";

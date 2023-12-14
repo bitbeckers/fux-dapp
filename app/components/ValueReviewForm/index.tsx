@@ -1,4 +1,3 @@
-import { Workstream, WorkstreamContributor } from "../../.graphclient";
 import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
 import { contractAddresses, contractABI } from "../../utils/constants";
@@ -30,6 +29,7 @@ import { useRouter } from "next/router";
 import React, { Fragment } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { WorkstreamContributor } from "../../__generated__/gql/graphql";
 
 type FormData = {
   ratings: {
@@ -103,7 +103,12 @@ const ValueReviewForm: React.FC<{
     args: [workstreamWithContributor?.id, _contributors, _ratings],
   });
 
-  console.log({ wsID: workstreamWithContributor?.id, _contributors, _ratings, config });
+  console.log({
+    wsID: workstreamWithContributor?.id,
+    _contributors,
+    _ratings,
+    config,
+  });
 
   const { write } = useContractWrite({
     ...config,

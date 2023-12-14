@@ -1,0 +1,12 @@
+generates:
+  ./__generated__/gql/:
+    documents:
+      - ./graph/**/*.graphql
+    schema: https://api.thegraph.com/subgraphs/name/bitbeckers/fux-goerli
+    preset: client
+    presetConfig:
+      typesPrefix: I
+      dedupeOperationSuffix: true
+      skipTypename: true
+      namingConvention: change-case#pascalCase
+      useTypeImports: true

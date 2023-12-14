@@ -1,4 +1,4 @@
-import { TokenFragmentFragment } from "../../.graphclient";
+import { TokenFragmentFragment } from "../../__generated__/gql/graphql";
 import { useGraphClient } from "../../hooks/useGraphClient";
 import { contractAddresses, contractABI } from "../../utils/constants";
 import { decodeURI, shortenString } from "../../utils/helpers";
@@ -18,8 +18,11 @@ import {
   ModalFooter,
   ModalBody,
   useDisclosure,
+  ButtonGroup,
+  Flex,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useEnsAvatar, useEnsName, useContractRead } from "wagmi";
 
@@ -30,10 +33,9 @@ const User: React.FC<{
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
 }> = ({ address, direction, displayAvatar, size }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { sdk } = useGraphClient();
+  const { balancesByUser } = useGraphClient();
   const { data: ensName } = useEnsName({
     address,
-    chainId: 1,
     scopeKey: "wagmi",
   });
 
@@ -43,7 +45,6 @@ const User: React.FC<{
     isLoading: avatarLoading,
   } = useEnsAvatar({
     name: ensName,
-    chainId: 1,
     scopeKey: "wagmi",
   });
   const [avatar, setAvatar] = useState<string>();
@@ -64,13 +65,13 @@ const User: React.FC<{
     });
   };
 
-  const { data: balancesByUser } = useQuery({
+  const { data: _balancesByUser } = useQuery({
     queryKey: ["balancesByUser", address?.toLowerCase()],
-    queryFn: () => sdk.BalancesByUser({ address: address?.toLowerCase() }),
+    queryFn: () => balancesByUser(address?.toLowerCase()),
     refetchInterval: 5000,
   });
 
-  const fuxID = balancesByUser?.userBalances.find(
+  const fuxID = _balancesByUser?.userBalances.find(
     ({ token }: { token: TokenFragmentFragment }) => parseInt(token.tokenID) > 1
   )?.token.tokenID;
 
@@ -97,16 +98,20 @@ const User: React.FC<{
             _hover={{ cursor: "pointer" }}
           />
         ) : undefined}
-        <Button variant={"link"} size={_size} onClick={() => handleClick()}>
-          {ensName ? (
-            <Tooltip label={address}>
-              <Text mr={2}>{ensName}</Text>
-            </Tooltip>
-          ) : (
-            <Text mr={2}>{`${address.slice(0, 6)}...`}</Text>
-          )}
-          <CopyIcon />
-        </Button>
+        <Flex direction="row">
+          <Link href={{ pathname: "/profile", query: { account: address } }}>
+            {ensName ? (
+              <Tooltip label={address}>
+                <Text mr={2}>{ensName}</Text>
+              </Tooltip>
+            ) : (
+              <Text mr={2}>{`${address.slice(0, 6)}...`}</Text>
+            )}
+          </Link>
+          <Button variant={"link"} size={_size} onClick={() => handleClick()}>
+            <CopyIcon />
+          </Button>
+        </Flex>
       </VStack>
     );
   }
@@ -122,16 +127,25 @@ const User: React.FC<{
             _hover={{ cursor: "pointer" }}
           />
         ) : undefined}
-        <Button variant={"link"} size={_size} onClick={() => handleClick()}>
-          {ensName ? (
-            <Tooltip label={address}>
-              <Text mr={2}>{ensName}</Text>
-            </Tooltip>
-          ) : (
-            <Text mr={2}>{`${address.slice(0, 6)}...`}</Text>
-          )}
-          <CopyIcon />
-        </Button>
+        <Flex direction="row">
+          <Link
+            href={{
+              pathname: "/profile/[account]",
+              query: { account: address },
+            }}
+          >
+            {ensName ? (
+              <Tooltip label={address}>
+                <Text mr={2}>{ensName}</Text>
+              </Tooltip>
+            ) : (
+              <Text mr={2}>{`${address.slice(0, 6)}...`}</Text>
+            )}
+          </Link>
+          <Button variant={"link"} size={_size} onClick={() => handleClick()}>
+            <CopyIcon />
+          </Button>
+        </Flex>
       </HStack>
     );
   }

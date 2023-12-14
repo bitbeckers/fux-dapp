@@ -1,4 +1,3 @@
-import { Workstream, WorkstreamContributor } from "../../.graphclient";
 import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
 import {
@@ -25,6 +24,7 @@ import { useRouter } from "next/router";
 import React, { Fragment } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { Workstream, WorkstreamContributor } from "../../__generated__/gql/graphql";
 
 const FinalizeForm: React.FC<{
   workstream: Partial<WorkstreamContributor>;
@@ -173,7 +173,9 @@ const FinalizeForm: React.FC<{
                           : _workstream.funding[0].token.symbol
                       }`}
                     </Text>
-                  ) : "N/A"}
+                  ) : (
+                    "N/A"
+                  )}
                 </GridItem>
               </Fragment>
             );

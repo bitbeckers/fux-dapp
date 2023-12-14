@@ -1,4 +1,4 @@
-import { WorkstreamContributor } from "../.graphclient";
+import { WorkstreamContributor } from "../__generated__/gql/graphql";
 import FuxOverview from "../components/FuxOverview";
 import WorkstreamCard from "../components/WorkstreamCard";
 import { useGraphClient } from "../hooks/useGraphClient";
@@ -16,12 +16,11 @@ import { useAccount } from "wagmi";
 
 const History: NextPage = () => {
   const { address: user } = useAccount();
-  const { sdk } = useGraphClient();
+  const { workstreamByContributor } = useGraphClient();
 
   const { isLoading, data, error } = useQuery({
     queryKey: ["workstreams", user?.toLowerCase()],
-    queryFn: () =>
-      sdk.WorkstreamsByContributor({ address: user?.toLowerCase() || "" }),
+    queryFn: () => workstreamByContributor(user?.toLowerCase() || ""),
     refetchInterval: 10000,
   });
 

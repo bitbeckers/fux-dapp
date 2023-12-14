@@ -1,4 +1,3 @@
-import { Workstream } from "../../.graphclient";
 import { useConstants } from "../../utils/constants";
 import CommitFuxModal from "../CommitFuxModal";
 import ContributorModal from "../ContributorModal";
@@ -8,6 +7,7 @@ import NextLink from "next/link";
 import React from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
+import { Workstream } from "../../__generated__/gql/graphql";
 
 const WorkstreamRow: React.FC<{
   workstream: Partial<Workstream>;

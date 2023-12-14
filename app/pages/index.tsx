@@ -32,11 +32,11 @@ const btnPurple = "#8E4EC6";
 
 const Home: NextPage = () => {
   const { address, isConnecting } = useAccount();
-  const { sdk } = useGraphClient();
+  const { userByAddress } = useGraphClient();
 
   const { data, error } = useQuery({
     queryKey: ["user", address?.toLowerCase()],
-    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() }),
+    queryFn: () => userByAddress(address?.toLowerCase() || ""),
     refetchInterval: 5000,
     enabled: !address,
   });
@@ -49,9 +49,6 @@ const Home: NextPage = () => {
     args: [address?.toLowerCase() || "", 1],
     enabled: !!address,
   });
-
-  console.log("fuxBalance as BigNumber", fuxBalance);
-  console.log("fuxBalance as string", fuxBalance?.toString());
 
   const claimLink = (
     <Flex direction="column" gap={2}>

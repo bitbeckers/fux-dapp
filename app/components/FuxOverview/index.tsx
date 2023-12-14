@@ -1,5 +1,6 @@
-import { useGraphClient } from "../../hooks/useGraphClient";
+import { useBlockTx } from "../../hooks/useBlockTx";
 import { useCustomToasts } from "../../hooks/useCustomToasts";
+import { useGraphClient } from "../../hooks/useGraphClient";
 import { contractAddresses, contractABI } from "../../utils/constants";
 import User from "../User";
 import {
@@ -11,51 +12,59 @@ import {
   StatLabel,
   StatNumber,
   StatHelpText,
-  StatGroup,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import { prepareWriteContract, writeContract } from "@wagmi/core";
 import NextLink from "next/link";
 import React from "react";
-import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useContractRead } from "wagmi";
 
-const FuxOverview: React.FC<{}> = ({}) => {
-  const { address } = useAccount();
-  const { sdk } = useGraphClient();
+const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
+  const { userByAddress } = useGraphClient();
+  const { checkChain } = useBlockTx();
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   const { error: errorToast, success: successToast } = useCustomToasts();
-  const { config } = usePrepareContractWrite({
+
+  const handleClaimFux = async () => {
+    if (checkChain()) {
+      const { request } = await prepareWriteContract({
+        address: contractAddresses.fuxContractAddress,
+        abi: contractABI.fux,
+        functionName: "mintFux",
+      });
+      const { hash } = await writeContract(request);
+
+      if (hash) {
+        successToast(
+          "Claiming FUX",
+          "Transaction submitted with hash: " + hash
+        );
+      }
+    }
+  };
+
+  const { data } = useQuery({
+    queryKey: ["userByAddress", address?.toLowerCase()],
+    queryFn: () => userByAddress(address?.toLowerCase() || ""),
+    refetchInterval: 5000,
+    enabled: !!address,
+  });
+
+  const { data: fuxBalance, isLoading: fuxLoading } = useContractRead({
     address: contractAddresses.fuxContractAddress,
     abi: contractABI.fux,
-    functionName: "mintFux",
-  });
-  const { data: tx, write } = useContractWrite({
-    ...config,
-    onError(e) {
-      errorToast(e);
-    },
-    onSuccess(tx) {
-      successToast("Minted FUX", `FUX minted to ${address}`);
-      console.log(tx);
-    },
+    functionName: "balanceOf",
+    args: [address, 1n],
   });
 
-  const { isLoading, data } = useQuery({
-    queryKey: ["userByAddress", address?.toLowerCase() || ""],
-    queryFn: () => sdk.UserByAddress({ address: address?.toLowerCase() || "" }),
-    refetchInterval: 5000,
+  const { data: vFuxBalance, isLoading: vFuxLoading } = useContractRead({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "balanceOf",
+    args: [address, 0n],
   });
-
-  const fuxBalance = data?.user?.balances?.find(
-    ({ token }) =>
-      token.name === "FUX"
-  )?.amount;
-
-  const vFuxBalance = data?.user?.balances?.find(
-    ({ token }) =>
-      token.name === "vFUX"
-  )?.amount;
 
   return (
     <HStack
@@ -65,7 +74,7 @@ const FuxOverview: React.FC<{}> = ({}) => {
       align="center"
       pb={"2em"}
     >
-      {!address || isLoading ? undefined : (
+      {!address ? undefined : (
         <Flex
           flexWrap="wrap"
           direction={["column", null, "row"]}
@@ -93,12 +102,14 @@ const FuxOverview: React.FC<{}> = ({}) => {
                 p={3}
                 my={2}
                 w="10em"
-              >{`${fuxBalance ? `${fuxBalance} /100` : "0"} FUX`}</StatNumber>
+              >{`${
+                fuxBalance ? `${fuxBalance.toString()} /100` : "0"
+              } FUX`}</StatNumber>
               {fuxBalance ? (
                 <></>
               ) : (
                 <StatHelpText color="#BF7AF0">
-                  <Link onClick={() => write?.()}>Claim FUX</Link>
+                  <Link onClick={handleClaimFux}>Claim FUX</Link>
                 </StatHelpText>
               )}
             </Stat>

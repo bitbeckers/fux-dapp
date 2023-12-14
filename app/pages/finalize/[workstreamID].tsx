@@ -20,7 +20,7 @@ import { useRouter } from "next/router";
 
 const Finalize: NextPage = () => {
   const router = useRouter();
-  const { sdk } = useGraphClient();
+  const { workstreamById } = useGraphClient();
 
   const { workstreamID } = router.query;
 
@@ -30,12 +30,12 @@ const Finalize: NextPage = () => {
     error,
   } = useQuery({
     queryKey: ["workstream", workstreamID],
-    queryFn: () => sdk.WorkstreamByID({ id: workstreamID as string }),
+    queryFn: () => workstreamById(workstreamID as string),
     refetchInterval: 5000,
   });
 
   const _workstream = workstreams?.workstreamContributors.find(
-    ({ workstream }) => workstream?.id === workstreamID
+    ({ workstream }: { workstream: any }) => workstream?.id === workstreamID
   )?.workstream;
 
   return _workstream ? (
@@ -85,7 +85,7 @@ const Finalize: NextPage = () => {
             flexWrap="wrap"
           >
             <Text>Workstream funds available</Text>
-            {_workstream.funding?.map((funding) => (
+            {_workstream.funding?.map((funding: any) => (
               <TokenBalance
                 key={funding.token.id}
                 token={funding.token}

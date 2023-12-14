@@ -1,9 +1,6 @@
 import { Input, Tooltip, Flex, FormHelperText } from "@chakra-ui/react";
-import { fetchEnsAddress } from "@wagmi/core";
-import { add } from "lodash";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { isAddress } from "viem";
 import { useEnsAddress, useEnsName } from "wagmi";
 
 const UserAddressInput: React.FC<{
