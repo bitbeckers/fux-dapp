@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import type { AppProps } from "next/app";
 import { goerli } from "viem/chains";
-import { WagmiConfig, createConfig, configureChains, mainnet } from "wagmi";
+import { WagmiConfig, createConfig, mainnet } from "wagmi";
 
 const ALCHEMY_API_KEY = assertExists(process.env.NEXT_PUBLIC_ALCHEMY_API_KEY);
 const WC_PROJECT_ID = assertExists(process.env.NEXT_PUBLIC_WC_PROJECT_ID);
