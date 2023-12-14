@@ -23,7 +23,7 @@ jobs:
         with:
           version: 8.9.0
       - name: Install
-        run: pnpm build
+        run: pnpm install
       - name: Test
         run: pnpm test
         env:
