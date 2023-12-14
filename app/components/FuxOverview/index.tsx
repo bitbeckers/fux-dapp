@@ -19,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import NextLink from "next/link";
 import React from "react";
+import { useContractRead } from "wagmi";
 
 const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
   const { sdk } = useGraphClient();
@@ -52,13 +53,19 @@ const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
     enabled: !!address,
   });
 
-  const fuxBalance = data?.user?.balances?.find(
-    ({ token }) => token.name === "FUX"
-  )?.amount;
+  const { data: fuxBalance, isLoading: fuxLoading } = useContractRead({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "balanceOf",
+    args: [address, 1n],
+  });
 
-  const vFuxBalance = data?.user?.balances?.find(
-    ({ token }) => token.name === "vFUX"
-  )?.amount;
+  const { data: vFuxBalance, isLoading: vFuxLoading } = useContractRead({
+    address: contractAddresses.fuxContractAddress,
+    abi: contractABI.fux,
+    functionName: "balanceOf",
+    args: [address, 0n],
+  });
 
   return (
     <HStack
@@ -96,7 +103,9 @@ const FuxOverview: React.FC<{ address?: `0x${string}` }> = ({ address }) => {
                 p={3}
                 my={2}
                 w="10em"
-              >{`${fuxBalance ? `${fuxBalance} /100` : "0"} FUX`}</StatNumber>
+              >{`${
+                fuxBalance ? `${fuxBalance.toString()} /100` : "0"
+              } FUX`}</StatNumber>
               {fuxBalance ? (
                 <></>
               ) : (

@@ -46,22 +46,20 @@ export const calculateRelative = (data: Ratings) => {
 };
 
 export const decodeURI = (data: string) => {
-
   let decodedString: string;
 
   const base64String = data.split(",")[1];
-  const buffer = Buffer.from(base64String, 'base64');
+  const buffer = Buffer.from(base64String, "base64");
 
   decodedString = buffer.toString();
-  
+
   const json = JSON.parse(decodedString);
-  const splitLink = json.image.substring(6)
+  const splitLink = json.image.substring(6);
 
   return splitLink;
-}
+};
 
 export const shortenString = (str: string, maxLength: number) => {
-
   const ellipsis = "...";
   const ellipsisLength = ellipsis.length;
 
@@ -71,4 +69,14 @@ export const shortenString = (str: string, maxLength: number) => {
   const secondHalf = str.slice(str.length - midpoint + ellipsisLength);
 
   return firstHalf + ellipsis + secondHalf;
-}
+};
+
+export const assertExists = (value: any, messageToThrow?: string) => {
+  if (value !== undefined && value !== null) {
+    return value;
+  } else {
+    throw new Error(
+      messageToThrow || "assertExists: The passed value doesn’t exist"
+    );
+  }
+};

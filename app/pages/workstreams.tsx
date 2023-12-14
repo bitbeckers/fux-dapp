@@ -88,7 +88,7 @@ const Workstreams: NextPage = () => {
 
   return (
     <VStack spacing={8} w={"100%"}>
-      <FuxOverview />
+      <FuxOverview address={user} />
       <Divider />
       {isLoading ? (
         <Spinner
