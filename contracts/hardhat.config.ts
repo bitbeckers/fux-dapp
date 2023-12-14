@@ -1,5 +1,6 @@
 import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-foundry";
 import "@nomiclabs/hardhat-ethers";
 import "@openzeppelin/hardhat-upgrades";
 import { config as dotenvConfig } from "dotenv";
@@ -99,7 +100,7 @@ const config: HardhatUserConfig = {
     tests: "./test",
   },
   solidity: {
-    version: "0.8.13",
+    version: "0.8.19",
     settings: {
       metadata: {
         // Not including the metadata hash
