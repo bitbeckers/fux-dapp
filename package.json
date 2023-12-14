@@ -6,14 +6,8 @@
   "author": "bitbeckers <code@bitbeckers.com>",
   "license": "MIT",
   "private": true,
-  "workspaces": [
-    "app",
-    "contracts",
-    "graph",
-    "docs"
-  ],
   "scripts": {
-    "build": "yarn workspace contracts compile && yarn workspace app build && yarn workspace docs build",
-    "test": "yarn workspace contracts test && yarn workspace graph test"
+    "build": "pnpm --filter @fux-dapp/contracts run build && pnpm --filter @fux-dapp/graph && pnpm --filter @fux-dapp/frontend run build",
+    "test": "pnpm --filter @fux-dapp/** run test"
   }
 }

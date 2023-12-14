@@ -1,5 +1,5 @@
 {
-  "name": "graph",
+  "name": "@fux-dapp/graph",
   "version": "0.0.1",
   "main": "index.js",
   "author": "bitbeckers",
